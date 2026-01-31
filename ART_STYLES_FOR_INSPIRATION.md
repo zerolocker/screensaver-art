@@ -15,3 +15,5 @@ Brutalism
 Vaporwave
 Solarpunk
 Retro-Futurism
+Biopunk
+Dieselpunk

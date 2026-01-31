@@ -13,3 +13,5 @@ Pointillism
 
 Brutalism
 Vaporwave
+Solarpunk
+Retro-Futurism

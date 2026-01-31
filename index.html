@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Living Art Screensaver</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        #art-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        .art-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 3s ease-in-out, transform 15s linear;
+        }
+        .ken-burns {
+            transform: scale(1.1) translate(1%, 1%);
+        }
+        .active {
+            opacity: 1;
+        }
+        #ui-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
+            z-index: 100;
+        }
+        body:hover #ui-overlay {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="art-container">
+        <!-- Videos/Images will be toggled here -->
+        <video id="art-display-video" class="art-item active" autoplay muted loop playsinline src="gallery/starry_coast_animated.mp4"></video>
+        <img id="art-display-img" class="art-item" src="gallery/starry_coast.png" style="opacity: 0;">
+    </div>
+    <div id="ui-overlay">Starry Coast - Impressionist Collection (AI Animated)</div>
+
+    <script>
+        const items = [
+            { src: 'gallery/starry_coast_animated.mp4', title: 'Starry Coast - Impressionist Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/renaissance_garden_animated.mp4', title: 'Renaissance Garden - Classic Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/surreal_clocks_animated.mp4', title: 'Melting Clocks - Surrealism Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/abstract_flow_animated.mp4', title: 'Neon Flow - Modern Abstract Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/cyberpunk_tokyo_animated.mp4', title: 'Neon Tokyo - Cyberpunk Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/ukiyo_e_wave_animated.mp4', title: 'The Great Wave - Ukiyo-e Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/steampunk_city_animated.mp4', title: 'Clockwork Metropolis - Steampunk Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/watercolor_landscape_animated.mp4', title: 'Ethereal Dawn - Watercolor Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/baroque_study_animated.mp4', title: 'Chiaroscuro Study - Baroque Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/pop_art_portrait_animated.mp4', title: 'Vibrant Muse - Pop Art Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/gothic_castle_animated.mp4', title: 'Midnight Fortress - Gothic Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/art_deco_pattern_animated.mp4', title: 'Golden Geometry - Art Deco Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/pointillism_garden_animated.mp4', title: 'Dotted Flora - Pointillism Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/surrealist_portrait_animated.mp4', title: 'Metamorphic Bloom - Surrealist Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/solarpunk_city_animated.mp4', title: 'Solarpunk City - Solarpunk Collection (AI Animated)', type: 'video' }
+        ];
+        let currentIndex = 0;
+
+        function nextArt() {
+            currentIndex = (currentIndex + 1) % items.length;
+            const item = items[currentIndex];
+            
+            const videoEl = document.getElementById('art-display-video');
+            const imgEl = document.getElementById('art-display-img');
+            const overlay = document.getElementById('ui-overlay');
+            
+            // Fade out current elements
+            videoEl.style.opacity = 0;
+            imgEl.style.opacity = 0;
+            imgEl.classList.remove('ken-burns');
+
+            setTimeout(() => {
+                overlay.textContent = item.title;
+                if (item.type === 'video') {
+                    videoEl.src = item.src;
+                    videoEl.style.opacity = 1;
+                    videoEl.play();
+                } else {
+                    imgEl.src = item.src;
+                    imgEl.style.opacity = 1;
+                    // Force reflow for transform reset then re-add Ken-Burns
+                    void imgEl.offsetWidth;
+                    imgEl.classList.add('ken-burns');
+                }
+            }, 3000);
+        }
+
+        setInterval(nextArt, 15000);
+
+        // Auto-hide mouse cursor
+        let timeout;
+        document.onmousemove = function(){
+            document.body.style.cursor = "default";
+            clearTimeout(timeout);
+            timeout = setTimeout(function(){document.body.style.cursor = "none";}, 3000);
+        };
+    </script>
+</body>
+</html>

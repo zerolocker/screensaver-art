@@ -15,3 +15,5 @@ You are building a web-based screensaver app that showcases classic and modern a
 - Repeat the steps above 3 times to generate unique art pieces to vastly increase gallery variety.
 
 - **Art Style Expansion:** Come up with, and add one or two more art styles to "ART_STYLES_FOR_INSPIRATION.md". If there're already more than 100 in that file, summarize it into around ~50 styles, keeping the most general ones.
+
+- Before you end this work, note that this is a github repo, so commit your changes, including the media files you added. Prepend the commit message with "AUTO_CURATION:" so that I know where this commit is from.

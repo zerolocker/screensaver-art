@@ -72,7 +72,10 @@
             { src: 'gallery/starry_coast_animated.mp4', title: 'Starry Coast - Impressionist Collection (AI Animated)', type: 'video' },
             { src: 'gallery/renaissance_garden_animated.mp4', title: 'Renaissance Garden - Classic Collection (AI Animated)', type: 'video' },
             { src: 'gallery/surreal_clocks_animated.mp4', title: 'Melting Clocks - Surrealism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/surreal_clock_animated.mp4', title: 'Surreal Clock - Surrealism Collection (AI Animated)', type: 'video' }
+            { src: 'gallery/surreal_clock_animated.mp4', title: 'Surreal Clock - Surrealism Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/cyberpunk_neon_city_animated.mp4', title: 'Neon City - Cyberpunk Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/ukiyoe_great_wave_mountain_animated.mp4', title: 'Great Wave - Ukiyo-e Collection (AI Animated)', type: 'video' },
+            { src: 'gallery/steampunk_airship_adventure_animated.mp4', title: 'Airship Adventure - Steampunk Collection (AI Animated)', type: 'video' }
         ];
         let currentIndex = 0;
 
@@ -81,27 +84,16 @@
             const item = items[currentIndex];
             
             const videoEl = document.getElementById('art-display-video');
-            const imgEl = document.getElementById('art-display-img');
             const overlay = document.getElementById('ui-overlay');
             
             // Fade out current elements
             videoEl.style.opacity = 0;
-            imgEl.style.opacity = 0;
-            imgEl.classList.remove('ken-burns');
 
             setTimeout(() => {
                 overlay.textContent = item.title;
-                if (item.type === 'video') {
-                    videoEl.src = item.src;
-                    videoEl.style.opacity = 1;
-                    videoEl.play();
-                } else {
-                    imgEl.src = item.src;
-                    imgEl.style.opacity = 1;
-                    // Force reflow for transform reset then re-add Ken-Burns
-                    void imgEl.offsetWidth;
-                    imgEl.classList.add('ken-burns');
-                }
+                videoEl.src = item.src;
+                videoEl.style.opacity = 1;
+                videoEl.play();
             }, 3000);
         }
 

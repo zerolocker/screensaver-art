@@ -11,3 +11,5 @@ Gothic
 Art Deco
 Pointillism
 
+Brutalism
+Vaporwave

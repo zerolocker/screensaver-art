@@ -17,3 +17,5 @@ Solarpunk
 Retro-Futurism
 Biopunk
 Dieselpunk
+Cubism
+Abstract Expressionism

@@ -19,3 +19,7 @@ Biopunk
 Dieselpunk
 Cubism
 Abstract Expressionism
+Art Nouveau
+Low Poly
+Pixel Art
+Synthwave

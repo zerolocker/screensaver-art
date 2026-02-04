@@ -23,3 +23,5 @@ Art Nouveau
 Low Poly
 Pixel Art
 Synthwave
+Noir
+Minimalism

@@ -25,3 +25,5 @@ Pixel Art
 Synthwave
 Noir
 Minimalism
+Voxel Art
+Isometric

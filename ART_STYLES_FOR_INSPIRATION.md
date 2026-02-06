@@ -27,3 +27,5 @@ Noir
 Minimalism
 Voxel Art
 Isometric
+Glitch Art
+Bauhaus

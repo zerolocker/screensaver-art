@@ -29,3 +29,5 @@ Voxel Art
 Isometric
 Glitch Art
 Bauhaus
+Constructivism
+Fauvism

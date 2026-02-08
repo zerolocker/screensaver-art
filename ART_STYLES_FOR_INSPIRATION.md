@@ -31,3 +31,5 @@ Glitch Art
 Bauhaus
 Constructivism
 Fauvism
+Neo-Tokyo
+Mid-Century Modern

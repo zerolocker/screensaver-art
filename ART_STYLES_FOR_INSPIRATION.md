@@ -33,3 +33,5 @@ Constructivism
 Fauvism
 Neo-Tokyo
 Mid-Century Modern
+Biomorphic
+Memphis Design

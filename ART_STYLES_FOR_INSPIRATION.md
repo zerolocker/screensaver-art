@@ -35,3 +35,6 @@ Neo-Tokyo
 Mid-Century Modern
 Biomorphic
 Memphis Design
+Frutiger Aero
+Acid Graphics
+Cyber-Gothic

@@ -38,3 +38,5 @@ Memphis Design
 Frutiger Aero
 Acid Graphics
 Cyber-Gothic
+De Stijl
+Suprematism

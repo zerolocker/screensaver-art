@@ -40,3 +40,5 @@ Acid Graphics
 Cyber-Gothic
 De Stijl
 Suprematism
+Ghibli-esque
+Papercut Art

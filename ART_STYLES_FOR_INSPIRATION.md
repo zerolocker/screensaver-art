@@ -42,3 +42,6 @@ De Stijl
 Suprematism
 Ghibli-esque
 Papercut Art
+
+Fractal Art
+Biomechanical

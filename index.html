@@ -55,6 +55,82 @@
             font-size: 12px;
             z-index: 100;
         }
+
+        /* Side Menu */
+        #side-menu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 300px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 200;
+            overflow-y: auto;
+            color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+            backdrop-filter: blur(10px);
+        }
+
+        #side-menu-trigger {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 100%;
+            z-index: 199;
+        }
+
+        #side-menu-trigger:hover + #side-menu,
+        #side-menu:hover {
+            transform: translateX(0);
+        }
+
+        #controls {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .control-btn {
+            background: none;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-radius: 4px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .control-btn.active-btn {
+            background: #fff;
+            color: #000;
+        }
+
+        .item-list-entry {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+        }
+
+        .item-list-entry:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .item-list-entry.current-item {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+            border-left: 4px solid #fff;
+        }
     </style>
 </head>
 <body>
@@ -63,6 +139,18 @@
         <video id="art-display-video" class="art-item active" autoplay muted loop playsinline src="gallery/starry_coast_animated.mp4"></video>
     </div>
     <div id="ui-overlay">Starry Coast - Impressionist Collection (AI Animated)</div>
+
+    <!-- Side Menu Trigger Zone -->
+    <div id="side-menu-trigger"></div>
+
+    <!-- Side Menu -->
+    <div id="side-menu">
+        <div id="controls">
+            <span>Controls</span>
+            <button id="randomize-btn" class="control-btn active-btn">Randomize: ON</button>
+        </div>
+        <div id="item-list"></div>
+    </div>
 
     <script>
         const items = [
@@ -116,29 +204,101 @@
             { src: 'gallery/minimalist_desert_animated.mp4', title: 'Serene Dunes - Minimalism Collection (AI Animated)', type: 'video' },
             { src: 'gallery/ukiyoe_animated.mp4', title: 'Cherry Blossom Waves - Ukiyo-e Collection (AI Animated)', type: 'video' }
         ];
+        
         let currentIndex = 0;
+        let randomize = true;
+        let intervalId;
 
-        function nextArt() {
-            currentIndex = (currentIndex + 1) % items.length;
+        // Populate the side menu list
+        const itemList = document.getElementById('item-list');
+        const randomizeBtn = document.getElementById('randomize-btn');
+
+        function initSideMenu() {
+            itemList.innerHTML = '';
+            items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'item-list-entry';
+                if (index === currentIndex) div.classList.add('current-item');
+                div.textContent = item.title.split(' - ')[0]; // Show simplified title
+                div.onclick = () => {
+                    displayItem(index, true); // Immediate transition
+                    restartInterval();
+                };
+                itemList.appendChild(div);
+            });
+        }
+
+        // Randomize toggle logic
+        randomizeBtn.onclick = () => {
+            randomize = !randomize;
+            randomizeBtn.textContent = `Randomize: ${randomize ? 'ON' : 'OFF'}`;
+            randomizeBtn.classList.toggle('active-btn', randomize);
+        };
+
+        function displayItem(index, immediate = false) {
+            currentIndex = index;
             const item = items[currentIndex];
             
             const videoEl = document.getElementById('art-display-video');
             const overlay = document.getElementById('ui-overlay');
             
-            // Fade out current elements
-            videoEl.style.opacity = 0;
+            // Highlight in menu
+            document.querySelectorAll('.item-list-entry').forEach((el, idx) => {
+                el.classList.toggle('current-item', idx === index);
+                if (idx === index) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
 
-            setTimeout(() => {
-                overlay.textContent = item.title;
-                videoEl.src = item.src;
-                videoEl.style.opacity = 1;
-                videoEl.play();
-            }, 3000);
+            // Transition logic
+            if (immediate) {
+                // Quick transition for user clicks
+                videoEl.style.transition = 'opacity 0.5s ease-in-out';
+                videoEl.style.opacity = 0;
+                
+                setTimeout(() => {
+                    overlay.textContent = item.title;
+                    videoEl.src = item.src;
+                    videoEl.style.opacity = 1;
+                    videoEl.play();
+                    // Reset transition speed after fade-in
+                    setTimeout(() => {
+                        videoEl.style.transition = 'opacity 3s ease-in-out, transform 15s linear';
+                    }, 500);
+                }, 500);
+            } else {
+                // Standard slow transition
+                videoEl.style.opacity = 0;
+                setTimeout(() => {
+                    overlay.textContent = item.title;
+                    videoEl.src = item.src;
+                    videoEl.style.opacity = 1;
+                    videoEl.play();
+                }, 3000);
+            }
         }
 
-        setInterval(nextArt, 8000);
+        function nextArt() {
+            let nextIndex;
+            if (randomize) {
+                // Random index, avoid immediate repeat if possible
+                do {
+                    nextIndex = Math.floor(Math.random() * items.length);
+                } while (items.length > 1 && nextIndex === currentIndex);
+            } else {
+                nextIndex = (currentIndex + 1) % items.length;
+            }
+            displayItem(nextIndex);
+        }
 
-        // Auto-hide mouse cursor
+        function restartInterval() {
+            clearInterval(intervalId);
+            intervalId = setInterval(nextArt, 8000);
+        }
+
+        // Initialize
+        initSideMenu();
+        intervalId = setInterval(nextArt, 8000);
+
+        // Auto-hide mouse cursor (and menu trigger visibility logic if needed)
         let timeout;
         document.onmousemove = function(){
             document.body.style.cursor = "default";

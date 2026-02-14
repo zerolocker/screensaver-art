@@ -45,3 +45,5 @@ Papercut Art
 
 Fractal Art
 Biomechanical
+Maximalism
+Psychedelic Art

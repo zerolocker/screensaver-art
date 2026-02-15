@@ -47,3 +47,5 @@ Fractal Art
 Biomechanical
 Maximalism
 Psychedelic Art
+Afrofuturism
+Celtic Knotwork

@@ -49,3 +49,5 @@ Maximalism
 Psychedelic Art
 Afrofuturism
 Celtic Knotwork
+Solarpunk-Noir
+Whimsical Steampunk

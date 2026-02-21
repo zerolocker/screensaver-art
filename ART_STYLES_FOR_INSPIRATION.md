@@ -51,3 +51,5 @@ Afrofuturism
 Celtic Knotwork
 Solarpunk-Noir
 Whimsical Steampunk
+Eco-Brutalism
+Dark Fantasy

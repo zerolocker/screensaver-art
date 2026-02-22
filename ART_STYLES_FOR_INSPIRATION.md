@@ -53,3 +53,5 @@ Solarpunk-Noir
 Whimsical Steampunk
 Eco-Brutalism
 Dark Fantasy
+Dungeon Synth
+Y2K Aesthetic

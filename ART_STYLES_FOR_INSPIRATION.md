@@ -55,3 +55,5 @@ Eco-Brutalism
 Dark Fantasy
 Dungeon Synth
 Y2K Aesthetic
+Liminal Spaces
+Dark Academia

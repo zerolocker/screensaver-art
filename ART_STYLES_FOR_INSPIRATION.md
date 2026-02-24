@@ -57,3 +57,5 @@ Dungeon Synth
 Y2K Aesthetic
 Liminal Spaces
 Dark Academia
+Dreamcore
+Weirdcore

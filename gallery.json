@@ -1,5 +1,20 @@
 [
   {
+    "src": "gallery/byzantine_mosaic_animated.mp4",
+    "title": "Golden Mosaic - Byzantine (AI Animated)",
+    "type": "video"
+  },
+  {
+    "src": "gallery/hudson_river_valley_animated.mp4",
+    "title": "Majestic Valley - Hudson River School (AI Animated)",
+    "type": "video"
+  },
+  {
+    "src": "gallery/rococo_garden_animated.mp4",
+    "title": "Garden Party - Rococo (AI Animated)",
+    "type": "video"
+  },
+  {
     "src": "gallery/dark_academia_library_animated.mp4",
     "title": "Gothic Library - Dark Academia (AI Animated)",
     "type": "video"

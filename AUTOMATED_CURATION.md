@@ -29,6 +29,7 @@ Do **NOT** guess tool commands. You must use the **nano-banana-pro** and **veo3-
 
 6.  **Expand Inspiration:** Append 1-2 new styles to `screensaver/ART_STYLES_FOR_INSPIRATION.md`.
 
-7.  **Commit:**
+7.  **Commit and Push:**
     *   **IMPORTANT:** You must be inside the `screensaver/` directory for git operations.
     *   Run: `cd screensaver && git add . && git commit -m "AUTO_CURATION: Added [Style 1, Style 2, Style 3] collections"`
+    *   Run: `git push` to sync changes to the remote.

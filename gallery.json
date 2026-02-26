@@ -363,5 +363,20 @@
     "src": "gallery/psychedelic_kaleidoscope_animated.mp4",
     "title": "Psychedelic Kaleidoscope - Psychedelic Art (AI Animated)",
     "type": "video"
-  }
+  },
+  {
+    "src": "gallery/mannerism_composition_animated.mp4",
+    "title": "Twisted Space - Mannerism (AI Animated)",
+    "type": "video"
+  },
+  {
+    "src": "gallery/romanticism_landscape_animated.mp4",
+    "title": "Stormy Peak - Romanticism (AI Animated)",
+    "type": "video"
+  },
+  {
+    "src": "gallery/tenebrism_chiaroscuro_animated.mp4",
+    "title": "Deep Shadow - Tenebrism (AI Animated)",
+    "type": "video"
+  },
 ]

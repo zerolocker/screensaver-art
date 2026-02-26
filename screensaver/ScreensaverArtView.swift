@@ -11,6 +11,7 @@ struct ArtItem: Decodable {
     let type: String
 
     static let baseURL = "https://tempzero-clawd.github.io/screensaver-art/"
+    static var galleryURL: URL { URL(string: baseURL + "gallery.json")! }
     var mediaURL: URL { URL(string: ArtItem.baseURL + src)! }
     var isVideo: Bool { type == "video" }
 }
@@ -38,6 +39,7 @@ class ScreensaverArtView: ScreenSaverView {
     private var loopObsB: Any?
 
     // ── Title pill ──────────────────────────────────────────────────────────
+    private var pillContainer: NSView?
     private var titleLabel: NSTextField?
 
     // ── Timer ───────────────────────────────────────────────────────────────
@@ -78,36 +80,77 @@ class ScreensaverArtView: ScreenSaverView {
         b.backgroundColor = NSColor.black.cgColor; b.opacity = 0
         layer?.addSublayer(b); slotB = b
 
-        // Title pill at bottom-center (matches the web app style)
+        // Title pill: frosted glass so it blends with the art instead of a solid box
         let fontSize: CGFloat = isPreview ? 7 : 12
+        let radius: CGFloat = isPreview ? 10 : 24
+        let pad: CGFloat = isPreview ? 6 : 20
+        let minHeight: CGFloat = isPreview ? 20 : 40
+        let hInset: CGFloat = isPreview ? 12 : 20
+        let vInset: CGFloat = isPreview ? 6 : 12
+
+        let container = NSView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.wantsLayer = true
+        container.layer?.cornerRadius = radius
+        container.layer?.masksToBounds = true
+        if let scale = NSScreen.main?.backingScaleFactor {
+            container.layer?.contentsScale = scale
+        }
+        // Soft shadow only (no border) so edges stay smooth and it floats
+        container.layer?.shadowColor = NSColor.black.cgColor
+        container.layer?.shadowOpacity = 0.35
+        container.layer?.shadowOffset = CGSize(width: 0, height: -2)
+        container.layer?.shadowRadius = 12
+        container.layer?.masksToBounds = false
+        addSubview(container)
+        pillContainer = container
+
+        let blur = NSVisualEffectView()
+        blur.translatesAutoresizingMaskIntoConstraints = false
+        blur.material = .hudWindow
+        blur.blendingMode = .withinWindow
+        blur.state = .active
+        blur.alphaValue = 0.65
+        blur.wantsLayer = true
+        blur.layer?.cornerRadius = radius
+        blur.layer?.masksToBounds = true
+        container.addSubview(blur, positioned: .below, relativeTo: nil)
+
         let lbl = NSTextField(labelWithString: "")
         lbl.translatesAutoresizingMaskIntoConstraints = false
-        lbl.textColor      = .white
-        lbl.font           = NSFont.systemFont(ofSize: fontSize, weight: .medium)
-        lbl.alignment      = .center
-        lbl.isBezeled      = false
-        lbl.isEditable     = false
-        lbl.drawsBackground = true
-        lbl.backgroundColor = NSColor(white: 0, alpha: 0.6)
-        lbl.wantsLayer     = true
-        lbl.layer?.cornerRadius = isPreview ? 8 : 20
-        lbl.layer?.masksToBounds = true
-        addSubview(lbl)
+        lbl.textColor = .white
+        lbl.font = NSFont.systemFont(ofSize: fontSize, weight: .medium)
+        lbl.alignment = .center
+        lbl.isBezeled = false
+        lbl.isEditable = false
+        lbl.drawsBackground = false
+        lbl.backgroundColor = .clear
+        lbl.wantsLayer = true
+        container.addSubview(lbl)
         titleLabel = lbl
 
-        let pad: CGFloat = isPreview ? 6 : 20
         NSLayoutConstraint.activate([
-            lbl.centerXAnchor.constraint(equalTo: centerXAnchor),
-            lbl.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -pad),
-            lbl.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, multiplier: 0.85),
+            container.centerXAnchor.constraint(equalTo: centerXAnchor),
+            container.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -pad),
+            container.widthAnchor.constraint(equalTo: lbl.widthAnchor, constant: 2 * hInset),
+            container.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, multiplier: 0.85),
+            container.heightAnchor.constraint(equalTo: lbl.heightAnchor, constant: 2 * vInset),
+            container.heightAnchor.constraint(greaterThanOrEqualToConstant: minHeight),
+            blur.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            blur.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            blur.topAnchor.constraint(equalTo: container.topAnchor),
+            blur.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            lbl.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: hInset),
+            lbl.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -hInset),
+            lbl.topAnchor.constraint(equalTo: container.topAnchor, constant: vInset),
+            lbl.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -vInset),
         ])
     }
 
     // MARK: Fetch & Parse
 
     private func fetchItems() {
-        let url = URL(string: "https://tempzero-clawd.github.io/screensaver-art/gallery.json")!
-        URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+        URLSession.shared.dataTask(with: ArtItem.galleryURL) { [weak self] data, _, _ in
             guard let self, let data else { return }
             guard let parsed = try? JSONDecoder().decode([ArtItem].self, from: data),
                   !parsed.isEmpty else { return }
@@ -155,9 +198,20 @@ class ScreensaverArtView: ScreenSaverView {
 
         activeSlot = incoming
 
-        // Title pill — pad with spaces for the pill effect
+        // Title pill — pad and style to match web app (letter spacing, uppercase feel optional)
         let padded = "  \(item.title)  "
-        titleLabel?.stringValue = padded
+        guard let lbl = titleLabel else { return }
+        let fontSize: CGFloat = isPreview ? 7 : 12
+        let font = NSFont.systemFont(ofSize: fontSize, weight: .medium)
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .center
+        let attrs: [NSAttributedString.Key: Any] = [
+            .font: font,
+            .foregroundColor: NSColor.white,
+            .kern: isPreview ? 0 : 1.2,
+            .paragraphStyle: paragraphStyle,
+        ]
+        lbl.attributedStringValue = NSAttributedString(string: padded, attributes: attrs)
     }
 
     private func clearSlot(_ slot: CALayer) {

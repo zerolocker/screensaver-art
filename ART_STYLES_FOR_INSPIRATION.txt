@@ -10,7 +10,6 @@ Pop Art
 Gothic
 Art Deco
 Pointillism
-
 Brutalism
 Vaporwave
 Solarpunk
@@ -42,7 +41,6 @@ De Stijl
 Suprematism
 Ghibli-esque
 Papercut Art
-
 Fractal Art
 Biomechanical
 Maximalism

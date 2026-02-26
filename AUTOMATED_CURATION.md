@@ -15,7 +15,7 @@ Do **NOT** guess tool commands. You must use the **nano-banana-pro** and **veo3-
 1.  **Gain Context:** Load "README.md" into your context. List and read files in `screensaver/` to understand the structure.
 
 2.  **Still Image Generation:**
-    *   Pick a new theme/style (check `ART_STYLES_FOR_INSPIRATION.md`).
+    *   Pick a new theme/style (check `ART_STYLES_FOR_INSPIRATION.txt`).
     *   Generate a high-quality PNG using the **nano-banana-pro** skill.
 
 3.  **AI Animation:**
@@ -27,7 +27,7 @@ Do **NOT** guess tool commands. You must use the **nano-banana-pro** and **veo3-
 
 5.  **Repeat:** Perform steps 2-4 a total of **3 times** to create 3 unique pieces.
 
-6.  **Expand Inspiration:** Append 1-2 new styles to `screensaver/ART_STYLES_FOR_INSPIRATION.md`.
+6.  **Expand Inspiration:** Append 1-2 new styles to `screensaver/ART_STYLES_FOR_INSPIRATION.txt`.
 
 7.  **Commit and Push:**
     *   **IMPORTANT:** You must be inside the `screensaver/` directory for git operations.

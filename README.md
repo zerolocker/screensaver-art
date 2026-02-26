@@ -27,11 +27,11 @@ The **Living Art Screensaver** (`index.html`) is a standalone web application de
 - **Assets:** Stored in `gallery/`.
     - `*.png`: High-resolution static bases.
     - `*_animated.mp4`: Veo-generated video loops.
-- **Configuration:** The playlist is a JSON array embedded in `index.html` (`const items = [...]`).
+- **Configuration:** The playlist is a JSON array embedded in `gallery.json`.
 - **Playback Engine:**
     - Auto-detects media type (`video` vs `image`).
     - Handles cross-fades (opacity transitions).
     - Manages overlay titles ("UI Overlay").
 
-## Future Vision
-This isn't just a folder of files; it's a *curated stream*. The ultimate goal is for the "Nightly Surprise Build" to act as the museum curator, commissioning new works every night while the user sleeps, so they wake up to a fresh exhibition every morning.
+## Nightly commissioning
+A background agent act as the museum curator, commissioning new works every night while the user sleeps, so they wake up to a fresh exhibition every morning.

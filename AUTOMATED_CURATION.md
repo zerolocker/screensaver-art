@@ -22,8 +22,8 @@ Do **NOT** guess tool commands. You must use the **nano-banana-pro** and **veo3-
     *   Animate your new image using the **veo3-video-gen** skill.
 
 4.  **Update App:**
-    *   Edit `screensaver/index.html` to include the new video in the `items` array.
-    *   Format: `{ src: 'gallery/filename_animated.mp4', title: 'Title - Style Collection (AI Animated)', type: 'video' }`
+    *   Edit `gallery.json` to include the new video in the array.
+    *   Format: `{ src: 'gallery/filename_animated.mp4', title: 'Title - Style (AI Animated)', type: 'video' }`
 
 5.  **Repeat:** Perform steps 2-4 a total of **3 times** to create 3 unique pieces.
 

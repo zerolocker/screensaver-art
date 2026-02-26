@@ -168,7 +168,7 @@
         <!-- Videos/Images will be toggled here -->
         <video id="art-display-video" class="art-item active" autoplay muted loop playsinline src="gallery/starry_coast_animated.mp4"></video>
     </div>
-    <div id="ui-overlay">Starry Coast - Impressionist Collection (AI Animated)</div>
+    <div id="ui-overlay">Starry Coast - Impressionist (AI Animated)</div>
 
     <!-- Hamburger Menu Toggle -->
     <div id="menu-toggle">
@@ -187,78 +187,7 @@
     </div>
 
     <script>
-        const items = [
-            { src: 'gallery/dark_academia_library_animated.mp4', title: 'Gothic Library - Dark Academia Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/liminal_spaces_hallway_animated.mp4', title: 'Eerie Hallway - Liminal Spaces Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/biomorphic_organic_shapes_animated.mp4', title: 'Organic Flow - Biomorphic Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/whimsical_steampunk_tree_animated.mp4', title: 'Whimsical Village - Whimsical Steampunk Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/dark_fantasy_fortress_animated.mp4', title: 'Obsidian Fortress - Dark Fantasy Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/eco_brutalist_jungle_animated.mp4', title: 'Overgrown Structure - Eco-Brutalism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/celtic_knotwork_forest_animated.mp4', title: 'Mystical Knotwork - Celtic Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/acid_graphics_rave_animated.mp4', title: 'Acid Melt - Acid Graphics Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/solarpunk_noir_city_animated.mp4', title: 'Neon Rain - Solarpunk Noir Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/biolum_rainforest_animated.mp4', title: 'Bioluminescent Rainforest - Biopunk Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/floating_city_animated.mp4', title: 'Floating City - Steampunk Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/nebula_dreams_animated.mp4', title: 'Nebula Dreams - Cosmic Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/abstract_expressionism_chaos_animated.mp4', title: 'Abstract Expressionism Chaos - Abstract Expressionism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/mid_century_modern_room_animated.mp4', title: 'Mid-Century Modern Room - Mid-Century Modern Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/frutiger_aero_dream_animated.mp4', title: 'Frutiger Aero Dream - Frutiger Aero Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/constructivism_industrial_animated.mp4', title: 'Industrial Rhythm - Constructivism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/fauvism_landscape_animated.mp4', title: 'Fauvism Flow - Fauvism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/voxel_room_animated.mp4', title: 'Cozy Room - Voxel Art Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/solarpunk_animated.mp4', title: 'Green Future - Solarpunk Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/neotokyo_animated.mp4', title: 'Neon Night - Neo-Tokyo Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/surrealism_animated.mp4', title: 'Floating Time - Surrealism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/impressionist_pond_animated.mp4', title: 'Impressionist Pond - Classic Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/pop_art_diner_animated.mp4', title: 'Pop Art Diner - Retro Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/bauhaus_architecture_animated.mp4', title: 'Bauhaus Architecture - Modernist Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/cubism_city_animated.mp4', title: 'Geometric Sunset - Cubism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/pixel_village_animated.mp4', title: 'Cozy Village - Pixel Art Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/isometric_island_animated.mp4', title: 'Floating Island - Isometric Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/surrealism_animated.mp4', title: 'Floating Islands - Surrealism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/synthwave_animated.mp4', title: 'Neon Highway - Synthwave Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/solarpunk_animated.mp4', title: 'Green Future - Solarpunk Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/gothic_cathedral_animated.mp4', title: 'Dark Cathedral - Gothic Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/art_deco_ballroom_animated.mp4', title: 'Grand Ballroom - Art Deco Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/solarpunk_city_animated.mp4', title: 'Solarpunk City - Solarpunk Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/starry_coast_animated.mp4', title: 'Starry Coast - Impressionist Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/renaissance_garden_animated.mp4', title: 'Renaissance Garden - Classic Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/surreal_clocks_animated.mp4', title: 'Melting Clocks - Surrealism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/surreal_clock_animated.mp4', title: 'Surreal Clock - Surrealism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/cyberpunk_neon_city_animated.mp4', title: 'Neon City - Cyberpunk Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/ukiyoe_great_wave_mountain_animated.mp4', title: 'Great Wave - Ukiyo-e Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/steampunk_airship_adventure_animated.mp4', title: 'Airship Adventure - Steampunk Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/cyberpunk_city_animated.mp4', title: 'Cyberpunk City - Cyberpunk Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/vaporwave_sunset_animated.mp4', title: 'Vaporwave Sunset - Vaporwave Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/brutalist_structure_animated.mp4', title: 'Brutalist Monument - Brutalism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/retro_futurism_city_animated.mp4', title: 'Flying Cars - Retro-Futurism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/biopunk_forest_animated.mp4', title: 'Glowing Forest - Biopunk Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/pointillism_park_animated.mp4', title: 'Lakeside Park - Pointillism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/art_nouveau_greenhouse_animated.mp4', title: 'Elegant Greenhouse - Art Nouveau Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/dieselpunk_factory_animated.mp4', title: 'Sky Factory - Dieselpunk Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/low_poly_mountain_animated.mp4', title: 'Geometric Sunset - Low Poly Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/noir_street_animated.mp4', title: 'Noir Street - Noir Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/baroque_palace_animated.mp4', title: 'Grand Palace - Baroque Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/watercolor_lake_animated.mp4', title: 'Misty Lake - Watercolor Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/solarpunk_animated.mp4', title: 'Solarpunk Utopia - Solarpunk Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/synthwave_animated.mp4', title: 'Neon Grid - Synthwave Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/biomorphic_shapes_animated.mp4', title: 'Organic Pulse - Biomorphic Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/glitch_landscape_animated.mp4', title: 'Data Decay - Glitch Art Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/minimalist_desert_animated.mp4', title: 'Serene Dunes - Minimalism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/ukiyoe_animated.mp4', title: 'Cherry Blossom Waves - Ukiyo-e Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/biomechanical_organic_machine_animated.mp4', title: 'Organic Machine - Biomechanical Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/papercut_forest_animated.mp4', title: 'Enchanted Layers - Papercut Art Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/memphis_pattern_animated.mp4', title: 'Geometric Loop - Memphis Design Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/de_stijl_composition_animated.mp4', title: 'De Stijl Composition - De Stijl Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/suprematism_composition_animated.mp4', title: 'Suprematism Shapes - Suprematism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/ghibli_landscape_animated.mp4', title: 'Serene Hills - Ghibli-esque Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/fractal_landscape_animated.mp4', title: 'Infinite Fractal - Fractal Art Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/retro_futurism_cloud_city_animated.mp4', title: 'Cloud City - Retro-Futurism Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/dungeon_synth_ruins_animated.mp4', title: 'Haunted Ruins - Dungeon Synth Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/y2k_dreamscape_animated.mp4', title: 'Chrome Dreams - Y2K Aesthetic Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/cyber_gothic_cathedral_animated.mp4', title: 'Neon Spire - Cyber-Gothic Collection (AI Animated)', type: 'video' },
-            { src: 'gallery/psychedelic_kaleidoscope_animated.mp4', title: 'Psychedelic Kaleidoscope - Psychedelic Art Collection (AI Animated)', type: 'video' },
-        ];
+        let items = [];
         
         let currentIndex = 0;
         let randomize = true;
@@ -365,9 +294,14 @@
             intervalId = setInterval(nextArt, 8000);
         }
 
-        // Initialize
-        initSideMenu();
-        intervalId = setInterval(nextArt, 8000);
+        // Initialize — load playlist from gallery.json then start
+        fetch('gallery.json')
+            .then(r => r.json())
+            .then(data => {
+                items = data;
+                initSideMenu();
+                intervalId = setInterval(nextArt, 8000);
+            });
 
         // Auto-hide mouse cursor
         let timeout;

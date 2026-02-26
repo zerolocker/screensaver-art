@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- The binary inside Contents/MacOS/ -->
+    <key>CFBundleExecutable</key>
+    <string>ScreensaverArt</string>
+
+    <!-- Reverse-domain bundle ID (used for ScreenSaverDefaults) -->
+    <key>CFBundleIdentifier</key>
+    <string>com.screensaver-art.ScreensaverArt</string>
+
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+
+    <!-- Display name shown in System Settings -->
+    <key>CFBundleName</key>
+    <string>Screensaver Art</string>
+
+    <!-- BNDL = loadable bundle (required for .saver) -->
+    <key>CFBundlePackageType</key>
+    <string>BNDL</string>
+
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+
+    <key>CFBundleVersion</key>
+    <string>1</string>
+
+    <!-- Must match @objc(ScreensaverArtView) on the Swift class -->
+    <key>NSPrincipalClass</key>
+    <string>ScreensaverArtView</string>
+</dict>
+</plist>

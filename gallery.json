@@ -1,5 +1,29 @@
 [
   {
+    "src": "gallery/art_nouveau_woman_animated.mp4",
+    "title": "Woman and Flora - Art Nouveau (AI Animated)",
+    "type": "video",
+    "date": "2026-02-28",
+    "image_prompt": "A portrait of a woman surrounded by intricate floral patterns, flowing lines, muted colors, Art Nouveau style, Alphonse Mucha influence",
+    "video_prompt": "The woman breathes gently, the floral patterns slowly grow and sway around her, her hair flows softly. Art Nouveau animation."
+  },
+  {
+    "src": "gallery/romanticism_storm_animated.mp4",
+    "title": "Stormy Sea - Romanticism (AI Animated)",
+    "type": "video",
+    "date": "2026-02-28",
+    "image_prompt": "A dramatic seascape with stormy waves crashing against cliffs, ship in the distance, dramatic lighting, Romanticism art style, oil painting texture",
+    "video_prompt": "The waves crash against the cliffs, the ship rocks on the stormy sea, dramatic clouds move across the sky. Oil painting animation."
+  },
+  {
+    "src": "gallery/ukiyo_e_fuji_animated.mp4",
+    "title": "Mount Fuji - Ukiyo-e (AI Animated)",
+    "type": "video",
+    "date": "2026-02-28",
+    "image_prompt": "A serene landscape of Mount Fuji with cherry blossoms in the foreground, traditional Japanese village, Ukiyo-e style, woodblock print texture, detailed line work",
+    "video_prompt": "The cherry blossoms gently sway in the wind, a few petals drift through the air, and the water in the river flows slowly. Ukiyo-e style animation."
+  },
+  {
     "src": "gallery/byzantine_mosaic_animated.mp4",
     "title": "Golden Mosaic - Byzantine (AI Animated)",
     "type": "video"

@@ -24,7 +24,7 @@ Do **NOT** guess tool commands. You must use the **nano-banana-pro** and **veo3-
 
 4.  **Update App:**
     *   Edit `gallery.json` to include the new video in the beginning of the array.
-    *   Format: `{ src: 'gallery/filename_animated.mp4', title: 'Title - Style (AI Animated)', type: 'video', date: 'YYYY-MM-DD', image_prompt: 'prompt you used for image generation', video_prompt: 'prompt you used for animation' }`
+    *   Format: `{ src: 'gallery/filename_animated.mp4', title: 'Title - Style (AI Animated)', type: 'video', date: 'YYYY-MM-DD', image_prompt: 'THE_IMAGE_PROMPT_USED', video_prompt: 'THE_VIDEO_PROMPT_USED' }`
 
 5.  **Repeat:** Perform steps 2-4 a total of **3 times** to create 3 unique pieces.
 

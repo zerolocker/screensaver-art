@@ -20,6 +20,7 @@ Do **NOT** guess tool commands. You must use the **nano-banana-pro** and **veo3-
 
 3.  **AI Animation:**
     *   Animate your new image using the **veo3-video-gen** skill.
+    *   After the video is successfully generated, **delete the source PNG file** (e.g., `gallery/filename.png`) as it is an intermediate artifact.
 
 4.  **Update App:**
     *   Edit `gallery.json` to include the new video in the array.

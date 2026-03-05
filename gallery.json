@@ -1,5 +1,29 @@
 [
   {
+    "src": "gallery/symbolism_island_animated.mp4",
+    "title": "Mystical Island - Symbolism (AI Animated)",
+    "type": "video",
+    "date": "2026-03-05",
+    "image_prompt": "A mystical, dreamlike landscape in the style of Symbolism art, featuring a floating island with ancient ruins, vibrant colors, soft focus, and ethereal lighting, reminiscent of Odilon Redon or Gustave Moreau.",
+    "video_prompt": "The floating island gently rotates, waterfalls cascade down, clouds drift slowly across the vibrant sky, and ancient ruins glow with a soft magical light."
+  },
+  {
+    "src": "gallery/barbizon_forest_animated.mp4",
+    "title": "Twilight Forest - Barbizon School (AI Animated)",
+    "type": "video",
+    "date": "2026-03-05",
+    "image_prompt": "A dense, ancient forest at twilight, with mist rising from a small stream, soft golden light filtering through the trees, in the style of the Barbizon School, reminiscent of Theodore Rousseau or Jean-Francois Millet.",
+    "video_prompt": "Mist swirls, leaves rustle, light changes as the sun sets, creating a moody, atmospheric landscape."
+  },
+  {
+    "src": "gallery/arts_and_crafts_garden_animated.mp4",
+    "title": "Decorative Garden - Arts and Crafts (AI Animated)",
+    "type": "video",
+    "date": "2026-03-05",
+    "image_prompt": "A lush, decorative garden with stylized flowers, intricate patterns, vibrant colors, birds among the branches, in the style of the Arts and Crafts Movement, reminiscent of William Morris.",
+    "video_prompt": "Vines curl and grow, flowers bloom slowly, birds flutter, light flickers, creating a sense of natural movement."
+  },
+  {
     "src": "gallery/bosch_surreal_garden_animated.mp4",
     "title": "Surreal Garden - Hieronymus Bosch (AI Animated)",
     "type": "video",

@@ -1,5 +1,29 @@
 [
   {
+    "src": "gallery/bosch_surreal_garden_animated.mp4",
+    "title": "Surreal Garden - Hieronymus Bosch (AI Animated)",
+    "type": "video",
+    "date": "2026-02-28",
+    "image_prompt": "A detailed, surreal landscape in the style of Hieronymus Bosch, filled with fantastical creatures, strange organic structures, and vibrant, unsettling colors. High resolution, intricate details.",
+    "video_prompt": "The strange creatures move around, the organic structures pulse and sway, creating a lively and chaotic scene."
+  },
+  {
+    "src": "gallery/preraphaelite_forest_animated.mp4",
+    "title": "Lush Forest - Pre-Raphaelite Brotherhood (AI Animated)",
+    "type": "video",
+    "date": "2026-02-28",
+    "image_prompt": "A detailed painting in the style of the Pre-Raphaelite Brotherhood, depicting a beautiful woman in a lush, detailed forest, with vibrant colors and intricate textures.",
+    "video_prompt": "The woman turns her head slowly, the wind blows through her hair and the leaves, sunlight dapples through the trees."
+  },
+  {
+    "src": "gallery/byzantine_angel_animated.mp4",
+    "title": "Golden Angel - Byzantine (AI Animated)",
+    "type": "video",
+    "date": "2026-02-28",
+    "image_prompt": "A grand Byzantine mosaic depicting an angel or saint, with golden tiles shimmering and a halo glowing.",
+    "video_prompt": "The figure slowly raises a hand in blessing, and the golden background glimmers."
+  },
+  {
     "src": "gallery/art_nouveau_woman_animated.mp4",
     "title": "Woman and Flora - Art Nouveau (AI Animated)",
     "type": "video",

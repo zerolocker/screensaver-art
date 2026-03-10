@@ -6,8 +6,8 @@ You are building a web-based screensaver app that showcases classic and modern a
 
 Do **NOT** guess tool commands. You must use the **nano-banana-pro** and **veo3-video-gen** skills.
 1.  **Read the skill documentation first**:
-    *   `read /home/clawd/.npm-global/lib/node_modules/clawdbot/skills/nano-banana-pro/SKILL.md`
-    *   `read /home/clawd/clawd/skills/veo3-video-gen/SKILL.md`
+    *   `read /home/clawd/.npm-global/lib/node_modules/openclaw/skills/nano-banana-pro/SKILL.md`
+    *   `read /home/clawd/.openclaw/workspace/skills/veo3-video-gen/SKILL.md`
 2.  **Follow the usage instructions** in those files exactly (using `uv run ...` as documented). Do not try to run `nano-banana-pro` as a standalone binary.
 
 ## Steps to execute

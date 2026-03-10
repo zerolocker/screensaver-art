@@ -1,5 +1,29 @@
 [
   {
+    "src": "gallery/rococo_garden_party_v2_animated.mp4",
+    "title": "Garden Party - Rococo (AI Animated)",
+    "type": "video",
+    "date": "2026-03-10",
+    "image_prompt": "A classical painting in the style of Rococo, depicting a playful and ornate garden party with elegantly dressed people, delicate floral arrangements, and pastel colors. Light, airy, and decorative. 18th-century influence.",
+    "video_prompt": "The garden comes to life: a gentle breeze rustles the delicate flowers, people laugh and converse in a light, playful manner, and the pastel colors shimmer in the soft sunlight. Rococo style animation."
+  },
+  {
+    "src": "gallery/neoclassicism_roman_forum_animated.mp4",
+    "title": "Roman Forum - Neoclassicism (AI Animated)",
+    "type": "video",
+    "date": "2026-03-10",
+    "image_prompt": "A classical landscape painting in the style of the Neoclassicism movement, depicting a grand Roman forum with pristine white marble columns, statues, and a clear blue sky. Balanced composition, sharp details, and idealized beauty. 18th-century influence.",
+    "video_prompt": "Sunlight slowly moves across the marble columns, shadows deepen, a gentle breeze rustles some distant banners, and birds fly across the clear blue sky. Neoclassicism style animation."
+  },
+  {
+    "src": "gallery/ashcan_urban_sunset_animated.mp4",
+    "title": "Urban Sunset - Ashcan School (AI Animated)",
+    "type": "video",
+    "date": "2026-03-10",
+    "image_prompt": "A classical landscape painting in the style of the Ashcan School, depicting a gritty urban scene at sunset with long shadows, earthy tones, and bold, painterly brushstrokes. 19th-century influence.",
+    "video_prompt": "The city street comes to life: a horse-drawn carriage moves slowly down the cobblestones, long shadows shift as the sun sets, and distant gas lamps begin to flicker on. Ashcan School style animation."
+  },
+  {
     "src": "gallery/symbolism_island_animated.mp4",
     "title": "Mystical Island - Symbolism (AI Animated)",
     "type": "video",

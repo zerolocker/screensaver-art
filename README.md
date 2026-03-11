@@ -25,7 +25,6 @@ The **Living Art Screensaver** (`index.html`) is a standalone web application de
 - **Hosting:** Deployed via GitHub Pages at [https://tempzero-clawd.github.io/screensaver-art/](https://tempzero-clawd.github.io/screensaver-art/).
 - **Frontend:** A single-file HTML/JS app (`index.html`). No build step required.
 - **Assets:** Stored in `https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/`.
-    - `*.png`: High-resolution static bases.
     - `*_animated.mp4`: Veo-generated video loops.
 - **Configuration:** The playlist is a JSON array embedded in `gallery.json`.
 - **Playback Engine:**

@@ -1,5 +1,29 @@
 [
   {
+    "src": "gallery/dutch_golden_age_scholar_animated.mp4",
+    "title": "Study in Light - Dutch Golden Age (AI Animated)",
+    "type": "video",
+    "date": "2026-03-10",
+    "image_prompt": "A high-quality oil painting in the style of the Dutch Golden Age, reminiscent of Rembrandt. A single candle illuminates a cluttered scholar's desk with old parchments, a quill, and a glass of wine. Deep shadows, rich textures, and dramatic chiaroscuro. 17th-century influence.",
+    "video_prompt": "The candlelight flickers gently, casting shifting shadows across the desk. The scholar's hand moves slightly as if writing, and the dust motes dance in the warm light. Dutch Golden Age style animation."
+  },
+  {
+    "src": "gallery/mughal_miniature_garden_animated.mp4",
+    "title": "Palace Garden - Mughal Miniature (AI Animated)",
+    "type": "video",
+    "date": "2026-03-10",
+    "image_prompt": "An intricate Mughal miniature painting depicting a lush palace garden with fountains, exotic birds, and courtiers in colorful silks. Fine details, flat perspective with layered depth, and vibrant natural pigments. 16th-century Indian influence.",
+    "video_prompt": "The fountains spray fine mist, the exotic birds flutter their wings and hop between branches, and the courtiers engage in quiet conversation. The intricate patterns on their silks shimmer slightly. Mughal miniature style animation."
+  },
+  {
+    "src": "gallery/ancient_egyptian_procession_animated.mp4",
+    "title": "River Procession - Ancient Egyptian (AI Animated)",
+    "type": "video",
+    "date": "2026-03-10",
+    "image_prompt": "A stylized wall painting in the style of Ancient Egyptian tomb art. A procession of figures carrying offerings along the Nile, with papyrus reeds and a stylized sun. Profile views, bold outlines, and earthy ochre and turquoise tones. Pharaonic era influence.",
+    "video_prompt": "The figures move in a rhythmic, stylized procession. The papyrus reeds sway gently by the riverbank, and the waters of the Nile ripple under the golden sun. Ancient Egyptian wall painting style animation."
+  },
+  {
     "src": "gallery/rococo_garden_party_v2_animated.mp4",
     "title": "Garden Party - Rococo (AI Animated)",
     "type": "video",

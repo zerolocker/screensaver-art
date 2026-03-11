@@ -10,9 +10,8 @@ struct ArtItem: Decodable {
     let title: String
     let type: String
 
-    static let baseURL = "https://tempzero-clawd.github.io/screensaver-art/"
-    static var galleryURL: URL { URL(string: baseURL + "gallery.json")! }
-    var mediaURL: URL { URL(string: ArtItem.baseURL + src)! }
+    static var galleryURL: URL { URL(string: "https://tempzero-clawd.github.io/screensaver-art/gallery.json")! }
+    var mediaURL: URL { URL(string: src)! }
     var isVideo: Bool { type == "video" }
 }
 

@@ -1,7 +1,7 @@
 # Claude Code Plan — macOS Screensaver Wrapper
 
 ## Goal
-Convert the existing web-based art screensaver (`index.html` + `gallery/`) into a
+Convert the existing web-based art screensaver (`index.html` + `https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/`) into a
 native macOS `.saver` bundle that System Settings can use as a screensaver.
 The HTML/JS/CSS web app is preserved exactly as-is.
 
@@ -11,7 +11,7 @@ The HTML/JS/CSS web app is preserved exactly as-is.
 screensaver-art/
 ├── index.html                   ← web app (loads playlist from gallery.json)
 ├── gallery.json                 ← single source of truth for all art items
-├── gallery/                     ← media assets (MP4 + PNG)
+├── https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/                     ← media assets (MP4 + PNG)
 ├── screensaver/
 │   ├── ScreensaverArtView.swift ← native Swift screensaver
 │   ├── Info.plist               ← bundle metadata
@@ -29,7 +29,7 @@ Swift screensaver (via `URLSession` + `JSONDecoder`) read from this file.
 
 ```json
 [
-  { "src": "gallery/xxx_animated.mp4", "title": "Title - Collection (AI Animated)", "type": "video" },
+  { "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/xxx_animated.mp4", "title": "Title - Collection (AI Animated)", "type": "video" },
   ...
 ]
 ```

@@ -10,7 +10,8 @@ A collection of AI-generated animated artworks displayed as a looping screensave
 |---|---|
 | `index.html` | The entire web app (HTML+CSS+JS) |
 | `gallery.json` | Playlist — the single source of truth for all art items |
-| `gallery/` | 506 MB of art assets (.mp4 animated, .png static) |
+| `gallery/` | (Deleted locally) Assets moved to Cloudflare R2 |
+| `R2 Bucket` | `https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/` — 506 MB of assets |
 | `screensaver/ScreensaverArtView.swift` | Native Swift screensaver source |
 | `screensaver/Info.plist` | Bundle metadata (CFBundleIdentifier, NSPrincipalClass) |
 | `screensaver/build.sh` | Build + install script |
@@ -28,8 +29,8 @@ bash screensaver/build.sh --install
 ```
 
 ## Add new art pieces
-1. Add the file to `gallery/`
-2. Add an entry to `gallery.json` — this is the only file you need to edit
+1. Generate new assets (MP4/PNG) and upload to Cloudflare R2 bucket `screensaver-assets` under the `gallery/` prefix.
+2. Add an entry to `gallery.json` using the public R2 URL.
 3. `index.html` and the screensaver both read from `gallery.json` automatically
 
 ## How the screensaver gets its playlist

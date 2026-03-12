@@ -1,29 +1,5 @@
 [
   {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/2026-03-11-dutch-golden-age_animated.mp4",
-    "title": "Amsterdam Twilight - Dutch Golden Age (AI Animated)",
-    "type": "video",
-    "date": "2026-03-11",
-    "image_prompt": "A breathtaking oil painting in the style of Dutch Golden Age, depicting a serene canal in Amsterdam at twilight, with warm glowing lights from house windows reflecting on the water, rich textures, masterwork.",
-    "video_prompt": "The water in the canal ripples gently, and the warm lights in the windows flicker softly. The scene is a living Dutch Golden Age painting, peaceful and atmospheric."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/2026-03-11-byzantine-mosaic_animated.mp4",
-    "title": "Celestial Garden - Byzantine Mosaic (AI Animated)",
-    "type": "video",
-    "date": "2026-03-11",
-    "image_prompt": "An exquisite Byzantine mosaic depicting a celestial garden, with thousands of tiny gold and glass tesserae shimmering in soft light. Rich lapis lazuli blues and deep emerald greens. Intricate, geometric patterns and stylized floral motifs.",
-    "video_prompt": "The golden tiles of the Byzantine mosaic shimmer and glint as if light is playing across the surface. The stylized flowers in the mosaic seem to subtly pulse with a quiet, celestial energy. Byzantine mosaic animation."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/2026-03-11-hudson-river-school_animated.mp4",
-    "title": "Sublime Valley - Hudson River School (AI Animated)",
-    "type": "video",
-    "date": "2026-03-11",
-    "image_prompt": "A dramatic and awe-inspiring landscape painting in the style of the Hudson River School, depicting a rugged mountain valley at sunrise. Golden light spills over the peaks, illuminating a winding river and dense forests. Epic scale, detailed nature, and a sense of sublime beauty.",
-    "video_prompt": "The golden sunrise light slowly creeps across the mountain valley, illuminating the river which flows gently. A few birds fly across the vast, detailed landscape. Hudson River School animation."
-  },
-  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dutch_golden_age_scholar_animated.mp4",
     "title": "Study in Light - Dutch Golden Age (AI Animated)",
     "type": "video",

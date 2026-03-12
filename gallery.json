@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/romanticism_sea_animated.mp4",
+    "title": "Stormy Cliffs - Romanticism (AI Animated)",
+    "type": "video",
+    "date": "2026-03-11",
+    "image_prompt": "An oil painting in the style of Romanticism, depicting a solitary figure standing on a rocky cliff overlooking a vast, stormy sea with powerful waves and a dramatic, cloud-filled sky at dusk. Emotional and sublime. 19th-century influence.",
+    "video_prompt": "The waves crash violently against the rocks, the clouds churn across the dark sky, and the lone figure's cloak billows in the wind. Romanticism style animation."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mannerism_figure_animated.mp4",
+    "title": "Twisted Figure - Mannerism (AI Animated)",
+    "type": "video",
+    "date": "2026-03-11",
+    "image_prompt": "An oil painting in the style of Mannerism, featuring an elongated figure in a dramatic, complex pose within an architectural space with distorted perspective and unnatural, vibrant colors. 16th-century influence.",
+    "video_prompt": "The figure slowly changes their pose, the dramatic shadows shift across the distorted architecture, and the vibrant colors pulse with intensity. Mannerism style animation."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/hudson_river_school_valley_animated.mp4",
+    "title": "Majestic Valley - Hudson River School (AI Animated)",
+    "type": "video",
+    "date": "2026-03-11",
+    "image_prompt": "A classical landscape painting in the style of the Hudson River School, depicting a majestic valley at sunrise with a winding river, towering mountains, and golden light filtering through a soft mist. 19th-century influence.",
+    "video_prompt": "The golden sunlight slowly spreads across the valley, the mist drifts gently between the mountains, and the river ripples softly. The style remains a 19th-century Hudson River School oil painting."
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dutch_golden_age_scholar_animated.mp4",
     "title": "Study in Light - Dutch Golden Age (AI Animated)",
     "type": "video",

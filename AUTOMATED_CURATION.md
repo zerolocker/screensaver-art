@@ -1,6 +1,8 @@
 # Living Art Screensaver Automated Curation
 
-You are building a web-based screensaver app that showcases classic and modern artworks brought to life using AI animation (Google Veo 3.1). You are working on an automated task to curate a new art collection. All the files below are relative to the directory "screensaver/". 
+You are building a web-based screensaver app that showcases classic and modern artworks brought to life using AI animation (Google Veo 3.1). You are working on an automated task to curate a new art collection.
+
+**IMPORTANT:** You must switch the current directory to `screensaver-art/` first as instructions below are relative to this directory.
 
 ## ⚠️ CRITICAL INSTRUCTION: Tool Usage
 
@@ -12,10 +14,10 @@ Do **NOT** guess tool commands. You must use the **nano-banana-pro** and **veo3-
 
 ## Steps to execute
 
-1.  **Gain Context:** Load "README.md" into your context. List and read files in `screensaver/` to understand the structure.
+1.  **Gain Context:** Load "README.md" into your context. List and read files in this directory to understand the structure.
 
 2.  **Still Image Generation:**
-    *   Pick a new theme/style. Only pick themes/styles which occur before the 21-th century. Ignore the art styles in `screensaver/ART_STYLES_FOR_INSPIRATION.txt` for now, because they are too modern and too focused on the art styles in the digital area.
+    *   Pick a new theme/style. Only pick themes/styles which occur before the 21-th century. Ignore the art styles in `ART_STYLES_FOR_INSPIRATION.txt` for now, because they are too modern and too focused on the art styles in the digital area.
     *   Generate a high-quality PNG using the **nano-banana-pro** skill.
 
 3.  **AI Animation & Upload:**
@@ -29,9 +31,9 @@ Do **NOT** guess tool commands. You must use the **nano-banana-pro** and **veo3-
 
 5.  **Repeat:** Perform steps 2-4 a total of **3 times** to create 3 unique pieces.
 
-6.  **Expand Inspiration:** If the art styles you picked doesn't exist in `screensaver/ART_STYLES_FOR_INSPIRATION.txt`, append them.
+6.  **Expand Inspiration:** If the art styles you picked doesn't exist in `ART_STYLES_FOR_INSPIRATION.txt`, append them.
 
 7.  **Commit and Push:**
-    *   **IMPORTANT:** You must be inside the `screensaver/` directory for git operations.
-    *   Run: `cd screensaver && git add . && git commit -m "AUTO_CURATION: Added [Style 1, Style 2, Style 3] collections"`
+    *   Run: `git add . && git commit -m "AUTO_CURATION: Added [Style 1, Style 2, Style 3] collections"`
     *   Run: `git push` to sync changes to the remote.
+

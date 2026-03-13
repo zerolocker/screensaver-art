@@ -6,7 +6,7 @@ The **Living Art Screensaver** (`index.html`) is a standalone web application de
 **Live Demo:** [https://tempzero-clawd.github.io/screensaver-art/](https://tempzero-clawd.github.io/screensaver-art/)
 
 ## Features
-- **Dynamic Living Art:** A mix of high-resolution static art with "Ken Burns" effects and fully animated 1080p video loops.
+- **Dynamic Living Art:** A mix of high-resolution static art with "Ken Burns" effects and fully animated videos.
 - **Always-On Overlay:** Minimalist title card showing the artwork's name and collection.
 - **Interactive Side Menu:** Hover over the left edge of the screen to reveal the control panel.
     - **Playlist:** Scrollable list of all available artworks. Click any item to jump to it immediately with a fast fade.

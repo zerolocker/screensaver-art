@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fresco_animated.mp4",
+    "title": "Roman Villa Landscape - Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-03-13",
+    "image_prompt": "A beautiful landscape in Fresco style, ancient Roman villa, pigments on wet plaster.",
+    "video_prompt": "Subtle animation: the plaster texture remains still while clouds slowly drift."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/minoan_animated.mp4",
+    "title": "Bull Leaping - Minoan Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-03-13",
+    "image_prompt": "A Minoan fresco showing bull leaping, bright colors, ancient Greek art style.",
+    "video_prompt": "Subtle animation: dust kicks up around the bull."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cave_painting_animated.mp4",
+    "title": "Running Horses - Paleolithic Cave Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-03-13",
+    "image_prompt": "A Paleolithic cave painting of running horses in Lascaux style, ochre and charcoal on rough stone.",
+    "video_prompt": "Subtle animation: flickering firelight illuminating the cave wall."
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sumerian_relief_animated.mp4",
     "title": "King receiving gifts - Sumerian Cuneiform Relief (AI Animated)",
     "type": "video",

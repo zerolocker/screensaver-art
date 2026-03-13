@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ming_silk_animated.mp4",
+    "title": "Mountain Landscape - Ming Dynasty Silk Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-03-13",
+    "image_prompt": "A beautiful Ming Dynasty Silk Painting depicting an ancient mountain landscape with scholars drinking tea, extremely detailed, traditional chinese painting",
+    "video_prompt": "Animate the scene with slow camera panning, gentle mist rolling over the mountains, and subtle movements of the characters."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cave_animated.mp4",
+    "title": "Ancient Hunt - Paleolithic Cave Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-03-13",
+    "image_prompt": "A vivid Paleolithic Cave Painting of ancient bisons and hunters, earthy ochre and charcoal tones, rough rock texture",
+    "video_prompt": "Animate the Paleolithic cave painting with subtle flickering firelight shadows, slowly panning across the rough wall as hunters seem to move."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fresco_animated_v2.mp4",
+    "title": "Saints - Romanesque Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-03-13",
+    "image_prompt": "A medieval Romanesque Fresco depicting saints in bright lapis lazuli and gold leaf, cracked plaster texture, religious art style",
+    "video_prompt": "Animate the Romanesque fresco with subtle shifting shadows and golden glints reflecting off the gold leaf as if lit by candlelight."
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fresco_animated.mp4",
     "title": "Roman Villa Landscape - Fresco (AI Animated)",
     "type": "video",

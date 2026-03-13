@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sumerian_relief_animated.mp4",
+    "title": "King receiving gifts - Sumerian Cuneiform Relief (AI Animated)",
+    "type": "video",
+    "date": "2026-03-13",
+    "image_prompt": "A highly detailed Sumerian stone wall relief showing an ancient king receiving gifts, carved in limestone, 3rd millennium BC style, intricate cuneiform inscriptions in the background.",
+    "video_prompt": "Subtle animation: the torchlight flickers, casting moving shadows across the deep carvings of the king and cuneiform inscriptions, very slow panning shot across the ancient stone."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/carolingian_animated.mp4",
+    "title": "Medieval Scholars - Carolingian Illumination (AI Animated)",
+    "type": "video",
+    "date": "2026-03-13",
+    "image_prompt": "A rich Carolingian illuminated manuscript page depicting medieval scholars in a scriptorium, intricate Celtic knot borders, gold leaf, vibrant lapis lazuli blues and reds, 9th-century style.",
+    "video_prompt": "Subtle animation: the candlelight flickers, the gold leaf on the borders shimmers gently, and the scholars appear to be slowly writing on the parchment, giving it a lively medieval atmosphere."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/edo_byobu_animated.mp4",
+    "title": "Cranes in River - Edo Period Byobu (Folding Screen) (AI Animated)",
+    "type": "video",
+    "date": "2026-03-13",
+    "image_prompt": "A beautiful Edo period Byobu folding screen painting of cranes standing in a shallow river surrounded by golden clouds and pine trees, ink and gold leaf on paper, 17th-century Japanese art style.",
+    "video_prompt": "Subtle animation: the golden clouds drift slowly, the river water ripples gently, and the cranes make slight head movements, a serene and peaceful atmosphere."
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/hellenistic_mosaic_animated.mp4",
     "title": "Ocean God - Hellenistic Mosaic (AI Animated)",
     "type": "video",

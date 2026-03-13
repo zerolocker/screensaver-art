@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/hellenistic_mosaic_animated.mp4",
+    "title": "Ocean God - Hellenistic Mosaic (AI Animated)",
+    "type": "video",
+    "date": "2026-03-13",
+    "image_prompt": "A highly detailed Hellenistic floor mosaic depicting the ocean god Poseidon surrounded by sea creatures, made of thousands of tiny colored stone tesserae",
+    "video_prompt": "Subtle animation: the tesserae shimmering as if underwater, gentle caustics and light rays moving across the mosaic surface, very slow zoom out"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/edo_sumie_animated.mp4",
+    "title": "Misty Mountains - Sumi-e Ink Wash (AI Animated)",
+    "type": "video",
+    "date": "2026-03-13",
+    "image_prompt": "A breathtaking Edo period Sumi-e ink wash painting of misty mountains with a small solitary figure walking on a winding path, elegant brush strokes, minimalist composition",
+    "video_prompt": "Subtle animation: mist slowly rolling through the mountains, gentle breeze moving the trees, ink spreading effect, very calm and meditative"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gothic_manuscript_animated.mp4",
+    "title": "Gothic Marketplace - Illuminated Manuscript (AI Animated)",
+    "type": "video",
+    "date": "2026-03-13",
+    "image_prompt": "A detailed and intricate Gothic Illuminated Manuscript page depicting a lively medieval marketplace, rich with gold leaf accents, deep blues, and reds, ornate borders",
+    "video_prompt": "Subtle animation: candlelight flickering, gold leaf shimmering, slight movement of figures, elegant slow pan across the manuscript"
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/romanticism_sea_animated.mp4",
     "title": "Stormy Cliffs - Romanticism (AI Animated)",
     "type": "video",

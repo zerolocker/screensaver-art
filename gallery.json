@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/neolithic_rock_animated.mp4",
+    "title": "Ancient Hunt - Neolithic Rock Art (AI Animated)",
+    "type": "video",
+    "date": "2026-03-14",
+    "image_prompt": "A vivid Neolithic Rock Art painting of ancient animals and hunters, earthy red and black tones, rough stone texture",
+    "video_prompt": "Subtle animation: hunters appear to move in the flickering firelight, adding life to the rough stone wall."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/etruscan_tomb_animated.mp4",
+    "title": "Banquet Scene - Etruscan Tomb Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-03-14",
+    "image_prompt": "An Etruscan Tomb Painting depicting musicians and dancers at a banquet, vibrant colors on plaster, ancient Italian style",
+    "video_prompt": "Subtle animation: the musicians play their instruments, dancers sway slightly, and shadows flicker from torches."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/han_dynasty_animated.mp4",
+    "title": "Mythical Chariot - Han Dynasty Relief (AI Animated)",
+    "type": "video",
+    "date": "2026-03-14",
+    "image_prompt": "A detailed Han Dynasty Relief carving in stone, showing chariots, horses, and mythical creatures, ancient Chinese art",
+    "video_prompt": "Subtle animation: the chariots roll slowly, mythical creatures breathe, and dust settles on the ancient stone."
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ming_silk_animated.mp4",
     "title": "Mountain Landscape - Ming Dynasty Silk Painting (AI Animated)",
     "type": "video",

@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/anglo_saxon_animated.mp4",
+    "title": "Intricate Design - Anglo-Saxon Metalwork (AI Animated)",
+    "type": "video",
+    "date": "2026-03-14",
+    "image_prompt": "A beautiful intricate design of an artifact in the style of Anglo-Saxon Metalwork, high quality, masterpiece",
+    "video_prompt": "Subtle gleaming of gold, slow panning over the intricate design"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gothic_glass_animated.mp4",
+    "title": "Cathedral Light - Gothic Stained Glass (AI Animated)",
+    "type": "video",
+    "date": "2026-03-14",
+    "image_prompt": "A breathtaking scene composed of colorful translucent shards in the style of Gothic Stained Glass, high quality, masterpiece",
+    "video_prompt": "Magical sunlight shining through the colorful glass, subtle dust motes floating"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mayan_stela_animated.mp4",
+    "title": "Ancient Record - Mayan Stela Relief (AI Animated)",
+    "type": "video",
+    "date": "2026-03-14",
+    "image_prompt": "A complex and detailed carving of historical events in the style of Mayan Stela Relief, high quality, masterpiece",
+    "video_prompt": "Slow zoom on the detailed carving, shadows moving slightly as if illuminated by a torch"
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/neolithic_rock_animated.mp4",
     "title": "Ancient Hunt - Neolithic Rock Art (AI Animated)",
     "type": "video",

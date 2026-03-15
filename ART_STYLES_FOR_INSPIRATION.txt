@@ -1,13 +1,71 @@
-Impressionist
-Renaissance
+Classical art
+Medieval art
+Renaissance art
+Baroque
+Rococo
+Neoclassicism
+Romanticism
+Realism
+Academic art
+Modern art
+Contemporary art
+Impressionism
+Post-Impressionism
+Symbolism
+Art Nouveau
+Expressionism
+Fauvism
+Cubism
+Futurism
+Dada
 Surrealism
-Cyberpunk
+Constructivism
+Suprematism
+De Stijl
+Bauhaus
+Precisionism
+Social Realism
+Magic Realism
+Abstract art
+Abstract Expressionism
+Color Field painting
+Action painting
+Minimalism
+Pop Art
+Op Art
+Hard-edge painting
+Conceptual art
+Performance art
+Land art
+Fluxus
+Installation art
+Photorealism
+Hyperrealism
+Neo-Expressionism
+Street art
+Graffiti art
+Digital art
+Video art
+New media art
+Postmodern art
+Relational art
+Environmental art
+Generative art
+AI art
+Byzantine art
+Gothic art
+Romanesque art
 Ukiyo-e
+Chinese ink painting
+Mughal miniature
+Islamic geometric art
+Indigenous art traditions
+Folk art
+Outsider art
+Naïve art
+Cyberpunk
 Steampunk
 Watercolor
-Baroque
-Pop Art
-Gothic
 Art Deco
 Pointillism
 Brutalism
@@ -16,20 +74,13 @@ Solarpunk
 Retro-Futurism
 Biopunk
 Dieselpunk
-Cubism
-Abstract Expressionism
-Art Nouveau
 Low Poly
 Pixel Art
 Synthwave
 Noir
-Minimalism
 Voxel Art
 Isometric
 Glitch Art
-Bauhaus
-Constructivism
-Fauvism
 Neo-Tokyo
 Mid-Century Modern
 Biomorphic
@@ -37,8 +88,6 @@ Memphis Design
 Frutiger Aero
 Acid Graphics
 Cyber-Gothic
-De Stijl
-Suprematism
 Ghibli-esque
 Papercut Art
 Fractal Art
@@ -57,24 +106,17 @@ Liminal Spaces
 Dark Academia
 Dreamcore
 Weirdcore
-Rococo
 Hudson River School
 ByzantineMannerism
 Ashcan School
-Neoclassicism
-Rococo
 Mannerism
-Romanticism
 Tenebrism
-Neoclassicism
 Pre-Raphaelite Brotherhood
-Ashcan School
 Hieronymus Bosch
 Byzantine Mosaic
 Barbizon School
 Arts and Crafts Movement
 Dutch Golden Age
-Mughal Miniature
 Ancient Egyptian Wall Painting
 Illuminated Manuscript
 Sumi-e Ink Wash
@@ -85,14 +127,11 @@ Edo Period Byobu (Folding Screen)
 Fresco
 Minoan Fresco
 Paleolithic Cave Painting
-
 Ming Dynasty Silk Painting
-Paleolithic Cave Painting
 Romanesque Fresco
 Neolithic Rock Art
 Etruscan Tomb Painting
 Han Dynasty Relief
-
 Anglo-Saxon Metalwork
 Gothic Stained Glass
 Mayan Stela Relief

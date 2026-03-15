@@ -1,5 +1,53 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sasanian_animated.mp4",
+    "title": "Royal Hunt - Sasanian Silverwork (AI Animated)",
+    "type": "video",
+    "date": "2026-03-15",
+    "image_prompt": "A highly detailed Sasanian Silverwork plate depicting a royal hunt with mythical beasts, intricate geometric patterns, 5th century AD style",
+    "video_prompt": "A highly detailed Sasanian Silverwork plate depicting a royal hunt with mythical beasts, intricate geometric patterns, 5th century AD style"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/tang_animated.mp4",
+    "title": "Silk Road Merchant - Tang Dynasty Sancai (AI Animated)",
+    "type": "video",
+    "date": "2026-03-15",
+    "image_prompt": "A Tang Dynasty Sancai (three-color) ceramic sculpture of a Silk Road merchant on a camel, vibrant green, amber, and cream glazes",
+    "video_prompt": "A Tang Dynasty Sancai (three-color) ceramic sculpture of a Silk Road merchant on a camel, vibrant green, amber, and cream glazes"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/inca_animated.mp4",
+    "title": "Andean Cosmology - Inca Textile Pattern (AI Animated)",
+    "type": "video",
+    "date": "2026-03-15",
+    "image_prompt": "An intricate Inca Tocapu textile pattern, vibrant dyes, geometric shapes representing different noble families and Andean cosmology",
+    "video_prompt": "An intricate Inca Tocapu textile pattern, vibrant dyes, geometric shapes representing different noble families and Andean cosmology"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sasanian_animated.mp4",
+    "title": "Royal Hunt - Sasanian Silverwork (AI Animated)",
+    "type": "video",
+    "date": "2026-03-15",
+    "image_prompt": "A highly detailed Sasanian Silverwork plate depicting a royal hunt with mythical beasts, intricate geometric patterns, 5th century AD style",
+    "video_prompt": "A highly detailed Sasanian Silverwork plate depicting a royal hunt with mythical beasts, intricate geometric patterns, 5th century AD style"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/tang_animated.mp4",
+    "title": "Silk Road Merchant - Tang Dynasty Sancai (AI Animated)",
+    "type": "video",
+    "date": "2026-03-15",
+    "image_prompt": "A Tang Dynasty Sancai (three-color) ceramic sculpture of a Silk Road merchant on a camel, vibrant green, amber, and cream glazes",
+    "video_prompt": "A Tang Dynasty Sancai (three-color) ceramic sculpture of a Silk Road merchant on a camel, vibrant green, amber, and cream glazes"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/inca_animated.mp4",
+    "title": "Andean Cosmology - Inca Textile Pattern (AI Animated)",
+    "type": "video",
+    "date": "2026-03-15",
+    "image_prompt": "An intricate Inca Tocapu textile pattern, vibrant dyes, geometric shapes representing different noble families and Andean cosmology",
+    "video_prompt": "An intricate Inca Tocapu textile pattern, vibrant dyes, geometric shapes representing different noble families and Andean cosmology"
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/anglo_saxon_animated.mp4",
     "title": "Intricate Design - Anglo-Saxon Metalwork (AI Animated)",
     "type": "video",

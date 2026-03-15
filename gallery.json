@@ -1,718 +1,742 @@
 [
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sasanian_animated.mp4",
-    "title": "Royal Hunt - Sasanian Silverwork (AI Animated)",
-    "type": "video",
-    "date": "2026-03-15",
-    "image_prompt": "A highly detailed Sasanian Silverwork plate depicting a royal hunt with mythical beasts, intricate geometric patterns, 5th century AD style",
-    "video_prompt": "A highly detailed Sasanian Silverwork plate depicting a royal hunt with mythical beasts, intricate geometric patterns, 5th century AD style"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/tang_animated.mp4",
-    "title": "Silk Road Merchant - Tang Dynasty Sancai (AI Animated)",
-    "type": "video",
-    "date": "2026-03-15",
-    "image_prompt": "A Tang Dynasty Sancai (three-color) ceramic sculpture of a Silk Road merchant on a camel, vibrant green, amber, and cream glazes",
-    "video_prompt": "A Tang Dynasty Sancai (three-color) ceramic sculpture of a Silk Road merchant on a camel, vibrant green, amber, and cream glazes"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/inca_animated.mp4",
-    "title": "Andean Cosmology - Inca Textile Pattern (AI Animated)",
-    "type": "video",
-    "date": "2026-03-15",
-    "image_prompt": "An intricate Inca Tocapu textile pattern, vibrant dyes, geometric shapes representing different noble families and Andean cosmology",
-    "video_prompt": "An intricate Inca Tocapu textile pattern, vibrant dyes, geometric shapes representing different noble families and Andean cosmology"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sasanian_animated.mp4",
-    "title": "Royal Hunt - Sasanian Silverwork (AI Animated)",
-    "type": "video",
-    "date": "2026-03-15",
-    "image_prompt": "A highly detailed Sasanian Silverwork plate depicting a royal hunt with mythical beasts, intricate geometric patterns, 5th century AD style",
-    "video_prompt": "A highly detailed Sasanian Silverwork plate depicting a royal hunt with mythical beasts, intricate geometric patterns, 5th century AD style"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/tang_animated.mp4",
-    "title": "Silk Road Merchant - Tang Dynasty Sancai (AI Animated)",
-    "type": "video",
-    "date": "2026-03-15",
-    "image_prompt": "A Tang Dynasty Sancai (three-color) ceramic sculpture of a Silk Road merchant on a camel, vibrant green, amber, and cream glazes",
-    "video_prompt": "A Tang Dynasty Sancai (three-color) ceramic sculpture of a Silk Road merchant on a camel, vibrant green, amber, and cream glazes"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/inca_animated.mp4",
-    "title": "Andean Cosmology - Inca Textile Pattern (AI Animated)",
-    "type": "video",
-    "date": "2026-03-15",
-    "image_prompt": "An intricate Inca Tocapu textile pattern, vibrant dyes, geometric shapes representing different noble families and Andean cosmology",
-    "video_prompt": "An intricate Inca Tocapu textile pattern, vibrant dyes, geometric shapes representing different noble families and Andean cosmology"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/anglo_saxon_animated.mp4",
-    "title": "Intricate Design - Anglo-Saxon Metalwork (AI Animated)",
-    "type": "video",
-    "date": "2026-03-14",
-    "image_prompt": "A beautiful intricate design of an artifact in the style of Anglo-Saxon Metalwork, high quality, masterpiece",
-    "video_prompt": "Subtle gleaming of gold, slow panning over the intricate design"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gothic_glass_animated.mp4",
-    "title": "Cathedral Light - Gothic Stained Glass (AI Animated)",
-    "type": "video",
-    "date": "2026-03-14",
-    "image_prompt": "A breathtaking scene composed of colorful translucent shards in the style of Gothic Stained Glass, high quality, masterpiece",
-    "video_prompt": "Magical sunlight shining through the colorful glass, subtle dust motes floating"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mayan_stela_animated.mp4",
-    "title": "Ancient Record - Mayan Stela Relief (AI Animated)",
-    "type": "video",
-    "date": "2026-03-14",
-    "image_prompt": "A complex and detailed carving of historical events in the style of Mayan Stela Relief, high quality, masterpiece",
-    "video_prompt": "Slow zoom on the detailed carving, shadows moving slightly as if illuminated by a torch"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/neolithic_rock_animated.mp4",
-    "title": "Ancient Hunt - Neolithic Rock Art (AI Animated)",
-    "type": "video",
-    "date": "2026-03-14",
-    "image_prompt": "A vivid Neolithic Rock Art painting of ancient animals and hunters, earthy red and black tones, rough stone texture",
-    "video_prompt": "Subtle animation: hunters appear to move in the flickering firelight, adding life to the rough stone wall."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/etruscan_tomb_animated.mp4",
-    "title": "Banquet Scene - Etruscan Tomb Painting (AI Animated)",
-    "type": "video",
-    "date": "2026-03-14",
-    "image_prompt": "An Etruscan Tomb Painting depicting musicians and dancers at a banquet, vibrant colors on plaster, ancient Italian style",
-    "video_prompt": "Subtle animation: the musicians play their instruments, dancers sway slightly, and shadows flicker from torches."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/han_dynasty_animated.mp4",
-    "title": "Mythical Chariot - Han Dynasty Relief (AI Animated)",
-    "type": "video",
-    "date": "2026-03-14",
-    "image_prompt": "A detailed Han Dynasty Relief carving in stone, showing chariots, horses, and mythical creatures, ancient Chinese art",
-    "video_prompt": "Subtle animation: the chariots roll slowly, mythical creatures breathe, and dust settles on the ancient stone."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ming_silk_animated.mp4",
-    "title": "Mountain Landscape - Ming Dynasty Silk Painting (AI Animated)",
-    "type": "video",
-    "date": "2026-03-13",
-    "image_prompt": "A beautiful Ming Dynasty Silk Painting depicting an ancient mountain landscape with scholars drinking tea, extremely detailed, traditional chinese painting",
-    "video_prompt": "Animate the scene with slow camera panning, gentle mist rolling over the mountains, and subtle movements of the characters."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cave_animated.mp4",
-    "title": "Ancient Hunt - Paleolithic Cave Painting (AI Animated)",
-    "type": "video",
-    "date": "2026-03-13",
-    "image_prompt": "A vivid Paleolithic Cave Painting of ancient bisons and hunters, earthy ochre and charcoal tones, rough rock texture",
-    "video_prompt": "Animate the Paleolithic cave painting with subtle flickering firelight shadows, slowly panning across the rough wall as hunters seem to move."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fresco_animated_v2.mp4",
-    "title": "Saints - Romanesque Fresco (AI Animated)",
-    "type": "video",
-    "date": "2026-03-13",
-    "image_prompt": "A medieval Romanesque Fresco depicting saints in bright lapis lazuli and gold leaf, cracked plaster texture, religious art style",
-    "video_prompt": "Animate the Romanesque fresco with subtle shifting shadows and golden glints reflecting off the gold leaf as if lit by candlelight."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fresco_animated.mp4",
-    "title": "Roman Villa Landscape - Fresco (AI Animated)",
-    "type": "video",
-    "date": "2026-03-13",
-    "image_prompt": "A beautiful landscape in Fresco style, ancient Roman villa, pigments on wet plaster.",
-    "video_prompt": "Subtle animation: the plaster texture remains still while clouds slowly drift."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/minoan_animated.mp4",
-    "title": "Bull Leaping - Minoan Fresco (AI Animated)",
-    "type": "video",
-    "date": "2026-03-13",
-    "image_prompt": "A Minoan fresco showing bull leaping, bright colors, ancient Greek art style.",
-    "video_prompt": "Subtle animation: dust kicks up around the bull."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cave_painting_animated.mp4",
-    "title": "Running Horses - Paleolithic Cave Painting (AI Animated)",
-    "type": "video",
-    "date": "2026-03-13",
-    "image_prompt": "A Paleolithic cave painting of running horses in Lascaux style, ochre and charcoal on rough stone.",
-    "video_prompt": "Subtle animation: flickering firelight illuminating the cave wall."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sumerian_relief_animated.mp4",
-    "title": "King receiving gifts - Sumerian Cuneiform Relief (AI Animated)",
-    "type": "video",
-    "date": "2026-03-13",
-    "image_prompt": "A highly detailed Sumerian stone wall relief showing an ancient king receiving gifts, carved in limestone, 3rd millennium BC style, intricate cuneiform inscriptions in the background.",
-    "video_prompt": "Subtle animation: the torchlight flickers, casting moving shadows across the deep carvings of the king and cuneiform inscriptions, very slow panning shot across the ancient stone."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/carolingian_animated.mp4",
-    "title": "Medieval Scholars - Carolingian Illumination (AI Animated)",
-    "type": "video",
-    "date": "2026-03-13",
-    "image_prompt": "A rich Carolingian illuminated manuscript page depicting medieval scholars in a scriptorium, intricate Celtic knot borders, gold leaf, vibrant lapis lazuli blues and reds, 9th-century style.",
-    "video_prompt": "Subtle animation: the candlelight flickers, the gold leaf on the borders shimmers gently, and the scholars appear to be slowly writing on the parchment, giving it a lively medieval atmosphere."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/edo_byobu_animated.mp4",
-    "title": "Cranes in River - Edo Period Byobu (Folding Screen) (AI Animated)",
-    "type": "video",
-    "date": "2026-03-13",
-    "image_prompt": "A beautiful Edo period Byobu folding screen painting of cranes standing in a shallow river surrounded by golden clouds and pine trees, ink and gold leaf on paper, 17th-century Japanese art style.",
-    "video_prompt": "Subtle animation: the golden clouds drift slowly, the river water ripples gently, and the cranes make slight head movements, a serene and peaceful atmosphere."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/hellenistic_mosaic_animated.mp4",
-    "title": "Ocean God - Hellenistic Mosaic (AI Animated)",
-    "type": "video",
-    "date": "2026-03-13",
-    "image_prompt": "A highly detailed Hellenistic floor mosaic depicting the ocean god Poseidon surrounded by sea creatures, made of thousands of tiny colored stone tesserae",
-    "video_prompt": "Subtle animation: the tesserae shimmering as if underwater, gentle caustics and light rays moving across the mosaic surface, very slow zoom out"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/edo_sumie_animated.mp4",
-    "title": "Misty Mountains - Sumi-e Ink Wash (AI Animated)",
-    "type": "video",
-    "date": "2026-03-13",
-    "image_prompt": "A breathtaking Edo period Sumi-e ink wash painting of misty mountains with a small solitary figure walking on a winding path, elegant brush strokes, minimalist composition",
-    "video_prompt": "Subtle animation: mist slowly rolling through the mountains, gentle breeze moving the trees, ink spreading effect, very calm and meditative"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gothic_manuscript_animated.mp4",
-    "title": "Gothic Marketplace - Illuminated Manuscript (AI Animated)",
-    "type": "video",
-    "date": "2026-03-13",
-    "image_prompt": "A detailed and intricate Gothic Illuminated Manuscript page depicting a lively medieval marketplace, rich with gold leaf accents, deep blues, and reds, ornate borders",
-    "video_prompt": "Subtle animation: candlelight flickering, gold leaf shimmering, slight movement of figures, elegant slow pan across the manuscript"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/romanticism_sea_animated.mp4",
-    "title": "Stormy Cliffs - Romanticism (AI Animated)",
-    "type": "video",
-    "date": "2026-03-11",
-    "image_prompt": "An oil painting in the style of Romanticism, depicting a solitary figure standing on a rocky cliff overlooking a vast, stormy sea with powerful waves and a dramatic, cloud-filled sky at dusk. Emotional and sublime. 19th-century influence.",
-    "video_prompt": "The waves crash violently against the rocks, the clouds churn across the dark sky, and the lone figure's cloak billows in the wind. Romanticism style animation."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mannerism_figure_animated.mp4",
-    "title": "Twisted Figure - Mannerism (AI Animated)",
-    "type": "video",
-    "date": "2026-03-11",
-    "image_prompt": "An oil painting in the style of Mannerism, featuring an elongated figure in a dramatic, complex pose within an architectural space with distorted perspective and unnatural, vibrant colors. 16th-century influence.",
-    "video_prompt": "The figure slowly changes their pose, the dramatic shadows shift across the distorted architecture, and the vibrant colors pulse with intensity. Mannerism style animation."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/hudson_river_school_valley_animated.mp4",
-    "title": "Majestic Valley - Hudson River School (AI Animated)",
-    "type": "video",
-    "date": "2026-03-11",
-    "image_prompt": "A classical landscape painting in the style of the Hudson River School, depicting a majestic valley at sunrise with a winding river, towering mountains, and golden light filtering through a soft mist. 19th-century influence.",
-    "video_prompt": "The golden sunlight slowly spreads across the valley, the mist drifts gently between the mountains, and the river ripples softly. The style remains a 19th-century Hudson River School oil painting."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dutch_golden_age_scholar_animated.mp4",
-    "title": "Study in Light - Dutch Golden Age (AI Animated)",
-    "type": "video",
-    "date": "2026-03-10",
-    "image_prompt": "A high-quality oil painting in the style of the Dutch Golden Age, reminiscent of Rembrandt. A single candle illuminates a cluttered scholar's desk with old parchments, a quill, and a glass of wine. Deep shadows, rich textures, and dramatic chiaroscuro. 17th-century influence.",
-    "video_prompt": "The candlelight flickers gently, casting shifting shadows across the desk. The scholar's hand moves slightly as if writing, and the dust motes dance in the warm light. Dutch Golden Age style animation."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mughal_miniature_garden_animated.mp4",
-    "title": "Palace Garden - Mughal Miniature (AI Animated)",
-    "type": "video",
-    "date": "2026-03-10",
-    "image_prompt": "An intricate Mughal miniature painting depicting a lush palace garden with fountains, exotic birds, and courtiers in colorful silks. Fine details, flat perspective with layered depth, and vibrant natural pigments. 16th-century Indian influence.",
-    "video_prompt": "The fountains spray fine mist, the exotic birds flutter their wings and hop between branches, and the courtiers engage in quiet conversation. The intricate patterns on their silks shimmer slightly. Mughal miniature style animation."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ancient_egyptian_procession_animated.mp4",
-    "title": "River Procession - Ancient Egyptian (AI Animated)",
-    "type": "video",
-    "date": "2026-03-10",
-    "image_prompt": "A stylized wall painting in the style of Ancient Egyptian tomb art. A procession of figures carrying offerings along the Nile, with papyrus reeds and a stylized sun. Profile views, bold outlines, and earthy ochre and turquoise tones. Pharaonic era influence.",
-    "video_prompt": "The figures move in a rhythmic, stylized procession. The papyrus reeds sway gently by the riverbank, and the waters of the Nile ripple under the golden sun. Ancient Egyptian wall painting style animation."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/rococo_garden_party_v2_animated.mp4",
-    "title": "Garden Party - Rococo (AI Animated)",
-    "type": "video",
-    "date": "2026-03-10",
-    "image_prompt": "A classical painting in the style of Rococo, depicting a playful and ornate garden party with elegantly dressed people, delicate floral arrangements, and pastel colors. Light, airy, and decorative. 18th-century influence.",
-    "video_prompt": "The garden comes to life: a gentle breeze rustles the delicate flowers, people laugh and converse in a light, playful manner, and the pastel colors shimmer in the soft sunlight. Rococo style animation."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/neoclassicism_roman_forum_animated.mp4",
-    "title": "Roman Forum - Neoclassicism (AI Animated)",
-    "type": "video",
-    "date": "2026-03-10",
-    "image_prompt": "A classical landscape painting in the style of the Neoclassicism movement, depicting a grand Roman forum with pristine white marble columns, statues, and a clear blue sky. Balanced composition, sharp details, and idealized beauty. 18th-century influence.",
-    "video_prompt": "Sunlight slowly moves across the marble columns, shadows deepen, a gentle breeze rustles some distant banners, and birds fly across the clear blue sky. Neoclassicism style animation."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ashcan_urban_sunset_animated.mp4",
-    "title": "Urban Sunset - Ashcan School (AI Animated)",
-    "type": "video",
-    "date": "2026-03-10",
-    "image_prompt": "A classical landscape painting in the style of the Ashcan School, depicting a gritty urban scene at sunset with long shadows, earthy tones, and bold, painterly brushstrokes. 19th-century influence.",
-    "video_prompt": "The city street comes to life: a horse-drawn carriage moves slowly down the cobblestones, long shadows shift as the sun sets, and distant gas lamps begin to flicker on. Ashcan School style animation."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/symbolism_island_animated.mp4",
-    "title": "Mystical Island - Symbolism (AI Animated)",
-    "type": "video",
-    "date": "2026-03-05",
-    "image_prompt": "A mystical, dreamlike landscape in the style of Symbolism art, featuring a floating island with ancient ruins, vibrant colors, soft focus, and ethereal lighting, reminiscent of Odilon Redon or Gustave Moreau.",
-    "video_prompt": "The floating island gently rotates, waterfalls cascade down, clouds drift slowly across the vibrant sky, and ancient ruins glow with a soft magical light."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/barbizon_forest_animated.mp4",
-    "title": "Twilight Forest - Barbizon School (AI Animated)",
-    "type": "video",
-    "date": "2026-03-05",
-    "image_prompt": "A dense, ancient forest at twilight, with mist rising from a small stream, soft golden light filtering through the trees, in the style of the Barbizon School, reminiscent of Theodore Rousseau or Jean-Francois Millet.",
-    "video_prompt": "Mist swirls, leaves rustle, light changes as the sun sets, creating a moody, atmospheric landscape."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/arts_and_crafts_garden_animated.mp4",
-    "title": "Decorative Garden - Arts and Crafts (AI Animated)",
-    "type": "video",
-    "date": "2026-03-05",
-    "image_prompt": "A lush, decorative garden with stylized flowers, intricate patterns, vibrant colors, birds among the branches, in the style of the Arts and Crafts Movement, reminiscent of William Morris.",
-    "video_prompt": "Vines curl and grow, flowers bloom slowly, birds flutter, light flickers, creating a sense of natural movement."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/bosch_surreal_garden_animated.mp4",
-    "title": "Surreal Garden - Hieronymus Bosch (AI Animated)",
-    "type": "video",
-    "date": "2026-02-28",
-    "image_prompt": "A detailed, surreal landscape in the style of Hieronymus Bosch, filled with fantastical creatures, strange organic structures, and vibrant, unsettling colors. High resolution, intricate details.",
-    "video_prompt": "The strange creatures move around, the organic structures pulse and sway, creating a lively and chaotic scene."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/preraphaelite_forest_animated.mp4",
-    "title": "Lush Forest - Pre-Raphaelite Brotherhood (AI Animated)",
-    "type": "video",
-    "date": "2026-02-28",
-    "image_prompt": "A detailed painting in the style of the Pre-Raphaelite Brotherhood, depicting a beautiful woman in a lush, detailed forest, with vibrant colors and intricate textures.",
-    "video_prompt": "The woman turns her head slowly, the wind blows through her hair and the leaves, sunlight dapples through the trees."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/byzantine_angel_animated.mp4",
-    "title": "Golden Angel - Byzantine (AI Animated)",
-    "type": "video",
-    "date": "2026-02-28",
-    "image_prompt": "A grand Byzantine mosaic depicting an angel or saint, with golden tiles shimmering and a halo glowing.",
-    "video_prompt": "The figure slowly raises a hand in blessing, and the golden background glimmers."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/art_nouveau_woman_animated.mp4",
-    "title": "Woman and Flora - Art Nouveau (AI Animated)",
-    "type": "video",
-    "date": "2026-02-28",
-    "image_prompt": "A portrait of a woman surrounded by intricate floral patterns, flowing lines, muted colors, Art Nouveau style, Alphonse Mucha influence",
-    "video_prompt": "The woman breathes gently, the floral patterns slowly grow and sway around her, her hair flows softly. Art Nouveau animation."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/romanticism_storm_animated.mp4",
-    "title": "Stormy Sea - Romanticism (AI Animated)",
-    "type": "video",
-    "date": "2026-02-28",
-    "image_prompt": "A dramatic seascape with stormy waves crashing against cliffs, ship in the distance, dramatic lighting, Romanticism art style, oil painting texture",
-    "video_prompt": "The waves crash against the cliffs, the ship rocks on the stormy sea, dramatic clouds move across the sky. Oil painting animation."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyo_e_fuji_animated.mp4",
-    "title": "Mount Fuji - Ukiyo-e (AI Animated)",
-    "type": "video",
-    "date": "2026-02-28",
-    "image_prompt": "A serene landscape of Mount Fuji with cherry blossoms in the foreground, traditional Japanese village, Ukiyo-e style, woodblock print texture, detailed line work",
-    "video_prompt": "The cherry blossoms gently sway in the wind, a few petals drift through the air, and the water in the river flows slowly. Ukiyo-e style animation."
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/byzantine_mosaic_animated.mp4",
-    "title": "Golden Mosaic - Byzantine (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/hudson_river_valley_animated.mp4",
-    "title": "Majestic Valley - Hudson River School (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/rococo_garden_animated.mp4",
-    "title": "Garden Party - Rococo (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dark_academia_library_animated.mp4",
-    "title": "Gothic Library - Dark Academia (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/liminal_spaces_hallway_animated.mp4",
-    "title": "Eerie Hallway - Liminal Spaces (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/biomorphic_organic_shapes_animated.mp4",
-    "title": "Organic Flow - Biomorphic (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/whimsical_steampunk_tree_animated.mp4",
-    "title": "Whimsical Village - Whimsical Steampunk (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dark_fantasy_fortress_animated.mp4",
-    "title": "Obsidian Fortress - Dark Fantasy (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/eco_brutalist_jungle_animated.mp4",
-    "title": "Overgrown Structure - Eco-Brutalism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/celtic_knotwork_forest_animated.mp4",
-    "title": "Mystical Knotwork - Celtic (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/acid_graphics_rave_animated.mp4",
-    "title": "Acid Melt - Acid Graphics (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/solarpunk_noir_city_animated.mp4",
-    "title": "Neon Rain - Solarpunk Noir (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/biolum_rainforest_animated.mp4",
-    "title": "Bioluminescent Rainforest - Biopunk (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/floating_city_animated.mp4",
-    "title": "Floating City - Steampunk (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/nebula_dreams_animated.mp4",
-    "title": "Nebula Dreams - Cosmic (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/abstract_expressionism_chaos_animated.mp4",
-    "title": "Abstract Expressionism Chaos - Abstract Expressionism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mid_century_modern_room_animated.mp4",
-    "title": "Mid-Century Modern Room - Mid-Century Modern (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/frutiger_aero_dream_animated.mp4",
-    "title": "Frutiger Aero Dream - Frutiger Aero (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/constructivism_industrial_animated.mp4",
-    "title": "Industrial Rhythm - Constructivism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fauvism_landscape_animated.mp4",
-    "title": "Fauvism Flow - Fauvism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/voxel_room_animated.mp4",
-    "title": "Cozy Room - Voxel Art (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/solarpunk_animated.mp4",
-    "title": "Green Future - Solarpunk (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/neotokyo_animated.mp4",
-    "title": "Neon Night - Neo-Tokyo (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/surrealism_animated.mp4",
-    "title": "Floating Time - Surrealism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/impressionist_pond_animated.mp4",
-    "title": "Impressionist Pond - Classic (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/pop_art_diner_animated.mp4",
-    "title": "Pop Art Diner - Retro (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/bauhaus_architecture_animated.mp4",
-    "title": "Bauhaus Architecture - Modernist (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cubism_city_animated.mp4",
-    "title": "Geometric Sunset - Cubism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/pixel_village_animated.mp4",
-    "title": "Cozy Village - Pixel Art (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/isometric_island_animated.mp4",
-    "title": "Floating Island - Isometric (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/surrealism_animated.mp4",
-    "title": "Floating Islands - Surrealism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/synthwave_animated.mp4",
-    "title": "Neon Highway - Synthwave (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/solarpunk_animated.mp4",
-    "title": "Green Future - Solarpunk (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gothic_cathedral_animated.mp4",
-    "title": "Dark Cathedral - Gothic (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/art_deco_ballroom_animated.mp4",
-    "title": "Grand Ballroom - Art Deco (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/solarpunk_city_animated.mp4",
-    "title": "Solarpunk City - Solarpunk (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/starry_coast_animated.mp4",
-    "title": "Starry Coast - Impressionist (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/renaissance_garden_animated.mp4",
-    "title": "Renaissance Garden - Classic (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/surreal_clocks_animated.mp4",
-    "title": "Melting Clocks - Surrealism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/surreal_clock_animated.mp4",
-    "title": "Surreal Clock - Surrealism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cyberpunk_neon_city_animated.mp4",
-    "title": "Neon City - Cyberpunk (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyoe_great_wave_mountain_animated.mp4",
-    "title": "Great Wave - Ukiyo-e (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/steampunk_airship_adventure_animated.mp4",
-    "title": "Airship Adventure - Steampunk (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cyberpunk_city_animated.mp4",
-    "title": "Cyberpunk City - Cyberpunk (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/vaporwave_sunset_animated.mp4",
-    "title": "Vaporwave Sunset - Vaporwave (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/brutalist_structure_animated.mp4",
-    "title": "Brutalist Monument - Brutalism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/retro_futurism_city_animated.mp4",
-    "title": "Flying Cars - Retro-Futurism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/biopunk_forest_animated.mp4",
-    "title": "Glowing Forest - Biopunk (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/pointillism_park_animated.mp4",
-    "title": "Lakeside Park - Pointillism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/art_nouveau_greenhouse_animated.mp4",
-    "title": "Elegant Greenhouse - Art Nouveau (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dieselpunk_factory_animated.mp4",
-    "title": "Sky Factory - Dieselpunk (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/low_poly_mountain_animated.mp4",
-    "title": "Geometric Sunset - Low Poly (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/noir_street_animated.mp4",
-    "title": "Noir Street - Noir (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/baroque_palace_animated.mp4",
-    "title": "Grand Palace - Baroque (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/watercolor_lake_animated.mp4",
-    "title": "Misty Lake - Watercolor (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/solarpunk_animated.mp4",
-    "title": "Solarpunk Utopia - Solarpunk (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/synthwave_animated.mp4",
-    "title": "Neon Grid - Synthwave (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/biomorphic_shapes_animated.mp4",
-    "title": "Organic Pulse - Biomorphic (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/glitch_landscape_animated.mp4",
-    "title": "Data Decay - Glitch Art (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/minimalist_desert_animated.mp4",
-    "title": "Serene Dunes - Minimalism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyoe_animated.mp4",
-    "title": "Cherry Blossom Waves - Ukiyo-e (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/biomechanical_organic_machine_animated.mp4",
-    "title": "Organic Machine - Biomechanical (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/papercut_forest_animated.mp4",
-    "title": "Enchanted Layers - Papercut Art (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/memphis_pattern_animated.mp4",
-    "title": "Geometric Loop - Memphis Design (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/de_stijl_composition_animated.mp4",
-    "title": "De Stijl Composition - De Stijl (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/suprematism_composition_animated.mp4",
-    "title": "Suprematism Shapes - Suprematism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ghibli_landscape_animated.mp4",
-    "title": "Serene Hills - Ghibli-esque (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fractal_landscape_animated.mp4",
-    "title": "Infinite Fractal - Fractal Art (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/retro_futurism_cloud_city_animated.mp4",
-    "title": "Cloud City - Retro-Futurism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dungeon_synth_ruins_animated.mp4",
-    "title": "Haunted Ruins - Dungeon Synth (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/y2k_dreamscape_animated.mp4",
-    "title": "Chrome Dreams - Y2K Aesthetic (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cyber_gothic_cathedral_animated.mp4",
-    "title": "Neon Spire - Cyber-Gothic (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/psychedelic_kaleidoscope_animated.mp4",
-    "title": "Psychedelic Kaleidoscope - Psychedelic Art (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mannerism_composition_animated.mp4",
-    "title": "Twisted Space - Mannerism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/romanticism_landscape_animated.mp4",
-    "title": "Stormy Peak - Romanticism (AI Animated)",
-    "type": "video"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/tenebrism_chiaroscuro_animated.mp4",
-    "title": "Deep Shadow - Tenebrism (AI Animated)",
-    "type": "video"
-  }
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/utrecht_lute_animated.mp4",
+        "title": "Lute Players - Utrecht Caravaggism (AI Animated)",
+        "type": "video",
+        "date": "2026-03-15",
+        "image_prompt": "A 17th-century Utrecht Caravaggism painting of musicians playing lutes in a dimly lit tavern, illuminated by a single hidden light source.",
+        "video_prompt": "Subtle movements of the musicians in the Utrecht Caravaggism painting, with dynamic lighting shifting softly across the dimly lit tavern scene."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/chiaroscuro_reader_animated.mp4",
+        "title": "Solitary Reader - Chiaroscuro (AI Animated)",
+        "type": "video",
+        "date": "2026-03-15",
+        "image_prompt": "A dramatic Chiaroscuro oil painting of a solitary figure reading by candlelight in a dark, cavernous 17th-century study.",
+        "video_prompt": "Flickering candle light casting shifting shadows in the dark Chiaroscuro painting, giving life to the intense contrast between light and dark."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/trompe_loeil_animated.mp4",
+        "title": "Stone Window Illusion - Trompe-l'\u0153il (AI Animated)",
+        "type": "video",
+        "date": "2026-03-15",
+        "image_prompt": "A hyper-realistic Trompe-l'oeil mural of a fake stone window looking out over a 16th-century Italian countryside.",
+        "video_prompt": "Slow pan across the hyper-realistic Trompe-l'oeil mural, with sunlight shifting across the fake stone window to create an illusion of depth."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sasanian_animated.mp4",
+        "title": "Royal Hunt - Sasanian Silverwork (AI Animated)",
+        "type": "video",
+        "date": "2026-03-15",
+        "image_prompt": "A highly detailed Sasanian Silverwork plate depicting a royal hunt with mythical beasts, intricate geometric patterns, 5th century AD style",
+        "video_prompt": "A highly detailed Sasanian Silverwork plate depicting a royal hunt with mythical beasts, intricate geometric patterns, 5th century AD style"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/tang_animated.mp4",
+        "title": "Silk Road Merchant - Tang Dynasty Sancai (AI Animated)",
+        "type": "video",
+        "date": "2026-03-15",
+        "image_prompt": "A Tang Dynasty Sancai (three-color) ceramic sculpture of a Silk Road merchant on a camel, vibrant green, amber, and cream glazes",
+        "video_prompt": "A Tang Dynasty Sancai (three-color) ceramic sculpture of a Silk Road merchant on a camel, vibrant green, amber, and cream glazes"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/inca_animated.mp4",
+        "title": "Andean Cosmology - Inca Textile Pattern (AI Animated)",
+        "type": "video",
+        "date": "2026-03-15",
+        "image_prompt": "An intricate Inca Tocapu textile pattern, vibrant dyes, geometric shapes representing different noble families and Andean cosmology",
+        "video_prompt": "An intricate Inca Tocapu textile pattern, vibrant dyes, geometric shapes representing different noble families and Andean cosmology"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sasanian_animated.mp4",
+        "title": "Royal Hunt - Sasanian Silverwork (AI Animated)",
+        "type": "video",
+        "date": "2026-03-15",
+        "image_prompt": "A highly detailed Sasanian Silverwork plate depicting a royal hunt with mythical beasts, intricate geometric patterns, 5th century AD style",
+        "video_prompt": "A highly detailed Sasanian Silverwork plate depicting a royal hunt with mythical beasts, intricate geometric patterns, 5th century AD style"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/tang_animated.mp4",
+        "title": "Silk Road Merchant - Tang Dynasty Sancai (AI Animated)",
+        "type": "video",
+        "date": "2026-03-15",
+        "image_prompt": "A Tang Dynasty Sancai (three-color) ceramic sculpture of a Silk Road merchant on a camel, vibrant green, amber, and cream glazes",
+        "video_prompt": "A Tang Dynasty Sancai (three-color) ceramic sculpture of a Silk Road merchant on a camel, vibrant green, amber, and cream glazes"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/inca_animated.mp4",
+        "title": "Andean Cosmology - Inca Textile Pattern (AI Animated)",
+        "type": "video",
+        "date": "2026-03-15",
+        "image_prompt": "An intricate Inca Tocapu textile pattern, vibrant dyes, geometric shapes representing different noble families and Andean cosmology",
+        "video_prompt": "An intricate Inca Tocapu textile pattern, vibrant dyes, geometric shapes representing different noble families and Andean cosmology"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/anglo_saxon_animated.mp4",
+        "title": "Intricate Design - Anglo-Saxon Metalwork (AI Animated)",
+        "type": "video",
+        "date": "2026-03-14",
+        "image_prompt": "A beautiful intricate design of an artifact in the style of Anglo-Saxon Metalwork, high quality, masterpiece",
+        "video_prompt": "Subtle gleaming of gold, slow panning over the intricate design"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gothic_glass_animated.mp4",
+        "title": "Cathedral Light - Gothic Stained Glass (AI Animated)",
+        "type": "video",
+        "date": "2026-03-14",
+        "image_prompt": "A breathtaking scene composed of colorful translucent shards in the style of Gothic Stained Glass, high quality, masterpiece",
+        "video_prompt": "Magical sunlight shining through the colorful glass, subtle dust motes floating"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mayan_stela_animated.mp4",
+        "title": "Ancient Record - Mayan Stela Relief (AI Animated)",
+        "type": "video",
+        "date": "2026-03-14",
+        "image_prompt": "A complex and detailed carving of historical events in the style of Mayan Stela Relief, high quality, masterpiece",
+        "video_prompt": "Slow zoom on the detailed carving, shadows moving slightly as if illuminated by a torch"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/neolithic_rock_animated.mp4",
+        "title": "Ancient Hunt - Neolithic Rock Art (AI Animated)",
+        "type": "video",
+        "date": "2026-03-14",
+        "image_prompt": "A vivid Neolithic Rock Art painting of ancient animals and hunters, earthy red and black tones, rough stone texture",
+        "video_prompt": "Subtle animation: hunters appear to move in the flickering firelight, adding life to the rough stone wall."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/etruscan_tomb_animated.mp4",
+        "title": "Banquet Scene - Etruscan Tomb Painting (AI Animated)",
+        "type": "video",
+        "date": "2026-03-14",
+        "image_prompt": "An Etruscan Tomb Painting depicting musicians and dancers at a banquet, vibrant colors on plaster, ancient Italian style",
+        "video_prompt": "Subtle animation: the musicians play their instruments, dancers sway slightly, and shadows flicker from torches."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/han_dynasty_animated.mp4",
+        "title": "Mythical Chariot - Han Dynasty Relief (AI Animated)",
+        "type": "video",
+        "date": "2026-03-14",
+        "image_prompt": "A detailed Han Dynasty Relief carving in stone, showing chariots, horses, and mythical creatures, ancient Chinese art",
+        "video_prompt": "Subtle animation: the chariots roll slowly, mythical creatures breathe, and dust settles on the ancient stone."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ming_silk_animated.mp4",
+        "title": "Mountain Landscape - Ming Dynasty Silk Painting (AI Animated)",
+        "type": "video",
+        "date": "2026-03-13",
+        "image_prompt": "A beautiful Ming Dynasty Silk Painting depicting an ancient mountain landscape with scholars drinking tea, extremely detailed, traditional chinese painting",
+        "video_prompt": "Animate the scene with slow camera panning, gentle mist rolling over the mountains, and subtle movements of the characters."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cave_animated.mp4",
+        "title": "Ancient Hunt - Paleolithic Cave Painting (AI Animated)",
+        "type": "video",
+        "date": "2026-03-13",
+        "image_prompt": "A vivid Paleolithic Cave Painting of ancient bisons and hunters, earthy ochre and charcoal tones, rough rock texture",
+        "video_prompt": "Animate the Paleolithic cave painting with subtle flickering firelight shadows, slowly panning across the rough wall as hunters seem to move."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fresco_animated_v2.mp4",
+        "title": "Saints - Romanesque Fresco (AI Animated)",
+        "type": "video",
+        "date": "2026-03-13",
+        "image_prompt": "A medieval Romanesque Fresco depicting saints in bright lapis lazuli and gold leaf, cracked plaster texture, religious art style",
+        "video_prompt": "Animate the Romanesque fresco with subtle shifting shadows and golden glints reflecting off the gold leaf as if lit by candlelight."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fresco_animated.mp4",
+        "title": "Roman Villa Landscape - Fresco (AI Animated)",
+        "type": "video",
+        "date": "2026-03-13",
+        "image_prompt": "A beautiful landscape in Fresco style, ancient Roman villa, pigments on wet plaster.",
+        "video_prompt": "Subtle animation: the plaster texture remains still while clouds slowly drift."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/minoan_animated.mp4",
+        "title": "Bull Leaping - Minoan Fresco (AI Animated)",
+        "type": "video",
+        "date": "2026-03-13",
+        "image_prompt": "A Minoan fresco showing bull leaping, bright colors, ancient Greek art style.",
+        "video_prompt": "Subtle animation: dust kicks up around the bull."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cave_painting_animated.mp4",
+        "title": "Running Horses - Paleolithic Cave Painting (AI Animated)",
+        "type": "video",
+        "date": "2026-03-13",
+        "image_prompt": "A Paleolithic cave painting of running horses in Lascaux style, ochre and charcoal on rough stone.",
+        "video_prompt": "Subtle animation: flickering firelight illuminating the cave wall."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sumerian_relief_animated.mp4",
+        "title": "King receiving gifts - Sumerian Cuneiform Relief (AI Animated)",
+        "type": "video",
+        "date": "2026-03-13",
+        "image_prompt": "A highly detailed Sumerian stone wall relief showing an ancient king receiving gifts, carved in limestone, 3rd millennium BC style, intricate cuneiform inscriptions in the background.",
+        "video_prompt": "Subtle animation: the torchlight flickers, casting moving shadows across the deep carvings of the king and cuneiform inscriptions, very slow panning shot across the ancient stone."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/carolingian_animated.mp4",
+        "title": "Medieval Scholars - Carolingian Illumination (AI Animated)",
+        "type": "video",
+        "date": "2026-03-13",
+        "image_prompt": "A rich Carolingian illuminated manuscript page depicting medieval scholars in a scriptorium, intricate Celtic knot borders, gold leaf, vibrant lapis lazuli blues and reds, 9th-century style.",
+        "video_prompt": "Subtle animation: the candlelight flickers, the gold leaf on the borders shimmers gently, and the scholars appear to be slowly writing on the parchment, giving it a lively medieval atmosphere."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/edo_byobu_animated.mp4",
+        "title": "Cranes in River - Edo Period Byobu (Folding Screen) (AI Animated)",
+        "type": "video",
+        "date": "2026-03-13",
+        "image_prompt": "A beautiful Edo period Byobu folding screen painting of cranes standing in a shallow river surrounded by golden clouds and pine trees, ink and gold leaf on paper, 17th-century Japanese art style.",
+        "video_prompt": "Subtle animation: the golden clouds drift slowly, the river water ripples gently, and the cranes make slight head movements, a serene and peaceful atmosphere."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/hellenistic_mosaic_animated.mp4",
+        "title": "Ocean God - Hellenistic Mosaic (AI Animated)",
+        "type": "video",
+        "date": "2026-03-13",
+        "image_prompt": "A highly detailed Hellenistic floor mosaic depicting the ocean god Poseidon surrounded by sea creatures, made of thousands of tiny colored stone tesserae",
+        "video_prompt": "Subtle animation: the tesserae shimmering as if underwater, gentle caustics and light rays moving across the mosaic surface, very slow zoom out"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/edo_sumie_animated.mp4",
+        "title": "Misty Mountains - Sumi-e Ink Wash (AI Animated)",
+        "type": "video",
+        "date": "2026-03-13",
+        "image_prompt": "A breathtaking Edo period Sumi-e ink wash painting of misty mountains with a small solitary figure walking on a winding path, elegant brush strokes, minimalist composition",
+        "video_prompt": "Subtle animation: mist slowly rolling through the mountains, gentle breeze moving the trees, ink spreading effect, very calm and meditative"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gothic_manuscript_animated.mp4",
+        "title": "Gothic Marketplace - Illuminated Manuscript (AI Animated)",
+        "type": "video",
+        "date": "2026-03-13",
+        "image_prompt": "A detailed and intricate Gothic Illuminated Manuscript page depicting a lively medieval marketplace, rich with gold leaf accents, deep blues, and reds, ornate borders",
+        "video_prompt": "Subtle animation: candlelight flickering, gold leaf shimmering, slight movement of figures, elegant slow pan across the manuscript"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/romanticism_sea_animated.mp4",
+        "title": "Stormy Cliffs - Romanticism (AI Animated)",
+        "type": "video",
+        "date": "2026-03-11",
+        "image_prompt": "An oil painting in the style of Romanticism, depicting a solitary figure standing on a rocky cliff overlooking a vast, stormy sea with powerful waves and a dramatic, cloud-filled sky at dusk. Emotional and sublime. 19th-century influence.",
+        "video_prompt": "The waves crash violently against the rocks, the clouds churn across the dark sky, and the lone figure's cloak billows in the wind. Romanticism style animation."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mannerism_figure_animated.mp4",
+        "title": "Twisted Figure - Mannerism (AI Animated)",
+        "type": "video",
+        "date": "2026-03-11",
+        "image_prompt": "An oil painting in the style of Mannerism, featuring an elongated figure in a dramatic, complex pose within an architectural space with distorted perspective and unnatural, vibrant colors. 16th-century influence.",
+        "video_prompt": "The figure slowly changes their pose, the dramatic shadows shift across the distorted architecture, and the vibrant colors pulse with intensity. Mannerism style animation."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/hudson_river_school_valley_animated.mp4",
+        "title": "Majestic Valley - Hudson River School (AI Animated)",
+        "type": "video",
+        "date": "2026-03-11",
+        "image_prompt": "A classical landscape painting in the style of the Hudson River School, depicting a majestic valley at sunrise with a winding river, towering mountains, and golden light filtering through a soft mist. 19th-century influence.",
+        "video_prompt": "The golden sunlight slowly spreads across the valley, the mist drifts gently between the mountains, and the river ripples softly. The style remains a 19th-century Hudson River School oil painting."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dutch_golden_age_scholar_animated.mp4",
+        "title": "Study in Light - Dutch Golden Age (AI Animated)",
+        "type": "video",
+        "date": "2026-03-10",
+        "image_prompt": "A high-quality oil painting in the style of the Dutch Golden Age, reminiscent of Rembrandt. A single candle illuminates a cluttered scholar's desk with old parchments, a quill, and a glass of wine. Deep shadows, rich textures, and dramatic chiaroscuro. 17th-century influence.",
+        "video_prompt": "The candlelight flickers gently, casting shifting shadows across the desk. The scholar's hand moves slightly as if writing, and the dust motes dance in the warm light. Dutch Golden Age style animation."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mughal_miniature_garden_animated.mp4",
+        "title": "Palace Garden - Mughal Miniature (AI Animated)",
+        "type": "video",
+        "date": "2026-03-10",
+        "image_prompt": "An intricate Mughal miniature painting depicting a lush palace garden with fountains, exotic birds, and courtiers in colorful silks. Fine details, flat perspective with layered depth, and vibrant natural pigments. 16th-century Indian influence.",
+        "video_prompt": "The fountains spray fine mist, the exotic birds flutter their wings and hop between branches, and the courtiers engage in quiet conversation. The intricate patterns on their silks shimmer slightly. Mughal miniature style animation."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ancient_egyptian_procession_animated.mp4",
+        "title": "River Procession - Ancient Egyptian (AI Animated)",
+        "type": "video",
+        "date": "2026-03-10",
+        "image_prompt": "A stylized wall painting in the style of Ancient Egyptian tomb art. A procession of figures carrying offerings along the Nile, with papyrus reeds and a stylized sun. Profile views, bold outlines, and earthy ochre and turquoise tones. Pharaonic era influence.",
+        "video_prompt": "The figures move in a rhythmic, stylized procession. The papyrus reeds sway gently by the riverbank, and the waters of the Nile ripple under the golden sun. Ancient Egyptian wall painting style animation."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/rococo_garden_party_v2_animated.mp4",
+        "title": "Garden Party - Rococo (AI Animated)",
+        "type": "video",
+        "date": "2026-03-10",
+        "image_prompt": "A classical painting in the style of Rococo, depicting a playful and ornate garden party with elegantly dressed people, delicate floral arrangements, and pastel colors. Light, airy, and decorative. 18th-century influence.",
+        "video_prompt": "The garden comes to life: a gentle breeze rustles the delicate flowers, people laugh and converse in a light, playful manner, and the pastel colors shimmer in the soft sunlight. Rococo style animation."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/neoclassicism_roman_forum_animated.mp4",
+        "title": "Roman Forum - Neoclassicism (AI Animated)",
+        "type": "video",
+        "date": "2026-03-10",
+        "image_prompt": "A classical landscape painting in the style of the Neoclassicism movement, depicting a grand Roman forum with pristine white marble columns, statues, and a clear blue sky. Balanced composition, sharp details, and idealized beauty. 18th-century influence.",
+        "video_prompt": "Sunlight slowly moves across the marble columns, shadows deepen, a gentle breeze rustles some distant banners, and birds fly across the clear blue sky. Neoclassicism style animation."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ashcan_urban_sunset_animated.mp4",
+        "title": "Urban Sunset - Ashcan School (AI Animated)",
+        "type": "video",
+        "date": "2026-03-10",
+        "image_prompt": "A classical landscape painting in the style of the Ashcan School, depicting a gritty urban scene at sunset with long shadows, earthy tones, and bold, painterly brushstrokes. 19th-century influence.",
+        "video_prompt": "The city street comes to life: a horse-drawn carriage moves slowly down the cobblestones, long shadows shift as the sun sets, and distant gas lamps begin to flicker on. Ashcan School style animation."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/symbolism_island_animated.mp4",
+        "title": "Mystical Island - Symbolism (AI Animated)",
+        "type": "video",
+        "date": "2026-03-05",
+        "image_prompt": "A mystical, dreamlike landscape in the style of Symbolism art, featuring a floating island with ancient ruins, vibrant colors, soft focus, and ethereal lighting, reminiscent of Odilon Redon or Gustave Moreau.",
+        "video_prompt": "The floating island gently rotates, waterfalls cascade down, clouds drift slowly across the vibrant sky, and ancient ruins glow with a soft magical light."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/barbizon_forest_animated.mp4",
+        "title": "Twilight Forest - Barbizon School (AI Animated)",
+        "type": "video",
+        "date": "2026-03-05",
+        "image_prompt": "A dense, ancient forest at twilight, with mist rising from a small stream, soft golden light filtering through the trees, in the style of the Barbizon School, reminiscent of Theodore Rousseau or Jean-Francois Millet.",
+        "video_prompt": "Mist swirls, leaves rustle, light changes as the sun sets, creating a moody, atmospheric landscape."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/arts_and_crafts_garden_animated.mp4",
+        "title": "Decorative Garden - Arts and Crafts (AI Animated)",
+        "type": "video",
+        "date": "2026-03-05",
+        "image_prompt": "A lush, decorative garden with stylized flowers, intricate patterns, vibrant colors, birds among the branches, in the style of the Arts and Crafts Movement, reminiscent of William Morris.",
+        "video_prompt": "Vines curl and grow, flowers bloom slowly, birds flutter, light flickers, creating a sense of natural movement."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/bosch_surreal_garden_animated.mp4",
+        "title": "Surreal Garden - Hieronymus Bosch (AI Animated)",
+        "type": "video",
+        "date": "2026-02-28",
+        "image_prompt": "A detailed, surreal landscape in the style of Hieronymus Bosch, filled with fantastical creatures, strange organic structures, and vibrant, unsettling colors. High resolution, intricate details.",
+        "video_prompt": "The strange creatures move around, the organic structures pulse and sway, creating a lively and chaotic scene."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/preraphaelite_forest_animated.mp4",
+        "title": "Lush Forest - Pre-Raphaelite Brotherhood (AI Animated)",
+        "type": "video",
+        "date": "2026-02-28",
+        "image_prompt": "A detailed painting in the style of the Pre-Raphaelite Brotherhood, depicting a beautiful woman in a lush, detailed forest, with vibrant colors and intricate textures.",
+        "video_prompt": "The woman turns her head slowly, the wind blows through her hair and the leaves, sunlight dapples through the trees."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/byzantine_angel_animated.mp4",
+        "title": "Golden Angel - Byzantine (AI Animated)",
+        "type": "video",
+        "date": "2026-02-28",
+        "image_prompt": "A grand Byzantine mosaic depicting an angel or saint, with golden tiles shimmering and a halo glowing.",
+        "video_prompt": "The figure slowly raises a hand in blessing, and the golden background glimmers."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/art_nouveau_woman_animated.mp4",
+        "title": "Woman and Flora - Art Nouveau (AI Animated)",
+        "type": "video",
+        "date": "2026-02-28",
+        "image_prompt": "A portrait of a woman surrounded by intricate floral patterns, flowing lines, muted colors, Art Nouveau style, Alphonse Mucha influence",
+        "video_prompt": "The woman breathes gently, the floral patterns slowly grow and sway around her, her hair flows softly. Art Nouveau animation."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/romanticism_storm_animated.mp4",
+        "title": "Stormy Sea - Romanticism (AI Animated)",
+        "type": "video",
+        "date": "2026-02-28",
+        "image_prompt": "A dramatic seascape with stormy waves crashing against cliffs, ship in the distance, dramatic lighting, Romanticism art style, oil painting texture",
+        "video_prompt": "The waves crash against the cliffs, the ship rocks on the stormy sea, dramatic clouds move across the sky. Oil painting animation."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyo_e_fuji_animated.mp4",
+        "title": "Mount Fuji - Ukiyo-e (AI Animated)",
+        "type": "video",
+        "date": "2026-02-28",
+        "image_prompt": "A serene landscape of Mount Fuji with cherry blossoms in the foreground, traditional Japanese village, Ukiyo-e style, woodblock print texture, detailed line work",
+        "video_prompt": "The cherry blossoms gently sway in the wind, a few petals drift through the air, and the water in the river flows slowly. Ukiyo-e style animation."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/byzantine_mosaic_animated.mp4",
+        "title": "Golden Mosaic - Byzantine (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/hudson_river_valley_animated.mp4",
+        "title": "Majestic Valley - Hudson River School (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/rococo_garden_animated.mp4",
+        "title": "Garden Party - Rococo (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dark_academia_library_animated.mp4",
+        "title": "Gothic Library - Dark Academia (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/liminal_spaces_hallway_animated.mp4",
+        "title": "Eerie Hallway - Liminal Spaces (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/biomorphic_organic_shapes_animated.mp4",
+        "title": "Organic Flow - Biomorphic (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/whimsical_steampunk_tree_animated.mp4",
+        "title": "Whimsical Village - Whimsical Steampunk (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dark_fantasy_fortress_animated.mp4",
+        "title": "Obsidian Fortress - Dark Fantasy (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/eco_brutalist_jungle_animated.mp4",
+        "title": "Overgrown Structure - Eco-Brutalism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/celtic_knotwork_forest_animated.mp4",
+        "title": "Mystical Knotwork - Celtic (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/acid_graphics_rave_animated.mp4",
+        "title": "Acid Melt - Acid Graphics (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/solarpunk_noir_city_animated.mp4",
+        "title": "Neon Rain - Solarpunk Noir (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/biolum_rainforest_animated.mp4",
+        "title": "Bioluminescent Rainforest - Biopunk (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/floating_city_animated.mp4",
+        "title": "Floating City - Steampunk (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/nebula_dreams_animated.mp4",
+        "title": "Nebula Dreams - Cosmic (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/abstract_expressionism_chaos_animated.mp4",
+        "title": "Abstract Expressionism Chaos - Abstract Expressionism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mid_century_modern_room_animated.mp4",
+        "title": "Mid-Century Modern Room - Mid-Century Modern (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/frutiger_aero_dream_animated.mp4",
+        "title": "Frutiger Aero Dream - Frutiger Aero (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/constructivism_industrial_animated.mp4",
+        "title": "Industrial Rhythm - Constructivism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fauvism_landscape_animated.mp4",
+        "title": "Fauvism Flow - Fauvism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/voxel_room_animated.mp4",
+        "title": "Cozy Room - Voxel Art (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/solarpunk_animated.mp4",
+        "title": "Green Future - Solarpunk (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/neotokyo_animated.mp4",
+        "title": "Neon Night - Neo-Tokyo (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/surrealism_animated.mp4",
+        "title": "Floating Time - Surrealism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/impressionist_pond_animated.mp4",
+        "title": "Impressionist Pond - Classic (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/pop_art_diner_animated.mp4",
+        "title": "Pop Art Diner - Retro (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/bauhaus_architecture_animated.mp4",
+        "title": "Bauhaus Architecture - Modernist (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cubism_city_animated.mp4",
+        "title": "Geometric Sunset - Cubism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/pixel_village_animated.mp4",
+        "title": "Cozy Village - Pixel Art (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/isometric_island_animated.mp4",
+        "title": "Floating Island - Isometric (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/surrealism_animated.mp4",
+        "title": "Floating Islands - Surrealism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/synthwave_animated.mp4",
+        "title": "Neon Highway - Synthwave (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/solarpunk_animated.mp4",
+        "title": "Green Future - Solarpunk (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gothic_cathedral_animated.mp4",
+        "title": "Dark Cathedral - Gothic (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/art_deco_ballroom_animated.mp4",
+        "title": "Grand Ballroom - Art Deco (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/solarpunk_city_animated.mp4",
+        "title": "Solarpunk City - Solarpunk (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/starry_coast_animated.mp4",
+        "title": "Starry Coast - Impressionist (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/renaissance_garden_animated.mp4",
+        "title": "Renaissance Garden - Classic (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/surreal_clocks_animated.mp4",
+        "title": "Melting Clocks - Surrealism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/surreal_clock_animated.mp4",
+        "title": "Surreal Clock - Surrealism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cyberpunk_neon_city_animated.mp4",
+        "title": "Neon City - Cyberpunk (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyoe_great_wave_mountain_animated.mp4",
+        "title": "Great Wave - Ukiyo-e (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/steampunk_airship_adventure_animated.mp4",
+        "title": "Airship Adventure - Steampunk (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cyberpunk_city_animated.mp4",
+        "title": "Cyberpunk City - Cyberpunk (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/vaporwave_sunset_animated.mp4",
+        "title": "Vaporwave Sunset - Vaporwave (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/brutalist_structure_animated.mp4",
+        "title": "Brutalist Monument - Brutalism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/retro_futurism_city_animated.mp4",
+        "title": "Flying Cars - Retro-Futurism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/biopunk_forest_animated.mp4",
+        "title": "Glowing Forest - Biopunk (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/pointillism_park_animated.mp4",
+        "title": "Lakeside Park - Pointillism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/art_nouveau_greenhouse_animated.mp4",
+        "title": "Elegant Greenhouse - Art Nouveau (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dieselpunk_factory_animated.mp4",
+        "title": "Sky Factory - Dieselpunk (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/low_poly_mountain_animated.mp4",
+        "title": "Geometric Sunset - Low Poly (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/noir_street_animated.mp4",
+        "title": "Noir Street - Noir (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/baroque_palace_animated.mp4",
+        "title": "Grand Palace - Baroque (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/watercolor_lake_animated.mp4",
+        "title": "Misty Lake - Watercolor (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/solarpunk_animated.mp4",
+        "title": "Solarpunk Utopia - Solarpunk (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/synthwave_animated.mp4",
+        "title": "Neon Grid - Synthwave (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/biomorphic_shapes_animated.mp4",
+        "title": "Organic Pulse - Biomorphic (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/glitch_landscape_animated.mp4",
+        "title": "Data Decay - Glitch Art (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/minimalist_desert_animated.mp4",
+        "title": "Serene Dunes - Minimalism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyoe_animated.mp4",
+        "title": "Cherry Blossom Waves - Ukiyo-e (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/biomechanical_organic_machine_animated.mp4",
+        "title": "Organic Machine - Biomechanical (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/papercut_forest_animated.mp4",
+        "title": "Enchanted Layers - Papercut Art (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/memphis_pattern_animated.mp4",
+        "title": "Geometric Loop - Memphis Design (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/de_stijl_composition_animated.mp4",
+        "title": "De Stijl Composition - De Stijl (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/suprematism_composition_animated.mp4",
+        "title": "Suprematism Shapes - Suprematism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ghibli_landscape_animated.mp4",
+        "title": "Serene Hills - Ghibli-esque (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fractal_landscape_animated.mp4",
+        "title": "Infinite Fractal - Fractal Art (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/retro_futurism_cloud_city_animated.mp4",
+        "title": "Cloud City - Retro-Futurism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dungeon_synth_ruins_animated.mp4",
+        "title": "Haunted Ruins - Dungeon Synth (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/y2k_dreamscape_animated.mp4",
+        "title": "Chrome Dreams - Y2K Aesthetic (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cyber_gothic_cathedral_animated.mp4",
+        "title": "Neon Spire - Cyber-Gothic (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/psychedelic_kaleidoscope_animated.mp4",
+        "title": "Psychedelic Kaleidoscope - Psychedelic Art (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mannerism_composition_animated.mp4",
+        "title": "Twisted Space - Mannerism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/romanticism_landscape_animated.mp4",
+        "title": "Stormy Peak - Romanticism (AI Animated)",
+        "type": "video"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/tenebrism_chiaroscuro_animated.mp4",
+        "title": "Deep Shadow - Tenebrism (AI Animated)",
+        "type": "video"
+    }
 ]

@@ -1,5 +1,29 @@
 [
     {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gond_painting_animated.mp4",
+        "title": "Mystical Forest - Gond painting (AI Animated)",
+        "type": "video",
+        "date": "2026-03-17",
+        "image_prompt": "A vibrant Gond painting of a mystical forest with interconnected trees, birds, and animals, featuring intricate dots, dashes, and lines in bright earthy colors, highly detailed.",
+        "video_prompt": "The intricate dots and lines of the Gond painting gently swirl and pulse, bringing the trees and animals to life in a mystical dance, continuous smooth animation."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/persian_metalwork_animated.mp4",
+        "title": "Lion and Griffin - Achaemenid Persian metalwork (AI Animated)",
+        "type": "video",
+        "date": "2026-03-17",
+        "image_prompt": "An exquisite Achaemenid Persian metalwork relief of a winged lion and griffin engaged in a dynamic struggle, golden tones, highly detailed.",
+        "video_prompt": "The golden metal surface gleams as the winged lion and griffin subtlely shift, bringing the ancient Achaemenid relief to life."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/assyrian_relief_animated.mp4",
+        "title": "Royal Lion Hunt - Assyrian bas-relief (AI Animated)",
+        "type": "video",
+        "date": "2026-03-17",
+        "image_prompt": "A masterful ancient Assyrian bas-relief stone carving of a royal lion hunt, depicting a majestic king on a chariot, highly detailed textures.",
+        "video_prompt": "The carved figures of the Assyrian bas-relief subtlely animate, the king drawing his bow and the lions moving, while dust motes float over the stone surface."
+    },
+    {
         "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/utrecht_lute_animated.mp4",
         "title": "Lute Players - Utrecht Caravaggism (AI Animated)",
         "type": "video",
@@ -17,7 +41,7 @@
     },
     {
         "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/trompe_loeil_animated.mp4",
-        "title": "Stone Window Illusion - Trompe-l'\u0153il (AI Animated)",
+        "title": "Stone Window Illusion - Trompe-l'œil (AI Animated)",
         "type": "video",
         "date": "2026-03-15",
         "image_prompt": "A hyper-realistic Trompe-l'oeil mural of a fake stone window looking out over a 16th-century Italian countryside.",

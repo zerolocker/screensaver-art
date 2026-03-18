@@ -7,7 +7,7 @@ You are building a web-based screensaver app that showcases classic and modern a
 ## ⚠️ CRITICAL INSTRUCTION: Tool Usage
 
 Do **NOT** guess tool commands. You must use the **nano-banana-pro** and **veo3-video-gen** skills.
-**Follow the usage instructions** in those skills exactly (using `uv run ...` as documented). Do not try to run `nano-banana-pro` as a standalone binary.
+**Follow the usage instructions** in those skills exactly (using `uv run ...` as documented). Do not expose API keys. In particular, do not write scripts that contain API keys. Think about other ways to supply API keys to a CLI tool, like setting the environment variables.
 
 ## Steps to execute
 

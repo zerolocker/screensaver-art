@@ -1,5 +1,29 @@
 [
     {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ottonian_garden_animated.mp4",
+        "title": "Serene Garden - Ottonian Illuminated Manuscript (AI Animated)",
+        "type": "video",
+        "date": "2026-03-19",
+        "image_prompt": "A beautiful Ottonian illuminated manuscript page showing a glowing fountain in a garden, bright colors, gold leaf",
+        "video_prompt": "Gentle flickering of candlelight over the intricate gold leaf of the illuminated manuscript, revealing medieval script elements."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/scythian_stag_animated.mp4",
+        "title": "Golden Stag - Scythian Animal Style (AI Animated)",
+        "type": "video",
+        "date": "2026-03-19",
+        "image_prompt": "Scythian animal style golden stag, intricate patterns",
+        "video_prompt": "Slow subtle panning over the golden stag, the golden patterns glimmer in the light."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/jomon_landscape_animated.mp4",
+        "title": "Abstract Topography - Jomon Cord-Marked Pottery (AI Animated)",
+        "type": "video",
+        "date": "2026-03-19",
+        "image_prompt": "An abstract landscape inspired by Jomon period cord-marked pottery (rope-patterned). Earthy tones, deep textured grooves, mysterious swirling patterns evoking ancient Japan.",
+        "video_prompt": "Slow subtle camera pan over the textured grooves, the lighting slowly shifts to reveal the depth of the earth."
+    },
+    {
         "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gond_painting_animated.mp4",
         "title": "Mystical Forest - Gond painting (AI Animated)",
         "type": "video",

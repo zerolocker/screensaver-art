@@ -1,5 +1,29 @@
 [
     {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/kamakura_animated.mp4",
+        "title": "Samurai in Forest - Kamakura Period Emakimono (AI Animated)",
+        "type": "video",
+        "date": "2026-03-20",
+        "image_prompt": "A vivid Kamakura Period Emakimono style depiction of samurai and monks in a lush forest",
+        "video_prompt": "A vivid Kamakura Period Emakimono style depiction of samurai and monks in a lush forest coming to life, gentle movements, traditional Japanese scroll art style"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/joseon_animated.mp4",
+        "title": "Tiger and Magpie - Joseon Dynasty Minhwa (AI Animated)",
+        "type": "video",
+        "date": "2026-03-20",
+        "image_prompt": "A Joseon Dynasty Minhwa style painting of a tiger and a magpie under a pine tree",
+        "video_prompt": "A Joseon Dynasty Minhwa style painting of a tiger and a magpie under a pine tree coming to life, subtle movement of the leaves, tiger breathing, traditional Korean folk art style"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gupta_animated.mp4",
+        "title": "Serene Deity - Gupta Empire Mathura Sculpture (AI Animated)",
+        "type": "video",
+        "date": "2026-03-20",
+        "image_prompt": "A Gupta Empire Mathura style intricate stone carving depiction of a serene deity surrounded by celestial beings",
+        "video_prompt": "A Gupta Empire Mathura style intricate stone carving depiction of a serene deity surrounded by celestial beings, soft dappled light moving across the stone, ancient Indian sculpture coming alive"
+    },
+    {
         "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/scythian_goldwork_animated.mp4",
         "title": "New Artwork - Scythian Goldwork (AI Animated)",
         "type": "video",

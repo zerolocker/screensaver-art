@@ -24,54 +24,6 @@
         "video_prompt": "Flickering firelight casts dancing shadows over the intricate cord-marked patterns and flame-like rims of the ancient Jomon pottery vessel."
     },
     {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/scythian_goldwork_animated.mp4",
-        "title": "New Artwork - Scythian Goldwork (AI Animated)",
-        "type": "video",
-        "date": "2026-03-21",
-        "image_prompt": "A highly detailed ancient Scythian Goldwork artifact, depicting dynamic animal style combat between a stag and a panther, glittering gold texture, 4th century BC.",
-        "video_prompt": "The glittering gold surface subtly catches the light as the stylized animals seem to shift and writhe, ancient Scythian Goldwork brought to life."
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fayum_portrait_animated.mp4",
-        "title": "New Artwork - Fayum Mummy Portraits (AI Animated)",
-        "type": "video",
-        "date": "2026-03-21",
-        "image_prompt": "A highly detailed and naturalistic Fayum Mummy Portrait of a young person on a wooden panel, encaustic wax painting, expressive eyes, Roman Egypt era.",
-        "video_prompt": "The candlelight subtly shifts across the textured encaustic wax surface, the eyes of the portrait seem to follow the viewer, Roman Egypt style."
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/jomon_pottery_animated.mp4",
-        "title": "New Artwork - Jomon Pottery (AI Animated)",
-        "type": "video",
-        "date": "2026-03-21",
-        "image_prompt": "An intricate ancient Japanese Jomon Pottery vessel, flame-like rims, elaborate cord-marked patterns, rough clay texture, prehistoric period.",
-        "video_prompt": "Flickering firelight casts dancing shadows over the intricate cord-marked patterns and flame-like rims of the ancient Jomon pottery vessel."
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/scythian_goldwork_animated.mp4",
-        "title": "New Artwork - Scythian Goldwork (AI Animated)",
-        "type": "video",
-        "date": "2026-03-21",
-        "image_prompt": "A highly detailed ancient Scythian Goldwork artifact, depicting dynamic animal style combat between a stag and a panther, glittering gold texture, 4th century BC.",
-        "video_prompt": "The glittering gold surface subtly catches the light as the stylized animals seem to shift and writhe, ancient Scythian Goldwork brought to life."
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fayum_portrait_animated.mp4",
-        "title": "New Artwork - Fayum Mummy Portraits (AI Animated)",
-        "type": "video",
-        "date": "2026-03-21",
-        "image_prompt": "A highly detailed and naturalistic Fayum Mummy Portrait of a young person on a wooden panel, encaustic wax painting, expressive eyes, Roman Egypt era.",
-        "video_prompt": "The candlelight subtly shifts across the textured encaustic wax surface, the eyes of the portrait seem to follow the viewer, Roman Egypt style."
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/jomon_pottery_animated.mp4",
-        "title": "New Artwork - Jomon Pottery (AI Animated)",
-        "type": "video",
-        "date": "2026-03-21",
-        "image_prompt": "An intricate ancient Japanese Jomon Pottery vessel, flame-like rims, elaborate cord-marked patterns, rough clay texture, prehistoric period.",
-        "video_prompt": "Flickering firelight casts dancing shadows over the intricate cord-marked patterns and flame-like rims of the ancient Jomon pottery vessel."
-    },
-    {
         "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/kamakura_animated.mp4",
         "title": "Samurai in Forest - Kamakura Period Emakimono (AI Animated)",
         "type": "video",
@@ -94,30 +46,6 @@
         "date": "2026-03-20",
         "image_prompt": "A Gupta Empire Mathura style intricate stone carving depiction of a serene deity surrounded by celestial beings",
         "video_prompt": "A Gupta Empire Mathura style intricate stone carving depiction of a serene deity surrounded by celestial beings, soft dappled light moving across the stone, ancient Indian sculpture coming alive"
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/scythian_goldwork_animated.mp4",
-        "title": "New Artwork - Scythian Goldwork (AI Animated)",
-        "type": "video",
-        "date": "2026-03-19",
-        "image_prompt": "A highly detailed ancient Scythian Goldwork artifact, depicting dynamic animal style combat between a stag and a panther, glittering gold texture, 4th century BC.",
-        "video_prompt": "The glittering gold surface subtly catches the light as the stylized animals seem to shift and writhe, ancient Scythian Goldwork brought to life."
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fayum_portrait_animated.mp4",
-        "title": "New Artwork - Fayum Mummy Portraits (AI Animated)",
-        "type": "video",
-        "date": "2026-03-19",
-        "image_prompt": "A highly detailed and naturalistic Fayum Mummy Portrait of a young person on a wooden panel, encaustic wax painting, expressive eyes, Roman Egypt era.",
-        "video_prompt": "The candlelight subtly shifts across the textured encaustic wax surface, the eyes of the portrait seem to follow the viewer, Roman Egypt style."
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/jomon_pottery_animated.mp4",
-        "title": "New Artwork - Jomon Pottery (AI Animated)",
-        "type": "video",
-        "date": "2026-03-19",
-        "image_prompt": "An intricate ancient Japanese Jomon Pottery vessel, flame-like rims, elaborate cord-marked patterns, rough clay texture, prehistoric period.",
-        "video_prompt": "Flickering firelight casts dancing shadows over the intricate cord-marked patterns and flame-like rims of the ancient Jomon pottery vessel."
     },
     {
         "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ottonian_garden_animated.mp4",
@@ -216,30 +144,6 @@
         "video_prompt": "An intricate Inca Tocapu textile pattern, vibrant dyes, geometric shapes representing different noble families and Andean cosmology"
     },
     {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sasanian_animated.mp4",
-        "title": "Royal Hunt - Sasanian Silverwork (AI Animated)",
-        "type": "video",
-        "date": "2026-03-15",
-        "image_prompt": "A highly detailed Sasanian Silverwork plate depicting a royal hunt with mythical beasts, intricate geometric patterns, 5th century AD style",
-        "video_prompt": "A highly detailed Sasanian Silverwork plate depicting a royal hunt with mythical beasts, intricate geometric patterns, 5th century AD style"
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/tang_animated.mp4",
-        "title": "Silk Road Merchant - Tang Dynasty Sancai (AI Animated)",
-        "type": "video",
-        "date": "2026-03-15",
-        "image_prompt": "A Tang Dynasty Sancai (three-color) ceramic sculpture of a Silk Road merchant on a camel, vibrant green, amber, and cream glazes",
-        "video_prompt": "A Tang Dynasty Sancai (three-color) ceramic sculpture of a Silk Road merchant on a camel, vibrant green, amber, and cream glazes"
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/inca_animated.mp4",
-        "title": "Andean Cosmology - Inca Textile Pattern (AI Animated)",
-        "type": "video",
-        "date": "2026-03-15",
-        "image_prompt": "An intricate Inca Tocapu textile pattern, vibrant dyes, geometric shapes representing different noble families and Andean cosmology",
-        "video_prompt": "An intricate Inca Tocapu textile pattern, vibrant dyes, geometric shapes representing different noble families and Andean cosmology"
-    },
-    {
         "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/anglo_saxon_animated.mp4",
         "title": "Intricate Design - Anglo-Saxon Metalwork (AI Animated)",
         "type": "video",
@@ -310,30 +214,6 @@
         "date": "2026-03-13",
         "image_prompt": "A medieval Romanesque Fresco depicting saints in bright lapis lazuli and gold leaf, cracked plaster texture, religious art style",
         "video_prompt": "Animate the Romanesque fresco with subtle shifting shadows and golden glints reflecting off the gold leaf as if lit by candlelight."
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fresco_animated.mp4",
-        "title": "Roman Villa Landscape - Fresco (AI Animated)",
-        "type": "video",
-        "date": "2026-03-13",
-        "image_prompt": "A beautiful landscape in Fresco style, ancient Roman villa, pigments on wet plaster.",
-        "video_prompt": "Subtle animation: the plaster texture remains still while clouds slowly drift."
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/minoan_animated.mp4",
-        "title": "Bull Leaping - Minoan Fresco (AI Animated)",
-        "type": "video",
-        "date": "2026-03-13",
-        "image_prompt": "A Minoan fresco showing bull leaping, bright colors, ancient Greek art style.",
-        "video_prompt": "Subtle animation: dust kicks up around the bull."
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cave_painting_animated.mp4",
-        "title": "Running Horses - Paleolithic Cave Painting (AI Animated)",
-        "type": "video",
-        "date": "2026-03-13",
-        "image_prompt": "A Paleolithic cave painting of running horses in Lascaux style, ochre and charcoal on rough stone.",
-        "video_prompt": "Subtle animation: flickering firelight illuminating the cave wall."
     },
     {
         "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sumerian_relief_animated.mp4",
@@ -678,18 +558,8 @@
         "type": "video"
     },
     {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/surrealism_animated.mp4",
-        "title": "Floating Islands - Surrealism (AI Animated)",
-        "type": "video"
-    },
-    {
         "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/synthwave_animated.mp4",
         "title": "Neon Highway - Synthwave (AI Animated)",
-        "type": "video"
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/solarpunk_animated.mp4",
-        "title": "Green Future - Solarpunk (AI Animated)",
         "type": "video"
     },
     {
@@ -800,16 +670,6 @@
     {
         "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/watercolor_lake_animated.mp4",
         "title": "Misty Lake - Watercolor (AI Animated)",
-        "type": "video"
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/solarpunk_animated.mp4",
-        "title": "Solarpunk Utopia - Solarpunk (AI Animated)",
-        "type": "video"
-    },
-    {
-        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/synthwave_animated.mp4",
-        "title": "Neon Grid - Synthwave (AI Animated)",
         "type": "video"
     },
     {

@@ -3,6 +3,30 @@
         "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/scythian_goldwork_animated.mp4",
         "title": "New Artwork - Scythian Goldwork (AI Animated)",
         "type": "video",
+        "date": "2026-03-22",
+        "image_prompt": "A highly detailed ancient Scythian Goldwork artifact, depicting dynamic animal style combat between a stag and a panther, glittering gold texture, 4th century BC.",
+        "video_prompt": "The glittering gold surface subtly catches the light as the stylized animals seem to shift and writhe, ancient Scythian Goldwork brought to life."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fayum_portrait_animated.mp4",
+        "title": "New Artwork - Fayum Mummy Portraits (AI Animated)",
+        "type": "video",
+        "date": "2026-03-22",
+        "image_prompt": "A highly detailed and naturalistic Fayum Mummy Portrait of a young person on a wooden panel, encaustic wax painting, expressive eyes, Roman Egypt era.",
+        "video_prompt": "The candlelight subtly shifts across the textured encaustic wax surface, the eyes of the portrait seem to follow the viewer, Roman Egypt style."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/jomon_pottery_animated.mp4",
+        "title": "New Artwork - Jomon Pottery (AI Animated)",
+        "type": "video",
+        "date": "2026-03-22",
+        "image_prompt": "An intricate ancient Japanese Jomon Pottery vessel, flame-like rims, elaborate cord-marked patterns, rough clay texture, prehistoric period.",
+        "video_prompt": "Flickering firelight casts dancing shadows over the intricate cord-marked patterns and flame-like rims of the ancient Jomon pottery vessel."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/scythian_goldwork_animated.mp4",
+        "title": "New Artwork - Scythian Goldwork (AI Animated)",
+        "type": "video",
         "date": "2026-03-21",
         "image_prompt": "A highly detailed ancient Scythian Goldwork artifact, depicting dynamic animal style combat between a stag and a panther, glittering gold texture, 4th century BC.",
         "video_prompt": "The glittering gold surface subtly catches the light as the stylized animals seem to shift and writhe, ancient Scythian Goldwork brought to life."

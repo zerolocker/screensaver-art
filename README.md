@@ -3,7 +3,7 @@
 Turn your Mac's idle display into a dynamic, evolving art gallery — AI-generated animations that feel alive.
 
 **Website:** [living-art-screensaver.com](https://living-art-screensaver.com)
-**Web preview:** [tempzero-clawd.github.io/screensaver-art](https://tempzero-clawd.github.io/screensaver-art/)
+**Web preview:** [zerolocker.github.io/screensaver-art](https://zerolocker.github.io/screensaver-art/)
 
 ---
 

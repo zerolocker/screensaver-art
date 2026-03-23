@@ -7,22 +7,22 @@ from datetime import datetime
 
 STYLES = [
     {
-        "style": "Scythian Goldwork",
-        "image_prompt": "A highly detailed ancient Scythian Goldwork artifact, depicting dynamic animal style combat between a stag and a panther, glittering gold texture, 4th century BC.",
-        "video_prompt": "The glittering gold surface subtly catches the light as the stylized animals seem to shift and writhe, ancient Scythian Goldwork brought to life.",
-        "filename": "scythian_goldwork"
+        "style": "Moche Ceramics",
+        "image_prompt": "A highly detailed ancient Peruvian Moche portrait vessel, intricate fine line painting, naturalistic human face, terracotta clay texture, pre-Columbian era.",
+        "video_prompt": "The terracotta surface subtly catches the light as the intricate fine line painting seems to shift, bringing the ancient Moche portrait to life.",
+        "filename": "moche_ceramics"
     },
     {
-        "style": "Fayum Mummy Portraits",
-        "image_prompt": "A highly detailed and naturalistic Fayum Mummy Portrait of a young person on a wooden panel, encaustic wax painting, expressive eyes, Roman Egypt era.",
-        "video_prompt": "The candlelight subtly shifts across the textured encaustic wax surface, the eyes of the portrait seem to follow the viewer, Roman Egypt style.",
-        "filename": "fayum_portrait"
+        "style": "Olmec Colossal Heads",
+        "image_prompt": "A highly detailed Olmec Colossal Head, carved basalt stone, realistic facial features, wearing a helmet, ancient Mesoamerican jungle setting.",
+        "video_prompt": "Dappled jungle light plays across the textured basalt surface of the Olmec Colossal Head as it stands timelessly.",
+        "filename": "olmec_head"
     },
     {
-        "style": "Jomon Pottery",
-        "image_prompt": "An intricate ancient Japanese Jomon Pottery vessel, flame-like rims, elaborate cord-marked patterns, rough clay texture, prehistoric period.",
-        "video_prompt": "Flickering firelight casts dancing shadows over the intricate cord-marked patterns and flame-like rims of the ancient Jomon pottery vessel.",
-        "filename": "jomon_pottery"
+        "style": "Fatimid Rock Crystal Carving",
+        "image_prompt": "An intricate medieval Fatimid rock crystal ewer, carved with birds and arabesques, highly transparent and gleaming, Islamic art.",
+        "video_prompt": "Light refracts and sparkles through the transparent rock crystal ewer, illuminating the delicately carved birds and arabesques.",
+        "filename": "fatimid_crystal"
     }
 ]
 

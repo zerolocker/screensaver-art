@@ -521,7 +521,9 @@ class ConfigureSheetController: NSObject {
     }
 
     @objc private func doneTapped() {
-        window?.orderOut(nil)
+        guard let w = window else { return }
+        w.sheetParent?.endSheet(w)   // end the modal session — required by the screensaver framework
+        w.orderOut(nil)
         onDismiss?()
     }
 }

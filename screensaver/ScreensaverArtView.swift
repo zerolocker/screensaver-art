@@ -342,7 +342,9 @@ class ConfigureSheetController: NSObject {
 
     private var window: NSWindow?
     private var emailField:    NSTextField?
+    private var emailLabel:    NSTextField?
     private var passwordField: NSSecureTextField?
+    private var passwordLabel: NSTextField?
     private var statusLabel:   NSTextField?
     private var loginButton:   NSButton?
     private var logoutButton:  NSButton?
@@ -381,6 +383,7 @@ class ConfigureSheetController: NSObject {
         emailLbl.translatesAutoresizingMaskIntoConstraints = false
         emailLbl.font = NSFont.systemFont(ofSize: 13, weight: .medium)
         content.addSubview(emailLbl)
+        emailLabel = emailLbl
 
         let emailFld = NSTextField()
         emailFld.translatesAutoresizingMaskIntoConstraints = false
@@ -394,6 +397,7 @@ class ConfigureSheetController: NSObject {
         pwLbl.translatesAutoresizingMaskIntoConstraints = false
         pwLbl.font = NSFont.systemFont(ofSize: 13, weight: .medium)
         content.addSubview(pwLbl)
+        passwordLabel = pwLbl
 
         let pwFld = NSSecureTextField()
         pwFld.translatesAutoresizingMaskIntoConstraints = false
@@ -464,7 +468,9 @@ class ConfigureSheetController: NSObject {
 
     private func refreshUI() {
         let loggedIn = AuthManager.shared.isLoggedIn
+        emailLabel?.isHidden    =  loggedIn
         emailField?.isHidden    =  loggedIn
+        passwordLabel?.isHidden =  loggedIn
         passwordField?.isHidden =  loggedIn
         loginButton?.isHidden   =  loggedIn
         logoutButton?.isHidden  = !loggedIn

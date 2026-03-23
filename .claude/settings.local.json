@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh run:*)",
+      "Bash(npx vercel:*)",
+      "Bash(python3 -c \"from PIL import Image; img1=Image.open\\(''/Users/gavinkaiber/Desktop/k-ss/workflow1.png''\\); img2=Image.open\\(''/Users/gavinkaiber/Desktop/k-ss/workflow2.png''\\); print\\(''workflow1:'', img1.size\\); print\\(''workflow2:'', img2.size\\)\")",
+      "Bash(python3:*)",
+      "Bash(grep -r Manage /Users/gavinkaiber/localgit/living-art-screensaver-web --include=*.tsx --include=*.ts --include=*.jsx --include=*.js)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(npx tsc:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(stripe trigger:*)"
+    ]
+  }
+}

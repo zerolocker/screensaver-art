@@ -287,7 +287,7 @@ class GalleryFetcher {
     func fetch(collection: String = "classic",
                completion: @escaping ([ArtItem], Bool, Int) -> Void) {
 
-        var urlStr = "\(API.galleryEndpoint)?collection=\(collection)"
+        let urlStr = "\(API.galleryEndpoint)?collection=\(collection)"
         guard let url = URL(string: urlStr) else { return }
 
         var req = URLRequest(url: url, timeoutInterval: 10)
@@ -295,8 +295,7 @@ class GalleryFetcher {
             req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
-        URLSession.shared.dataTask(with: req) { [weak self] data, resp, err in
-            guard let self else { return }
+        URLSession.shared.dataTask(with: req) { data, resp, err in
 
             if let data {
                 VideoCache.shared.saveGalleryCache(data)   // persist for offline use
@@ -343,7 +342,9 @@ class ConfigureSheetController: NSObject {
 
     private var window: NSWindow?
     private var emailField:    NSTextField?
+    private var emailLabel:    NSTextField?
     private var passwordField: NSSecureTextField?
+    private var passwordLabel: NSTextField?
     private var statusLabel:   NSTextField?
     private var loginButton:   NSButton?
     private var logoutButton:  NSButton?
@@ -382,6 +383,7 @@ class ConfigureSheetController: NSObject {
         emailLbl.translatesAutoresizingMaskIntoConstraints = false
         emailLbl.font = NSFont.systemFont(ofSize: 13, weight: .medium)
         content.addSubview(emailLbl)
+        emailLabel = emailLbl
 
         let emailFld = NSTextField()
         emailFld.translatesAutoresizingMaskIntoConstraints = false
@@ -395,6 +397,7 @@ class ConfigureSheetController: NSObject {
         pwLbl.translatesAutoresizingMaskIntoConstraints = false
         pwLbl.font = NSFont.systemFont(ofSize: 13, weight: .medium)
         content.addSubview(pwLbl)
+        passwordLabel = pwLbl
 
         let pwFld = NSSecureTextField()
         pwFld.translatesAutoresizingMaskIntoConstraints = false
@@ -465,7 +468,9 @@ class ConfigureSheetController: NSObject {
 
     private func refreshUI() {
         let loggedIn = AuthManager.shared.isLoggedIn
+        emailLabel?.isHidden    =  loggedIn
         emailField?.isHidden    =  loggedIn
+        passwordLabel?.isHidden =  loggedIn
         passwordField?.isHidden =  loggedIn
         loginButton?.isHidden   =  loggedIn
         logoutButton?.isHidden  = !loggedIn
@@ -522,7 +527,9 @@ class ConfigureSheetController: NSObject {
     }
 
     @objc private func doneTapped() {
-        window?.orderOut(nil)
+        guard let w = window else { return }
+        w.sheetParent?.endSheet(w)   // end the modal session — required by the screensaver framework
+        w.orderOut(nil)
         onDismiss?()
     }
 }
@@ -565,7 +572,7 @@ class UpsellOverlay: NSView {
         sub.lineBreakMode         = .byWordWrapping
 
         let urlLbl = NSTextField(labelWithString: API.subscribeURL)
-        urlLbl.font      = NSFont.monospacedSystemFont(ofSize: 14, fixedPitch: true)
+        urlLbl.font      = NSFont.monospacedSystemFont(ofSize: 14, weight: .regular)
         urlLbl.textColor = NSColor(calibratedRed: 0.4, green: 0.75, blue: 1.0, alpha: 1)
         urlLbl.alignment = .center
 

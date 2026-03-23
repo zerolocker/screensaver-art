@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createNativeClient } from '@/lib/supabase/native-client'
 
-const GALLERY_URL = 'https://tempzero-clawd.github.io/screensaver-art/gallery.json'
+const GALLERY_URL = 'https://zerolocker.github.io/screensaver-art/gallery.json'
 const FREE_ITEM_COUNT = 2
 
 interface GalleryItem {

@@ -287,7 +287,7 @@ class GalleryFetcher {
     func fetch(collection: String = "classic",
                completion: @escaping ([ArtItem], Bool, Int) -> Void) {
 
-        var urlStr = "\(API.galleryEndpoint)?collection=\(collection)"
+        let urlStr = "\(API.galleryEndpoint)?collection=\(collection)"
         guard let url = URL(string: urlStr) else { return }
 
         var req = URLRequest(url: url, timeoutInterval: 10)
@@ -295,8 +295,7 @@ class GalleryFetcher {
             req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
-        URLSession.shared.dataTask(with: req) { [weak self] data, resp, err in
-            guard let self else { return }
+        URLSession.shared.dataTask(with: req) { data, resp, err in
 
             if let data {
                 VideoCache.shared.saveGalleryCache(data)   // persist for offline use
@@ -565,7 +564,7 @@ class UpsellOverlay: NSView {
         sub.lineBreakMode         = .byWordWrapping
 
         let urlLbl = NSTextField(labelWithString: API.subscribeURL)
-        urlLbl.font      = NSFont.monospacedSystemFont(ofSize: 14, fixedPitch: true)
+        urlLbl.font      = NSFont.monospacedSystemFont(ofSize: 14, weight: .regular)
         urlLbl.textColor = NSColor(calibratedRed: 0.4, green: 0.75, blue: 1.0, alpha: 1)
         urlLbl.alignment = .center
 

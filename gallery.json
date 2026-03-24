@@ -3,6 +3,30 @@
         "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/moche_ceramics_animated.mp4",
         "title": "New Artwork - Moche Ceramics (AI Animated)",
         "type": "video",
+        "date": "2026-03-24",
+        "image_prompt": "A highly detailed ancient Peruvian Moche portrait vessel, intricate fine line painting, naturalistic human face, terracotta clay texture, pre-Columbian era.",
+        "video_prompt": "The terracotta surface subtly catches the light as the intricate fine line painting seems to shift, bringing the ancient Moche portrait to life."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/olmec_head_animated.mp4",
+        "title": "New Artwork - Olmec Colossal Heads (AI Animated)",
+        "type": "video",
+        "date": "2026-03-24",
+        "image_prompt": "A highly detailed Olmec Colossal Head, carved basalt stone, realistic facial features, wearing a helmet, ancient Mesoamerican jungle setting.",
+        "video_prompt": "Dappled jungle light plays across the textured basalt surface of the Olmec Colossal Head as it stands timelessly."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fatimid_crystal_animated.mp4",
+        "title": "New Artwork - Fatimid Rock Crystal Carving (AI Animated)",
+        "type": "video",
+        "date": "2026-03-24",
+        "image_prompt": "An intricate medieval Fatimid rock crystal ewer, carved with birds and arabesques, highly transparent and gleaming, Islamic art.",
+        "video_prompt": "Light refracts and sparkles through the transparent rock crystal ewer, illuminating the delicately carved birds and arabesques."
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/moche_ceramics_animated.mp4",
+        "title": "New Artwork - Moche Ceramics (AI Animated)",
+        "type": "video",
         "date": "2026-03-23",
         "image_prompt": "A highly detailed ancient Peruvian Moche portrait vessel, intricate fine line painting, naturalistic human face, terracotta clay texture, pre-Columbian era.",
         "video_prompt": "The terracotta surface subtly catches the light as the intricate fine line painting seems to shift, bringing the ancient Moche portrait to life."

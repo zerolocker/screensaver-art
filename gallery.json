@@ -1,5 +1,29 @@
 [
     {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/art1.mp4",
+        "title": "Serene Mountain River - Song Dynasty Landscape Painting (AI Animated)",
+        "type": "video",
+        "date": "2026-03-25",
+        "image_prompt": "A serene mountain river in the style of Song Dynasty Landscape Painting",
+        "video_prompt": "A serene mountain river flowing gently in the style of Song Dynasty Landscape Painting"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/art2.mp4",
+        "title": "Royal Court Figure - Tudor Portrait Miniature (AI Animated)",
+        "type": "video",
+        "date": "2026-03-25",
+        "image_prompt": "A royal court figure in the style of Tudor Portrait Miniature",
+        "video_prompt": "A royal court figure subtly turning head in the style of Tudor Portrait Miniature"
+    },
+    {
+        "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/art3.mp4",
+        "title": "Detailed Interior Room - Early Netherlandish Oil Painting (AI Animated)",
+        "type": "video",
+        "date": "2026-03-25",
+        "image_prompt": "A detailed interior room in the style of Early Netherlandish Oil Painting",
+        "video_prompt": "A detailed interior room with flickering candlelight in the style of Early Netherlandish Oil Painting"
+    },
+    {
         "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/moche_ceramics_animated.mp4",
         "title": "New Artwork - Moche Ceramics (AI Animated)",
         "type": "video",

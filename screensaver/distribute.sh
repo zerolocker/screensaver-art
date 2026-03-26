@@ -25,15 +25,17 @@ TMP_DMG="${DIST_DIR}/tmp_rw.dmg"
 VOLUME_NAME="Living Art Screensaver"
 
 # DMG Finder window geometry (logical points)
-WIN_W=600
-WIN_H=380
+WIN_W=660
+WIN_H=400
 # Pre-compute arithmetic to avoid bad-substitution in heredocs
 BG_W=$((WIN_W * 2))          # @2x Retina
 BG_H=$((WIN_H * 2))
-WIN_RIGHT=$((300 + WIN_W))
-WIN_BOTTOM=$((150 + WIN_H))
+WIN_LEFT=300
+WIN_TOP=150
+WIN_RIGHT=$((WIN_LEFT + WIN_W))
+WIN_BOTTOM=$((WIN_TOP + WIN_H))
 ICON_X=$((WIN_W / 2))
-ICON_Y=$((WIN_H / 2 - 20))
+ICON_Y=$((WIN_H / 2 + 20))
 
 # ── Step 1: Build the .saver bundle ─────────────────────────────────────────
 echo "→ Building ${BUNDLE_NAME}…"
@@ -131,31 +133,55 @@ from PIL import Image, ImageDraw, ImageFont
 
 out, W, H, win_w, win_h = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5])
 
-img  = Image.new("RGB", (W, H), "#0a0a0f")
+img  = Image.new("RGB", (W, H), "#080810")
 draw = ImageDraw.Draw(img)
 
-# Subtle radial glow from centre
-for r in range(min(W, H) // 2, 0, -8):
-    t = 1 - r / (min(W, H) / 2)
-    v = int(20 * t)
-    draw.ellipse([W//2 - r, H//2 - r, W//2 + r, H//2 + r],
-                 fill=(18 + v, 18 + v, 30 + v))
+# Soft radial glow from centre
+cx, cy = W // 2, H // 2
+max_r  = int((W**2 + H**2)**0.5 // 2)
+for r in range(max_r, 0, -10):
+    t = 1 - r / max_r
+    v = int(28 * t * t)
+    draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(10 + v, 10 + v, 22 + v))
 
 def font(size):
     for path in ["/System/Library/Fonts/Helvetica.ttc",
-                 "/System/Library/Fonts/SFNSDisplay.ttf",
+                 "/System/Library/Fonts/SFNSText.ttf",
                  "/System/Library/Fonts/LucidaGrande.ttc"]:
         try: return ImageFont.truetype(path, size)
         except: pass
     return ImageFont.load_default()
 
-def centred_text(text, y, f, color):
+def centred(text, y, f, color):
     bb = draw.textbbox((0, 0), text, font=f)
-    draw.text(((W - (bb[2]-bb[0])) // 2, y), text, fill=color, font=f)
+    x  = (W - (bb[2] - bb[0])) // 2
+    draw.text((x, y), text, fill=color, font=f)
 
-centred_text("Living Art Screensaver", 70,  font(54), "#ffffff")
-centred_text("↓",                      H//2 + 20, font(80), "#4455ee")
-centred_text("Double-click to install", H - 100, font(32), "#8888bb")
+# Title near top
+centred("Living Art Screensaver", 80, font(58), "#ffffff")
+
+# Thin separator line
+draw.line([(W//2 - 120, 170), (W//2 + 120, 170)], fill="#333355", width=2)
+
+# Draw a downward arrow pointing at where the icon will sit
+# Icon is at ICON_Y logical pts; in @2x px: icon_py = (win_h//2 + 20) * 2
+icon_py = (win_h // 2 + 20) * 2
+ax, ay = W // 2, icon_py - 200   # arrow top-centre
+aw, ah = 44, 90                   # shaft half-width, total height
+shaft_hw = 16                     # shaft half-width
+head_hw  = aw                     # arrowhead half-width
+head_h   = ah * 2 // 5            # arrowhead height
+shaft_h  = ah - head_h
+color    = "#4466ee"
+# Shaft
+draw.rectangle([ax - shaft_hw, ay, ax + shaft_hw, ay + shaft_h], fill=color)
+# Arrowhead triangle
+draw.polygon([ax - head_hw, ay + shaft_h,
+              ax + head_hw, ay + shaft_h,
+              ax,           ay + ah], fill=color)
+
+# Instruction at bottom
+centred("Double-click to install", H - 90, font(34), "#7777aa")
 
 img.save(out)
 print(f"  background: {W}x{H}px @2x → {out}")
@@ -193,7 +219,8 @@ tell application "Finder"
     set current view of container window to icon view
     set toolbar visible of container window to false
     set statusbar visible of container window to false
-    set bounds of container window to {300, 150, ${WIN_RIGHT}, ${WIN_BOTTOM}}
+    set bounds of container window to {${WIN_LEFT}, ${WIN_TOP}, ${WIN_RIGHT}, ${WIN_BOTTOM}}
+    set sidebar width of container window to 0
     set theViewOptions to icon view options of container window
     set arrangement of theViewOptions to not arranged
     set icon size of theViewOptions to 96

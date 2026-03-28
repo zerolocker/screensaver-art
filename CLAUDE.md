@@ -13,9 +13,10 @@ A monorepo containing:
 | `index.html` | Standalone web preview (HTML+CSS+JS, no build step) |
 | `gallery.json` | Playlist — all art items with `src`, `title`, `type`, `collection`, `date`, prompts |
 | `R2 Bucket` | `https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/` — MP4 assets |
-| `screensaver/ScreensaverArtView.swift` | Entire native screensaver in one file |
+| `screensaver/*.swift` | Native screensaver — split into focused modules (see below) |
 | `screensaver/Info.plist` | Bundle metadata (CFBundleIdentifier, NSPrincipalClass) |
 | `screensaver/build.sh` | Build + install script |
+| `screensaver/distribute.sh` | Packages the screensaver as a distributable DMG |
 | `living-art-screensaver-web/` | Next.js website (marketing, auth, billing, gallery API) |
 | `living-art-screensaver-web/app/api/gallery/route.ts` | **The gating endpoint** — serves gallery to the macOS app |
 | `living-art-screensaver-web/app/api/subscription/verify/route.ts` | Subscription status check |
@@ -121,23 +122,40 @@ The website's default Supabase client uses cookies (for browser sessions). The m
 
 ## Screensaver internals (Swift)
 
-### Key classes in ScreensaverArtView.swift
-| Class | Responsibility |
-|---|---|
-| `AuthManager` | Supabase REST auth, Keychain token storage, token refresh |
-| `SubscriptionCache` | 24h local cache of `isActive` + `totalCount` in UserDefaults |
-| `VideoCache` | File-based MP4 cache, LRU eviction, gallery JSON persistence |
-| `GalleryFetcher` | Calls `/api/gallery`, falls back to cached JSON offline |
-| `ConfigureSheetController` | Native login/logout panel (System Settings → Options) |
-| `UpsellOverlay` | Full-screen overlay shown after free content loops; auto-dismisses in 30s |
-| `ScreensaverArtView` | Main screensaver view — A/B CALayer crossfade, 8s timer, orchestrates everything |
+### Swift module breakdown
+Each class lives in its own file under `screensaver/`:
+
+| File | Class | Responsibility |
+|---|---|---|
+| `Constants.swift` | `API` enum | Supabase URL/key, gallery endpoint, free item count |
+| `Models.swift` | `ArtItem`, `GalleryResponse` | Decodable gallery types |
+| `Keychain.swift` | `Keychain` | Save/load/delete tokens from macOS Keychain |
+| `AuthManager.swift` | `AuthManager` | Supabase REST auth, token refresh, sign-out |
+| `SubscriptionCache.swift` | `SubscriptionCache` | 24h local cache of `isActive` + `totalCount` in UserDefaults |
+| `VideoCache.swift` | `VideoCache` | File-based MP4 cache, LRU eviction (2 GB cap), gallery JSON persistence |
+| `GalleryFetcher.swift` | `GalleryFetcher` | Calls `/api/gallery`, falls back to cached JSON offline |
+| `ConfigureSheetController.swift` | `ConfigureSheetController` | Native login/logout panel (System Settings → Options) |
+| `UpsellOverlay.swift` | `UpsellOverlay` | Full-screen overlay shown after free content loops; auto-dismisses in 30s |
+| `ScreensaverArtView.swift` | `ScreensaverArtView` | Main screensaver view — A/B CALayer crossfade, 8s timer, orchestrates everything |
 
 ### Supabase credentials (safe to hardcode — these are public anon keys)
 - URL: `https://fcrkikggdvgshuopshgm.supabase.co`
-- Anon key: in `ScreensaverArtView.swift` under `API` enum
+- Anon key: in `Constants.swift` under `API` enum
 
 ### Configure sheet
 `hasConfigureSheet = true` — accessible via the Options button in System Settings → Screen Saver. Shows login form when logged out, subscription status + logout when logged in.
+
+### DMG distribution (`screensaver/distribute.sh`)
+```bash
+bash screensaver/distribute.sh        # → screensaver/dist/ScreensaverArt-1.0.dmg
+bash screensaver/distribute.sh 1.1   # override version
+```
+- Builds a compressed DMG containing a single item: **`Install Living Art Screensaver.app`**
+- The `.app` is built with `osacompile` from an AppleScript that handles the full install flow
+- The `.saver` bundle is embedded inside `Install Living Art Screensaver.app/Contents/Resources/` — the user never sees a raw `.saver` file
+- On launch the installer: kills screensaver processes (required by Apple's legacy screensaver framework), copies `.saver` to `~/Library/Screen Savers/`, strips quarantine, opens System Settings to the Screen Saver pane
+- The DMG Finder window is configured via AppleScript (icon view, no toolbar/statusbar/sidebar, fixed bounds, icon centred)
+- System folders (`.fseventsd`, `.Trashes`) are hidden with `chflags hidden` after mounting so they don't appear to the user
 
 ---
 

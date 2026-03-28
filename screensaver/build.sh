@@ -42,7 +42,7 @@ mkdir -p "${BUNDLE_PATH}/Contents/Resources"
 # (No intermediate copy — avoids any race where a restarted process grabs stale files)
 echo "→ Compiling Swift (this may take a moment)..."
 swiftc \
-    "${SCRIPT_DIR}/${APP_NAME}View.swift" \
+    "${SCRIPT_DIR}"/*.swift \
     -parse-as-library \
     -module-name "${APP_NAME}" \
     -Xlinker -bundle \

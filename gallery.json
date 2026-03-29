@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mycenaean_fresco_animated.mp4",
+    "title": "Warriors on Chariots - Mycenaean Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-03-29",
+    "image_prompt": "A beautiful Mycenaean Fresco of warriors on chariots",
+    "video_prompt": "Animate the artwork naturally"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/carolingian_ivory_animated.mp4",
+    "title": "Biblical Scene - Carolingian Ivory Carving (AI Animated)",
+    "type": "video",
+    "date": "2026-03-29",
+    "image_prompt": "A detailed Carolingian Ivory Carving depicting a biblical scene",
+    "video_prompt": "Animate the artwork naturally"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/viking_runestone_animated.mp4",
+    "title": "Mythological Beasts - Viking Runestone Art (AI Animated)",
+    "type": "video",
+    "date": "2026-03-29",
+    "image_prompt": "An intricate Viking Runestone Art showing mythological beasts",
+    "video_prompt": "Animate the artwork naturally"
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/kano_school_ink_painting_animated.mp4",
     "title": "Serene Landscape - Kano School Ink Painting (AI Animated)",
     "type": "video",

@@ -34,4 +34,5 @@ You are building a web-based screensaver app that showcases classic and modern a
 7.  **Commit and Push:**
     *   Run: `git add . && git commit -m "AUTO_CURATION: Added [Style 1, Style 2, Style 3] collections"`
     *   Run: `git push` to sync changes to the remote.
+    *   Pushing to `master` automatically triggers the GitHub Pages deploy workflow (`.github/workflows/deploy-pages.yml`), which publishes only `gallery.json` and `index.html` — no other repo files are exposed.
 

@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/kano_school_ink_painting_animated.mp4",
+    "title": "Serene Landscape - Kano School Ink Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-03-29",
+    "image_prompt": "A classical Kano School Ink Painting depicting a serene landscape with a river and mountains",
+    "video_prompt": "Gentle movement of the river, subtle swaying of the trees, a crane takes flight"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mesopotamian_cylinder_seal_animated.mp4",
+    "title": "Ancient Figures - Mesopotamian Cylinder Seal Impression (AI Animated)",
+    "type": "video",
+    "date": "2026-03-29",
+    "image_prompt": "A detailed Mesopotamian Cylinder Seal Impression showing ancient figures and mythical beasts",
+    "video_prompt": "Ancient figures slowly march across the scene, beasts roar with life"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/aztec_codices_animated.mp4",
+    "title": "Ritual Altar - Aztec Codices Art (AI Animated)",
+    "type": "video",
+    "date": "2026-03-29",
+    "image_prompt": "A colorful Aztec Codices Art illustration depicting an ancient ritual with traditional symbols",
+    "video_prompt": "Flames flicker at the ritual altar, priests chant and raise their hands"
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/romanticism_castle.mp4",
     "title": "Ruined Castle - 19th-Century Romanticism (AI Animated)",
     "type": "video",

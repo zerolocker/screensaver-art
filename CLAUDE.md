@@ -1,8 +1,10 @@
 # Screensaver Art — Project Reference
 
 ## What this project is
-A monorepo containing:
-- **macOS screensaver** (`screensaver/`) — native Swift app sold via subscription
+A **pnpm workspace** monorepo containing:
+- **Shared UI library** (`packages/ui/`) — React components shared between the website and Electron app
+- **Electron companion app** (`electron-app/`) — cross-platform desktop app (auth, gallery browser, cache management)
+- **macOS screensaver** (`screensaver/`) — native Swift `.saver` bundle, streams art from R2
 - **Marketing + account website** (`living-art-screensaver-web/`) — Next.js, deployed to `living-art-screensaver.com` via Vercel
 - **Gallery playlist** (`gallery.json`) — single source of truth for all art items
 - **Web preview** (`index.html`) — standalone HTML+CSS+JS, no build step
@@ -10,6 +12,9 @@ A monorepo containing:
 ## Key paths
 | Path | Purpose |
 |---|---|
+| `pnpm-workspace.yaml` | Workspace config — ties all packages together |
+| `packages/ui/` | **Shared UI** — React components (LoginForm, SignUpForm, SubscriptionCard, base UI) |
+| `electron-app/` | **Electron companion app** — gallery browser, auth, cache management |
 | `index.html` | Standalone web preview (HTML+CSS+JS, no build step) |
 | `gallery.json` | Playlist — all art items with `src`, `title`, `type`, `collection`, `date`, prompts |
 | `R2 Bucket` | `https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/` — MP4 assets |
@@ -22,22 +27,54 @@ A monorepo containing:
 | `living-art-screensaver-web/app/api/subscription/verify/route.ts` | Subscription status check |
 | `living-art-screensaver-web/app/api/webhooks/stripe/route.ts` | Stripe → Supabase sync |
 
+## Getting started (pnpm workspace)
+```bash
+pnpm install              # install all workspace dependencies from repo root
+```
+
 ## Build & install the screensaver
 ```bash
 bash screensaver/build.sh --install
 # kills cached processes, compiles, installs to ~/Library/Screen Savers/ScreensaverArt.saver
 ```
 
+## Electron companion app
+```bash
+cd electron-app
+pnpm dev                  # launches Electron with HMR
+pnpm build                # builds to electron-app/out/
+```
+- Uses `electron-vite` for build tooling (main + preload + renderer)
+- Renderer is React + Tailwind v4, imports shared components from `@screensaver-art/ui`
+- Auth via `@supabase/supabase-js` (not SSR — stores session in Chromium localStorage)
+- Cache management: main process handles file I/O via IPC; renderer shows stats and clear button
+- Cache dir: `~/Library/Caches/ScreensaverArt/` (macOS), `%LOCALAPPDATA%\ScreensaverArt\` (Windows)
+
 ## Website (living-art-screensaver-web)
 ```bash
 cd living-art-screensaver-web
-pnpm install   # first time / after pulling
-pnpm dev       # localhost:3000
+pnpm dev                  # localhost:3000
 ```
 - Deployed on **Vercel** (project `v0-living-art-screensaver`, team `gavin-1a51c3e5`)
 - Vercel is connected to **this repo** (`zerolocker/screensaver-art`), root directory set to `living-art-screensaver-web/`
 - Auto-deploys on push to `master`
 - Uses **pnpm** — do not use npm or yarn
+
+## Shared UI library (packages/ui)
+- Package name: `@screensaver-art/ui`
+- Exports: `LoginForm`, `SignUpForm`, `SubscriptionCard`, base UI components (`Button`, `Card`, `Input`, `Label`), `cn()` utility
+- Also exports `globals.css` with shared design tokens (OKLch color palette, fonts, radii)
+- Components are **framework-agnostic** — no Next.js imports; auth forms accept `onSubmit` callbacks
+- No build step — consuming apps (Next.js, Vite) compile the TSX source directly
+- Website uses `transpilePackages: ['@screensaver-art/ui']` in `next.config.mjs`
+
+### Tailwind v4 + pnpm workspace gotcha
+Tailwind v4's Vite plugin auto-detects classes in imported files, but **does not scan workspace packages resolved through `node_modules` symlinks**. Each consuming app must add a `@source` directive in its CSS pointing at the shared package source:
+```css
+@import 'tailwindcss';
+@source "../../../../packages/ui/src";   /* relative to the CSS file */
+```
+Without this, classes like `bg-primary` used only in `packages/ui` components won't be generated. The website avoids this issue because Next.js handles transpilePackages differently.
 
 ## Infrastructure
 | Service | What it does |
@@ -46,12 +83,18 @@ pnpm dev       # localhost:3000
 | **Stripe** | Payments — $0.99/month, single tier |
 | **Cloudflare R2** | Hosts MP4 video assets (public, no auth) |
 | **Vercel** | Hosts the Next.js website |
-| **GitHub Pages** | Hosts `gallery.json` at `https://tempzero-clawd.github.io/screensaver-art/gallery.json` |
+| **GitHub Pages** | Hosts `gallery.json` and `index.html` at `https://zerolocker.github.io/screensaver-art/` — deployed via GitHub Actions (only these 2 files, not the full repo) |
+
+### GitHub Pages deploy workflow (`.github/workflows/deploy-pages.yml`)
+- Triggered on push to `master` when `gallery.json` or `index.html` change (also supports `workflow_dispatch`)
+- Copies **only** `gallery.json` and `index.html` into a `_site/` directory and deploys via `actions/deploy-pages`
+- This ensures no source code (Swift, TypeScript, CLAUDE.md, etc.) is publicly accessible even though the repo is private
+- **Prerequisite**: in the repo Settings → Pages, source must be set to **"GitHub Actions"** (not "Deploy from a branch")
 
 ## Add new art pieces
 1. Upload MP4 to Cloudflare R2 bucket `screensaver-assets` under the `gallery/` prefix.
 2. Add an entry to `gallery.json` — include `src` (full R2 URL), `title`, `type`, `date`, `collection`, `image_prompt`, `video_prompt`.
-3. Push to GitHub — the screensaver picks it up on next launch (no rebuild needed).
+3. Push to `master` — the Pages workflow auto-deploys `gallery.json`; the screensaver picks it up on next launch (no rebuild needed).
 
 ---
 
@@ -62,8 +105,8 @@ pnpm dev       # localhost:3000
 - **Subscribed**: see all gallery items
 - **Not subscribed / not logged in**: see first 2 items only + upsell overlay after one loop
 
-### Why Option B (server-side gating) not Option A (client-side)
-We chose to gate the gallery server-side via `/api/gallery` rather than just limiting on the client. This prevents the full URL list from being trivially readable. The MP4s themselves are still public on R2 (no signed URLs) — this is an acceptable tradeoff for a $0.99 product. If piracy becomes a real problem, add Cloudflare signed URLs (Option C).
+### Why server-side gating not client-side
+We chose to gate the gallery server-side via `/api/gallery` rather than just limiting on the client. This prevents the full URL list from being trivially readable. The MP4s themselves are still public on R2 (no signed URLs) — this is an acceptable tradeoff for a $0.99 product. If piracy becomes a real problem, add Cloudflare signed URLs.
 
 ### `/api/gallery` endpoint (the key piece)
 ```

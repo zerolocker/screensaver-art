@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/romanticism_castle.mp4",
+    "title": "Ruined Castle - 19th-Century Romanticism (AI Animated)",
+    "type": "video",
+    "date": "2026-03-29",
+    "image_prompt": "An ancient ruined castle on a cliff edge, overlooking a turbulent sea, dramatic storm clouds, intense lighting, 19th-century Romanticism style",
+    "video_prompt": "Turbulent waves crashing against the cliffs, dark storm clouds rolling in, lightning flashes in the distance, dramatic cinematic motion"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyoe_mtfuji.mp4",
+    "title": "Snowy Fuji - 19th-Century Ukiyo-e (AI Animated)",
+    "type": "video",
+    "date": "2026-03-29",
+    "image_prompt": "A classical Ukiyo-e woodblock print of Mount Fuji in winter, snow falling gently, delicate lines and flat colors, 19th-century Edo period style",
+    "video_prompt": "Gentle snowfall, subtle drift of clouds, very slight shimmering of the snow on the mountain, subtle cinematic motion"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/baroque_galleon.mp4",
+    "title": "Sunset Galleon - 17th-Century Baroque (AI Animated)",
+    "type": "video",
+    "date": "2026-03-29",
+    "image_prompt": "A serene coastal landscape at sunset with a majestic galleon ship, dramatic lighting, and deep shadows, in the style of 17th-century Baroque painting",
+    "video_prompt": "The waves slowly crash against the galleon, the clouds gently drift across the dramatic sky, the sunlight flickers on the water, subtle cinematic motion"
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/goryeo_buddhist_1_animated.mp4",
     "title": "Goryeo Bodhisattva - Goryeo Buddhist Painting (AI Animated)",
     "type": "video",
@@ -199,7 +223,7 @@
   },
   {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/trompe_loeil_animated.mp4",
-    "title": "Stone Window Illusion - Trompe-l'\u0153il (AI Animated)",
+    "title": "Stone Window Illusion - Trompe-l'œil (AI Animated)",
     "type": "video",
     "date": "2026-03-15",
     "image_prompt": "A hyper-realistic Trompe-l'oeil mural of a fake stone window looking out over a 16th-century Italian countryside.",

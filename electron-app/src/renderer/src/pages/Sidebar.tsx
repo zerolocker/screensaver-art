@@ -23,8 +23,8 @@ export function Sidebar({ session }: SidebarProps) {
 
   return (
     <div className="w-56 border-r border-border flex flex-col bg-sidebar">
-      {/* Draggable title area */}
-      <div className="titlebar-drag h-12 flex items-center px-4 border-b border-border">
+      {/* Draggable title area — pt pushes below macOS traffic lights */}
+      <div className="titlebar-drag pt-8 pb-3 px-4 border-b border-border">
         <h1 className="font-serif text-sm font-bold text-foreground titlebar-no-drag">
           Living Art Screensaver
         </h1>

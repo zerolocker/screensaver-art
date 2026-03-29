@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createNativeClient } from '@/lib/supabase/native-client'
+import { verifyNativeAuth } from '@/lib/auth/verify-native-auth'
 
 const GALLERY_URL = 'https://zerolocker.github.io/screensaver-art/gallery.json'
 const FREE_ITEM_COUNT = 2
@@ -50,32 +50,7 @@ export async function GET(request: NextRequest) {
     : allItems
 
   // ── Resolve subscription ────────────────────────────────────────────────────
-  let isSubscribed = false
-
-  const authHeader = request.headers.get('Authorization')
-  const accessToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
-
-  if (accessToken) {
-    try {
-      const supabase = createNativeClient(accessToken)
-
-      // Validate the token by fetching the user
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
-      if (!userError && user) {
-        const { data: subscription } = await supabase
-          .from('subscriptions')
-          .select('status')
-          .eq('user_id', user.id)
-          .single()
-
-        isSubscribed =
-          subscription?.status === 'active' || subscription?.status === 'trialing'
-      }
-    } catch (err) {
-      // Invalid token or network error — treat as unauthenticated, serve free tier
-      console.error('Subscription check error:', err)
-    }
-  }
+  const { isSubscribed } = await verifyNativeAuth(request)
 
   // ── Return appropriate slice ────────────────────────────────────────────────
   const items = isSubscribed

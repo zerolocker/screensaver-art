@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { SubscriptionCard, Card, CardContent, CardHeader, CardTitle, CardDescription, Button } from '@screensaver-art/ui'
-import type { Subscription, Session } from '@supabase/supabase-js'
-import { supabase } from '../lib/supabase'
+import { supabase, SUBSCRIPTION_VERIFY_ENDPOINT } from '../lib/supabase'
 import { Loader2, Trash2, HardDrive } from 'lucide-react'
 
 interface SubscriptionRow {
@@ -32,7 +31,7 @@ export function AccountPage({ session }: AccountPageProps) {
   async function fetchSubscription() {
     setSubLoading(true)
     try {
-      const res = await fetch('https://living-art-screensaver.com/api/subscription/verify', {
+      const res = await fetch(SUBSCRIPTION_VERIFY_ENDPOINT, {
         headers: { Authorization: `Bearer ${session.access_token}` },
       })
       if (res.ok) {

@@ -1,24 +1,16 @@
 import { useEffect, useState } from 'react'
 import { SubscriptionCard, Card, CardContent, CardHeader, CardTitle, CardDescription, Button } from '@screensaver-art/ui'
-import { supabase, SUBSCRIPTION_VERIFY_ENDPOINT } from '../lib/supabase'
-import { Loader2, Trash2, HardDrive } from 'lucide-react'
-
-interface SubscriptionRow {
-  id: string
-  user_id: string
-  stripe_customer_id: string | null
-  stripe_subscription_id: string | null
-  status: string
-  current_period_start: string | null
-  current_period_end: string | null
-}
+import type { Subscription } from '@screensaver-art/ui'
+import { SUBSCRIPTION_VERIFY_ENDPOINT } from '../lib/api'
+import { Loader2, Trash2, HardDrive, FolderOpen } from 'lucide-react'
+import type { Session } from '@supabase/supabase-js'
 
 interface AccountPageProps {
-  session: { user: { id: string; email?: string; created_at: string }; access_token: string }
+  session: Session
 }
 
 export function AccountPage({ session }: AccountPageProps) {
-  const [subscription, setSubscription] = useState<SubscriptionRow | null>(null)
+  const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [subLoading, setSubLoading] = useState(true)
   const [cacheStats, setCacheStats] = useState<{ sizeBytes: number; fileCount: number; path: string } | null>(null)
   const [clearing, setClearing] = useState(false)
@@ -133,38 +125,58 @@ export function AccountPage({ session }: AccountPageProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             {cacheStats && (
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-muted">
-                  <HardDrive className="w-5 h-5 text-muted-foreground" />
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-full bg-muted">
+                    <HardDrive className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">
+                      {formatBytes(cacheStats.sizeBytes)}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {cacheStats.fileCount} cached video{cacheStats.fileCount !== 1 ? 's' : ''}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium text-foreground">
-                    {formatBytes(cacheStats.sizeBytes)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {cacheStats.fileCount} cached video{cacheStats.fileCount !== 1 ? 's' : ''}
-                  </p>
-                </div>
+                <p className="text-xs text-muted-foreground break-all">
+                  {cacheStats.path}
+                </p>
               </div>
             )}
-            <Button
-              onClick={handleClearCache}
-              variant="outline"
-              className="w-full"
-              disabled={clearing}
-            >
-              {clearing ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Clearing...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Clear Cache
-                </>
-              )}
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                onClick={() => {
+                  if (window.electronAPI && cacheStats) {
+                    window.electronAPI.shell.openPath(cacheStats.path)
+                  }
+                }}
+                variant="outline"
+                className="flex-1"
+                disabled={!cacheStats}
+              >
+                <FolderOpen className="mr-2 h-4 w-4" />
+                Show in Folder
+              </Button>
+              <Button
+                onClick={handleClearCache}
+                variant="outline"
+                className="flex-1"
+                disabled={clearing}
+              >
+                {clearing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Clearing...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Clear Cache
+                  </>
+                )}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

@@ -23,11 +23,12 @@ export function App() {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
-      if (session) {
+      // Only navigate on actual sign-in/sign-out, not token refreshes
+      if (event === 'SIGNED_IN') {
         navigate('/gallery')
-      } else {
+      } else if (event === 'SIGNED_OUT') {
         navigate('/login')
       }
     })

@@ -100,6 +100,10 @@ ipcMain.handle('shell:openExternal', (_event, url: string) => {
   shell.openExternal(url)
 })
 
+ipcMain.handle('shell:openPath', (_event, path: string) => {
+  return shell.openPath(path)
+})
+
 // ---------------------------------------------------------------------------
 // App lifecycle
 // ---------------------------------------------------------------------------

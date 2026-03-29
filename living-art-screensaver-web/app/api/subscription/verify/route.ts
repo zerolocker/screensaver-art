@@ -1,13 +1,23 @@
-import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { createNativeClient } from '@/lib/supabase/native-client'
 
-// This endpoint allows the macOS app to verify subscription status
-export async function GET() {
+// This endpoint allows the macOS app and Electron app to verify subscription status
+export async function GET(request: NextRequest) {
+  const authHeader = request.headers.get('Authorization')
+  const accessToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
+
+  if (!accessToken) {
+    return NextResponse.json(
+      { error: 'Unauthorized', isActive: false },
+      { status: 401 }
+    )
+  }
+
   try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const supabase = createNativeClient(accessToken)
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
 
-    if (!user) {
+    if (userError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized', isActive: false },
         { status: 401 }
@@ -16,7 +26,7 @@ export async function GET() {
 
     const { data: subscription } = await supabase
       .from('subscriptions')
-      .select('status, current_period_end')
+      .select('id, user_id, stripe_customer_id, stripe_subscription_id, status, current_period_start, current_period_end')
       .eq('user_id', user.id)
       .single()
 
@@ -24,10 +34,7 @@ export async function GET() {
 
     return NextResponse.json({
       isActive,
-      status: subscription?.status || 'inactive',
-      expiresAt: subscription?.current_period_end || null,
-      userId: user.id,
-      email: user.email,
+      subscription: subscription || null,
     })
   } catch (error) {
     console.error('Subscription verification error:', error)

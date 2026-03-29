@@ -9,10 +9,12 @@ Turn your Mac's idle display into a dynamic, evolving art gallery — AI-generat
 
 ## What's in this repo
 
-This is a monorepo containing all three parts of the product:
+This is a pnpm workspace monorepo containing:
 
 | Directory | What it is |
 |---|---|
+| `packages/ui/` | Shared React components (auth forms, subscription card, base UI) |
+| `electron-app/` | Cross-platform companion app (Electron + React) |
 | `screensaver/` | Native macOS screensaver (Swift, AVPlayer) |
 | `living-art-screensaver-web/` | Marketing site + account/billing portal (Next.js) |
 | `index.html` | Standalone web preview — no build step |
@@ -62,22 +64,31 @@ Cloudflare R2          GitHub Pages           Vercel
 
 ## Development
 
+```bash
+pnpm install              # install all workspace dependencies from repo root
+```
+
 **Build & install the screensaver:**
 ```bash
 bash screensaver/build.sh --install
 # Compiles Swift and installs to ~/Library/Screen Savers/ScreensaverArt.saver
 ```
 
+**Run the Electron companion app:**
+```bash
+cd electron-app
+pnpm dev                  # launches Electron with HMR
+```
+
 **Run the website locally:**
 ```bash
 cd living-art-screensaver-web
-pnpm install
-pnpm dev          # → localhost:3000
+pnpm dev                  # → localhost:3000
 ```
 
 **Add new artworks:**
 1. Upload MP4 to Cloudflare R2 under the `gallery/` prefix
 2. Add an entry to `gallery.json` (include `src`, `title`, `type`, `collection`, `date`, prompts)
-3. Push to GitHub — the screensaver picks it up on next launch, no rebuild needed
+3. Push to `master` — a GitHub Actions workflow deploys only `gallery.json` and `index.html` to Pages (no source code is exposed)
 
 See `CLAUDE.md` for full architectural details and decision rationale.

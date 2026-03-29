@@ -6,6 +6,12 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--dir", "living-art-screensaver-web", "run", "dev", "--port", "3001"],
       "port": 3001
+    },
+    {
+      "name": "electron-renderer",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--dir", "electron-app", "run", "dev"],
+      "port": 5173
     }
   ]
 }

@@ -1,0 +1,4 @@
+packages:
+  - "packages/*"
+  - "living-art-screensaver-web"
+  - "electron-app"

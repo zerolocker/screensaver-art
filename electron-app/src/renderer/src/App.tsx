@@ -45,8 +45,8 @@ export function App() {
 
   if (!session) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="w-full max-w-md p-8">
+      <div className="titlebar-drag flex items-center justify-center min-h-screen">
+        <div className="w-full max-w-md p-8 titlebar-no-drag">
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
@@ -61,6 +61,7 @@ export function App() {
     <div className="flex h-screen">
       <Sidebar session={session} />
       <main className="flex-1 overflow-y-auto">
+        <div className="titlebar-drag h-10 sticky top-0 z-10" />
         <Routes>
           <Route path="/gallery" element={<GalleryPage session={session} />} />
           <Route path="/account" element={<AccountPage session={session} />} />

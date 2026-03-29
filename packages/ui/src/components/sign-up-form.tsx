@@ -103,8 +103,9 @@ export function SignUpForm({
         </div>
 
         {error && (
-          <div className="p-3 text-sm text-red-400 bg-red-950 border border-red-800 rounded-lg">
-            {error}
+          <div className="flex items-start gap-2 p-3 text-sm rounded-lg bg-red-500/[0.06] border border-red-500/20">
+            <span className="text-red-400 shrink-0">✕</span>
+            <span className="text-neutral-300">{error}</span>
           </div>
         )}
 

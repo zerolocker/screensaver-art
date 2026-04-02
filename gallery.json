@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/flemish_primitives_animated.mp4",
+    "title": "Indoor Domestic Scene - Flemish Primitives (AI Animated)",
+    "type": "video",
+    "date": "2026-04-02",
+    "image_prompt": "A highly detailed panel painting in the style of Flemish Primitives, showing an indoor domestic scene with rich oil glazes, deep reds, symbolic objects on a wooden table, and a view of a 15th-century town through an arched window.",
+    "video_prompt": "A highly detailed panel painting in the style of Flemish Primitives, showing an indoor domestic scene with rich oil glazes, deep reds, symbolic objects on a wooden table, and a view of a 15th-century town through an arched window."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/macchiaioli_animated.mp4",
+    "title": "Sunlit Tuscan Countryside - Macchiaioli (AI Animated)",
+    "type": "video",
+    "date": "2026-04-02",
+    "image_prompt": "A bright, naturalistic outdoor scene in the style of the Macchiaioli movement, depicting a sunlit Tuscan countryside with distinct patches of color (macchie), peasant workers in the fields, and strong contrasts of light and shadow.",
+    "video_prompt": "A bright, naturalistic outdoor scene in the style of the Macchiaioli movement, depicting a sunlit Tuscan countryside with distinct patches of color (macchie), peasant workers in the fields, and strong contrasts of light and shadow."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/tonalism_landscape_animated.mp4",
+    "title": "Serene Landscape - Tonalism (AI Animated)",
+    "type": "video",
+    "date": "2026-04-02",
+    "image_prompt": "A serene, atmospheric landscape in the style of Tonalism, with muted, misty, and dark colors. A solitary figure walks on a dim path near a quiet pond at dusk.",
+    "video_prompt": "A serene, atmospheric landscape in the style of Tonalism, with muted, misty, and dark colors. A solitary figure walks on a dim path near a quiet pond at dusk."
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mycenaean_fresco_animated.mp4",
     "title": "Warriors on Chariots - Mycenaean Fresco (AI Animated)",
     "type": "video",

@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/proto_renaissance_animated.mp4",
+    "title": "Serene Landscape - Proto-Renaissance (AI Animated)",
+    "type": "video",
+    "date": "2026-04-03",
+    "image_prompt": "A serene landscape with a river and mountains, painted in the style of Proto-Renaissance art, featuring tempera-like textures and flat but expressive forms.",
+    "video_prompt": "Animate this painting. The water flows gently and the clouds move slowly across the sky."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/nanga_animated.mp4",
+    "title": "Autumn Village - Nanga (AI Animated)",
+    "type": "video",
+    "date": "2026-04-03",
+    "image_prompt": "A tranquil village scene in autumn, painted in the Japanese Nanga literati painting style, using ink wash and soft brushstrokes.",
+    "video_prompt": "Animate this painting. The village leaves gently sway in the autumn breeze."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cloisonnism_animated.mp4",
+    "title": "Moonlight Portrait - Cloisonnism (AI Animated)",
+    "type": "video",
+    "date": "2026-04-03",
+    "image_prompt": "A portrait of a woman under the moonlight, painted in the Cloisonnism style, with bold and flat forms separated by dark contours.",
+    "video_prompt": "Animate this painting. The moonlight gently shimmers and subtle shadows move."
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/flemish_primitives_animated.mp4",
     "title": "Indoor Domestic Scene - Flemish Primitives (AI Animated)",
     "type": "video",

@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/renaissance_courtyard_animated.mp4",
+    "title": "Italian Courtyard - Renaissance (AI Animated)",
+    "type": "video",
+    "date": "2026-04-04",
+    "image_prompt": "A Renaissance oil painting of a lively Italian courtyard with merchants and nobles mingling",
+    "video_prompt": "A lively Italian courtyard with merchants and nobles mingling, renaissance oil painting style, subtle movement, cinematic"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyo_e_landscape_animated.mp4",
+    "title": "Mountain River - Ukiyo-e (AI Animated)",
+    "type": "video",
+    "date": "2026-04-04",
+    "image_prompt": "A Ukiyo-e Japanese woodblock print of a serene mountain landscape with cherry blossoms and a small river",
+    "video_prompt": "A serene mountain landscape with cherry blossoms blowing in the wind and a small river flowing, Ukiyo-e Japanese woodblock print style, subtle movement"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/impressionist_paris_animated.mp4",
+    "title": "Paris at Dusk - Impressionist (AI Animated)",
+    "type": "video",
+    "date": "2026-04-04",
+    "image_prompt": "An Impressionist painting of a bustling Parisian street corner at dusk with glowing street lamps and blurred figures walking",
+    "video_prompt": "A bustling Parisian street corner at dusk with glowing street lamps and blurred figures walking, impressionist painting style, subtle movement, cinematic"
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/proto_renaissance_animated.mp4",
     "title": "Serene Landscape - Proto-Renaissance (AI Animated)",
     "type": "video",

@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/minoan_dolphins_animated.mp4",
+    "title": "Jumping Dolphins - Minoan Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-04-05",
+    "image_prompt": "A Minoan Fresco depicting dolphins and fish in a vibrant ancient Aegean palace, earthy colors and cracked plaster texture",
+    "video_prompt": "A Minoan Fresco depicting dolphins and fish jumping in a vibrant ancient Aegean palace, earthy colors and cracked plaster texture, subtle animation of water and dolphins"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gothic_knight_animated.mp4",
+    "title": "Knight and Dragon - Gothic Stained Glass (AI Animated)",
+    "type": "video",
+    "date": "2026-04-05",
+    "image_prompt": "A breathtaking Gothic Stained Glass window depicting a knight and a dragon, vivid lapis lazuli and ruby glass, sunlight shining through",
+    "video_prompt": "A breathtaking Gothic Stained Glass window depicting a knight and a dragon, vivid lapis lazuli and ruby glass, sunlight moving and shining through"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/byzantine_emperor_animated.mp4",
+    "title": "Regal Emperor - Byzantine Mosaic (AI Animated)",
+    "type": "video",
+    "date": "2026-04-05",
+    "image_prompt": "A grand Byzantine Mosaic of a regal emperor in golden robes surrounded by saints, glowing golden tesserae, highly detailed",
+    "video_prompt": "A grand Byzantine Mosaic of a regal emperor in golden robes surrounded by saints, golden tesserae shimmering in candlelight, subtle animation"
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/renaissance_courtyard_animated.mp4",
     "title": "Italian Courtyard - Renaissance (AI Animated)",
     "type": "video",

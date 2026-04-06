@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/renaissance_animated.mp4",
+    "title": "Serene Castle - Renaissance (AI Animated)",
+    "type": "video",
+    "date": "2026-04-06",
+    "image_prompt": "A beautiful Renaissance oil painting of a serene landscape with a castle and a lake, 16th century style.",
+    "video_prompt": "Gentle rippling water on the lake, soft wind blowing through the trees, the clouds drift slowly in the sky. Serene and majestic."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/impressionism_animated.mp4",
+    "title": "Parisian Rain - Impressionism (AI Animated)",
+    "type": "video",
+    "date": "2026-04-06",
+    "image_prompt": "An Impressionist painting of a bustling Parisian street scene in the rain, vivid brushstrokes.",
+    "video_prompt": "Rain pouring down on the street, people walking quickly with umbrellas, water splashing on the cobblestone, dynamic cinematic motion."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyo-e_animated.mp4",
+    "title": "Crashing Wave - Ukiyo-e (AI Animated)",
+    "type": "video",
+    "date": "2026-04-06",
+    "image_prompt": "A classic Ukiyo-e woodblock print of a majestic wave crashing near Mount Fuji.",
+    "video_prompt": "The massive wave crashes dramatically, foam spraying in the air, the water surges with power, traditional ukiyo-e style animation."
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/minoan_dolphins_animated.mp4",
     "title": "Jumping Dolphins - Minoan Fresco (AI Animated)",
     "type": "video",

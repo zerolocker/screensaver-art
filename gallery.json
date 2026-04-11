@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/celtic_metalwork_animated.mp4",
+    "title": "Celtic Metalwork (AI Animated)",
+    "type": "video",
+    "date": "2026-04-11",
+    "image_prompt": "An intricate artwork in the style of Celtic Metalwork, depicting intertwining knots",
+    "video_prompt": "Animate this artwork"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/cycladic_art_animated.mp4",
+    "title": "Cycladic Art (AI Animated)",
+    "type": "video",
+    "date": "2026-04-11",
+    "image_prompt": "A serene artwork in the style of Cycladic Art, depicting abstract marble figures",
+    "video_prompt": "Animate this artwork"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/minoan_pottery_animated.mp4",
+    "title": "Minoan Pottery (AI Animated)",
+    "type": "video",
+    "date": "2026-04-11",
+    "image_prompt": "A vibrant artwork in the style of Minoan Pottery, depicting ancient ocean life",
+    "video_prompt": "Animate this Minoan Pottery artwork, fluid and subtle movement"
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/renaissance_animated.mp4",
     "title": "Serene Castle - Renaissance (AI Animated)",
     "type": "video",

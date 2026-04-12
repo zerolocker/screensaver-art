@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/netsuke_dragon_animated.mp4",
+    "title": "Netsuke Dragon (AI Animated)",
+    "type": "video",
+    "date": "2026-04-12",
+    "image_prompt": "A highly detailed Edo period Netsuke carving of a small dragon, carved from ivory-colored wood, intricate texture, traditional Japanese art",
+    "video_prompt": "Slowly rotate the Netsuke carving, highlighting the intricate details of the dragon, subtle natural wood lighting"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/etruscan_bucchero_animated.mp4",
+    "title": "Etruscan Bucchero Chalice (AI Animated)",
+    "type": "video",
+    "date": "2026-04-12",
+    "image_prompt": "A detailed Etruscan Bucchero pottery chalice with engraved mythical figures, glossy black clay surface, ancient Italian art",
+    "video_prompt": "Flickering firelight plays across the glossy black surface of the Etruscan Bucchero pottery chalice, bringing the engraved figures to life"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gandharan_sculpture_animated.mp4",
+    "title": "Gandharan Meditating Figure (AI Animated)",
+    "type": "video",
+    "date": "2026-04-12",
+    "image_prompt": "A serene Gandharan Buddhist sculpture of a meditating figure, carved in grey schist stone, blending Greco-Roman and Indian artistic styles",
+    "video_prompt": "Gentle natural light moves across the grey schist stone of the Gandharan Buddhist sculpture, emphasizing the deep folds of the robe"
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/celtic_metalwork_animated.mp4",
     "title": "Celtic Metalwork (AI Animated)",
     "type": "video",

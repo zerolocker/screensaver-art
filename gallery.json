@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/renaissance_angel_animated.mp4",
+    "title": "Renaissance Angel - Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-04-13",
+    "image_prompt": "A Renaissance fresco detail showing a serene angelic figure with soft golden halos against a cracked plaster background, muted earth tones, classical proportions",
+    "video_prompt": "Dust motes floating gently in a shaft of sunlight illuminating the ancient fresco, subtle temporal shift, still and majestic"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyoe_snow_animated.mp4",
+    "title": "Winter Serenity - Ukiyo-e (AI Animated)",
+    "type": "video",
+    "date": "2026-04-13",
+    "image_prompt": "A traditional Japanese Ukiyo-e woodblock print featuring a tranquil snowy landscape with a lone pine tree and a small wooden bridge, flat colors, distinct outlines",
+    "video_prompt": "Gentle snowflakes falling steadily across the tranquil landscape, subtle wind moving the pine needles slightly, calm and serene"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/baroque_still_life_animated.mp4",
+    "title": "Fruit and Silver - Baroque (AI Animated)",
+    "type": "video",
+    "date": "2026-04-13",
+    "image_prompt": "A Baroque oil painting in the style of Caravaggio, featuring a still life of ripe fruit and a silver goblet on a wooden table, dramatic chiaroscuro lighting, deep shadows",
+    "video_prompt": "Subtle flickering candlelight illuminates the fruit and silver goblet, revealing rich textures and deep shadows, slow subtle movement"
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/netsuke_dragon_animated.mp4",
     "title": "Netsuke Dragon (AI Animated)",
     "type": "video",

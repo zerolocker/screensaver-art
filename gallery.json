@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/chola_bronze_animated.mp4",
+    "title": "Dancing Deity - Chola Dynasty Bronze Sculpture (AI Animated)",
+    "type": "video",
+    "date": "2026-04-15",
+    "image_prompt": "A highly detailed Chola Dynasty Bronze Sculpture of a dancing deity, intricately carved jewelry and headdress, green patina, ancient Indian art style",
+    "video_prompt": "A highly detailed Chola Dynasty Bronze Sculpture of a dancing deity. The figure subtly moves and dances, glowing with divine energy, ancient Indian art brought to life."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/nazca_lines_animated.mp4",
+    "title": "Desert Hummingbird - Nazca Lines (AI Animated)",
+    "type": "video",
+    "date": "2026-04-15",
+    "image_prompt": "An aerial view of ancient Nazca Lines depicting a massive hummingbird on the dry desert floor, earthy red and brown tones, casting long shadows at sunrise, ancient Peruvian geoglyph",
+    "video_prompt": "An aerial view of ancient Nazca Lines depicting a massive hummingbird on the dry desert floor. The sun slowly rises, casting moving shadows across the geoglyph as desert wind blows."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/kofun_haniwa_animated.mp4",
+    "title": "Terracotta Warrior - Kofun Period Haniwa (AI Animated)",
+    "type": "video",
+    "date": "2026-04-15",
+    "image_prompt": "A close up of a Kofun period Haniwa terracotta warrior figure, simplified facial features, rustic red clay texture, ancient Japanese art",
+    "video_prompt": "A close up of a Kofun period Haniwa terracotta warrior figure. The warrior subtly turns its head, flickering firelight casts dancing shadows over its rough clay texture."
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/renaissance_angel_animated.mp4",
     "title": "Renaissance Angel - Fresco (AI Animated)",
     "type": "video",

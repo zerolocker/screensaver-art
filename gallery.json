@@ -1,5 +1,13 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/renaissance_animated.mp4",
+    "title": "Serene Village - Renaissance (AI Animated)",
+    "type": "video",
+    "date": "2026-04-16",
+    "image_prompt": "A beautiful Renaissance painting of an Italian village during golden hour, masterpiece, detailed, oil on canvas.",
+    "video_prompt": "A beautiful Renaissance painting of an Italian village during golden hour, masterpiece, detailed, oil on canvas. The camera slowly zooms in, subtle lighting changes."
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/chola_bronze_animated.mp4",
     "title": "Dancing Deity - Chola Dynasty Bronze Sculpture (AI Animated)",
     "type": "video",

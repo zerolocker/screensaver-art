@@ -1,5 +1,32 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/amarna_relief_animated.mp4",
+    "title": "Akhenaten and Family - Amarna Period Art (AI Animated)",
+    "type": "video",
+    "date": "2026-04-18",
+    "image_prompt": "A highly detailed Amarna Period limestone relief depicting Pharaoh Akhenaten and his family under the rays of the Aten sun disk, sunken relief style, ancient Egyptian art.",
+    "video_prompt": "Sunlight slowly moves across the limestone relief, highlighting the carved figures of Akhenaten and his family, dust motes float in the air.",
+    "collection": "classic"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/iberian_sculpture_animated.mp4",
+    "title": "Priestess - Iberian Sculpture (AI Animated)",
+    "type": "video",
+    "date": "2026-04-18",
+    "image_prompt": "A highly detailed ancient Iberian limestone sculpture of a priestess, similar to the Lady of Elche, wearing an intricate headdress with large coils and heavy necklaces, 5th century BC.",
+    "video_prompt": "Flickering torchlight gently casts shifting shadows across the face and intricate headdress of the ancient Iberian stone sculpture, adding an enigmatic life to the cold stone.",
+    "collection": "classic"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mississippian_copper_animated.mp4",
+    "title": "Birdman - Mississippian Copper Plates (AI Animated)",
+    "type": "video",
+    "date": "2026-04-18",
+    "image_prompt": "An intricate repoussé copper plate from the Mississippian culture, depicting a stylized avian or birdman figure, green patina on aged copper, ancient Native American artifact.",
+    "video_prompt": "The green patina and embossed copper surface subtly catch the light as the plate is slowly rotated, revealing the intricate details of the Mississippian birdman figure.",
+    "collection": "classic"
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/renaissance_animated.mp4",
     "title": "Serene Village - Renaissance (AI Animated)",
     "type": "video",

@@ -1,5 +1,32 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/carolingian_animated.mp4",
+    "title": "Medieval Scene - Carolingian Minuscule Calligraphy (AI Animated)",
+    "type": "video",
+    "date": "2026-04-19",
+    "image_prompt": "A beautiful medieval scene with knights and castles, in the style of Carolingian Minuscule Calligraphy illuminated manuscript",
+    "video_prompt": "Subtle animation, bringing the classical scene to life, gentle motion",
+    "collection": "classic"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mogollon_animated.mp4",
+    "title": "Desert Landscape - Mogollon Pottery Art (AI Animated)",
+    "type": "video",
+    "date": "2026-04-19",
+    "image_prompt": "A geometric desert landscape in the style of Mogollon Pottery Art, black and white intricate patterns",
+    "video_prompt": "Subtle animation, bringing the geometric shapes to life, slow shifting patterns",
+    "collection": "classic"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dongson_animated.mp4",
+    "title": "Vivid Boat Scene - Dong Son Bronze Drum Engraving (AI Animated)",
+    "type": "video",
+    "date": "2026-04-19",
+    "image_prompt": "A vivid boat scene with warriors, in the style of Dong Son Bronze Drum Engraving, stylized figures in bronze tones",
+    "video_prompt": "Subtle animation, the bronze figures and animals begin to move slowly, metallic reflections",
+    "collection": "classic"
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/amarna_relief_animated.mp4",
     "title": "Akhenaten and Family - Amarna Period Art (AI Animated)",
     "type": "video",

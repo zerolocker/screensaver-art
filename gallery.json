@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sienese_animated.mp4",
+    "title": "Noblewoman - Sienese School (AI Animated)",
+    "type": "video",
+    "date": "2026-04-21",
+    "image_prompt": "A beautiful tempera panel painting of an elegant noblewoman holding a lily, intricate gold leaf background, flat perspective, Sienese School style, 14th century Italian art, rich ultramarine and crimson",
+    "video_prompt": "Subtle animation, bringing the classical scene to life, gentle motion"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/yuan_animated.mp4",
+    "title": "Mountain Landscape - Yuan Dynasty Landscape (AI Animated)",
+    "type": "video",
+    "date": "2026-04-21",
+    "image_prompt": "A serene mountain landscape with a lone fisherman on a small boat, ink wash painting, Yuan Dynasty Landscape style, elegant brushstrokes, misty mountains, monochrome",
+    "video_prompt": "Subtle animation, bringing the classical scene to life, gentle motion"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/teotihuacan_animated.mp4",
+    "title": "Great Goddess Mural - Teotihuacan Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-04-21",
+    "image_prompt": "A vibrant mural of the Great Goddess of Teotihuacan with quetzal birds and water motifs, Teotihuacan Fresco style, flat colors, red and turquoise pigments, Mesoamerican art",
+    "video_prompt": "Subtle animation, bringing the classical scene to life, gentle motion"
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/carolingian_animated.mp4",
     "title": "Medieval Scene - Carolingian Minuscule Calligraphy (AI Animated)",
     "type": "video",

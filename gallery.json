@@ -1,5 +1,29 @@
 [
   {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/macedonian_mosaic.mp4",
+    "title": "Royal Lion Hunt - Macedonian Court Mosaic (AI Animated)",
+    "type": "video",
+    "date": "2026-04-24",
+    "image_prompt": "A highly detailed ancient Macedonian Court Mosaic depicting a royal lion hunt, made of natural pebble tesserae, realistic figures, 4th century BC style, Hellenistic era",
+    "video_prompt": "Subtle animation: the light slowly changes over the natural pebble tesserae of the ancient Macedonian Court Mosaic, bringing the realistic figures of the royal lion hunt to life."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/bactrian_gold.mp4",
+    "title": "Tree of Life - Bactrian Gold Artifact (AI Animated)",
+    "type": "video",
+    "date": "2026-04-24",
+    "image_prompt": "A highly detailed ancient Bactrian Gold Artifact from Tillya Tepe, depicting a stylized tree of life with mythological creatures, intricate gold granulation and turquoise inlay, 1st century BC",
+    "video_prompt": "Subtle animation: the intricate gold granulation and turquoise inlay of the ancient Bactrian Gold Artifact gleam as the light shifts, and the mythological creatures in the tree of life gently shimmer."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/etruscan_terracotta.mp4",
+    "title": "Reclining Couple - Etruscan Terracotta Sarcophagus (AI Animated)",
+    "type": "video",
+    "date": "2026-04-24",
+    "image_prompt": "An ancient Etruscan Terracotta Sarcophagus lid depicting a reclining married couple, expressive archaic smiles, painted terracotta texture, 6th century BC",
+    "video_prompt": "Subtle animation: gentle flickering torchlight casts moving shadows across the ancient Etruscan Terracotta Sarcophagus, and the expressive archaic smiles of the reclining married couple seem to soften."
+  },
+  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sienese_animated.mp4",
     "title": "Noblewoman - Sienese School (AI Animated)",
     "type": "video",

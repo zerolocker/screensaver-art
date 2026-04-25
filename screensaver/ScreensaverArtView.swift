@@ -24,6 +24,10 @@ class ScreensaverArtView: ScreenSaverView {
     private var freeLoopCount: Int          = 0
     private let upsellAfterLoops            = 1
 
+    // mtime of the manifest at last load — used to detect mid-session syncs
+    // by the Electron app and reload without waiting for stopAnimation.
+    private var lastManifestMtime: Date? = nil
+
     // MARK: A/B crossfade layers
 
     private var slotA: CALayer?
@@ -48,7 +52,7 @@ class ScreensaverArtView: ScreenSaverView {
     // MARK: Timing
 
     private var advanceTimer:    Timer?
-    private let displayDuration: TimeInterval = 8.0
+    private let displayDuration: TimeInterval = 7.8
     private let fadeDuration:    TimeInterval = 1.5
 
     // MARK: Init
@@ -78,14 +82,35 @@ class ScreensaverArtView: ScreenSaverView {
         isSubscribed  = manifest?.isSubscribed ?? true
         totalCount    = manifest?.totalCount ?? 0
         freeLoopCount = 0
+        lastManifestMtime = manifestMtime()
         hideUpsell()
         if newItems.isEmpty {
             showEmptyState()
         } else {
             hideEmptyState()
             showCurrent()
-            startTimer()
         }
+        // Always run the timer — even in the empty-state case it serves as a
+        // heartbeat so reloadIfManifestChanged() can pick up a sync in progress
+        // and transition us out of the empty state.
+        startTimer()
+    }
+
+    /// If the Electron app has rewritten the manifest since we last loaded it
+    /// (sync just finished, or is still in flight), pick up the new list.
+    /// Returns true if a reload happened — the caller should not advance again
+    /// in the same tick.
+    @discardableResult
+    private func reloadIfManifestChanged() -> Bool {
+        guard let mod = manifestMtime() else { return false }
+        if let last = lastManifestMtime, mod <= last { return false }
+        loadFromCache()
+        return true
+    }
+
+    private func manifestMtime() -> Date? {
+        let attrs = try? FileManager.default.attributesOfItem(atPath: Cache.manifestFile.path)
+        return attrs?[.modificationDate] as? Date
     }
 
     // MARK: UI construction
@@ -252,6 +277,11 @@ class ScreensaverArtView: ScreenSaverView {
     }
 
     private func advance() {
+        // If a sync just landed, reload the manifest first so newly-downloaded
+        // items appear within the current screensaver session. loadFromCache
+        // handles re-shuffling and starts playback itself.
+        if reloadIfManifestChanged() { return }
+
         guard !items.isEmpty else { return }
         let nextPos = (orderPos + 1) % shuffledOrder.count
 

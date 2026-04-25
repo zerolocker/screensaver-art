@@ -17,10 +17,15 @@ export default defineConfig({
       },
     },
     plugins: [react(), tailwindcss()],
-    // Proxy API requests to local website's API
+    // In dev, /api/* is proxied through Vite. Defaults to the live site so the
+    // Gallery tab works without running the website locally; override with
+    // WEB_API_URL=http://localhost:3000 when iterating on website code.
     server: {
       proxy: {
-        '/api': 'http://localhost:3000',
+        '/api': {
+          target: process.env.WEB_API_URL || 'https://living-art-screensaver.com',
+          changeOrigin: true,
+        },
       },
     },
   },

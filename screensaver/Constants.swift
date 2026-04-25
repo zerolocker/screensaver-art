@@ -4,17 +4,22 @@ import Foundation
 
 /// Cache layout — populated and managed entirely by the Electron companion app.
 /// The screensaver only reads.
+///
+/// `.cachesDirectory` here resolves to the legacyScreenSaver sandbox container
+/// (e.g. `~/Library/Containers/com.apple.ScreenSaver.Engine.legacyScreenSaver/
+/// Data/Library/Caches/ScreensaverArt/`), NOT `~/Library/Caches/`. The Electron
+/// app writes into that same container path — see `macSandboxCacheDir` in
+/// electron-app/src/main/cache-sync.ts.
 enum Cache {
-    /// `~/Library/Caches/ScreensaverArt/`
     static let baseDir: URL = {
         let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
         return caches.appendingPathComponent("ScreensaverArt", isDirectory: true)
     }()
 
-    /// `~/Library/Caches/ScreensaverArt/videos/` — `.bin` files, XOR-obfuscated.
+    /// `<baseDir>/videos/` — `.bin` files, XOR-obfuscated.
     static let videosDir: URL = baseDir.appendingPathComponent("videos", isDirectory: true)
 
-    /// `~/Library/Caches/ScreensaverArt/gallery.json` — manifest written by Electron.
+    /// `<baseDir>/gallery.json` — manifest written by Electron.
     static let manifestFile: URL = baseDir.appendingPathComponent("gallery.json")
 }
 

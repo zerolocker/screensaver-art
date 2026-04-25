@@ -26,7 +26,7 @@ This is a pnpm workspace monorepo containing:
 
 1. User downloads the **Living Art Screensaver** desktop app (Electron).
 2. They sign in inside the app and (optionally) subscribe via Stripe at $0.99/month.
-3. The app fetches the gallery from `living-art-screensaver.com/api/gallery`, downloads each MP4, **XOR-obfuscates** it, and writes it to `~/Library/Caches/ScreensaverArt/videos/`.
+3. The app fetches the gallery from `living-art-screensaver.com/api/gallery`, downloads each MP4, **XOR-obfuscates** it, and writes it into the screensaver's sandbox-container cache (`~/Library/Containers/com.apple.ScreenSaver.Engine.legacyScreenSaver/Data/Library/Caches/ScreensaverArt/videos/`). It writes there, not `~/Library/Caches/`, because the `.saver` runs sandboxed and can only read inside its own container.
 4. The app installs the native screensaver (`.saver` bundle on macOS) into `~/Library/Screen Savers/` — this only happens once. Subsequent runs of the app just refresh the cache.
 5. The screensaver itself is a thin player: it reads the cache manifest, decrypts each `.bin` to a temp file, and crossfades between them. It has no network access and no UI for accounts.
 
@@ -63,9 +63,10 @@ Cloudflare R2          GitHub Pages           Vercel
          └────────────────────┬───────────────────────┘
                               │ writes
                               ▼
-              ~/Library/Caches/ScreensaverArt/
-                  ├── gallery.json  (manifest)
-                  └── videos/*.bin  (XOR-obfuscated)
+      ~/Library/Containers/com.apple.ScreenSaver.Engine.legacyScreenSaver/
+          Data/Library/Caches/ScreensaverArt/
+              ├── gallery.json  (manifest)
+              └── videos/*.bin  (XOR-obfuscated)
                               ▲
                               │ reads
          ┌──────── ScreensaverArt.saver (player) ─────┐

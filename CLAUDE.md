@@ -55,7 +55,7 @@ pnpm dist:win             # → electron-app/dist/Living Art Screensaver Setup-<
 - Renderer is React + Tailwind v4, imports shared components from `@screensaver-art/ui`
 - Auth via `@supabase/supabase-js` (not SSR — stores session in Chromium localStorage)
 - Cache management: main process handles file I/O via IPC; renderer shows stats and clear button
-- Cache dir: `~/Library/Caches/ScreensaverArt/` (macOS), `%LOCALAPPDATA%\ScreensaverArt\` (Windows)
+- Cache dir: `~/Library/Containers/com.apple.ScreenSaver.Engine.legacyScreenSaver/Data/Library/Caches/ScreensaverArt/` (macOS — see "Why the cache lives in a sandbox container" below), `%LOCALAPPDATA%\ScreensaverArt\` (Windows)
 - The `.saver` bundle is built and bundled into `electron-app/resources/` by `scripts/bundle-saver.sh` before every `pnpm dev` / `pnpm build`. `electron-builder` ships everything in `resources/` to `Contents/Resources/` in the packaged app, where `installer.ts` finds it via `process.resourcesPath`.
 - Windows `.scr` support is scaffolded but not implemented; the install flow returns an "unsupported on this platform" error there.
 
@@ -138,12 +138,20 @@ The exact key, magic, and djb2-127 filename hash are duplicated in two places th
 This is **not real cryptography** — both binaries embed the key, so anyone willing to `strings` or disassemble can recover it. We deliberately picked a friction layer rather than DRM:
 - The `.bin` files in the cache directory don't open in QuickTime even after rename
 - The Swift screensaver decrypts on demand into `NSTemporaryDirectory()/ScreensaverArt/`, hands the temp URL to AVPlayer, and deletes the temp file when the slot is reused
-- This blocks the casual "drag the MP4 out of `~/Library/Caches/` and post it on Twitter" path without burning engineering effort on real DRM, which would be over-engineered for a $0.99 product
+- This blocks the casual "drag the MP4 out of the cache and post it on Twitter" path without burning engineering effort on real DRM, which would be over-engineered for a $0.99 product
 
 If piracy ever becomes a real problem, the next step is signed URLs from R2, not stronger client-side encryption.
 
+### Why the cache lives in a sandbox container (macOS)
+
+The `.saver` runs inside `legacyScreenSaver.appex`, which is sandboxed. When the Swift code calls `FileManager.default.urls(for: .cachesDirectory, …)` it gets back the **container's** Caches dir, not the user's `~/Library/Caches/`. Reads outside the container are blocked.
+
+The Electron app (un-sandboxed) writes directly into that container path so the screensaver can find the files. See `macSandboxCacheDir` in [`electron-app/src/main/cache-sync.ts`](electron-app/src/main/cache-sync.ts). On Apple Silicon the container is `com.apple.ScreenSaver.Engine.legacyScreenSaver`; on Intel it's the same with a `.x86-64` suffix.
+
+App Groups would be the textbook sharing mechanism but require provisioning profiles and code-signing both binaries — overkill for a $0.99 product.
+
 ### Offline support
-- Cache lives in `~/Library/Caches/ScreensaverArt/` (Mac) / `%LOCALAPPDATA%\ScreensaverArt\` (Windows)
+- Cache lives in `~/Library/Containers/com.apple.ScreenSaver.Engine.legacyScreenSaver/Data/Library/Caches/ScreensaverArt/` (Mac) / `%LOCALAPPDATA%\ScreensaverArt\` (Windows)
 - The Electron app populates and refreshes this cache; the screensaver only reads
 - The screensaver re-reads `gallery.json` every time `startAnimation` fires, so a fresh sync is picked up the next time the screensaver kicks in — no reboot needed
 - The Electron app can be quit; the screensaver keeps working from the existing cache

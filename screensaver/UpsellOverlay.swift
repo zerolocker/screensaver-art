@@ -1,9 +1,12 @@
 import Cocoa
 
 // MARK: - Upsell Overlay
+//
+// Shown after the free preview loops once. ScreensaverArtView reads the
+// `isSubscribed` flag from the cache manifest (written by the Electron app)
+// to decide whether to show this — the screensaver itself never talks to
+// the subscription API.
 
-/// Full-screen overlay shown after the free content loops.
-/// Auto-dismisses after 30 s via the timer managed in ScreensaverArtView.
 class UpsellOverlay: NSView {
 
     private let totalCount: Int
@@ -34,14 +37,14 @@ class UpsellOverlay: NSView {
         heading.alignment = .center
 
         let body = label(
-            "You're watching the free preview.\nSubscribe for $0.99 / month to unlock the full gallery.",
+            "You're watching the free preview.\nSubscribe to unlock the full gallery.",
             size: 15, color: NSColor(white: 0.85, alpha: 1)
         )
-        body.alignment             = .center
-        body.maximumNumberOfLines  = 3
-        body.lineBreakMode         = .byWordWrapping
+        body.alignment            = .center
+        body.maximumNumberOfLines = 3
+        body.lineBreakMode        = .byWordWrapping
 
-        let urlLbl = label(API.subscribeURL, size: 14,
+        let urlLbl = label("living-art-screensaver.com", size: 14,
                            color: NSColor(calibratedRed: 0.4, green: 0.75, blue: 1.0, alpha: 1))
         urlLbl.font      = NSFont.monospacedSystemFont(ofSize: 14, weight: .regular)
         urlLbl.alignment = .center
@@ -58,8 +61,8 @@ class UpsellOverlay: NSView {
     }
 
     private func label(_ text: String, size: CGFloat,
-                        weight: NSFont.Weight = .regular,
-                        color: NSColor = .white) -> NSTextField {
+                       weight: NSFont.Weight = .regular,
+                       color: NSColor = .white) -> NSTextField {
         let lbl = NSTextField(labelWithString: text)
         lbl.font      = NSFont.systemFont(ofSize: size, weight: weight)
         lbl.textColor = color

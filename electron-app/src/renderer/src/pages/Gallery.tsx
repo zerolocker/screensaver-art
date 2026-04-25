@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { Loader2, Lock, Play, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { GALLERY_ENDPOINT } from '../lib/api'
+import { UpsellBanner } from '../components/UpsellBanner'
 import type { Session } from '@supabase/supabase-js'
 
 const ITEMS_PER_PAGE = 12
@@ -107,6 +108,15 @@ export function GalleryPage({ session }: GalleryPageProps) {
           </p>
         </div>
       </div>
+
+      {gallery && !gallery.isSubscribed && (
+        <UpsellBanner
+          totalCount={gallery.totalCount}
+          onSubscribe={() =>
+            window.electronAPI.shell.openExternal('https://living-art-screensaver.com/account')
+          }
+        />
+      )}
 
       {/* Video preview modal */}
       {previewItem && (

@@ -1,19 +1,22 @@
 import Foundation
 
-// MARK: - Data Models
+// MARK: - Cached gallery models
+//
+// Written by the Electron companion app at Cache.manifestFile, then read here.
+// Kept intentionally minimal — anything subscription-related lives in the
+// Electron app, not in the screensaver.
 
-struct ArtItem: Decodable {
-    let src:        String
-    let title:      String
-    let type:       String
-    let collection: String?
+struct CachedItem: Decodable {
+    let filename: String
+    let title:    String
+    let type:     String
 
-    var mediaURL: URL { URL(string: src)! }
-    var isVideo:  Bool { type == "video" }
+    var isVideo: Bool { type == "video" }
 }
 
-struct GalleryResponse: Decodable {
-    let items:        [ArtItem]
+struct CachedManifest: Decodable {
+    let items:        [CachedItem]
     let isSubscribed: Bool
     let totalCount:   Int
+    let syncedAt:     String?
 }

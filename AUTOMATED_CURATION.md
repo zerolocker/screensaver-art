@@ -21,7 +21,7 @@ You are building a web-based screensaver app that showcases classic and modern a
 3.  **AI Animation & Upload:**
     *   Animate your new image using the **veo3-video-gen** skill.
     *   **Upload the video** to Cloudflare R2: `wrangler r2 object put screensaver-assets/gallery/filename_animated.mp4 --file=gallery/filename_animated.mp4 --remote`.
-    *   After the video is successfully uploaded, **delete the local video and source PNG files** (e.g., `gallery/filename.mp4` and `gallery/filename.png`) to keep the repository size small.
+    *   **Clean up** after successful upload: delete the local versions of the image and the video.
 
 4.  **Update App:**
     *   Edit `gallery.json` to include the new video in the beginning of the array.
@@ -32,7 +32,7 @@ You are building a web-based screensaver app that showcases classic and modern a
 6.  **Expand Inspiration:** If the art styles you picked doesn't exist in `ART_STYLES_FOR_INSPIRATION.txt`, append them.
 
 7.  **Commit and Push:**
-    *   Run: `git add . && git commit -m "AUTO_CURATION: Added [Style 1, Style 2, Style 3] collections"`
+    *   Run: `git add gallery.json ART_STYLES_FOR_INSPIRATION.txt && git commit -m "AUTO_CURATION: Added [Style 1, Style 2, Style 3] collections"`
     *   Run: `git push` to sync changes to the remote.
     *   Pushing to `master` automatically triggers the GitHub Pages deploy workflow (`.github/workflows/deploy-pages.yml`), which publishes only `gallery.json` and `index.html` — no other repo files are exposed.
 

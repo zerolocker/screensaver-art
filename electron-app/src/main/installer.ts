@@ -14,8 +14,10 @@ const SAVER_BUNDLE_NAME = 'ScreensaverArt.saver'
 
 // Indirection layer so tests can swap spawn without touching the dev
 // machine's real `killall` / `xattr` / `open`. vi.mock on Node built-ins
-// doesn't propagate transitively in vitest 2.x with vite-node, so an
-// override hook is the simplest reliable way to keep these tests safe.
+// (including child_process) does not propagate transitively into imported
+// sibling modules under vitest 2.x or 4.x — verified empirically in both
+// versions. An override hook is the simplest reliable way to keep these
+// tests safe.
 export const _testHooks: { spawn: typeof spawn } = { spawn }
 
 // Where the .saver lives inside the packaged Electron app vs. dev mode.

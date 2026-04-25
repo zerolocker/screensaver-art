@@ -34,7 +34,8 @@ const realSpawn = _testHooks.spawn
 
 // Capture spawn calls instead of running real `killall`/`xattr`/`open` against
 // the dev machine. installer.ts goes through _testHooks.spawn so this swap is
-// the only intervention needed.
+// the only intervention needed — vi.mock on 'child_process' doesn't propagate
+// transitively into sibling modules even under vitest 4.x.
 const spawnCalls: { cmd: string; args: ReadonlyArray<string> }[] = []
 function fakeSpawn(cmd: string, args: ReadonlyArray<string>) {
   spawnCalls.push({ cmd, args })

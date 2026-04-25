@@ -48,7 +48,16 @@ export function AccountPage({ session }: AccountPageProps) {
   useEffect(() => {
     fetchSubscription()
     refreshLocalState()
-    const off = window.electronAPI.cache.onProgress(setProgress)
+    const off = window.electronAPI.cache.onProgress((p) => {
+      setProgress(p)
+      // Refresh the cache stats on each progress event so the file count and
+      // total size tick up live as videos arrive — otherwise the user only
+      // sees the "Downloading 12/184" text and the headline number stays
+      // frozen at whatever it was before sync started.
+      if (p.phase === 'cached' || p.phase === 'downloading' || p.phase === 'done') {
+        window.electronAPI.cache.getStats().then(setCacheStats).catch(() => {})
+      }
+    })
     return off
   }, [])
 

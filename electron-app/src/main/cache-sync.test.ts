@@ -186,6 +186,72 @@ describe('cache-sync', () => {
       expect(fetchMock).toHaveBeenCalledTimes(1)
     })
 
+    it('writes the manifest BEFORE downloading any videos so the screensaver can pick up the new list mid-sync', async () => {
+      // Capture the manifest contents at the moment the first video download
+      // is requested. If the manifest is already on disk by then, the
+      // screensaver wakes up mid-sync and sees the full new list (videos that
+      // haven't been downloaded yet are skipped at play time).
+      const items = [
+        { src: 'https://r2.example/a.mp4', title: 'A', type: 'video' },
+        { src: 'https://r2.example/b.mp4', title: 'B', type: 'video' },
+      ]
+      let manifestAtFirstDownload: { items: { filename: string }[] } | null = null
+
+      fetchMock
+        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items, { totalCount: 2 })))
+        .mockImplementationOnce(async () => {
+          manifestAtFirstDownload = JSON.parse(readFileSync(PATHS.MANIFEST_PATH, 'utf8'))
+          return makeBinaryResponse(Buffer.from('a'))
+        })
+        .mockResolvedValueOnce(makeBinaryResponse(Buffer.from('b')))
+
+      await syncGallery('https://api/gallery', null, null)
+
+      expect(manifestAtFirstDownload).not.toBeNull()
+      expect(manifestAtFirstDownload!.items).toHaveLength(2)
+      expect(manifestAtFirstDownload!.items.map((i) => i.filename).sort()).toEqual(
+        items.map((i) => filenameForUrl(i.src)).sort(),
+      )
+    })
+
+    it('writes the manifest atomically (no partial JSON readable mid-write)', async () => {
+      // The manifest goes via a .tmp + rename so the screensaver — which polls
+      // it on every advance() — never observes a half-written file.
+      fetchMock
+        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse([])))
+      await syncGallery('https://api/gallery', null, null)
+
+      // Atomic write should leave no .tmp sibling behind on success
+      const dirContents = readdirSync(PATHS.CACHE_DIR)
+      expect(dirContents).toContain('gallery.json')
+      expect(dirContents).not.toContain('gallery.json.tmp')
+    })
+
+    it('only deletes orphans AFTER downloads complete (cache only grows mid-sync)', async () => {
+      // Pre-seed the cache with an orphan that won't be in the new gallery.
+      // While the new download is in flight, the orphan must still exist so
+      // the screensaver has something to play if it wakes up.
+      const orphanPath = join(PATHS.VIDEOS_DIR, 'orphan-from-previous-sync.bin')
+      writeFileSync(orphanPath, 'old leftover')
+      expect(existsSync(orphanPath)).toBe(true)
+
+      const newItems = [{ src: 'https://r2.example/new.mp4', title: 'New', type: 'video' }]
+      let orphanExistedDuringDownload = false
+
+      fetchMock
+        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(newItems)))
+        .mockImplementationOnce(async () => {
+          orphanExistedDuringDownload = existsSync(orphanPath)
+          return makeBinaryResponse(Buffer.from('new bytes'))
+        })
+
+      await syncGallery('https://api/gallery', null, null)
+
+      expect(orphanExistedDuringDownload).toBe(true) // cache only grows mid-sync
+      expect(existsSync(orphanPath)).toBe(false) // orphan cleaned up at end
+      expect(existsSync(join(PATHS.VIDEOS_DIR, filenameForUrl(newItems[0].src)))).toBe(true)
+    })
+
     it('removes cached files that are no longer in the gallery (e.g. subscription expired)', async () => {
       const all = [
         { src: 'https://r2.example/a.mp4', title: 'A', type: 'video' },

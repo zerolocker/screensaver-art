@@ -83,18 +83,12 @@ Without this, classes like `bg-primary` used only in `packages/ui` components wo
 | **Stripe** | Payments — $0.99/month, single tier |
 | **Cloudflare R2** | Hosts MP4 video assets (public, no auth) |
 | **Vercel** | Hosts the Next.js website |
-| **GitHub Pages** | Hosts `gallery.json` and `index.html` at `https://zerolocker.github.io/screensaver-art/` — deployed via GitHub Actions (only these 2 files, not the full repo) |
-
-### GitHub Pages deploy workflow (`.github/workflows/deploy-pages.yml`)
-- Triggered on push to `master` when `gallery.json` or `index.html` change (also supports `workflow_dispatch`)
-- Copies **only** `gallery.json` and `index.html` into a `_site/` directory and deploys via `actions/deploy-pages`
-- This ensures no source code (Swift, TypeScript, CLAUDE.md, etc.) is publicly accessible even though the repo is private
-- **Prerequisite**: in the repo Settings → Pages, source must be set to **"GitHub Actions"** (not "Deploy from a branch")
+| **GitHub Pages** | Hosts `gallery.json` and `index.html` at `https://zerolocker.github.io/screensaver-art/` — deployed natively from `master` (Settings → Pages → "Deploy from a branch") |
 
 ## Add new art pieces
 1. Upload MP4 to Cloudflare R2 bucket `screensaver-assets` under the `gallery/` prefix.
 2. Add an entry to `gallery.json` — include `src` (full R2 URL), `title`, `type`, `date`, `collection`, `image_prompt`, `video_prompt`.
-3. Push to `master` — the Pages workflow auto-deploys `gallery.json`; the screensaver picks it up on next launch (no rebuild needed).
+3. Push to `master` — GitHub Pages auto-deploys `gallery.json`; the screensaver picks it up on next launch (no rebuild needed).
 
 ---
 

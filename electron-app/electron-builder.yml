@@ -1,0 +1,53 @@
+appId: com.livingart.screensaver.app
+productName: Living Art Screensaver
+copyright: Copyright © 2026 Living Art
+
+directories:
+  output: dist
+  buildResources: build
+
+files:
+  - out/**/*
+  - package.json
+  - "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}"
+  - "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}"
+
+# The .saver bundle is built by scripts/bundle-saver.sh and copied into
+# resources/. electron-builder ships everything in extraResources at
+# Contents/Resources/ in the packaged app — exactly where installer.ts
+# looks for it via process.resourcesPath.
+extraResources:
+  - from: resources
+    to: .
+    filter:
+      - "**/*"
+
+mac:
+  category: public.app-category.utilities
+  target:
+    - dmg
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  hardenedRuntime: false
+  gatekeeperAssess: false
+  identity: null  # unsigned for now — sign before public release
+
+dmg:
+  artifactName: ${productName}-${version}.${ext}
+  title: ${productName}
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+
+win:
+  target:
+    - nsis
+  artifactName: ${productName}-${version}-${arch}.${ext}
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: false

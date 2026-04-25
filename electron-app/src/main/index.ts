@@ -1,29 +1,19 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
-const is = { dev: !app.isPackaged }
-import { stat, readdir, rm, mkdir } from 'fs/promises'
+import { stat, readdir, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
-import { homedir } from 'os'
+import { getStatus, install, uninstall, openSystemSettings } from './installer'
+import { syncGallery, clearCache, PATHS, type CachedManifest } from './cache-sync'
 
-// ---------------------------------------------------------------------------
-// Cache paths
-// ---------------------------------------------------------------------------
-function getCacheDir(): string {
-  if (process.platform === 'darwin') {
-    return join(homedir(), 'Library', 'Caches', 'ScreensaverArt')
-  }
-  // Windows: %LOCALAPPDATA%\ScreensaverArt
-  return join(process.env.LOCALAPPDATA || join(homedir(), 'AppData', 'Local'), 'ScreensaverArt')
-}
+const is = { dev: !app.isPackaged }
 
-const CACHE_DIR = getCacheDir()
-const VIDEOS_DIR = join(CACHE_DIR, 'videos')
+let mainWindow: BrowserWindow | null = null
 
 // ---------------------------------------------------------------------------
 // Window creation
 // ---------------------------------------------------------------------------
 function createWindow(): void {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1000,
     height: 700,
     minWidth: 800,
@@ -37,17 +27,14 @@ function createWindow(): void {
     },
   })
 
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
-  })
+  mainWindow.on('ready-to-show', () => mainWindow?.show())
+  mainWindow.on('closed', () => { mainWindow = null })
 
-  // Open external links in the default browser
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
 
-  // HMR in dev, load built files in production
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
@@ -56,7 +43,7 @@ function createWindow(): void {
 }
 
 // ---------------------------------------------------------------------------
-// IPC: Cache management
+// Cache stats — reads from the directory the Swift screensaver reads from
 // ---------------------------------------------------------------------------
 async function getDirSize(dirPath: string): Promise<number> {
   if (!existsSync(dirPath)) return 0
@@ -65,8 +52,7 @@ async function getDirSize(dirPath: string): Promise<number> {
   for (const entry of entries) {
     const full = join(dirPath, entry.name)
     if (entry.isFile()) {
-      const s = await stat(full)
-      total += s.size
+      total += (await stat(full)).size
     } else if (entry.isDirectory()) {
       total += await getDirSize(full)
     }
@@ -80,48 +66,58 @@ async function countFiles(dirPath: string): Promise<number> {
   return entries.filter((e) => e.isFile()).length
 }
 
+// ---------------------------------------------------------------------------
+// IPC
+// ---------------------------------------------------------------------------
 ipcMain.handle('cache:getStats', async () => {
-  const size = await getDirSize(VIDEOS_DIR)
-  const count = await countFiles(VIDEOS_DIR)
-  return { sizeBytes: size, fileCount: count, path: VIDEOS_DIR }
+  const sizeBytes = await getDirSize(PATHS.VIDEOS_DIR)
+  const fileCount = await countFiles(PATHS.VIDEOS_DIR)
+  return { sizeBytes, fileCount, path: PATHS.VIDEOS_DIR }
 })
 
 ipcMain.handle('cache:clear', async () => {
-  if (existsSync(VIDEOS_DIR)) {
-    await rm(VIDEOS_DIR, { recursive: true, force: true })
-    await mkdir(VIDEOS_DIR, { recursive: true })
-  }
+  await clearCache()
   return { success: true }
 })
 
-ipcMain.handle('cache:getDir', () => CACHE_DIR)
+ipcMain.handle('cache:getDir', () => PATHS.CACHE_DIR)
 
-ipcMain.handle('shell:openExternal', (_event, url: string) => {
-  shell.openExternal(url)
+ipcMain.handle(
+  'cache:sync',
+  async (_evt, payload: { apiUrl: string; accessToken: string | null }): Promise<{ ok: true; manifest: CachedManifest } | { ok: false; error: string }> => {
+    try {
+      const manifest = await syncGallery(payload.apiUrl, payload.accessToken, mainWindow)
+      return { ok: true, manifest }
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) }
+    }
+  },
+)
+
+ipcMain.handle('installer:status', () => getStatus())
+ipcMain.handle('installer:install', () => install())
+ipcMain.handle('installer:uninstall', () => uninstall())
+ipcMain.handle('installer:openSystemSettings', () => {
+  openSystemSettings()
+  return { ok: true }
 })
 
-ipcMain.handle('shell:openPath', (_event, path: string) => {
-  return shell.openPath(path)
-})
+ipcMain.handle('shell:openExternal', (_evt, url: string) => shell.openExternal(url))
+ipcMain.handle('shell:openPath', (_evt, path: string) => shell.openPath(path))
 
 // ---------------------------------------------------------------------------
-// App lifecycle
+// Lifecycle
 // ---------------------------------------------------------------------------
 app.whenReady().then(() => {
-  // Ensure cache dir exists
-  if (!existsSync(VIDEOS_DIR)) {
-    mkdir(VIDEOS_DIR, { recursive: true }).catch(() => {})
+  if (!existsSync(PATHS.VIDEOS_DIR)) {
+    mkdir(PATHS.VIDEOS_DIR, { recursive: true }).catch(() => {})
   }
-
   createWindow()
-
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  if (process.platform !== 'darwin') app.quit()
 })

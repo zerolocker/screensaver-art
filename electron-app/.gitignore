@@ -1,3 +1,5 @@
 node_modules/
 out/
 dist/
+resources/ScreensaverArt.saver/
+electron.vite.config.*.mjs

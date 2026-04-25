@@ -3,19 +3,26 @@ import ScreenSaver
 import AVFoundation
 
 // MARK: - Screensaver View
+//
+// Pure player. Reads the manifest written by the Electron companion app,
+// decrypts each video to a temp file, and crossfades between them.
+//
+// All auth, subscription, gallery-fetching, upsell, and configure-sheet logic
+// lives in the Electron app now. If the cache is empty (user hasn't synced
+// yet), we show a black screen with a hint.
 
 @objc(ScreensaverArtView)
 class ScreensaverArtView: ScreenSaverView {
 
     // MARK: State
 
-    private var items:         [ArtItem] = []
-    private var shuffledOrder: [Int]     = []
-    private var orderPos:      Int       = 0
-    private var isSubscribed:  Bool      = false
-    private var totalCount:    Int       = 0
-    private var freeLoopCount: Int       = 0
-    private let upsellAfterLoops         = 1
+    private var items:         [CachedItem] = []
+    private var shuffledOrder: [Int]        = []
+    private var orderPos:      Int          = 0
+    private var isSubscribed:  Bool         = true
+    private var totalCount:    Int          = 0
+    private var freeLoopCount: Int          = 0
+    private let upsellAfterLoops            = 1
 
     // MARK: A/B crossfade layers
 
@@ -27,24 +34,22 @@ class ScreensaverArtView: ScreenSaverView {
     private var playerB:  AVPlayer?
     private var loopObsA: Any?
     private var loopObsB: Any?
+    private var tmpURLA:  URL?
+    private var tmpURLB:  URL?
 
-    // MARK: UI components
+    // MARK: UI
 
     private var pillContainer: NSView?
     private var titleLabel:    NSTextField?
+    private var emptyState:    NSTextField?
     private var upsellOverlay: UpsellOverlay?
     private var upsellVisible  = false
 
     // MARK: Timing
 
-    private var advanceTimer:        Timer?
-    private let displayDuration:     TimeInterval = 8.0
-    private let fadeDuration:        TimeInterval = 1.5
-
-    // MARK: Configure sheet
-
-    private var configController = ConfigureSheetController()
-    private var configWindow:    NSWindow?
+    private var advanceTimer:    Timer?
+    private let displayDuration: TimeInterval = 8.0
+    private let fadeDuration:    TimeInterval = 1.5
 
     // MARK: Init
 
@@ -52,47 +57,34 @@ class ScreensaverArtView: ScreenSaverView {
         super.init(frame: frame, isPreview: isPreview)
         animationTimeInterval = 1.0
         buildUI()
-        loadGallery()
+        loadFromCache()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         animationTimeInterval = 1.0
         buildUI()
-        loadGallery()
+        loadFromCache()
     }
 
-    // MARK: Gallery loading
+    // MARK: Cache loading
 
-    private func loadGallery() {
-        // Offline-first: play from cache immediately if available
-        if let cached   = VideoCache.shared.loadGalleryCache(),
-           let response = try? JSONDecoder().decode(GalleryResponse.self, from: cached) {
-            applyGallery(response.items, isSubscribed: response.isSubscribed, totalCount: response.totalCount)
-        }
-
-        // Then refresh from network (respects daily revalidation cadence)
-        guard SubscriptionCache.shared.needsRevalidation || items.isEmpty else { return }
-        GalleryFetcher.shared.fetchWithTokenRefresh { [weak self] newItems, isSubscribed, totalCount in
-            guard let self, !newItems.isEmpty else { return }
-            self.applyGallery(newItems, isSubscribed: isSubscribed, totalCount: totalCount)
-        }
-    }
-
-    private func applyGallery(_ newItems: [ArtItem], isSubscribed: Bool, totalCount: Int) {
-        self.items         = newItems
-        self.isSubscribed  = isSubscribed
-        self.totalCount    = totalCount
-        self.shuffledOrder = Array(0..<newItems.count).shuffled()
-        self.orderPos      = 0
-        self.freeLoopCount = 0
+    private func loadFromCache() {
+        let manifest = CachedGallery.shared.loadManifest()
+        let newItems = (manifest?.items ?? []).filter { $0.isVideo }
+        items         = newItems
+        shuffledOrder = Array(0..<newItems.count).shuffled()
+        orderPos      = 0
+        isSubscribed  = manifest?.isSubscribed ?? true
+        totalCount    = manifest?.totalCount ?? 0
+        freeLoopCount = 0
         hideUpsell()
-        showCurrent()
-        startTimer()
-
-        // Eagerly cache the free videos so they're available offline
-        for item in newItems.prefix(API.freeItemCount) where item.isVideo {
-            VideoCache.shared.cacheInBackground(item.mediaURL)
+        if newItems.isEmpty {
+            showEmptyState()
+        } else {
+            hideEmptyState()
+            showCurrent()
+            startTimer()
         }
     }
 
@@ -185,6 +177,35 @@ class ScreensaverArtView: ScreenSaverView {
         ])
     }
 
+    // MARK: Empty state
+
+    private func showEmptyState() {
+        guard !isPreview else { return }
+        pillContainer?.isHidden = true
+        if emptyState == nil {
+            let lbl = NSTextField(labelWithString:
+                "Open the Living Art Screensaver app to sync your gallery.")
+            lbl.translatesAutoresizingMaskIntoConstraints = false
+            lbl.textColor = NSColor(white: 0.7, alpha: 1)
+            lbl.font      = NSFont.systemFont(ofSize: 16, weight: .regular)
+            lbl.alignment = .center
+            lbl.drawsBackground = false
+            lbl.isBezeled       = false
+            addSubview(lbl)
+            NSLayoutConstraint.activate([
+                lbl.centerXAnchor.constraint(equalTo: centerXAnchor),
+                lbl.centerYAnchor.constraint(equalTo: centerYAnchor),
+            ])
+            emptyState = lbl
+        }
+    }
+
+    private func hideEmptyState() {
+        emptyState?.removeFromSuperview()
+        emptyState = nil
+        pillContainer?.isHidden = false
+    }
+
     // MARK: Playback
 
     private func showCurrent() {
@@ -192,20 +213,19 @@ class ScreensaverArtView: ScreenSaverView {
         show(items[shuffledOrder[orderPos]])
     }
 
-    private func show(_ item: ArtItem) {
-        let incoming: CALayer = (activeSlot === slotA) ? slotB! : slotA!
+    private func show(_ item: CachedItem) {
+        let incoming: CALayer  = (activeSlot === slotA) ? slotB! : slotA!
         let outgoing: CALayer? = activeSlot
 
         if let out = outgoing { layer?.insertSublayer(incoming, above: out) }
         clearSlot(incoming)
 
-        let playURL = item.isVideo ? VideoCache.shared.playbackURL(for: item.mediaURL) : item.mediaURL
-        if item.isVideo {
-            fillVideo(slot: incoming, url: playURL, isA: incoming === slotA)
-            if playURL == item.mediaURL { VideoCache.shared.cacheInBackground(item.mediaURL) }
-        } else {
-            fillImage(slot: incoming, url: playURL)
+        guard let url = CachedGallery.shared.playableURL(for: item) else {
+            // Skip and try the next one.
+            advance()
+            return
         }
+        fillVideo(slot: incoming, url: url, isA: incoming === slotA)
 
         CATransaction.begin()
         CATransaction.setAnimationDuration(fadeDuration)
@@ -254,7 +274,7 @@ class ScreensaverArtView: ScreenSaverView {
         upsellVisible = true
         advanceTimer?.invalidate()
 
-        let overlay = UpsellOverlay(frame: bounds, totalCount: totalCount > 0 ? totalCount : 123)
+        let overlay = UpsellOverlay(frame: bounds, totalCount: totalCount > 0 ? totalCount : items.count)
         overlay.autoresizingMask = [.width, .height]
         overlay.alphaValue = 0
         addSubview(overlay)
@@ -287,10 +307,14 @@ class ScreensaverArtView: ScreenSaverView {
             playerA?.pause(); playerA = nil
             if let obs = loopObsA { NotificationCenter.default.removeObserver(obs) }
             loopObsA = nil
+            CachedGallery.shared.releasePlayable(tmpURLA)
+            tmpURLA = nil
         } else {
             playerB?.pause(); playerB = nil
             if let obs = loopObsB { NotificationCenter.default.removeObserver(obs) }
             loopObsB = nil
+            CachedGallery.shared.releasePlayable(tmpURLB)
+            tmpURLB = nil
         }
     }
 
@@ -312,18 +336,8 @@ class ScreensaverArtView: ScreenSaverView {
             queue:   .main
         ) { _ in player.seek(to: .zero); player.play() }
 
-        if isA { playerA = player; loopObsA = obs }
-        else   { playerB = player; loopObsB = obs }
-    }
-
-    private func fillImage(slot: CALayer, url: URL) {
-        URLSession.shared.dataTask(with: url) { [weak slot] data, _, _ in
-            guard let data, let img = NSImage(data: data) else { return }
-            DispatchQueue.main.async {
-                slot?.contentsGravity = .resizeAspectFill
-                slot?.contents        = img
-            }
-        }.resume()
+        if isA { playerA = player; loopObsA = obs; tmpURLA = url }
+        else   { playerB = player; loopObsB = obs; tmpURLB = url }
     }
 
     // MARK: Timer
@@ -331,7 +345,7 @@ class ScreensaverArtView: ScreenSaverView {
     private func startTimer() {
         advanceTimer?.invalidate()
         advanceTimer = Timer.scheduledTimer(withTimeInterval: displayDuration,
-                                             repeats: true) { [weak self] _ in self?.advance() }
+                                            repeats: true) { [weak self] _ in self?.advance() }
     }
 
     // MARK: ScreenSaverView lifecycle
@@ -340,16 +354,9 @@ class ScreensaverArtView: ScreenSaverView {
 
     override func startAnimation() {
         super.startAnimation()
-        if items.isEmpty {
-            loadGallery()
-        } else if SubscriptionCache.shared.needsRevalidation {
-            GalleryFetcher.shared.fetchWithTokenRefresh { [weak self] newItems, isSubscribed, totalCount in
-                guard let self, !newItems.isEmpty else { return }
-                self.applyGallery(newItems, isSubscribed: isSubscribed, totalCount: totalCount)
-            }
-        } else {
-            startTimer()
-        }
+        // Re-read the manifest every time we wake up so a fresh sync from the
+        // Electron app is picked up without rebooting the screensaver.
+        loadFromCache()
     }
 
     override func stopAnimation() {
@@ -359,16 +366,5 @@ class ScreensaverArtView: ScreenSaverView {
         playerB?.pause()
     }
 
-    // MARK: Configure sheet
-
-    override var hasConfigureSheet: Bool { true }
-
-    override var configureSheet: NSWindow? {
-        if configWindow == nil {
-            configWindow = configController.makeWindow { [weak self] in
-                self?.loadGallery()
-            }
-        }
-        return configWindow
-    }
+    override var hasConfigureSheet: Bool { false }
 }

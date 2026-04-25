@@ -4,11 +4,42 @@ export interface CacheStats {
   path: string
 }
 
+export interface InstallerStatus {
+  platform: NodeJS.Platform
+  supported: boolean
+  bundledSaverExists: boolean
+  installed: boolean
+  installedPath: string | null
+}
+
+export type CacheProgress =
+  | { phase: 'fetching-gallery' }
+  | { phase: 'cached' | 'downloading' | 'error'; index: number; total: number; title: string; error?: string }
+  | { phase: 'done'; total: number }
+
+export interface CachedManifest {
+  items: { filename: string; title: string; type: string }[]
+  isSubscribed: boolean
+  totalCount: number
+  syncedAt: string
+}
+
 export interface ElectronAPI {
   cache: {
     getStats: () => Promise<CacheStats>
     clear: () => Promise<{ success: boolean }>
     getDir: () => Promise<string>
+    sync: (
+      apiUrl: string,
+      accessToken: string | null,
+    ) => Promise<{ ok: true; manifest: CachedManifest } | { ok: false; error: string }>
+    onProgress: (cb: (p: CacheProgress) => void) => () => void
+  }
+  installer: {
+    status: () => Promise<InstallerStatus>
+    install: () => Promise<{ ok: boolean; error?: string }>
+    uninstall: () => Promise<{ ok: boolean; error?: string }>
+    openSystemSettings: () => Promise<{ ok: true }>
   }
   shell: {
     openExternal: (url: string) => Promise<void>

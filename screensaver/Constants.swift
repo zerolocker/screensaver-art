@@ -1,11 +1,33 @@
 import Foundation
 
-// MARK: - API Constants
+// MARK: - Constants
 
-enum API {
-    static let supabaseURL     = "https://fcrkikggdvgshuopshgm.supabase.co"
-    static let supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjcmtpa2dnZHZnc2h1b3BzaGdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NTAyNTUsImV4cCI6MjA4OTEyNjI1NX0.ia0iWugP97L0cOX4OTI20vB9C3U1_f4w84Xumjsvc7c"
-    static let galleryEndpoint = "https://living-art-screensaver.com/api/gallery"
-    static let subscribeURL    = "https://living-art-screensaver.com"
-    static let freeItemCount   = 2  // items visible without a subscription
+/// Cache layout — populated and managed entirely by the Electron companion app.
+/// The screensaver only reads.
+enum Cache {
+    /// `~/Library/Caches/ScreensaverArt/`
+    static let baseDir: URL = {
+        let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        return caches.appendingPathComponent("ScreensaverArt", isDirectory: true)
+    }()
+
+    /// `~/Library/Caches/ScreensaverArt/videos/` — `.bin` files, XOR-obfuscated.
+    static let videosDir: URL = baseDir.appendingPathComponent("videos", isDirectory: true)
+
+    /// `~/Library/Caches/ScreensaverArt/gallery.json` — manifest written by Electron.
+    static let manifestFile: URL = baseDir.appendingPathComponent("gallery.json")
+}
+
+/// Cache-file obfuscation. Mirrors electron-app/src/main/obfuscation.ts —
+/// if you change either, change both. Not real cryptography; the goal is to
+/// make the `.bin` files in the cache directory inert without our reader,
+/// to deter casual extraction for a $0.99 product.
+enum Obfuscation {
+    static let magic: [UInt8] = Array("LARTV001".utf8)
+    static let key: [UInt8] = [
+        0x9c, 0x4d, 0x1f, 0x7a, 0xe3, 0x55, 0xa1, 0x08,
+        0x6b, 0xd2, 0x44, 0xc7, 0x18, 0xf9, 0x82, 0x37,
+        0x2e, 0xa6, 0x71, 0xbb, 0x09, 0x5d, 0xe4, 0xc1,
+        0x76, 0x33, 0x88, 0x4f, 0xaa, 0x12, 0xb9, 0x60,
+    ]
 }

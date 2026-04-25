@@ -230,14 +230,6 @@
     "video_prompt": "Animate this Minoan Pottery artwork, fluid and subtle movement"
   },
   {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/renaissance_animated.mp4",
-    "title": "Serene Castle - Renaissance (AI Animated)",
-    "type": "video",
-    "date": "2026-04-06",
-    "image_prompt": "A beautiful Renaissance oil painting of a serene landscape with a castle and a lake, 16th century style.",
-    "video_prompt": "Gentle rippling water on the lake, soft wind blowing through the trees, the clouds drift slowly in the sky. Serene and majestic."
-  },
-  {
     "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/impressionism_animated.mp4",
     "title": "Parisian Rain - Impressionism (AI Animated)",
     "type": "video",
@@ -743,15 +735,6 @@
     "date": "2026-03-13",
     "image_prompt": "A highly detailed Sumerian stone wall relief showing an ancient king receiving gifts, carved in limestone, 3rd millennium BC style, intricate cuneiform inscriptions in the background.",
     "video_prompt": "Subtle animation: the torchlight flickers, casting moving shadows across the deep carvings of the king and cuneiform inscriptions, very slow panning shot across the ancient stone.",
-    "collection": "classic"
-  },
-  {
-    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/carolingian_animated.mp4",
-    "title": "Medieval Scholars - Carolingian Illumination (AI Animated)",
-    "type": "video",
-    "date": "2026-03-13",
-    "image_prompt": "A rich Carolingian illuminated manuscript page depicting medieval scholars in a scriptorium, intricate Celtic knot borders, gold leaf, vibrant lapis lazuli blues and reds, 9th-century style.",
-    "video_prompt": "Subtle animation: the candlelight flickers, the gold leaf on the borders shimmers gently, and the scholars appear to be slowly writing on the parchment, giving it a lively medieval atmosphere.",
     "collection": "classic"
   },
   {

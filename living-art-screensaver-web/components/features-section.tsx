@@ -42,7 +42,7 @@ export function FeaturesSection() {
               <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
                 <feature.icon className="w-7 h-7 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">
+              <h3 className="font-serif text-2xl font-medium text-foreground mb-3">
                 {feature.title}
               </h3>
               <p className="text-muted-foreground leading-relaxed">

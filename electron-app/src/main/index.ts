@@ -22,6 +22,10 @@ function createWindow(): void {
     show: false,
     titleBarStyle: 'hiddenInset',
     backgroundColor: '#141414',
+    // macOS uses the .icns baked into the .app bundle (via electron-builder
+    // and build/icon.png). For Windows/Linux dev runs, point at the same
+    // source PNG so window/taskbar icons are branded.
+    icon: is.dev ? join(__dirname, '../../build/icon.png') : undefined,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,

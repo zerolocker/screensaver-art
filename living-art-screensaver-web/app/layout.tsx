@@ -18,20 +18,7 @@ export const metadata: Metadata = {
   description: 'Turn your idle Mac display into a dynamic, evolving art gallery. AI-powered animated artworks across all art styles, with nightly curation.',
   generator: 'v0.app',
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
+    icon: { url: '/icon.svg', type: 'image/svg+xml' },
     apple: '/apple-icon.png',
   },
 }

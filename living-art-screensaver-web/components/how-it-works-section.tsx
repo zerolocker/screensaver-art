@@ -52,7 +52,7 @@ export function HowItWorksSection() {
                 <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4">
                   {step.step}
                 </span>
-                <h3 className="text-xl font-semibold text-foreground mb-3">
+                <h3 className="font-serif text-2xl font-medium text-foreground mb-3">
                   {step.title}
                 </h3>
                 <p className="text-muted-foreground leading-relaxed max-w-sm mx-auto">

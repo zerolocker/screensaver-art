@@ -14,8 +14,9 @@ This is a pnpm workspace monorepo containing:
 | Directory | What it is |
 |---|---|
 | `packages/ui/` | Shared React components (auth forms, subscription card, base UI) |
-| `electron-app/` | Cross-platform desktop app — the **only thing the user installs**. Handles auth, billing portal, video sync, and installs the platform-native screensaver. |
-| `screensaver/` | Native macOS screensaver bundle (Swift). Pure player — no auth, no network. Reads videos from a local cache populated by the Electron app. |
+| `electron-app/` | Cross-platform desktop app — the **only thing the user installs**. Handles auth, billing portal, video sync, and installs + activates the platform-native screensaver. |
+| `screensaver-macos/` | Native macOS screensaver as a modern **`.appex`** ExtensionKit extension (Swift, built with Xcode/xcodegen). Pure player — no auth, no network. Reads videos from a shared local cache populated by the Electron app. |
+| `screensaver-helper/` | Tiny SwiftPM CLI (`lart-screensaver-helper`) wrapping PaperSaver so the app can detect/set the active screensaver (one-click "Set"). |
 | `living-art-screensaver-web/` | Marketing site + account/billing portal (Next.js) |
 | `index.html` | Standalone web preview — no build step |
 | `gallery.json` | Master playlist — single source of truth for all artworks |
@@ -26,8 +27,8 @@ This is a pnpm workspace monorepo containing:
 
 1. User downloads the **Living Art Screensaver** desktop app (Electron).
 2. They sign in inside the app and (optionally) subscribe via Stripe at $0.99/month.
-3. The app fetches the gallery from `living-art-screensaver.com/api/gallery`, downloads each MP4, **XOR-obfuscates** it, and writes it into the screensaver's sandbox-container cache (`~/Library/Containers/com.apple.ScreenSaver.Engine.legacyScreenSaver/Data/Library/Caches/ScreensaverArt/videos/`). It writes there, not `~/Library/Caches/`, because the `.saver` runs sandboxed and can only read inside its own container.
-4. The app installs the native screensaver (`.saver` bundle on macOS) into `~/Library/Screen Savers/` — this only happens once. Subsequent runs of the app just refresh the cache.
+3. The app fetches the gallery from `living-art-screensaver.com/api/gallery`, downloads each MP4, **XOR-obfuscates** it, and writes it into the shared cache at `/Users/Shared/LivingArtScreensaver/videos/`. `/Users/Shared/` is nobody's app container, so writing there triggers no macOS "access data from other apps" prompt; the sandboxed screensaver reads it via a filesystem-exception entitlement.
+4. The app installs the native screensaver — on macOS it registers the embedded **`.appex`** extension with `pluginkit` (one-time), then offers a one-click "Set" to make it the active screensaver. Subsequent runs of the app just refresh the cache.
 5. The screensaver itself is a thin player: it reads the cache manifest, decrypts each `.bin` to a temp file, and crossfades between them. It has no network access and no UI for accounts.
 
 The result: only one user-facing installer, and the screensaver process itself is small, offline, and free of subscription-management complexity.
@@ -58,18 +59,17 @@ Cloudflare R2          GitHub Pages           Vercel
          │  - Sign in to Supabase                     │
          │  - Fetch /api/gallery with Bearer token    │
          │  - Download MP4s, XOR-obfuscate, cache     │
-         │  - Install ScreensaverArt.saver into       │
-         │    ~/Library/Screen Savers/                │
+         │  - pluginkit -a the embedded .appex        │
+         │  - One-click "Set" (PaperSaver helper)     │
          └────────────────────┬───────────────────────┘
                               │ writes
                               ▼
-      ~/Library/Containers/com.apple.ScreenSaver.Engine.legacyScreenSaver/
-          Data/Library/Caches/ScreensaverArt/
+              /Users/Shared/LivingArtScreensaver/
               ├── gallery.json  (manifest)
               └── videos/*.bin  (XOR-obfuscated)
                               ▲
-                              │ reads
-         ┌──────── ScreensaverArt.saver (player) ─────┐
+                              │ reads (sandbox filesystem-exception entitlement)
+         ┌──── ScreensaverArtExtension.appex (player) ┐
          │  - Loads manifest                          │
          │  - Decrypts each .bin to a temp .mp4       │
          │  - A/B crossfade with AVPlayer             │
@@ -80,7 +80,7 @@ Cloudflare R2          GitHub Pages           Vercel
 - **Auth:** Supabase email/password, handled in the Electron app. Sessions persist in Chromium localStorage.
 - **Billing:** Stripe ($0.99/month). Webhooks sync subscription status to Supabase. The website hosts the Stripe portal; the Electron app deep-links to it.
 - **Gallery API:** `GET /api/gallery?collection=classic` — same gating endpoint as before. Free users get 2 items, subscribers get the full list. The Electron app downloads whatever the API returns.
-- **Cache obfuscation:** every video is XOR'd byte-by-byte with a fixed 32-byte cycling key plus an 8-byte magic header (`LARTV001`), and stored on disk as `<hash>.bin`. The same key + algorithm lives in both `electron-app/src/main/obfuscation.ts` and `screensaver/Constants.swift`. This is not cryptography — anyone willing to disassemble either binary can recover the key. The intent is to deter the casual "drag the MP4 out of the cache and post it" path. Anything stronger would be over-engineered for a $0.99 product.
+- **Cache obfuscation:** every video is XOR'd byte-by-byte with a fixed 32-byte cycling key plus an 8-byte magic header (`LARTV001`), and stored on disk as `<hash>.bin`. The same key + algorithm lives in both `electron-app/src/main/obfuscation.ts` and `screensaver-macos/ScreensaverArtExtension/Constants.swift`. This is not cryptography — anyone willing to disassemble either binary can recover the key. The intent is to deter the casual "drag the MP4 out of the cache and post it" path. Anything stronger would be over-engineered for a $0.99 product.
 
 ---
 
@@ -90,25 +90,25 @@ Cloudflare R2          GitHub Pages           Vercel
 pnpm install              # install all workspace dependencies from repo root
 ```
 
-**Build & install the screensaver directly (developer shortcut):**
+**Build the screensaver directly (developer shortcut):** *(requires Xcode + `brew install xcodegen`)*
 ```bash
-bash screensaver/build.sh --install
-# Compiles Swift and installs to ~/Library/Screen Savers/ScreensaverArt.saver
+bash screensaver-macos/build.sh Debug   # fast, host-arch; auto-registers via pluginkit
+# Then pick it in System Settings → Screen Saver, or set it active from screensaver-helper.
 ```
 
 **Run the Electron desktop app:**
 ```bash
 cd electron-app
-pnpm dev                  # bundles the .saver, then launches Electron with HMR
+pnpm dev                  # builds the .appex + helper, then launches Electron with HMR
 ```
 
 **Build a distributable Electron installer:**
 ```bash
 cd electron-app
-pnpm dist:mac             # → electron-app/dist/Living Art Screensaver-1.0.0.dmg
+pnpm dist:mac             # → electron-app/dist/Living Art Screensaver-1.0.0-universal.dmg
 pnpm dist:win             # → electron-app/dist/Living Art Screensaver Setup-1.0.0.exe
 ```
-The DMG is unsigned by default. Sign + notarize before public release.
+The macOS DMG is **universal** (Intel + Apple Silicon) but unsigned by default. Sign + notarize before public release.
 
 **Run the website locally:**
 ```bash

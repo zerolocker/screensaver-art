@@ -7,9 +7,10 @@ export interface CacheStats {
 export interface InstallerStatus {
   platform: NodeJS.Platform
   supported: boolean
-  bundledSaverExists: boolean
-  installed: boolean
-  installedPath: string | null
+  bundledExtensionExists: boolean
+  registered: boolean
+  active: boolean
+  registeredPath: string | null
 }
 
 export type CacheProgress =
@@ -39,6 +40,7 @@ export interface ElectronAPI {
     status: () => Promise<InstallerStatus>
     install: () => Promise<{ ok: boolean; error?: string }>
     uninstall: () => Promise<{ ok: boolean; error?: string }>
+    activate: () => Promise<{ ok: boolean; error?: string }>
     openSystemSettings: () => Promise<{ ok: true }>
   }
   shell: {

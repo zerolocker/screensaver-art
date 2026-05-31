@@ -4,13 +4,13 @@
   "private": true,
   "main": "./out/main/index.js",
   "scripts": {
-    "bundle-saver": "bash scripts/bundle-saver.sh",
-    "dev": "pnpm bundle-saver && electron-vite dev",
-    "build": "pnpm bundle-saver && electron-vite build",
+    "bundle-appex": "bash scripts/bundle-appex.sh",
+    "dev": "pnpm bundle-appex && electron-vite dev",
+    "build": "pnpm bundle-appex && electron-vite build",
     "preview": "electron-vite preview",
     "start": "electron .",
     "dist": "pnpm build && electron-builder",
-    "dist:mac": "pnpm build && electron-builder --mac",
+    "dist:mac": "pnpm build && electron-builder --mac --universal",
     "dist:win": "pnpm build && electron-builder --win",
     "test": "vitest run",
     "test:watch": "vitest"

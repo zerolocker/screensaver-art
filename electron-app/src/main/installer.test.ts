@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { mkdirSync, writeFileSync, existsSync, rmSync } from 'fs'
+import { mkdtempSync, mkdirSync, writeFileSync, existsSync, rmSync } from 'fs'
+import { tmpdir } from 'os'
 import { join } from 'path'
 import { EventEmitter } from 'events'
 
-// Same trick as cache-sync.test.ts: redirect HOME so installedSaverPath()
-// (which is `~/Library/Screen Savers/...`) lands in a tmp dir, not in the
-// developer's real Screen Savers folder.
-const FAKE_HOME = vi.hoisted(() => {
+// Point the appex/helper at a throwaway tmp dir so the test never touches the
+// real resources/ artifacts (and so "missing"/"present" cases are controllable).
+const TMP = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const fs = require('fs') as typeof import('fs')
   // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -14,7 +14,8 @@ const FAKE_HOME = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const path = require('path') as typeof import('path')
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'installer-test-'))
-  process.env.HOME = dir
+  process.env.LART_APPEX_PATH = path.join(dir, 'ScreensaverArtExtension.appex')
+  process.env.LART_HELPER_PATH = path.join(dir, 'lart-screensaver-helper')
   return dir
 })
 
@@ -24,18 +25,15 @@ vi.mock('electron', () => ({
   app: { isPackaged: false },
 }))
 
-import { getStatus, install, uninstall, openSystemSettings, _testHooks } from './installer'
+import { getStatus, install, uninstall, activate, openSystemSettings, _testHooks } from './installer'
 
-const SAVER_NAME = 'ScreensaverArt.saver'
-const installedPath = () => join(FAKE_HOME, 'Library', 'Screen Savers', SAVER_NAME)
-const bundledPath = () => join(__dirname, '..', '..', 'resources', SAVER_NAME)
+const APPEX = () => process.env.LART_APPEX_PATH!
+const EXTENSION_BUNDLE_ID = 'com.livingart.screensaver.app.Extension'
 
 const realSpawn = _testHooks.spawn
+const realRun = _testHooks.run
 
-// Capture spawn calls instead of running real `killall`/`xattr`/`open` against
-// the dev machine. installer.ts goes through _testHooks.spawn so this swap is
-// the only intervention needed — vi.mock on 'child_process' doesn't propagate
-// transitively into sibling modules even under vitest 4.x.
+// Capture fire-and-forget spawn calls (killall/open) instead of running them.
 const spawnCalls: { cmd: string; args: ReadonlyArray<string> }[] = []
 function fakeSpawn(cmd: string, args: ReadonlyArray<string>) {
   spawnCalls.push({ cmd, args })
@@ -45,10 +43,31 @@ function fakeSpawn(cmd: string, args: ReadonlyArray<string>) {
   return ee as unknown as ReturnType<typeof realSpawn>
 }
 
-// Make a fake .saver bundle (a directory with a marker file inside)
-function plantFakeBundle(at: string, marker = 'fake') {
+// Canned output for the capturing runner (pluginkit queries + helper calls).
+type RunResult = { code: number; stdout: string; stderr: string }
+const runCalls: { cmd: string; args: ReadonlyArray<string> }[] = []
+let runImpl: (cmd: string, args: ReadonlyArray<string>) => RunResult
+function fakeRun(cmd: string, args: ReadonlyArray<string>) {
+  runCalls.push({ cmd, args })
+  return Promise.resolve(runImpl(cmd, args))
+}
+
+// Default canned behaviour: nothing registered, helper says inactive.
+function defaultRunImpl(cmd: string, args: ReadonlyArray<string>): RunResult {
+  if (cmd.endsWith('pluginkit') && args.includes('-m')) return { code: 0, stdout: '', stderr: '' }
+  if (cmd === APPEX() || cmd.endsWith('lart-screensaver-helper')) {
+    // helper
+    if (args[0] === 'status') return { code: 0, stdout: '{"active":false}', stderr: '' }
+  }
+  if (cmd === process.env.LART_HELPER_PATH) {
+    if (args[0] === 'status') return { code: 0, stdout: '{"active":false}', stderr: '' }
+  }
+  return { code: 0, stdout: '', stderr: '' }
+}
+
+function plantBundle(at: string) {
   mkdirSync(at, { recursive: true })
-  writeFileSync(join(at, 'marker.txt'), marker)
+  writeFileSync(join(at, 'marker.txt'), 'fake')
 }
 
 const ORIGINAL_PLATFORM = process.platform
@@ -59,51 +78,69 @@ function setPlatform(p: NodeJS.Platform) {
 describe('installer', () => {
   beforeEach(() => {
     spawnCalls.length = 0
+    runCalls.length = 0
+    runImpl = defaultRunImpl
     _testHooks.spawn = fakeSpawn as unknown as typeof realSpawn
+    _testHooks.run = fakeRun as unknown as typeof realRun
     setPlatform('darwin')
+    if (existsSync(APPEX())) rmSync(APPEX(), { recursive: true, force: true })
   })
 
   afterEach(() => {
     _testHooks.spawn = realSpawn
+    _testHooks.run = realRun
     setPlatform(ORIGINAL_PLATFORM)
-    if (existsSync(installedPath())) rmSync(installedPath(), { recursive: true, force: true })
-    if (existsSync(bundledPath())) rmSync(bundledPath(), { recursive: true, force: true })
+    if (existsSync(APPEX())) rmSync(APPEX(), { recursive: true, force: true })
   })
 
+  // A pluginkit -m line that includes our extension, for the "registered" cases.
+  const registeredLine = `    ${EXTENSION_BUNDLE_ID}(1.0.0)\tUUID\t2026-05-31\t${APPEX()}`
+
   describe('getStatus', () => {
-    it('reports unsupported on non-darwin platforms', () => {
+    it('reports unsupported on non-darwin platforms', async () => {
       setPlatform('linux')
-      const s = getStatus()
+      const s = await getStatus()
       expect(s.supported).toBe(false)
-      expect(s.installed).toBe(false)
-      expect(s.bundledSaverExists).toBe(false)
-      expect(s.installedPath).toBeNull()
+      expect(s.registered).toBe(false)
+      expect(s.active).toBe(false)
+      expect(s.bundledExtensionExists).toBe(false)
+      expect(s.registeredPath).toBeNull()
       expect(s.platform).toBe('linux')
     })
 
-    it('reports supported=true on darwin', () => {
-      const s = getStatus()
+    it('reports supported=true on darwin', async () => {
+      const s = await getStatus()
       expect(s.supported).toBe(true)
       expect(s.platform).toBe('darwin')
     })
 
-    it('detects an installed bundle', () => {
-      plantFakeBundle(installedPath())
-      const s = getStatus()
-      expect(s.installed).toBe(true)
-      expect(s.installedPath).toBe(installedPath())
+    it('detects a bundled extension in resources/', async () => {
+      plantBundle(APPEX())
+      const s = await getStatus()
+      expect(s.bundledExtensionExists).toBe(true)
     })
 
-    it('reports installed=false when nothing is in Screen Savers', () => {
-      const s = getStatus()
-      expect(s.installed).toBe(false)
-      expect(s.installedPath).toBeNull()
+    it('parses registration + path from pluginkit output', async () => {
+      runImpl = (cmd, args) => {
+        if (cmd.endsWith('pluginkit') && args.includes('-m')) {
+          return { code: 0, stdout: registeredLine, stderr: '' }
+        }
+        return defaultRunImpl(cmd, args)
+      }
+      const s = await getStatus()
+      expect(s.registered).toBe(true)
+      expect(s.registeredPath).toBe(APPEX())
     })
 
-    it('detects a bundled .saver in resources/', () => {
-      plantFakeBundle(bundledPath())
-      const s = getStatus()
-      expect(s.bundledSaverExists).toBe(true)
+    it('reflects the helper active state', async () => {
+      runImpl = (cmd, args) => {
+        if (cmd === process.env.LART_HELPER_PATH && args[0] === 'status') {
+          return { code: 0, stdout: '{"active":true}', stderr: '' }
+        }
+        return defaultRunImpl(cmd, args)
+      }
+      const s = await getStatus()
+      expect(s.active).toBe(true)
     })
   })
 
@@ -115,48 +152,36 @@ describe('installer', () => {
       expect(result.error).toMatch(/win32/)
     })
 
-    it('returns an error if the bundled .saver is missing', async () => {
-      // Make sure nothing is bundled
-      if (existsSync(bundledPath())) rmSync(bundledPath(), { recursive: true, force: true })
+    it('returns an error if the bundled extension is missing', async () => {
       const result = await install()
       expect(result.ok).toBe(false)
       expect(result.error).toMatch(/Bundled screensaver missing/)
     })
 
-    it('copies the bundled .saver into ~/Library/Screen Savers/', async () => {
-      plantFakeBundle(bundledPath(), 'v1')
+    it('registers via pluginkit -a and confirms via re-query', async () => {
+      plantBundle(APPEX())
+      // After -a, registration query returns our extension.
+      runImpl = (cmd, args) => {
+        if (cmd.endsWith('pluginkit') && args.includes('-m')) {
+          return { code: 0, stdout: registeredLine, stderr: '' }
+        }
+        return { code: 0, stdout: '', stderr: '' }
+      }
       const result = await install()
       expect(result.ok).toBe(true)
-      expect(existsSync(installedPath())).toBe(true)
-      // Marker file came along — full directory copy
-      expect(existsSync(join(installedPath(), 'marker.txt'))).toBe(true)
+      // killall ran (fire-and-forget) before the pluginkit -a run.
+      expect(spawnCalls.some((c) => c.cmd === 'sh')).toBe(true)
+      const add = runCalls.find((c) => c.cmd.endsWith('pluginkit') && c.args.includes('-a'))
+      expect(add).toBeDefined()
+      expect(add!.args).toEqual(['-a', APPEX()])
     })
 
-    it('overwrites a stale installed bundle (kills procs first, then copies)', async () => {
-      plantFakeBundle(installedPath(), 'old')
-      plantFakeBundle(bundledPath(), 'new')
-
+    it('fails when pluginkit does not register the extension', async () => {
+      plantBundle(APPEX())
+      runImpl = () => ({ code: 1, stdout: '', stderr: 'boom' }) // -m stays empty → not registered
       const result = await install()
-      expect(result.ok).toBe(true)
-
-      // Marker from the new bundle, not the old
-      const fs = await import('fs/promises')
-      const marker = await fs.readFile(join(installedPath(), 'marker.txt'), 'utf8')
-      expect(marker).toBe('new')
-
-      // killall ran before xattr (process kill comes first)
-      const cmds = spawnCalls.map((c) => c.cmd)
-      expect(cmds).toContain('sh') // killall is wrapped in `sh -c`
-      expect(cmds).toContain('xattr')
-      expect(cmds.indexOf('sh')).toBeLessThan(cmds.indexOf('xattr'))
-    })
-
-    it('strips the quarantine xattr after installing', async () => {
-      plantFakeBundle(bundledPath())
-      await install()
-      const xattrCall = spawnCalls.find((c) => c.cmd === 'xattr')
-      expect(xattrCall).toBeDefined()
-      expect(xattrCall!.args).toEqual(['-dr', 'com.apple.quarantine', installedPath()])
+      expect(result.ok).toBe(false)
+      expect(result.error).toMatch(/failed to register/)
     })
   })
 
@@ -167,19 +192,44 @@ describe('installer', () => {
       expect(result.ok).toBe(false)
     })
 
-    it('removes the installed bundle', async () => {
-      plantFakeBundle(installedPath())
-      expect(existsSync(installedPath())).toBe(true)
-
+    it('runs pluginkit -r on the registered path', async () => {
+      runImpl = (cmd, args) => {
+        if (cmd.endsWith('pluginkit') && args.includes('-m')) {
+          return { code: 0, stdout: registeredLine, stderr: '' }
+        }
+        return { code: 0, stdout: '', stderr: '' }
+      }
       const result = await uninstall()
       expect(result.ok).toBe(true)
-      expect(existsSync(installedPath())).toBe(false)
+      const rm = runCalls.find((c) => c.cmd.endsWith('pluginkit') && c.args.includes('-r'))
+      expect(rm).toBeDefined()
+      expect(rm!.args).toEqual(['-r', APPEX()])
+    })
+  })
+
+  describe('activate', () => {
+    it('runs the helper activate and succeeds on exit 0', async () => {
+      runImpl = (cmd, args) => {
+        if (cmd === process.env.LART_HELPER_PATH && args[0] === 'activate') {
+          return { code: 0, stdout: '{"active":true}', stderr: '' }
+        }
+        return defaultRunImpl(cmd, args)
+      }
+      const result = await activate()
+      expect(result.ok).toBe(true)
+      expect(runCalls.some((c) => c.cmd === process.env.LART_HELPER_PATH && c.args[0] === 'activate')).toBe(true)
     })
 
-    it('is a no-op when nothing is installed', async () => {
-      expect(existsSync(installedPath())).toBe(false)
-      const result = await uninstall()
-      expect(result.ok).toBe(true)
+    it('surfaces the helper error on failure', async () => {
+      runImpl = (cmd, args) => {
+        if (cmd === process.env.LART_HELPER_PATH && args[0] === 'activate') {
+          return { code: 1, stdout: '', stderr: 'activate failed: nope' }
+        }
+        return defaultRunImpl(cmd, args)
+      }
+      const result = await activate()
+      expect(result.ok).toBe(false)
+      expect(result.error).toMatch(/activate failed: nope/)
     })
   })
 
@@ -195,7 +245,6 @@ describe('installer', () => {
       expect(spawnCalls).toHaveLength(1)
       expect(spawnCalls[0].cmd).toBe('sh')
       expect(spawnCalls[0].args[0]).toBe('-c')
-      // The chained-fallback open command should reference the screen-saver pane
       expect(spawnCalls[0].args[1]).toMatch(/ScreenSaver-Settings.extension/)
     })
   })

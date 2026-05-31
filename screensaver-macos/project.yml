@@ -1,0 +1,77 @@
+name: ScreensaverArt
+
+options:
+  bundleIdPrefix: com.livingart.screensaver.app
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+  defaultConfig: Release
+
+settings:
+  base:
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+    # Ad-hoc "Sign to Run Locally" — no Apple ID / Team needed for local dev.
+    # Developer ID signing + notarization is a separate, later step.
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "-"
+    DEVELOPMENT_TEAM: ""
+    # Universal (Intel + Apple Silicon). ARCHS_STANDARD resolves to arm64-only
+    # on this Xcode, so list both slices explicitly.
+    ARCHS: "arm64 x86_64"
+  configs:
+    # Debug builds host arch only (fast dev loop); Release builds both slices.
+    Debug:
+      ONLY_ACTIVE_ARCH: "YES"
+    Release:
+      ONLY_ACTIVE_ARCH: "NO"
+
+targets:
+  ScreensaverArtExtension:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: ScreensaverArtExtension
+    dependencies:
+      - sdk: ScreenSaver.framework
+      - sdk: AVFoundation.framework
+    settings:
+      base:
+        PRODUCT_NAME: ScreensaverArtExtension
+        PRODUCT_BUNDLE_IDENTIFIER: com.livingart.screensaver.app.Extension
+        PRODUCT_MODULE_NAME: ScreensaverArtExtension
+        INFOPLIST_FILE: ScreensaverArtExtension/Info.plist
+        GENERATE_INFOPLIST_FILE: "NO"
+        CODE_SIGN_ENTITLEMENTS: ScreensaverArtExtension/ScreensaverArtExtension.entitlements
+        SWIFT_OBJC_BRIDGING_HEADER: ScreensaverArtExtension/ScreensaverArtExtension-Bridging-Header.h
+
+  DevHost:
+    type: application
+    platform: macOS
+    sources:
+      - path: DevHost
+    dependencies:
+      - target: ScreensaverArtExtension
+        embed: true
+    settings:
+      base:
+        PRODUCT_NAME: DevHost
+        # Use the real Electron host's bundle id so the embedded extension's id
+        # (com.livingart.screensaver.app.Extension) is correctly prefixed by its
+        # parent — exactly as it will be inside the shipped Electron .app.
+        PRODUCT_BUNDLE_IDENTIFIER: com.livingart.screensaver.app
+        GENERATE_INFOPLIST_FILE: "YES"
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Living Art"
+        CODE_SIGN_ENTITLEMENTS: DevHost/DevHost.entitlements
+    postBuildScripts:
+      # Auto-register the embedded appex for the local DEV loop only. Release
+      # builds feed the bundle pipeline (the appex is extracted and embedded in
+      # the Electron app, which registers its own copy) — registering the build
+      # dir copy there would violate pluginkit's one-location rule.
+      - name: Register appex with pluginkit (Debug only)
+        basedOnDependencyAnalysis: false
+        script: |
+          if [ "${CONFIGURATION}" = "Debug" ]; then
+            find "$CODESIGNING_FOLDER_PATH" -name '*.appex' -exec /usr/bin/pluginkit -a {} \;
+          fi

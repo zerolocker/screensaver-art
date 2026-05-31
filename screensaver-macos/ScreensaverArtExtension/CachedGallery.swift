@@ -6,7 +6,8 @@ import Foundation
 // obfuscated `.bin` file into a playable temp `.mp4` URL on demand.
 //
 // Lifetime model: each call to `playableURL(for:)` writes a fresh decrypted
-// file under NSTemporaryDirectory(). Pair every call with `releasePlayable(_:)`
+// file under NSTemporaryDirectory() (inside this extension's own sandbox
+// container — always writable). Pair every call with `releasePlayable(_:)`
 // once the player is done with it so we don't leak temp files. macOS will
 // also reap NSTemporaryDirectory() on its own, so the leak is bounded even
 // if we miss one.

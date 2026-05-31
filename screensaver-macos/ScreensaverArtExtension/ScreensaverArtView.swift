@@ -10,6 +10,12 @@ import AVFoundation
 // All auth, subscription, gallery-fetching, upsell, and configure-sheet logic
 // lives in the Electron app now. If the cache is empty (user hasn't synced
 // yet), we show a black screen with a hint.
+//
+// Lifecycle: this is an appex (.appex) ScreenSaverView, created by
+// ScreensaverArtViewController.loadView(). We drive start/stop from
+// viewDidMoveToWindow — robust across both ScreenSaverEngine and the System
+// Settings preview — and keep startAnimation/stopAnimation so the framework
+// can drive them too.
 
 @objc(ScreensaverArtView)
 class ScreensaverArtView: ScreenSaverView {
@@ -61,14 +67,23 @@ class ScreensaverArtView: ScreenSaverView {
         super.init(frame: frame, isPreview: isPreview)
         animationTimeInterval = 1.0
         buildUI()
-        loadFromCache()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         animationTimeInterval = 1.0
         buildUI()
-        loadFromCache()
+    }
+
+    // MARK: View lifecycle
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        if window != nil {
+            loadFromCache()
+        } else {
+            stopPlayback()
+        }
     }
 
     // MARK: Cache loading
@@ -378,6 +393,12 @@ class ScreensaverArtView: ScreenSaverView {
                                             repeats: true) { [weak self] _ in self?.advance() }
     }
 
+    private func stopPlayback() {
+        advanceTimer?.invalidate(); advanceTimer = nil
+        playerA?.pause()
+        playerB?.pause()
+    }
+
     // MARK: ScreenSaverView lifecycle
 
     override func animateOneFrame() {}
@@ -391,10 +412,6 @@ class ScreensaverArtView: ScreenSaverView {
 
     override func stopAnimation() {
         super.stopAnimation()
-        advanceTimer?.invalidate(); advanceTimer = nil
-        playerA?.pause()
-        playerB?.pause()
+        stopPlayback()
     }
-
-    override var hasConfigureSheet: Bool { false }
 }

@@ -5,16 +5,16 @@ import Foundation
 /// Cache layout — populated and managed entirely by the Electron companion app.
 /// The screensaver only reads.
 ///
-/// `.cachesDirectory` here resolves to the legacyScreenSaver sandbox container
-/// (e.g. `~/Library/Containers/com.apple.ScreenSaver.Engine.legacyScreenSaver/
-/// Data/Library/Caches/ScreensaverArt/`), NOT `~/Library/Caches/`. The Electron
-/// app writes into that same container path — see `macSandboxCacheDir` in
-/// electron-app/src/main/cache-sync.ts.
+/// Unlike the old legacy `.saver` (which ran inside the legacyScreenSaver
+/// sandbox container and read `.cachesDirectory`), this appex reads from a
+/// fixed, shared path under `/Users/Shared/`. `/Users/Shared/` is nobody's
+/// app container, so the un-sandboxed Electron app can write there with no
+/// "access data from other apps" TCC prompt, and this sandboxed extension can
+/// read it via a `temporary-exception.files.absolute-path.read-only`
+/// entitlement (see ScreensaverArtExtension.entitlements). The absolute path
+/// MUST match `getCacheDir()` in electron-app/src/main/cache-sync.ts.
 enum Cache {
-    static let baseDir: URL = {
-        let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
-        return caches.appendingPathComponent("ScreensaverArt", isDirectory: true)
-    }()
+    static let baseDir = URL(fileURLWithPath: "/Users/Shared/LivingArtScreensaver", isDirectory: true)
 
     /// `<baseDir>/videos/` — `.bin` files, XOR-obfuscated.
     static let videosDir: URL = baseDir.appendingPathComponent("videos", isDirectory: true)

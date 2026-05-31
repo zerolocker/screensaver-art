@@ -1,79 +1,148 @@
-// Screensaver installer — installs the platform-native screensaver bundle
-// from the Electron app's bundled resources into the OS's screensaver
-// directory. The user runs ONE installer (this Electron app); we manage the
-// platform-specific screensaver under the hood.
+// Screensaver installer — registers the macOS .appex screensaver extension
+// (bundled inside this Electron app) with the system, and drives the one-click
+// "Set as your screensaver" flow. Everything that touches pluginkit (register /
+// unregister / discover) or the active-screensaver store goes through the
+// PaperSaver helper (lart-screensaver-helper, backed by PaperSaverKit), so this
+// process never shells out to `pluginkit` directly or parses its output.
+//
+// The user runs ONE installer (this Electron app). The .appex is embedded in
+// the app bundle's Contents/PlugIns/; the helper registers it and the user
+// activates it (either one-click via the helper, or in System Settings).
 
-import { spawn } from 'child_process'
+import { spawn, execFile } from 'child_process'
 import { existsSync } from 'fs'
-import { mkdir, cp, rm } from 'fs/promises'
-import { homedir } from 'os'
 import { join } from 'path'
 import { app } from 'electron'
 
-const SAVER_BUNDLE_NAME = 'ScreensaverArt.saver'
+const APPEX_NAME = 'ScreensaverArtExtension.appex'
+const HELPER_NAME = 'lart-screensaver-helper'
+const EXTENSION_BUNDLE_ID = 'com.livingart.screensaver.app.Extension'
 
-// Indirection layer so tests can swap spawn without touching the dev
-// machine's real `killall` / `xattr` / `open`. vi.mock on Node built-ins
-// (including child_process) does not propagate transitively into imported
-// sibling modules under vitest 2.x or 4.x — verified empirically in both
-// versions. An override hook is the simplest reliable way to keep these
-// tests safe.
-export const _testHooks: { spawn: typeof spawn } = { spawn }
+type RunResult = { code: number; stdout: string; stderr: string }
 
-// Where the .saver lives inside the packaged Electron app vs. dev mode.
-// In dev, run `bash scripts/bundle-saver.sh` from electron-app/ first.
-function bundledSaverPath(): string {
-  if (app.isPackaged) {
-    return join(process.resourcesPath, SAVER_BUNDLE_NAME)
-  }
-  return join(__dirname, '..', '..', 'resources', SAVER_BUNDLE_NAME)
+// Default output-capturing runner (helper calls).
+function defaultRun(cmd: string, args: ReadonlyArray<string>): Promise<RunResult> {
+  return new Promise((resolve) => {
+    execFile(cmd, args as string[], { timeout: 20000 }, (err, stdout, stderr) => {
+      const e = err as (NodeJS.ErrnoException & { code?: number }) | null
+      const code = e && typeof e.code === 'number' ? e.code : e ? 1 : 0
+      resolve({ code, stdout: stdout?.toString() ?? '', stderr: stderr?.toString() ?? '' })
+    })
+  })
 }
 
-function installedSaverPath(): string {
-  return join(homedir(), 'Library', 'Screen Savers', SAVER_BUNDLE_NAME)
+// Indirection layer so tests can swap spawn/run without touching the dev
+// machine's real `killall` / helper. vi.mock on Node built-ins doesn't
+// propagate transitively into sibling modules under vitest, so an override
+// hook is the simplest reliable seam. `spawn` is fire-and-forget (killall,
+// open); `run` captures stdout/stderr/exit code (helper calls).
+export const _testHooks: { spawn: typeof spawn; run: typeof defaultRun } = {
+  spawn,
+  run: defaultRun,
+}
+
+// All pluginkit work is delegated to the PaperSaver helper. This wraps the
+// canonical invocation so every call site (status/find/register/unregister/
+// activate) goes through the same runner + path resolution.
+function runHelper(args: ReadonlyArray<string>): Promise<RunResult> {
+  return _testHooks.run(helperPath(), args as string[])
+}
+
+// Where the appex / helper live inside the packaged Electron app vs. dev mode.
+// In dev, run `bash scripts/bundle-appex.sh` from electron-app/ first.
+function bundledAppexPath(): string {
+  if (process.env.LART_APPEX_PATH) return process.env.LART_APPEX_PATH // test seam
+  // Packaged: electron-builder embeds the appex in Contents/PlugIns/ (next to
+  // Contents/Resources, which is process.resourcesPath).
+  if (app.isPackaged) return join(process.resourcesPath, '..', 'PlugIns', APPEX_NAME)
+  // Dev (unpackaged): a standalone .appex can't be registered — pluginkit only
+  // accepts an appex embedded inside a .app bundle. `bundle-appex.sh` builds the
+  // DevHost.app scaffold (Release) with the appex embedded, so register THAT
+  // copy. (__dirname is electron-app/out/main → ../../.. is the repo root.)
+  return join(
+    __dirname, '..', '..', '..',
+    'screensaver-macos', 'build', 'Build', 'Products', 'Release',
+    'DevHost.app', 'Contents', 'PlugIns', APPEX_NAME,
+  )
+}
+
+function helperPath(): string {
+  if (process.env.LART_HELPER_PATH) return process.env.LART_HELPER_PATH // test seam
+  if (app.isPackaged) return join(process.resourcesPath, HELPER_NAME)
+  return join(__dirname, '..', '..', 'resources', HELPER_NAME)
 }
 
 export type InstallerStatus = {
   platform: NodeJS.Platform
   supported: boolean
-  bundledSaverExists: boolean
-  installed: boolean
-  installedPath: string | null
+  // The appex is present in this app's resources/PlugIns (so install can run).
+  bundledExtensionExists: boolean
+  // pluginkit knows about our extension.
+  registered: boolean
+  // PaperSaver reports our screensaver as the active one (banner gates on this).
+  active: boolean
+  registeredPath: string | null
 }
 
-export function getStatus(): InstallerStatus {
-  const supported = process.platform === 'darwin'
-  const bundledSaverExists = supported && existsSync(bundledSaverPath())
-  const installed = supported && existsSync(installedSaverPath())
-  return {
-    platform: process.platform,
-    supported,
-    bundledSaverExists,
-    installed,
-    installedPath: installed ? installedSaverPath() : null,
+// Ask the PaperSaver helper (`find`) whether pluginkit knows our extension and,
+// if so, the path it has registered. PaperSaver runs pluginkit and parses its
+// output — including the tab-split fix for bundle paths that contain spaces,
+// like "Living Art Screensaver.app".
+async function queryRegistration(): Promise<{ registered: boolean; registeredPath: string | null }> {
+  try {
+    const { code, stdout } = await runHelper(['find', EXTENSION_BUNDLE_ID])
+    if (code !== 0) return { registered: false, registeredPath: null }
+    const parsed = JSON.parse(stdout.trim())
+    return {
+      registered: parsed.registered === true,
+      registeredPath: typeof parsed.path === 'string' ? parsed.path : null,
+    }
+  } catch {
+    // helper missing or errored — treat as not registered.
+    return { registered: false, registeredPath: null }
   }
 }
 
-// Apple's legacy screensaver framework keeps the bundle mapped in memory once
-// loaded — copying over a running .saver gives you stale code at next launch.
-// Same pattern as screensaver/build.sh and the original DMG installer script.
+// Ask the PaperSaver helper whether our screensaver is the active one.
+async function isActive(): Promise<boolean> {
+  try {
+    const { code, stdout } = await runHelper(['status'])
+    if (code !== 0) return false
+    return JSON.parse(stdout.trim()).active === true
+  } catch {
+    return false
+  }
+}
+
+export async function getStatus(): Promise<InstallerStatus> {
+  const supported = process.platform === 'darwin'
+  if (!supported) {
+    return {
+      platform: process.platform,
+      supported: false,
+      bundledExtensionExists: false,
+      registered: false,
+      active: false,
+      registeredPath: null,
+    }
+  }
+  const bundledExtensionExists = existsSync(bundledAppexPath())
+  const [{ registered, registeredPath }, active] = await Promise.all([queryRegistration(), isActive()])
+  return { platform: process.platform, supported, bundledExtensionExists, registered, active, registeredPath }
+}
+
+// Kill anything that may have the old extension code mapped, so a re-register
+// picks up fresh code. Best-effort; failures are ignored.
 function killScreensaverProcesses(): Promise<void> {
   return new Promise((resolve) => {
     const cmd = `
-      killall ScreenSaverEngine    2>/dev/null || true
-      killall 'System Settings'    2>/dev/null || true
-      killall 'System Preferences' 2>/dev/null || true
-      pkill -f legacyScreenSaver   2>/dev/null || true
+      killall ScreensaverArtExtension 2>/dev/null || true
+      killall ScreenSaverEngine       2>/dev/null || true
+      killall 'System Settings'       2>/dev/null || true
+      killall legacyScreenSaver       2>/dev/null || true
     `
     const proc = _testHooks.spawn('sh', ['-c', cmd])
-    proc.on('exit', () => setTimeout(resolve, 1000))
-  })
-}
-
-function stripQuarantine(path: string): Promise<void> {
-  return new Promise((resolve) => {
-    const proc = _testHooks.spawn('xattr', ['-dr', 'com.apple.quarantine', path])
-    proc.on('exit', () => resolve())
+    proc.on('exit', () => setTimeout(resolve, 500))
   })
 }
 
@@ -81,20 +150,27 @@ export async function install(): Promise<{ ok: boolean; error?: string }> {
   if (process.platform !== 'darwin') {
     return { ok: false, error: `Screensaver install is not supported on ${process.platform} yet.` }
   }
-  const src = bundledSaverPath()
-  if (!existsSync(src)) {
-    return { ok: false, error: `Bundled screensaver missing at ${src}. Run scripts/bundle-saver.sh.` }
+  const appex = bundledAppexPath()
+  if (!existsSync(appex)) {
+    return { ok: false, error: `Bundled screensaver missing at ${appex}. Run scripts/bundle-appex.sh.` }
   }
-  const installDir = join(homedir(), 'Library', 'Screen Savers')
-  const dest = installedSaverPath()
 
   await killScreensaverProcesses()
-  await mkdir(installDir, { recursive: true })
-  if (existsSync(dest)) {
-    await rm(dest, { recursive: true, force: true })
+
+  // The helper registers via pluginkit AND re-queries to confirm the extension
+  // actually landed (pluginkit -a can report odd exit states), reporting back
+  // `{ registered, path }`. Trust that verified result rather than the raw exit.
+  const { code, stdout, stderr } = await runHelper(['register', appex])
+  let registered = false
+  try {
+    registered = JSON.parse(stdout.trim()).registered === true
+  } catch {
+    registered = false
   }
-  await cp(src, dest, { recursive: true })
-  await stripQuarantine(dest)
+  if (!registered) {
+    const detail = stderr.trim() || `helper exit ${code}`
+    return { ok: false, error: `Failed to register the screensaver (${detail}).` }
+  }
   return { ok: true }
 }
 
@@ -103,9 +179,24 @@ export async function uninstall(): Promise<{ ok: boolean; error?: string }> {
     return { ok: false, error: `Not supported on ${process.platform}.` }
   }
   await killScreensaverProcesses()
-  const dest = installedSaverPath()
-  if (existsSync(dest)) {
-    await rm(dest, { recursive: true, force: true })
+  // Prefer the path pluginkit actually has registered; fall back to ours.
+  const { registeredPath } = await queryRegistration()
+  const target = registeredPath || bundledAppexPath()
+  const { code, stderr } = await runHelper(['unregister', target])
+  if (code !== 0) {
+    return { ok: false, error: stderr.trim() || `Could not unregister the screensaver (helper exit ${code}).` }
+  }
+  return { ok: true }
+}
+
+// One-click "Set as your screensaver" via the PaperSaver helper.
+export async function activate(): Promise<{ ok: boolean; error?: string }> {
+  if (process.platform !== 'darwin') {
+    return { ok: false, error: `Not supported on ${process.platform}.` }
+  }
+  const { code, stderr } = await _testHooks.run(helperPath(), ['activate'])
+  if (code !== 0) {
+    return { ok: false, error: stderr.trim() || `Could not set the screensaver (helper exit ${code}).` }
   }
   return { ok: true }
 }

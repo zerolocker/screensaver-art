@@ -36,27 +36,22 @@ export type CachedManifest = {
 }
 
 export function getCacheDir(): string {
+  // Test-only override (the test suite points this at a tmp dir so it never
+  // touches the real /Users/Shared). NOT a user-facing setting: the Swift
+  // screensaver hardcodes /Users/Shared/LivingArtScreensaver, so overriding
+  // this in production would desync the writer from the reader.
+  if (process.env.LART_CACHE_DIR) return process.env.LART_CACHE_DIR
   if (process.platform === 'darwin') {
-    return macSandboxCacheDir()
+    // Shared, un-sandboxed location that both the Electron app (writer) and the
+    // .appex screensaver (reader, via a temporary-exception.files.absolute-path
+    // entitlement) can reach. /Users/Shared/ is nobody's app container, so
+    // writing here triggers no "access data from other apps" TCC prompt — which
+    // is exactly why the old legacyScreenSaver-container path is gone.
+    // MUST match `Cache.baseDir` in
+    // screensaver-macos/ScreensaverArtExtension/Constants.swift.
+    return '/Users/Shared/LivingArtScreensaver'
   }
   return join(process.env.LOCALAPPDATA || join(homedir(), 'AppData', 'Local'), 'ScreensaverArt')
-}
-
-// The .saver runs inside legacyScreenSaver.appex's sandbox, so when its Swift
-// asks for `.cachesDirectory` macOS hands back the container's Caches dir —
-// NOT the user's real ~/Library/Caches/. We write where the screensaver reads.
-// (App Groups would be cleaner but require code-signing + provisioning that
-// isn't worth it for a $0.99 product.)
-function macSandboxCacheDir(): string {
-  const containers = join(homedir(), 'Library', 'Containers')
-  const candidates = [
-    'com.apple.ScreenSaver.Engine.legacyScreenSaver',
-    'com.apple.ScreenSaver.Engine.legacyScreenSaver.x86-64', // Intel hosts
-  ]
-  const containerId =
-    candidates.find((id) => existsSync(join(containers, id, 'Data', 'Library', 'Caches'))) ??
-    candidates[0]
-  return join(containers, containerId, 'Data', 'Library', 'Caches', 'ScreensaverArt')
 }
 
 const CACHE_DIR = getCacheDir()

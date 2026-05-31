@@ -2,9 +2,8 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { stat, readdir } from 'fs/promises'
 import { existsSync } from 'fs'
-import { getStatus, install, uninstall, openSystemSettings } from './installer'
+import { getStatus, install, uninstall, activate, openSystemSettings } from './installer'
 import { syncGallery, clearCache, PATHS, type CachedManifest } from './cache-sync'
-import { explainBeforeAccess, withAppDataAccess, isPermissionError } from './mac-permission'
 
 const is = { dev: !app.isPackaged }
 
@@ -75,22 +74,17 @@ async function countFiles(dirPath: string): Promise<number> {
 // IPC
 // ---------------------------------------------------------------------------
 ipcMain.handle('cache:getStats', async () => {
-  // Passive read — explain the macOS prompt the first time, but don't interrupt
-  // with a recovery dialog if it's denied; just report an empty cache.
-  await explainBeforeAccess(mainWindow)
-  try {
-    const sizeBytes = await getDirSize(PATHS.VIDEOS_DIR)
-    const fileCount = await countFiles(PATHS.VIDEOS_DIR)
-    return { sizeBytes, fileCount, path: PATHS.VIDEOS_DIR }
-  } catch (err) {
-    if (isPermissionError(err)) return { sizeBytes: 0, fileCount: 0, path: PATHS.VIDEOS_DIR }
-    throw err
-  }
+  // The cache lives at /Users/Shared/LivingArtScreensaver — our own shared
+  // directory, not another app's container — so there's no TCC prompt to
+  // explain or recover from anymore.
+  const sizeBytes = await getDirSize(PATHS.VIDEOS_DIR)
+  const fileCount = await countFiles(PATHS.VIDEOS_DIR)
+  return { sizeBytes, fileCount, path: PATHS.VIDEOS_DIR }
 })
 
 ipcMain.handle('cache:clear', async () => {
   try {
-    await withAppDataAccess(mainWindow, () => clearCache())
+    await clearCache()
     return { success: true }
   } catch {
     return { success: false }
@@ -103,9 +97,7 @@ ipcMain.handle(
   'cache:sync',
   async (_evt, payload: { apiUrl: string; accessToken: string | null }): Promise<{ ok: true; manifest: CachedManifest } | { ok: false; error: string }> => {
     try {
-      const manifest = await withAppDataAccess(mainWindow, () =>
-        syncGallery(payload.apiUrl, payload.accessToken, mainWindow),
-      )
+      const manifest = await syncGallery(payload.apiUrl, payload.accessToken, mainWindow)
       return { ok: true, manifest }
     } catch (err) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) }
@@ -116,6 +108,7 @@ ipcMain.handle(
 ipcMain.handle('installer:status', () => getStatus())
 ipcMain.handle('installer:install', () => install())
 ipcMain.handle('installer:uninstall', () => uninstall())
+ipcMain.handle('installer:activate', () => activate())
 ipcMain.handle('installer:openSystemSettings', () => {
   openSystemSettings()
   return { ok: true }
@@ -128,10 +121,6 @@ ipcMain.handle('shell:openPath', (_evt, path: string) => shell.openPath(path))
 // Lifecycle
 // ---------------------------------------------------------------------------
 app.whenReady().then(() => {
-  // Don't create the cache dir here — it lives in the screensaver's sandbox
-  // container, so touching it before the user has seen the permission explainer
-  // would trigger the macOS prompt at launch with no context. syncGallery
-  // creates the dir lazily once the user has been prompted.
   createWindow()
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

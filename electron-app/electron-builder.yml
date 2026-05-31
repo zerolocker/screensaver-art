@@ -12,24 +12,39 @@ files:
   - "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}"
   - "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}"
 
-# The .saver bundle is built by scripts/bundle-saver.sh and copied into
-# resources/. electron-builder ships everything in extraResources at
-# Contents/Resources/ in the packaged app — exactly where installer.ts
-# looks for it via process.resourcesPath.
+# scripts/bundle-appex.sh builds the screensaver extension + PaperSaver helper
+# (both universal) into resources/. We place them where installer.ts looks:
+#   - the .appex in Contents/PlugIns/ (so it's an embedded extension of this
+#     app — required for pluginkit registration + the parent-bundle-id prefix)
+#   - the helper CLI in Contents/Resources/ (process.resourcesPath)
+extraFiles:
+  - from: resources/ScreensaverArtExtension.appex
+    to: PlugIns/ScreensaverArtExtension.appex
 extraResources:
-  - from: resources
-    to: .
-    filter:
-      - "**/*"
+  - from: resources/lart-screensaver-helper
+    to: lart-screensaver-helper
 
 mac:
   category: public.app-category.utilities
+  # One universal DMG runs on both Intel and Apple Silicon. The embedded
+  # .appex + helper are already universal (see bundle-appex.sh).
   target:
-    - dmg
+    - target: dmg
+      arch:
+        - universal
+  # Our embedded .appex + helper are already universal Mach-O, so they're
+  # byte-identical in electron-builder's x64 and arm64 passes. Tell
+  # @electron/universal that's intentional (don't try to lipo-merge them).
+  x64ArchFiles: "Contents/{PlugIns/**,Resources/lart-screensaver-helper}"
   artifactName: ${productName}-${version}-${arch}.${ext}
   hardenedRuntime: false
   gatekeeperAssess: false
-  identity: null  # unsigned for now — sign before public release
+  # Unsigned for now. Before public release, Developer-ID-sign + notarize:
+  # the embedded code signs inside-out (ScreensaverArtExtension.appex and
+  # lart-screensaver-helper first, then the outer .app), and the appex's
+  # temporary-exception entitlements are allowed under Developer ID (not the
+  # App Store). hardenedRuntime must be true for notarization.
+  identity: null
 
 dmg:
   artifactName: ${productName}-${version}.${ext}

@@ -19,6 +19,9 @@ const FAKE_HOME = vi.hoisted(() => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cache-sync-test-'))
   process.env.HOME = dir
   process.env.LOCALAPPDATA = dir   // Windows code path uses this instead
+  // On macOS the cache lives at the fixed /Users/Shared/LivingArtScreensaver;
+  // redirect it into the tmp dir so tests never write to the real shared path.
+  process.env.LART_CACHE_DIR = path.join(dir, 'LivingArtScreensaver')
   return dir
 })
 

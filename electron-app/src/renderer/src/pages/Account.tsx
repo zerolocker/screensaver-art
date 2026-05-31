@@ -36,6 +36,8 @@ export function AccountPage({ session }: AccountPageProps) {
   const [installer, setInstaller] = useState<InstallerStatus | null>(null)
 
   const [installing, setInstalling] = useState(false)
+  const [activating, setActivating] = useState(false)
+  const [uninstalling, setUninstalling] = useState(false)
   const [installError, setInstallError] = useState<string | null>(null)
 
   const [syncing, setSyncing] = useState(false)
@@ -92,9 +94,30 @@ export function AccountPage({ session }: AccountPageProps) {
     setInstallError(null)
     const result = await window.electronAPI.installer.install()
     if (!result.ok) setInstallError(result.error ?? 'Installation failed')
-    else await window.electronAPI.installer.openSystemSettings()
     await refreshLocalState()
     setInstalling(false)
+  }
+
+  // Unregister the .appex from the system (pluginkit -r, via the PaperSaver
+  // helper). After this it no longer appears in System Settings → Screen Saver.
+  async function handleUninstall() {
+    setUninstalling(true)
+    setInstallError(null)
+    const result = await window.electronAPI.installer.uninstall()
+    if (!result.ok) setInstallError(result.error ?? 'Uninstall failed')
+    await refreshLocalState()
+    setUninstalling(false)
+  }
+
+  // One-click "Set as your screensaver" — flips the active screensaver to ours
+  // via the PaperSaver helper, no trip through System Settings required.
+  async function handleActivate() {
+    setActivating(true)
+    setInstallError(null)
+    const result = await window.electronAPI.installer.activate()
+    if (!result.ok) setInstallError(result.error ?? 'Could not set the screensaver')
+    await refreshLocalState()
+    setActivating(false)
   }
 
   async function handleSync() {
@@ -194,56 +217,102 @@ export function AccountPage({ session }: AccountPageProps) {
             </CardTitle>
             <CardDescription>
               {installer?.supported
-                ? 'Install the screensaver on your Mac. This app will keep its video cache up to date in the background.'
+                ? 'Install the screensaver and set it as your active screensaver. This app keeps its video cache up to date in the background.'
                 : `Screensaver install isn't supported on ${installer?.platform ?? 'this platform'} yet — coming soon.`}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {installer?.supported && (
               <>
-                <div className="flex items-center gap-3">
-                  {installer.installed ? (
-                    <>
-                      <CheckCircle2 className="w-5 h-5 text-green-500" />
-                      <div>
+                {/* Status row — pill on the left, uninstall pushed to the right */}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    {installer.active ? (
+                      <>
+                        <CheckCircle2 className="w-5 h-5 text-green-500" />
+                        <p className="text-foreground">Set as your screensaver</p>
+                      </>
+                    ) : installer.registered ? (
+                      <>
+                        <CheckCircle2 className="w-5 h-5 text-green-500" />
                         <p className="text-foreground">Installed</p>
-                        <p className="text-xs text-muted-foreground break-all">
-                          {installer.installedPath}
-                        </p>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <AlertCircle className="w-5 h-5 text-amber-500" />
-                      <p className="text-foreground">Not installed</p>
-                    </>
+                      </>
+                    ) : (
+                      <>
+                        <AlertCircle className="w-5 h-5 text-amber-500" />
+                        <p className="text-foreground">Not installed</p>
+                      </>
+                    )}
+                  </div>
+
+                  {installer.registered && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleUninstall}
+                      disabled={uninstalling}
+                      className="ml-auto shrink-0"
+                    >
+                      {uninstalling ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Uninstalling…
+                        </>
+                      ) : (
+                        'Uninstall from System Settings'
+                      )}
+                    </Button>
                   )}
                 </div>
-                {!installer.bundledSaverExists && (
+
+                {/* "Not set" banner — one-click activation, no System Settings trip */}
+                {installer.registered && !installer.active && (
+                  <div className="flex items-center gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
+                    <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-foreground">
+                        Screen Saver isn’t set to Living Art yet
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Set it as your active screensaver to see your gallery.
+                      </p>
+                    </div>
+                    <Button onClick={handleActivate} disabled={activating} size="sm">
+                      {activating ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Setting…
+                        </>
+                      ) : (
+                        'Set'
+                      )}
+                    </Button>
+                  </div>
+                )}
+
+                {!installer.bundledExtensionExists && (
                   <p className="text-xs text-amber-500">
                     The screensaver bundle is missing from this app's resources. Run{' '}
-                    <code className="font-mono">scripts/bundle-saver.sh</code> from{' '}
+                    <code className="font-mono">scripts/bundle-appex.sh</code> from{' '}
                     <code className="font-mono">electron-app/</code> before launching.
                   </p>
                 )}
                 {installError && <p className="text-xs text-red-500">{installError}</p>}
+
                 <div className="flex gap-3">
-                  <Button
-                    onClick={handleInstall}
-                    disabled={installing || !installer.bundledSaverExists}
-                    className="flex-1"
-                  >
-                    {installing ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Installing…
-                      </>
-                    ) : installer.installed ? (
-                      'Reinstall'
-                    ) : (
-                      'Install Screensaver'
-                    )}
-                  </Button>
-                  {installer.installed && (
+                  {!installer.registered ? (
+                    <Button
+                      onClick={handleInstall}
+                      disabled={installing || !installer.bundledExtensionExists}
+                      className="flex-1"
+                    >
+                      {installing ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Installing…
+                        </>
+                      ) : (
+                        'Install Screensaver'
+                      )}
+                    </Button>
+                  ) : (
                     <Button
                       variant="outline"
                       onClick={() => window.electronAPI.installer.openSystemSettings()}

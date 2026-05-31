@@ -37,6 +37,7 @@ export function AccountPage({ session }: AccountPageProps) {
 
   const [installing, setInstalling] = useState(false)
   const [activating, setActivating] = useState(false)
+  const [uninstalling, setUninstalling] = useState(false)
   const [installError, setInstallError] = useState<string | null>(null)
 
   const [syncing, setSyncing] = useState(false)
@@ -95,6 +96,17 @@ export function AccountPage({ session }: AccountPageProps) {
     if (!result.ok) setInstallError(result.error ?? 'Installation failed')
     await refreshLocalState()
     setInstalling(false)
+  }
+
+  // Unregister the .appex from the system (pluginkit -r, via the PaperSaver
+  // helper). After this it no longer appears in System Settings → Screen Saver.
+  async function handleUninstall() {
+    setUninstalling(true)
+    setInstallError(null)
+    const result = await window.electronAPI.installer.uninstall()
+    if (!result.ok) setInstallError(result.error ?? 'Uninstall failed')
+    await refreshLocalState()
+    setUninstalling(false)
   }
 
   // One-click "Set as your screensaver" — flips the active screensaver to ours
@@ -212,23 +224,43 @@ export function AccountPage({ session }: AccountPageProps) {
           <CardContent className="space-y-4">
             {installer?.supported && (
               <>
-                {/* Status row */}
-                <div className="flex items-center gap-3">
-                  {installer.active ? (
-                    <>
-                      <CheckCircle2 className="w-5 h-5 text-green-500" />
-                      <p className="text-foreground">Set as your screensaver</p>
-                    </>
-                  ) : installer.registered ? (
-                    <>
-                      <CheckCircle2 className="w-5 h-5 text-green-500" />
-                      <p className="text-foreground">Installed</p>
-                    </>
-                  ) : (
-                    <>
-                      <AlertCircle className="w-5 h-5 text-amber-500" />
-                      <p className="text-foreground">Not installed</p>
-                    </>
+                {/* Status row — pill on the left, uninstall pushed to the right */}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    {installer.active ? (
+                      <>
+                        <CheckCircle2 className="w-5 h-5 text-green-500" />
+                        <p className="text-foreground">Set as your screensaver</p>
+                      </>
+                    ) : installer.registered ? (
+                      <>
+                        <CheckCircle2 className="w-5 h-5 text-green-500" />
+                        <p className="text-foreground">Installed</p>
+                      </>
+                    ) : (
+                      <>
+                        <AlertCircle className="w-5 h-5 text-amber-500" />
+                        <p className="text-foreground">Not installed</p>
+                      </>
+                    )}
+                  </div>
+
+                  {installer.registered && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleUninstall}
+                      disabled={uninstalling}
+                      className="ml-auto shrink-0"
+                    >
+                      {uninstalling ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Uninstalling…
+                        </>
+                      ) : (
+                        'Uninstall from System Settings'
+                      )}
+                    </Button>
                   )}
                 </div>
 

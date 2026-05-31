@@ -5,7 +5,7 @@ A **pnpm workspace** monorepo containing:
 - **Shared UI library** (`packages/ui/`) — React components shared between the website and Electron app
 - **Electron desktop app** (`electron-app/`) — **the only thing end users install**. Handles auth, subscription, gallery sync, video obfuscation, and installs + activates the platform-native screensaver.
 - **macOS screensaver** (`screensaver-macos/`) — native Swift **`.appex` ExtensionKit screensaver** (Sonoma+), built with Xcode (via xcodegen). **Pure player.** Reads videos from a shared local cache populated by the Electron app. No auth, no network. Embedded into the Electron app and registered with `pluginkit`.
-- **Activation helper** (`screensaver-helper/`) — tiny SwiftPM CLI (`lart-screensaver-helper`) that wraps [PaperSaver](https://github.com/AerialScreensaver/PaperSaver) so the Electron app can detect/set the active screensaver (one-click "Set").
+- **Screensaver helper** (`screensaver-helper/`) — tiny SwiftPM CLI (`lart-screensaver-helper`) that wraps [PaperSaver](https://github.com/AerialScreensaver/PaperSaver) so the Electron app can do everything that needs Swift: detect/set the active screensaver (one-click "Set"), and register/unregister/discover the `.appex` via PaperSaver's `PluginkitManager` (so the Electron app never shells out to `pluginkit` itself).
 - **Marketing + account website** (`living-art-screensaver-web/`) — Next.js, deployed to `living-art-screensaver.com` via Vercel
 - **Gallery playlist** (`gallery.json`) — single source of truth for all art items
 - **Web preview** (`index.html`) — standalone HTML+CSS+JS, no build step
@@ -16,7 +16,7 @@ A **pnpm workspace** monorepo containing:
 | `pnpm-workspace.yaml` | Workspace config — ties all packages together |
 | `packages/ui/` | **Shared UI** — React components (LoginForm, SignUpForm, SubscriptionCard, base UI) |
 | `electron-app/` | **The user-facing installer** — see below |
-| `electron-app/src/main/installer.ts` | Registers/unregisters the `.appex` via `pluginkit`; queries status; one-click `activate()` via the helper |
+| `electron-app/src/main/installer.ts` | Registers/unregisters the `.appex`, queries registration status, reads/sets the active screensaver — all delegated to the PaperSaver helper (`register`/`unregister`/`find`/`status`/`activate`). No direct `pluginkit` calls or output parsing. |
 | `electron-app/src/main/cache-sync.ts` | Fetches `/api/gallery`, downloads + obfuscates MP4s, writes manifest to `/Users/Shared/LivingArtScreensaver/` |
 | `electron-app/src/main/obfuscation.ts` | XOR + magic-header + djb2 filename hash. **Mirror of `screensaver-macos/ScreensaverArtExtension/Constants.swift`** — change both. |
 | `electron-app/scripts/bundle-appex.sh` | Builds the universal `.appex` + helper and copies them into `electron-app/resources/` |
@@ -28,7 +28,7 @@ A **pnpm workspace** monorepo containing:
 | `screensaver-macos/ScreensaverArtExtension/*.swift` | The screensaver extension — pure player, see split below |
 | `screensaver-macos/ScreensaverArtExtension/{Info.plist,*.entitlements}` | `XPC!` package type, `NSExtension`/`com.apple.screensaver`, sandbox + `/Users/Shared/` read exception |
 | `screensaver-macos/build.sh` | Regenerates the project (xcodegen) and builds the `.appex` (Release = universal) |
-| `screensaver-helper/` | SwiftPM package for `lart-screensaver-helper` (PaperSaver-backed `status`/`activate`) |
+| `screensaver-helper/` | SwiftPM package for `lart-screensaver-helper` (PaperSaver-backed `status`/`activate`/`register`/`unregister`/`find`) |
 | `living-art-screensaver-web/` | Next.js website (marketing, auth, billing, gallery API) |
 | `living-art-screensaver-web/app/api/gallery/route.ts` | **The gating endpoint** — serves gallery to the Electron app |
 | `living-art-screensaver-web/app/api/subscription/verify/route.ts` | Subscription status check |
@@ -65,7 +65,7 @@ pnpm dist:win             # → electron-app/dist/Living Art Screensaver Setup-<
 - Cache management: main process handles file I/O via IPC; renderer shows stats and clear button
 - Cache dir: `/Users/Shared/LivingArtScreensaver/` (macOS), `%LOCALAPPDATA%\ScreensaverArt\` (Windows). See "Why the cache lives in /Users/Shared" below.
 - `scripts/bundle-appex.sh` (run before every `pnpm dev`/`build`) builds the universal `.appex` + helper into `electron-app/resources/`. `electron-builder` embeds the `.appex` at `Contents/PlugIns/` and the helper at `Contents/Resources/` in the packaged app, where `installer.ts` finds them. Requires Xcode + xcodegen.
-- macOS install = `pluginkit -a` the embedded `.appex` (no copy into `~/Library/Screen Savers/`). Activation = the PaperSaver helper (one-click "Set"), or the user picks it in System Settings.
+- macOS install = register the embedded `.appex` (no copy into `~/Library/Screen Savers/`) — `installer.ts` calls the helper's `register`, which `pluginkit -a`'s it via PaperSaver. Activation = the PaperSaver helper (one-click "Set"), or the user picks it in System Settings. Uninstall = the helper's `unregister` (PaperSaver's `pluginkit -r`), surfaced as the "Uninstall from System Settings" button on the Account page.
 - Windows `.scr` support is scaffolded but not implemented; the install flow returns an "unsupported on this platform" error there.
 
 ## Website (living-art-screensaver-web)
@@ -130,7 +130,7 @@ The Electron app caches whatever comes back and removes any local `.bin` files t
 2. Signs in with email + password — `@supabase/supabase-js` handles the round-trip; session persists in Chromium localStorage
 3. App calls `GET /api/gallery` with `Authorization: Bearer <access_token>`
 4. App downloads each MP4, XOR-obfuscates it, writes it to the cache directory, and updates `gallery.json` (the manifest)
-5. App installs the screensaver (one-time) — registers the embedded `.appex` with `pluginkit -a`, then offers a one-click "Set" (via the PaperSaver helper) to make it the active screensaver, or the user can pick it in System Settings
+5. App installs the screensaver (one-time) — registers the embedded `.appex` via the PaperSaver helper (which runs `pluginkit -a`), then offers a one-click "Set" (also via the helper) to make it the active screensaver, or the user can pick it in System Settings
 
 ### Why server-side gating not client-side
 We chose to gate the gallery server-side via `/api/gallery` rather than just limiting on the client. This prevents the full URL list from being trivially readable. The MP4s themselves are still public on R2 (no signed URLs); we layer a cache-side obfuscation on top of that, see below.

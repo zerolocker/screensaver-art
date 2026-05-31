@@ -28,7 +28,7 @@ vi.mock('electron', () => ({
 import { getStatus, install, uninstall, activate, openSystemSettings, _testHooks } from './installer'
 
 const APPEX = () => process.env.LART_APPEX_PATH!
-const EXTENSION_BUNDLE_ID = 'com.livingart.screensaver.app.Extension'
+const HELPER = () => process.env.LART_HELPER_PATH!
 
 const realSpawn = _testHooks.spawn
 const realRun = _testHooks.run
@@ -43,7 +43,9 @@ function fakeSpawn(cmd: string, args: ReadonlyArray<string>) {
   return ee as unknown as ReturnType<typeof realSpawn>
 }
 
-// Canned output for the capturing runner (pluginkit queries + helper calls).
+// Canned output for the capturing runner. Every pluginkit interaction now goes
+// through the PaperSaver helper, so the only command installer.ts runs is the
+// helper itself (status/find/register/unregister/activate).
 type RunResult = { code: number; stdout: string; stderr: string }
 const runCalls: { cmd: string; args: ReadonlyArray<string> }[] = []
 let runImpl: (cmd: string, args: ReadonlyArray<string>) => RunResult
@@ -52,15 +54,11 @@ function fakeRun(cmd: string, args: ReadonlyArray<string>) {
   return Promise.resolve(runImpl(cmd, args))
 }
 
-// Default canned behaviour: nothing registered, helper says inactive.
+// Default canned behaviour: helper says inactive and nothing registered.
 function defaultRunImpl(cmd: string, args: ReadonlyArray<string>): RunResult {
-  if (cmd.endsWith('pluginkit') && args.includes('-m')) return { code: 0, stdout: '', stderr: '' }
-  if (cmd === APPEX() || cmd.endsWith('lart-screensaver-helper')) {
-    // helper
+  if (cmd === HELPER()) {
     if (args[0] === 'status') return { code: 0, stdout: '{"active":false}', stderr: '' }
-  }
-  if (cmd === process.env.LART_HELPER_PATH) {
-    if (args[0] === 'status') return { code: 0, stdout: '{"active":false}', stderr: '' }
+    if (args[0] === 'find') return { code: 0, stdout: '{"registered":false,"path":null}', stderr: '' }
   }
   return { code: 0, stdout: '', stderr: '' }
 }
@@ -93,8 +91,9 @@ describe('installer', () => {
     if (existsSync(APPEX())) rmSync(APPEX(), { recursive: true, force: true })
   })
 
-  // A pluginkit -m line that includes our extension, for the "registered" cases.
-  const registeredLine = `    ${EXTENSION_BUNDLE_ID}(1.0.0)\tUUID\t2026-05-31\t${APPEX()}`
+  // Helper `find` output for the "registered" cases (PaperSaver already parsed
+  // pluginkit and resolved the path).
+  const foundJson = () => `{"registered":true,"path":"${APPEX()}"}`
 
   describe('getStatus', () => {
     it('reports unsupported on non-darwin platforms', async () => {
@@ -120,10 +119,10 @@ describe('installer', () => {
       expect(s.bundledExtensionExists).toBe(true)
     })
 
-    it('parses registration + path from pluginkit output', async () => {
+    it('reads registration + path from the helper `find` report', async () => {
       runImpl = (cmd, args) => {
-        if (cmd.endsWith('pluginkit') && args.includes('-m')) {
-          return { code: 0, stdout: registeredLine, stderr: '' }
+        if (cmd === HELPER() && args[0] === 'find') {
+          return { code: 0, stdout: foundJson(), stderr: '' }
         }
         return defaultRunImpl(cmd, args)
       }
@@ -134,7 +133,7 @@ describe('installer', () => {
 
     it('reflects the helper active state', async () => {
       runImpl = (cmd, args) => {
-        if (cmd === process.env.LART_HELPER_PATH && args[0] === 'status') {
+        if (cmd === HELPER() && args[0] === 'status') {
           return { code: 0, stdout: '{"active":true}', stderr: '' }
         }
         return defaultRunImpl(cmd, args)
@@ -158,30 +157,34 @@ describe('installer', () => {
       expect(result.error).toMatch(/Bundled screensaver missing/)
     })
 
-    it('registers via pluginkit -a and confirms via re-query', async () => {
+    it('registers via the helper and confirms via its report', async () => {
       plantBundle(APPEX())
-      // After -a, registration query returns our extension.
       runImpl = (cmd, args) => {
-        if (cmd.endsWith('pluginkit') && args.includes('-m')) {
-          return { code: 0, stdout: registeredLine, stderr: '' }
+        if (cmd === HELPER() && args[0] === 'register') {
+          return { code: 0, stdout: foundJson(), stderr: '' }
         }
-        return { code: 0, stdout: '', stderr: '' }
+        return defaultRunImpl(cmd, args)
       }
       const result = await install()
       expect(result.ok).toBe(true)
-      // killall ran (fire-and-forget) before the pluginkit -a run.
+      // killall ran (fire-and-forget) before the helper register call.
       expect(spawnCalls.some((c) => c.cmd === 'sh')).toBe(true)
-      const add = runCalls.find((c) => c.cmd.endsWith('pluginkit') && c.args.includes('-a'))
-      expect(add).toBeDefined()
-      expect(add!.args).toEqual(['-a', APPEX()])
+      const reg = runCalls.find((c) => c.cmd === HELPER() && c.args[0] === 'register')
+      expect(reg).toBeDefined()
+      expect(reg!.args).toEqual(['register', APPEX()])
     })
 
-    it('fails when pluginkit does not register the extension', async () => {
+    it('fails when the helper does not register the extension', async () => {
       plantBundle(APPEX())
-      runImpl = () => ({ code: 1, stdout: '', stderr: 'boom' }) // -m stays empty → not registered
+      runImpl = (cmd, args) => {
+        if (cmd === HELPER() && args[0] === 'register') {
+          return { code: 1, stdout: '', stderr: 'register failed: boom' }
+        }
+        return defaultRunImpl(cmd, args)
+      }
       const result = await install()
       expect(result.ok).toBe(false)
-      expect(result.error).toMatch(/failed to register/)
+      expect(result.error).toMatch(/register/i)
     })
   })
 
@@ -192,37 +195,37 @@ describe('installer', () => {
       expect(result.ok).toBe(false)
     })
 
-    it('runs pluginkit -r on the registered path', async () => {
+    it('unregisters the registered path via the helper', async () => {
       runImpl = (cmd, args) => {
-        if (cmd.endsWith('pluginkit') && args.includes('-m')) {
-          return { code: 0, stdout: registeredLine, stderr: '' }
+        if (cmd === HELPER() && args[0] === 'find') {
+          return { code: 0, stdout: foundJson(), stderr: '' }
         }
-        return { code: 0, stdout: '', stderr: '' }
+        return defaultRunImpl(cmd, args)
       }
       const result = await uninstall()
       expect(result.ok).toBe(true)
-      const rm = runCalls.find((c) => c.cmd.endsWith('pluginkit') && c.args.includes('-r'))
+      const rm = runCalls.find((c) => c.cmd === HELPER() && c.args[0] === 'unregister')
       expect(rm).toBeDefined()
-      expect(rm!.args).toEqual(['-r', APPEX()])
+      expect(rm!.args).toEqual(['unregister', APPEX()])
     })
   })
 
   describe('activate', () => {
     it('runs the helper activate and succeeds on exit 0', async () => {
       runImpl = (cmd, args) => {
-        if (cmd === process.env.LART_HELPER_PATH && args[0] === 'activate') {
+        if (cmd === HELPER() && args[0] === 'activate') {
           return { code: 0, stdout: '{"active":true}', stderr: '' }
         }
         return defaultRunImpl(cmd, args)
       }
       const result = await activate()
       expect(result.ok).toBe(true)
-      expect(runCalls.some((c) => c.cmd === process.env.LART_HELPER_PATH && c.args[0] === 'activate')).toBe(true)
+      expect(runCalls.some((c) => c.cmd === HELPER() && c.args[0] === 'activate')).toBe(true)
     })
 
     it('surfaces the helper error on failure', async () => {
       runImpl = (cmd, args) => {
-        if (cmd === process.env.LART_HELPER_PATH && args[0] === 'activate') {
+        if (cmd === HELPER() && args[0] === 'activate') {
           return { code: 1, stdout: '', stderr: 'activate failed: nope' }
         }
         return defaultRunImpl(cmd, args)

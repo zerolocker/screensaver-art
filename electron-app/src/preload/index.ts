@@ -27,6 +27,22 @@ export interface CachedManifest {
   syncedAt: string
 }
 
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
+export interface RendererLogEntry {
+  level: LogLevel
+  scope?: string
+  msg: string
+  data?: unknown
+}
+
+export interface SendReportInput {
+  endpoint: string
+  accessToken: string | null
+  reason?: string
+  error?: string
+  rendererContext?: unknown
+}
+
 const electronAPI = {
   cache: {
     getStats: (): Promise<CacheStats> => ipcRenderer.invoke('cache:getStats'),
@@ -53,6 +69,14 @@ const electronAPI = {
   shell: {
     openExternal: (url: string): Promise<void> => ipcRenderer.invoke('shell:openExternal', url),
     openPath: (path: string): Promise<string> => ipcRenderer.invoke('shell:openPath', path),
+  },
+  log: {
+    record: (entry: RendererLogEntry): Promise<void> => ipcRenderer.invoke('log:record', entry),
+    getFilePath: (): Promise<string | null> => ipcRenderer.invoke('log:getFilePath'),
+  },
+  report: {
+    send: (input: SendReportInput): Promise<{ ok: boolean; id?: string; error?: string }> =>
+      ipcRenderer.invoke('report:send', input),
   },
 }
 

@@ -1,5 +1,11 @@
 import Foundation
+import OSLog
 import PaperSaverKit
+
+// Logs to the unified log (NOT stdout — stdout carries the JSON the Electron app
+// parses). Watch with:
+//   log stream --predicate 'subsystem == "com.livingart.screensaver.app"' --level debug
+private let logger = Logger(subsystem: "com.livingart.screensaver.app", category: "helper")
 
 // Tiny CLI the Electron app shells out to for everything that can only be done
 // from Swift: detecting/setting the active screensaver, and registering /
@@ -32,16 +38,21 @@ struct Helper {
         let args = CommandLine.arguments
         let cmd = args.count > 1 ? args[1] : ""
         let arg = args.count > 2 ? args[2] : nil
+        logger.debug("command: \(cmd, privacy: .public) arg: \(arg ?? "nil", privacy: .public)")
 
         switch cmd {
         case "status":
-            emit(["active": isActive(paperSaver, module: arg ?? defaultModule)])
+            let active = isActive(paperSaver, module: arg ?? defaultModule)
+            logger.info("status: active=\(active, privacy: .public)")
+            emit(["active": active])
 
         case "activate":
             do {
                 try await paperSaver.setScreensaverEverywhere(module: arg ?? defaultModule)
+                logger.info("activate: set active screensaver")
                 emit(["active": true])
             } catch {
+                logger.error("activate failed: \(error.localizedDescription, privacy: .public)")
                 fail("activate failed: \(error.localizedDescription)", code: 1)
             }
 
@@ -50,11 +61,15 @@ struct Helper {
                 fail("usage: lart-screensaver-helper register <appex-path>", code: 2)
             }
             do {
+                logger.info("register: pluginkit -a \(path, privacy: .public)")
                 try pluginkit.registerExtension(at: URL(fileURLWithPath: path))
                 // `pluginkit -a` can report odd exit states, so confirm the
                 // extension actually landed by re-querying instead of trusting it.
-                emit(registration(pluginkit, bundleID: defaultBundleID))
+                let result = registration(pluginkit, bundleID: defaultBundleID)
+                logger.info("register: registered=\(String(describing: result["registered"]), privacy: .public)")
+                emit(result)
             } catch {
+                logger.error("register failed: \(error.localizedDescription, privacy: .public)")
                 fail("register failed: \(error.localizedDescription)", code: 1)
             }
 
@@ -63,14 +78,18 @@ struct Helper {
                 fail("usage: lart-screensaver-helper unregister <appex-path>", code: 2)
             }
             do {
+                logger.info("unregister: pluginkit -r \(path, privacy: .public)")
                 try pluginkit.unregisterExtension(at: URL(fileURLWithPath: path))
                 emit(["unregistered": true])
             } catch {
+                logger.error("unregister failed: \(error.localizedDescription, privacy: .public)")
                 fail("unregister failed: \(error.localizedDescription)", code: 1)
             }
 
         case "find":
-            emit(registration(pluginkit, bundleID: arg ?? defaultBundleID))
+            let result = registration(pluginkit, bundleID: arg ?? defaultBundleID)
+            logger.info("find: registered=\(String(describing: result["registered"]), privacy: .public)")
+            emit(result)
 
         default:
             fail("usage: lart-screensaver-helper [status|activate|register|unregister|find] [arg]", code: 2)

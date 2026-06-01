@@ -13,6 +13,7 @@ import { spawn, execFile } from 'child_process'
 import { existsSync } from 'fs'
 import { join } from 'path'
 import { app } from 'electron'
+import { log } from './logger'
 
 const APPEX_NAME = 'ScreensaverArtExtension.appex'
 const HELPER_NAME = 'lart-screensaver-helper'
@@ -90,15 +91,19 @@ export type InstallerStatus = {
 // like "Living Art Screensaver.app".
 async function queryRegistration(): Promise<{ registered: boolean; registeredPath: string | null }> {
   try {
-    const { code, stdout } = await runHelper(['find', EXTENSION_BUNDLE_ID])
-    if (code !== 0) return { registered: false, registeredPath: null }
+    const { code, stdout, stderr } = await runHelper(['find', EXTENSION_BUNDLE_ID])
+    if (code !== 0) {
+      log.warn('installer', 'helper find exited non-zero', { code, stderr: stderr.trim() })
+      return { registered: false, registeredPath: null }
+    }
     const parsed = JSON.parse(stdout.trim())
     return {
       registered: parsed.registered === true,
       registeredPath: typeof parsed.path === 'string' ? parsed.path : null,
     }
-  } catch {
+  } catch (err) {
     // helper missing or errored — treat as not registered.
+    log.warn('installer', 'helper find failed', { error: err instanceof Error ? err.message : String(err) })
     return { registered: false, registeredPath: null }
   }
 }
@@ -152,9 +157,11 @@ export async function install(): Promise<{ ok: boolean; error?: string }> {
   }
   const appex = bundledAppexPath()
   if (!existsSync(appex)) {
+    log.error('installer', 'bundled appex missing', { appex })
     return { ok: false, error: `Bundled screensaver missing at ${appex}. Run scripts/bundle-appex.sh.` }
   }
 
+  log.info('installer', 'install: registering appex', { appex })
   await killScreensaverProcesses()
 
   // The helper registers via pluginkit AND re-queries to confirm the extension
@@ -168,9 +175,13 @@ export async function install(): Promise<{ ok: boolean; error?: string }> {
     registered = false
   }
   if (!registered) {
-    const detail = stderr.trim() || `helper exit ${code}`
+    // Surface the helper's actual report (not just "exit 0") — the most common
+    // cause is a broken appex code signature, which pluginkit refuses silently.
+    const detail = stderr.trim() || stdout.trim() || `helper exit ${code}`
+    log.error('installer', 'install: registration not confirmed', { code, stdout: stdout.trim(), stderr: stderr.trim() })
     return { ok: false, error: `Failed to register the screensaver (${detail}).` }
   }
+  log.info('installer', 'install: registered', { stdout: stdout.trim() })
   return { ok: true }
 }
 
@@ -182,8 +193,10 @@ export async function uninstall(): Promise<{ ok: boolean; error?: string }> {
   // Prefer the path pluginkit actually has registered; fall back to ours.
   const { registeredPath } = await queryRegistration()
   const target = registeredPath || bundledAppexPath()
+  log.info('installer', 'uninstall: unregistering appex', { target })
   const { code, stderr } = await runHelper(['unregister', target])
   if (code !== 0) {
+    log.error('installer', 'uninstall failed', { code, stderr: stderr.trim() })
     return { ok: false, error: stderr.trim() || `Could not unregister the screensaver (helper exit ${code}).` }
   }
   return { ok: true }
@@ -194,11 +207,49 @@ export async function activate(): Promise<{ ok: boolean; error?: string }> {
   if (process.platform !== 'darwin') {
     return { ok: false, error: `Not supported on ${process.platform}.` }
   }
+  log.info('installer', 'activate: setting active screensaver')
   const { code, stderr } = await _testHooks.run(helperPath(), ['activate'])
   if (code !== 0) {
+    log.error('installer', 'activate failed', { code, stderr: stderr.trim() })
     return { ok: false, error: stderr.trim() || `Could not set the screensaver (helper exit ${code}).` }
   }
   return { ok: true }
+}
+
+// Rich, read-only diagnostics for error reports. Includes the appex code-sign
+// verification (the usual culprit when registration fails) and the helper's
+// raw `find` output, alongside the normal status. Never throws.
+export interface InstallerDiagnostics {
+  status: InstallerStatus
+  appexPath: string
+  codesign: { ok: boolean; output: string } | null
+  helperFind: { code: number; stdout: string; stderr: string } | null
+}
+
+export async function getDiagnostics(): Promise<InstallerDiagnostics> {
+  const status = await getStatus()
+  const appexPath = bundledAppexPath()
+  if (process.platform !== 'darwin') {
+    return { status, appexPath, codesign: null, helperFind: null }
+  }
+  let codesign: { ok: boolean; output: string } | null = null
+  try {
+    const { code, stderr, stdout } = await _testHooks.run('/usr/bin/codesign', [
+      '--verify', '--deep', '--strict', '--verbose=2', appexPath,
+    ])
+    codesign = { ok: code === 0, output: (stderr + stdout).trim() }
+  } catch (err) {
+    codesign = { ok: false, output: err instanceof Error ? err.message : String(err) }
+  }
+  let helperFind: { code: number; stdout: string; stderr: string } | null = null
+  try {
+    const r = await runHelper(['find', EXTENSION_BUNDLE_ID])
+    helperFind = { code: r.code, stdout: r.stdout.trim(), stderr: r.stderr.trim() }
+  } catch {
+    helperFind = null
+  }
+  log.debug('installer', 'diagnostics gathered', { codesignOk: codesign?.ok, registered: status.registered })
+  return { status, appexPath, codesign, helperFind }
 }
 
 export function openSystemSettings(): void {

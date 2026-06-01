@@ -2,6 +2,11 @@ appId: com.livingart.screensaver.app
 productName: Living Art Screensaver
 copyright: Copyright © 2026 Living Art
 
+# Re-sign the embedded .appex (+ helper + app) after the universal merge, which
+# otherwise invalidates the appex signature and makes pluginkit refuse to
+# register the screensaver. See scripts/afterpack-sign.cjs.
+afterPack: scripts/afterpack-sign.cjs
+
 directories:
   output: dist
   buildResources: build

@@ -8,6 +8,7 @@ import { homedir } from 'os'
 import { join } from 'path'
 import { BrowserWindow } from 'electron'
 import { obfuscate, filenameForUrl } from './obfuscation'
+import { log } from './logger'
 
 export type ApiItem = {
   src: string
@@ -79,12 +80,17 @@ export async function syncGallery(
 ): Promise<CachedManifest> {
   await mkdir(VIDEOS_DIR, { recursive: true })
 
+  log.info('cache-sync', 'sync started', { apiUrl, authenticated: Boolean(accessToken) })
   emit(window, 'cache:progress', { phase: 'fetching-gallery' })
   const res = await fetch(apiUrl, {
     headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
   })
-  if (!res.ok) throw new Error(`Gallery API returned HTTP ${res.status}`)
+  if (!res.ok) {
+    log.error('cache-sync', 'gallery API error', { status: res.status })
+    throw new Error(`Gallery API returned HTTP ${res.status}`)
+  }
   const api: ApiResponse = await res.json()
+  log.info('cache-sync', 'gallery fetched', { count: api.items.length, isSubscribed: api.isSubscribed, totalCount: api.totalCount })
 
   const cached: CachedItem[] = api.items.map((item) => ({
     filename: filenameForUrl(item.src),
@@ -121,6 +127,11 @@ export async function syncGallery(
     try {
       await downloadAndObfuscate(item, dest)
     } catch (err) {
+      log.error('cache-sync', 'item download failed', {
+        title: item.title,
+        src: item.src,
+        error: err instanceof Error ? err.message : String(err),
+      })
       emit(window, 'cache:progress', {
         phase: 'error',
         index: i,
@@ -142,6 +153,7 @@ export async function syncGallery(
     }
   }
 
+  log.info('cache-sync', 'sync done', { total: api.items.length })
   emit(window, 'cache:progress', { phase: 'done', total: api.items.length })
   return manifest
 }

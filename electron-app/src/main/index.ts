@@ -4,8 +4,19 @@ import { stat, readdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import { getStatus, install, uninstall, activate, openSystemSettings } from './installer'
 import { syncGallery, clearCache, PATHS, type CachedManifest } from './cache-sync'
+import { log, installGlobalHandlers, recordRendererLog, getLogFilePath } from './logger'
+import { sendReport, type SendReportInput } from './report'
 
 const is = { dev: !app.isPackaged }
+
+installGlobalHandlers()
+log.info('app', 'main process starting', {
+  version: app.getVersion(),
+  electron: process.versions.electron,
+  platform: process.platform,
+  arch: process.arch,
+  packaged: app.isPackaged,
+})
 
 let mainWindow: BrowserWindow | null = null
 
@@ -100,7 +111,9 @@ ipcMain.handle(
       const manifest = await syncGallery(payload.apiUrl, payload.accessToken, mainWindow)
       return { ok: true, manifest }
     } catch (err) {
-      return { ok: false, error: err instanceof Error ? err.message : String(err) }
+      const message = err instanceof Error ? err.message : String(err)
+      log.error('cache-sync', 'sync failed', { error: message })
+      return { ok: false, error: message }
     }
   },
 )
@@ -116,6 +129,19 @@ ipcMain.handle('installer:openSystemSettings', () => {
 
 ipcMain.handle('shell:openExternal', (_evt, url: string) => shell.openExternal(url))
 ipcMain.handle('shell:openPath', (_evt, path: string) => shell.openPath(path))
+
+// ---------------------------------------------------------------------------
+// Logging + error reporting
+// ---------------------------------------------------------------------------
+// Renderer forwards its logs + uncaught errors here so a single report captures
+// both processes.
+ipcMain.handle('log:record', (_evt, entry: { level?: 'debug' | 'info' | 'warn' | 'error'; scope?: string; msg?: string; data?: unknown }) => {
+  recordRendererLog(entry)
+})
+ipcMain.handle('log:getFilePath', () => getLogFilePath())
+
+// Assemble a debug snapshot and upload it to the website's error-report bucket.
+ipcMain.handle('report:send', (_evt, input: SendReportInput) => sendReport(input))
 
 // ---------------------------------------------------------------------------
 // Lifecycle

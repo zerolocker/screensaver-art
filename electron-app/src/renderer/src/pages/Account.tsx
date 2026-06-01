@@ -9,7 +9,8 @@ import {
   Button,
 } from '@screensaver-art/ui'
 import type { Subscription } from '@screensaver-art/ui'
-import { GALLERY_ENDPOINT, SUBSCRIPTION_VERIFY_ENDPOINT } from '../lib/api'
+import { GALLERY_ENDPOINT, SUBSCRIPTION_VERIFY_ENDPOINT, ERROR_REPORT_ENDPOINT } from '../lib/api'
+import { log } from '../lib/log'
 import {
   Loader2,
   Trash2,
@@ -19,6 +20,7 @@ import {
   CheckCircle2,
   RefreshCw,
   AlertCircle,
+  Bug,
 } from 'lucide-react'
 import type { Session } from '@supabase/supabase-js'
 import type { CacheProgress, CacheStats, InstallerStatus } from '../../../preload'
@@ -46,6 +48,9 @@ export function AccountPage({ session }: AccountPageProps) {
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null)
 
   const [clearing, setClearing] = useState(false)
+
+  const [reporting, setReporting] = useState(false)
+  const [reportResult, setReportResult] = useState<{ ok: boolean; id?: string; error?: string } | null>(null)
 
   useEffect(() => {
     fetchSubscription()
@@ -140,6 +145,23 @@ export function AccountPage({ session }: AccountPageProps) {
     await window.electronAPI.cache.clear()
     await refreshLocalState()
     setClearing(false)
+  }
+
+  // Assemble a debug snapshot in the main process and upload it to the website's
+  // error-report bucket. Surfaced both on errors and as a proactive button.
+  async function handleSendReport(reason: string, errorText?: string | null) {
+    setReporting(true)
+    setReportResult(null)
+    log.info('account', 'sending error report', { reason })
+    const result = await window.electronAPI.report.send({
+      endpoint: ERROR_REPORT_ENDPOINT,
+      accessToken: session.access_token,
+      reason,
+      error: errorText ?? undefined,
+      rendererContext: { installError, syncError, installer },
+    })
+    setReportResult(result)
+    setReporting(false)
   }
 
   function isActiveSubscription(sub: Subscription | null): boolean {
@@ -295,7 +317,28 @@ export function AccountPage({ session }: AccountPageProps) {
                     <code className="font-mono">electron-app/</code> before launching.
                   </p>
                 )}
-                {installError && <p className="text-xs text-red-500">{installError}</p>}
+                {installError && (
+                  <div className="flex items-center justify-between gap-3 rounded-lg border border-red-500/30 bg-red-500/10 p-3">
+                    <p className="text-xs text-red-500">{installError}</p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSendReport('install_error', installError)}
+                      disabled={reporting}
+                      className="shrink-0"
+                    >
+                      {reporting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending…
+                        </>
+                      ) : (
+                        <>
+                          <Bug className="mr-2 h-4 w-4" /> Send error report
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
 
                 <div className="flex gap-3">
                   {!installer.registered ? (
@@ -396,6 +439,46 @@ export function AccountPage({ session }: AccountPageProps) {
                   <Trash2 className="h-4 w-4" />
                 )}
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Diagnostics / error reporting */}
+        <Card className="bg-card border-border">
+          <CardHeader>
+            <CardTitle className="text-foreground">Diagnostics</CardTitle>
+            <CardDescription>
+              Something not working? Send us a debug report — app version, system info, screensaver
+              install state, and recent logs. No video content is included.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <Button
+                variant="outline"
+                onClick={() => handleSendReport('manual')}
+                disabled={reporting}
+              >
+                {reporting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending…
+                  </>
+                ) : (
+                  <>
+                    <Bug className="mr-2 h-4 w-4" /> Send error report
+                  </>
+                )}
+              </Button>
+              {reportResult?.ok && (
+                <p className="text-xs text-green-500">
+                  Report sent. Reference ID: <code className="font-mono">{reportResult.id}</code>
+                </p>
+              )}
+              {reportResult && !reportResult.ok && (
+                <p className="text-xs text-red-500">
+                  Couldn’t send report: {reportResult.error ?? 'unknown error'}
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>

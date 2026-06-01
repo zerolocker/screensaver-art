@@ -19,8 +19,11 @@ A **pnpm workspace** monorepo containing:
 | `electron-app/src/main/installer.ts` | Registers/unregisters the `.appex`, queries registration status, reads/sets the active screensaver — all delegated to the PaperSaver helper (`register`/`unregister`/`find`/`status`/`activate`). No direct `pluginkit` calls or output parsing. |
 | `electron-app/src/main/cache-sync.ts` | Fetches `/api/gallery`, downloads + obfuscates MP4s, writes manifest to `/Users/Shared/LivingArtScreensaver/` |
 | `electron-app/src/main/obfuscation.ts` | XOR + magic-header + djb2 filename hash. **Mirror of `screensaver-macos/ScreensaverArtExtension/Constants.swift`** — change both. |
+| `electron-app/src/main/logger.ts` | Dependency-free main-process logger — console + JSONL file (`<userData>/logs/main.log`) + in-memory ring buffer. Renderer logs forwarded via `log:record` IPC. |
+| `electron-app/src/main/report.ts` | Assembles a debug snapshot (versions, OS, installer/codesign diagnostics, cache summary, recent logs) and uploads it to `/api/error-report`. |
 | `electron-app/scripts/bundle-appex.sh` | Builds the universal `.appex` + helper and copies them into `electron-app/resources/` |
-| `electron-app/electron-builder.yml` | DMG (universal) / NSIS distribution config |
+| `electron-app/scripts/afterpack-sign.cjs` | electron-builder `afterPack` hook — **re-signs the bundle after the universal merge** (which invalidates the appex signature, breaking `pluginkit` registration). Ad-hoc by default; set `LART_CODESIGN_IDENTITY` for Developer ID. |
+| `electron-app/electron-builder.yml` | DMG (universal) / NSIS distribution config; wires the `afterPack` signing hook |
 | `index.html` | Standalone web preview (HTML+CSS+JS, no build step) |
 | `gallery.json` | Playlist — all art items with `src`, `title`, `type`, `collection`, `date`, prompts |
 | `R2 Bucket` | `https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/` — MP4 assets |
@@ -33,6 +36,7 @@ A **pnpm workspace** monorepo containing:
 | `living-art-screensaver-web/app/api/gallery/route.ts` | **The gating endpoint** — serves gallery to the Electron app |
 | `living-art-screensaver-web/app/api/subscription/verify/route.ts` | Subscription status check |
 | `living-art-screensaver-web/app/api/webhooks/stripe/route.ts` | Stripe → Supabase sync |
+| `living-art-screensaver-web/app/api/error-report/route.ts` | Stores Electron-app debug reports (Bearer-auth) in the Supabase `user-error-reports` bucket via the service role |
 
 ## Getting started (pnpm workspace)
 ```bash
@@ -97,7 +101,7 @@ Without this, classes like `bg-primary` used only in `packages/ui` components wo
 ## Infrastructure
 | Service | What it does |
 |---|---|
-| **Supabase** | Auth (email/password) + `subscriptions` table |
+| **Supabase** | Auth (email/password) + `subscriptions` table + `user-error-reports` Storage bucket (private; debug reports from the Electron app) |
 | **Stripe** | Payments — $0.99/month, single tier |
 | **Cloudflare R2** | Hosts MP4 video assets (public, no auth) |
 | **Vercel** | Hosts the Next.js website |
@@ -220,8 +224,22 @@ lives in its own file under `screensaver-macos/ScreensaverArtExtension/`:
 ### Distribution
 Distribution is owned by the Electron app — see `electron-app/electron-builder.yml`. The `.appex` is embedded in the Electron `.app`'s `Contents/PlugIns/` and registered with `pluginkit`. There is no per-screensaver DMG.
 
-### Code signing for release (TODO — out of scope so far)
-Builds are unsigned/ad-hoc today (`identity: null`). Before public release, Developer-ID-sign + notarize, signing **inside-out**: the `.appex` and `lart-screensaver-helper` first, then the outer Electron `.app`. Set `hardenedRuntime: true` for notarization. Universal (Intel + Apple Silicon) is already done.
+### Code signing — the `afterPack` re-sign (important)
+The outer Electron `.app` is unsigned for distribution (`identity: null`), but the embedded `.appex` **must** have a valid signature or `pluginkit -a` silently refuses to register it (it exits 0 but the extension never appears in `pluginkit -m` — surfaced in-app as "Failed to register the screensaver (helper exit 0).").
+
+The trap: for a `universal` build, `@electron/universal` merges the x64 + arm64 apps and **rewrites nested `Info.plist` files after Xcode signed the appex**, invalidating its signature. `scripts/afterpack-sign.cjs` (wired via `afterPack`) repairs this on the merged universal app, before electron-builder's own signing step:
+1. `codesign --deep --sign -` the whole bundle (signs the merged frameworks too),
+2. re-sign the appex **with its entitlements** (deep signing drops them),
+3. re-seal the outer app over the re-signed appex,
+then `--verify --deep --strict` both (fails the build otherwise).
+
+Ad-hoc (`-`) matches the locally-valid signature Xcode gives the dev DevHost build. For Developer ID + notarization, set `LART_CODESIGN_IDENTITY` to the "Developer ID Application" identity (the hook already signs inside-out and applies the hardened runtime for a real identity) and set `hardenedRuntime: true`. Universal (Intel + Apple Silicon) is already done.
+
+### Logging & error reports
+- **Main process**: `src/main/logger.ts` logs to console + `<userData>/logs/main.log` (JSONL, rotated at ~5 MB) + an in-memory ring buffer. `installGlobalHandlers()` captures `uncaughtException`/`unhandledRejection`. Installer, cache-sync, and IPC are instrumented.
+- **Renderer**: `src/renderer/src/lib/log.ts` mirrors to the console and forwards to main via `log:record`, and installs `window` `error`/`unhandledrejection` handlers. So one report covers both processes.
+- **Swift helper**: logs to the unified log under subsystem `com.livingart.screensaver.app` (category `helper`) — `log stream --predicate 'subsystem == "com.livingart.screensaver.app"'`. Never writes to stdout (that carries the JSON the Electron app parses).
+- **Error report**: the Account page has a "Send error report" button (shown on errors + a persistent Diagnostics card). `report.ts` assembles a JSON snapshot — app/OS/Electron versions, `installer.getDiagnostics()` (status + appex `codesign --verify` + helper `find`), cache summary, and the recent log buffer — and POSTs it (Bearer-auth) to `/api/error-report`, which stores it in the Supabase `user-error-reports` bucket at `<userId>/<timestamp>-<id>.json`. No video content or access token is included in the body.
 
 ---
 

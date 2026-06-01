@@ -80,7 +80,10 @@ export type InstallerStatus = {
   bundledExtensionExists: boolean
   // pluginkit knows about our extension.
   registered: boolean
-  // PaperSaver reports our screensaver as the active one (banner gates on this).
+  // Our screensaver is registered AND set as the active one, so it will actually
+  // display. Gated on `registered` — an unregistered appex can't be active even
+  // when the system preference still names it (see getStatus). The "Set" banner
+  // and the "Set as your screensaver" pill gate on this.
   active: boolean
   registeredPath: string | null
 }
@@ -132,7 +135,15 @@ export async function getStatus(): Promise<InstallerStatus> {
     }
   }
   const bundledExtensionExists = existsSync(bundledAppexPath())
-  const [{ registered, registeredPath }, active] = await Promise.all([queryRegistration(), isActive()])
+  const [{ registered, registeredPath }, rawActive] = await Promise.all([queryRegistration(), isActive()])
+  // Gate `active` on `registered`. After an uninstall (`pluginkit -r`) the
+  // extension is gone from System Settings, but the system's active-screensaver
+  // preference can still name ScreensaverArtExtension, so the helper's `status`
+  // keeps reporting active=true. Surfacing that unchanged makes the Account page
+  // show the contradictory "Set as your screensaver" pill alongside the "Install
+  // Screensaver" button. An unregistered appex can't actually display, so it
+  // isn't meaningfully active.
+  const active = registered && rawActive
   return { platform: process.platform, supported, bundledExtensionExists, registered, active, registeredPath }
 }
 

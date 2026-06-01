@@ -1,11 +1,10 @@
-// electron-builder `afterPack` hook — re-sign the packaged mac app so the
-// embedded screensaver .appex has a VALID code signature.
+// electron-builder `afterPack` hook — make the embedded screensaver .appex have
+// a VALID code signature in the packaged app.
 //
 // WHY THIS EXISTS
 // For a `universal` mac build, electron-builder builds an x64 and an arm64 app
 // and merges them with @electron/universal. That merge rewrites nested
-// `Info.plist` files AFTER Xcode signed the .appex, which invalidates the
-// appex's signature:
+// `Info.plist` files AFTER the .appex was signed, invalidating its signature:
 //
 //     codesign --verify …/ScreensaverArtExtension.appex
 //     → "invalid Info.plist (plist or signature have been modified)"
@@ -14,31 +13,30 @@
 // signature is broken — it exits 0 but the extension never shows up in
 // `pluginkit -m`. In the app that surfaced as the install error
 //     "Failed to register the screensaver (helper exit 0)."
-// The merge also leaves the merged frameworks unsigned and the outer app's seal
-// referencing the now-stale appex, which would trigger a "damaged app"
-// Gatekeeper block on a downloaded (quarantined) DMG.
 //
-// macPackager calls afterPack exactly once for the merged universal app, after
-// the merge and before its own (no-op under identity:null) signing — so this is
-// the place to repair everything. We re-sign the WHOLE bundle consistently:
+// macPackager calls afterPack once for the merged universal app, after the merge
+// and before electron-builder's own signing — so this is where we fix the appex.
 //
-//   1. `--deep` sign everything (frameworks, helper apps, the appex, the app)
-//      so all nested code is signed.
-//   2. Re-sign the appex WITH its entitlements (step 1's --deep can't apply the
-//      appex's sandbox + /Users/Shared temporary-exception entitlements).
-//   3. Re-seal the outer app so its signature matches the re-signed appex.
+// TWO MODES (driven by LART_CODESIGN_IDENTITY; kept in lockstep with
+// electron-builder.cjs):
 //
-// Ad-hoc ("-") matches the locally-valid signature Xcode produces for the dev
-// DevHost build, which registers fine. Set LART_CODESIGN_IDENTITY to a
-// "Developer ID Application" identity once notarization is set up (this hook
-// already signs inside-out + can apply the hardened runtime, both of which
-// notarization requires).
+//   ad-hoc ("-" / unset): electron-builder does NOT sign (identity:null), so we
+//     sign the WHOLE bundle ourselves: deep ad-hoc sign, re-sign the appex with
+//     its entitlements, re-seal the outer app, verify. Matches the locally-valid
+//     signature Xcode gives the dev DevHost build (registers fine on this Mac).
+//
+//   Developer ID: electron-builder signs the frameworks/helpers/outer app with
+//     the hardened runtime AND notarizes — but it ignores Contents/PlugIns, so
+//     it never touches the appex. We pre-sign ONLY the appex (with its sandbox
+//     entitlements) + the helper (insurance) here, hardened runtime + secure
+//     timestamp; electron-builder then seals the outer app over them.
 
 const { execFileSync } = require('child_process')
 const { existsSync } = require('fs')
 const path = require('path')
 
 const APPEX_REL = path.join('Contents', 'PlugIns', 'ScreensaverArtExtension.appex')
+const HELPER_REL = path.join('Contents', 'Resources', 'lart-screensaver-helper')
 
 module.exports = async function afterPack(context) {
   if (context.electronPlatformName !== 'darwin') return
@@ -59,6 +57,7 @@ module.exports = async function afterPack(context) {
   const appName = `${context.packager.appInfo.productFilename}.app`
   const appPath = path.join(context.appOutDir, appName)
   const appexPath = path.join(appPath, APPEX_REL)
+  const helperPath = path.join(appPath, HELPER_REL)
   const entitlements = path.join(
     __dirname,
     '..',
@@ -83,20 +82,35 @@ module.exports = async function afterPack(context) {
       stdio: 'inherit',
     })
 
-  // 1. Sign all nested code + the app in one pass.
-  codesign(['--deep', appPath])
-  // 2. Give the appex back its entitlements (deep signing dropped them).
-  codesign(['--entitlements', entitlements, appexPath])
-  // 3. Re-seal the outer app over the re-signed appex.
-  codesign([appPath])
+  if (adhoc) {
+    // 1. Sign all nested code + the app in one pass.
+    codesign(['--deep', appPath])
+    // 2. Give the appex back its entitlements (deep signing dropped them).
+    codesign(['--entitlements', entitlements, appexPath])
+    // 3. Re-seal the outer app over the re-signed appex.
+    codesign([appPath])
+  } else {
+    // Developer ID: only the appex (+ helper) need our intervention; electron-
+    // builder signs and seals everything else afterwards.
+    if (existsSync(helperPath)) {
+      codesign([helperPath])
+    }
+    codesign(['--entitlements', entitlements, appexPath])
+  }
 
-  // Fail the build loudly if either signature isn't valid — that's the exact
-  // condition that made the shipped screensaver impossible to register / launch.
+  // Verify the appex regardless of mode — a broken appex signature is the exact
+  // condition that makes the screensaver impossible to register. (The outer app
+  // is only fully signed at this point in ad-hoc mode; electron-builder signs +
+  // verifies it in Developer ID mode.)
   execFileSync('/usr/bin/codesign', ['--verify', '--deep', '--strict', '--verbose=2', appexPath], {
     stdio: 'inherit',
   })
-  execFileSync('/usr/bin/codesign', ['--verify', '--deep', '--strict', '--verbose=2', appPath], {
-    stdio: 'inherit',
-  })
-  console.log(`[afterpack-sign] re-signed bundle (${identity}); appex + app signatures valid ✓`)
+  if (adhoc) {
+    execFileSync('/usr/bin/codesign', ['--verify', '--deep', '--strict', '--verbose=2', appPath], {
+      stdio: 'inherit',
+    })
+  }
+  console.log(
+    `[afterpack-sign] ${adhoc ? 'ad-hoc signed bundle' : 'pre-signed appex + helper'} (${identity}); appex signature valid ✓`,
+  )
 }

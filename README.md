@@ -108,7 +108,11 @@ cd electron-app
 pnpm dist:mac             # → electron-app/dist/Living Art Screensaver-1.0.0-universal.dmg
 pnpm dist:win             # → electron-app/dist/Living Art Screensaver Setup-1.0.0.exe
 ```
-The macOS DMG is **universal** (Intel + Apple Silicon) but unsigned by default. Sign + notarize before public release.
+The macOS DMG is **universal** (Intel + Apple Silicon). By default it's ad-hoc signed (runs on the build machine; not distributable to others). For a **signed + notarized release** (one-time setup: a "Developer ID Application" cert in your keychain + `xcrun notarytool store-credentials`), copy `electron-app/release.env.example` → `release.env` (gitignored), fill in your identity + keychain profile, then:
+```bash
+pnpm dist:mac:release
+```
+This signs with the hardened runtime, notarizes via Apple, and staples the ticket. (Equivalently, pass `LART_CODESIGN_IDENTITY` + `APPLE_KEYCHAIN_PROFILE` inline to `pnpm dist:mac`.) See `CLAUDE.md` → "Code signing & notarization" for how it works.
 
 **Run the website locally:**
 ```bash

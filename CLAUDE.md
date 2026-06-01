@@ -22,8 +22,10 @@ A **pnpm workspace** monorepo containing:
 | `electron-app/src/main/logger.ts` | Dependency-free main-process logger — console + JSONL file (`<userData>/logs/main.log`) + in-memory ring buffer. Renderer logs forwarded via `log:record` IPC. |
 | `electron-app/src/main/report.ts` | Assembles a debug snapshot (versions, OS, installer/codesign diagnostics, cache summary, recent logs) and uploads it to `/api/error-report`. |
 | `electron-app/scripts/bundle-appex.sh` | Builds the universal `.appex` + helper and copies them into `electron-app/resources/` |
-| `electron-app/scripts/afterpack-sign.cjs` | electron-builder `afterPack` hook — **re-signs the bundle after the universal merge** (which invalidates the appex signature, breaking `pluginkit` registration). Ad-hoc by default; set `LART_CODESIGN_IDENTITY` for Developer ID. |
-| `electron-app/electron-builder.yml` | DMG (universal) / NSIS distribution config; wires the `afterPack` signing hook |
+| `electron-app/scripts/afterpack-sign.cjs` | electron-builder `afterPack` hook — fixes the embedded appex signature after the universal merge (which invalidates it, breaking `pluginkit` registration). Ad-hoc by default; pre-signs the appex+helper with Developer ID when `LART_CODESIGN_IDENTITY` is set. |
+| `electron-app/scripts/aftersign-staple.cjs` | electron-builder `afterSign` hook — staples the notarization ticket onto the `.app` (electron-builder notarizes but doesn't staple). Runs only when notary creds are set. |
+| `electron-app/electron-builder.cjs` | DMG (universal) / NSIS distribution config — **JS, env-driven**: ad-hoc unless `LART_CODESIGN_IDENTITY` selects Developer ID (then hardened runtime + notarization). Wires both signing hooks. |
+| `electron-app/build/entitlements.mac.plist` + `.inherit.plist` | Hardened-runtime entitlements for the outer Electron app + its helper processes (Developer ID builds). The appex has its own entitlements. |
 | `index.html` | Standalone web preview (HTML+CSS+JS, no build step) |
 | `gallery.json` | Playlist — all art items with `src`, `title`, `type`, `collection`, `date`, prompts |
 | `R2 Bucket` | `https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/` — MP4 assets |
@@ -222,18 +224,30 @@ lives in its own file under `screensaver-macos/ScreensaverArtExtension/`:
 `SSEHasConfigureSheet = false` (Info.plist). The screensaver has no UI of its own — accounts and cache are managed in the Electron app.
 
 ### Distribution
-Distribution is owned by the Electron app — see `electron-app/electron-builder.yml`. The `.appex` is embedded in the Electron `.app`'s `Contents/PlugIns/` and registered with `pluginkit`. There is no per-screensaver DMG.
+Distribution is owned by the Electron app — see `electron-app/electron-builder.cjs`. The `.appex` is embedded in the Electron `.app`'s `Contents/PlugIns/` and registered with `pluginkit`. There is no per-screensaver DMG.
 
-### Code signing — the `afterPack` re-sign (important)
-The outer Electron `.app` is unsigned for distribution (`identity: null`), but the embedded `.appex` **must** have a valid signature or `pluginkit -a` silently refuses to register it (it exits 0 but the extension never appears in `pluginkit -m` — surfaced in-app as "Failed to register the screensaver (helper exit 0).").
+### Code signing & notarization (env-driven)
+The embedded `.appex` **must** have a valid signature or `pluginkit -a` silently refuses to register it (it exits 0 but the extension never appears in `pluginkit -m` — surfaced in-app as "Failed to register the screensaver (helper exit 0)."). The trap: for a `universal` build, `@electron/universal` merges the x64 + arm64 apps and **rewrites nested `Info.plist` files after the appex was signed**, invalidating its signature. So the appex always needs (re)signing *after* the merge — that's what `scripts/afterpack-sign.cjs` (the `afterPack` hook) does, on the merged universal app.
 
-The trap: for a `universal` build, `@electron/universal` merges the x64 + arm64 apps and **rewrites nested `Info.plist` files after Xcode signed the appex**, invalidating its signature. `scripts/afterpack-sign.cjs` (wired via `afterPack`) repairs this on the merged universal app, before electron-builder's own signing step:
-1. `codesign --deep --sign -` the whole bundle (signs the merged frameworks too),
-2. re-sign the appex **with its entitlements** (deep signing drops them),
-3. re-seal the outer app over the re-signed appex,
-then `--verify --deep --strict` both (fails the build otherwise).
+The whole pipeline is toggled by the **`LART_CODESIGN_IDENTITY`** env var, kept in lockstep between `electron-builder.cjs` and the hooks:
 
-Ad-hoc (`-`) matches the locally-valid signature Xcode gives the dev DevHost build. For Developer ID + notarization, set `LART_CODESIGN_IDENTITY` to the "Developer ID Application" identity (the hook already signs inside-out and applies the hardened runtime for a real identity) and set `hardenedRuntime: true`. Universal (Intel + Apple Silicon) is already done.
+**Ad-hoc (default — local/contributor builds, no cert):** `electron-builder.cjs` sets `identity: null` (electron-builder skips signing). `afterpack-sign.cjs` ad-hoc signs the whole bundle: `codesign --deep --sign -`, re-sign the appex with its entitlements, re-seal the outer app, `--verify --deep --strict`. Registers fine on the build machine; not distributable to others.
+
+**Developer ID (release):** set `LART_CODESIGN_IDENTITY="Developer ID Application: NAME (TEAMID)"`. Then:
+- `electron-builder.cjs` → `hardenedRuntime: true`, `identity: <that>`. electron-builder signs the frameworks/helper-apps/outer app with the hardened runtime (`build/entitlements.mac{,.inherit}.plist`). **It ignores `Contents/PlugIns/` by design**, so it never touches the appex.
+- `afterpack-sign.cjs` pre-signs the **appex** (with its sandbox + `/Users/Shared` temporary-exception entitlements) and the **helper**, both hardened-runtime + secure-timestamp. electron-builder then seals the outer app over them.
+- **Notarization** is electron-builder-native (`@electron/notarize`) and kicks in when Apple notary creds are in the env — easiest is a keychain profile from `xcrun notarytool store-credentials`: `APPLE_KEYCHAIN_PROFILE="…"` (or `APPLE_ID`/`APPLE_APP_SPECIFIC_PASSWORD`/`APPLE_TEAM_ID`). `@electron/notarize` submits but doesn't staple, so `scripts/aftersign-staple.cjs` (the `afterSign` hook) staples the ticket onto the `.app` before the DMG is built. With no creds, the app is signed but not notarized (staple skipped).
+
+Release: copy `electron-app/release.env.example` → `release.env` (gitignored; holds your `LART_CODESIGN_IDENTITY` + `APPLE_KEYCHAIN_PROFILE` — not secrets, just developer-specific), then `pnpm dist:mac:release` (wrapper: `scripts/dist-mac-release.sh` loads `release.env` and runs `pnpm dist:mac`). Equivalent to setting the env vars inline:
+```bash
+LART_CODESIGN_IDENTITY="Developer ID Application: NAME (TEAMID)" \
+APPLE_KEYCHAIN_PROFILE="living-art-notary" \
+pnpm dist:mac
+# verify:
+spctl -a -vvv -t install "dist/mac-universal/Living Art Screensaver.app"   # → accepted, Notarized Developer ID
+xcrun stapler validate "dist/Living Art Screensaver-1.0.0.dmg"
+```
+The `temporary-exception` entitlements are accepted by Developer ID notarization (automated malware scan, not an App Store entitlement review — Aerial ships the same combo). Test the DMG on a *different* Mac to truly confirm Gatekeeper is happy.
 
 ### Logging & error reports
 - **Main process**: `src/main/logger.ts` logs to console + `<userData>/logs/main.log` (JSONL, rotated at ~5 MB) + an in-memory ring buffer. `installGlobalHandlers()` captures `uncaughtException`/`unhandledRejection`. Installer, cache-sync, and IPC are instrumented.

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Hardened-runtime entitlements for the outer Electron app, applied by
+  electron-builder when LART_CODESIGN_IDENTITY is set (Developer ID signing).
+  This is the standard Electron set: Chromium's V8 needs JIT / writable-
+  executable memory, and Electron loads unsigned native modules at runtime.
+  The sandboxed .appex carries its OWN, different entitlements and is pre-signed
+  in scripts/afterpack-sign.cjs (electron-builder ignores Contents/PlugIns).
+-->
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.cs.allow-jit</key>
+	<true/>
+	<key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+	<true/>
+	<key>com.apple.security.cs.disable-library-validation</key>
+	<true/>
+	<key>com.apple.security.cs.allow-dyld-environment-variables</key>
+	<true/>
+</dict>
+</plist>

@@ -136,10 +136,32 @@ describe('installer', () => {
         if (cmd === HELPER() && args[0] === 'status') {
           return { code: 0, stdout: '{"active":true}', stderr: '' }
         }
+        if (cmd === HELPER() && args[0] === 'find') {
+          return { code: 0, stdout: foundJson(), stderr: '' }
+        }
         return defaultRunImpl(cmd, args)
       }
       const s = await getStatus()
       expect(s.active).toBe(true)
+    })
+
+    // After uninstall, pluginkit no longer knows the extension but the system's
+    // active-screensaver preference can still name it, so the helper keeps
+    // reporting active=true. `active` is gated on `registered` to avoid the
+    // contradictory "Set as your screensaver" + "Install Screensaver" UI.
+    it('reports active=false when the extension is no longer registered', async () => {
+      runImpl = (cmd, args) => {
+        if (cmd === HELPER() && args[0] === 'status') {
+          return { code: 0, stdout: '{"active":true}', stderr: '' }
+        }
+        if (cmd === HELPER() && args[0] === 'find') {
+          return { code: 0, stdout: '{"registered":false,"path":null}', stderr: '' }
+        }
+        return defaultRunImpl(cmd, args)
+      }
+      const s = await getStatus()
+      expect(s.registered).toBe(false)
+      expect(s.active).toBe(false)
     })
   })
 

@@ -4,17 +4,16 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Check, Download, Loader2 } from "lucide-react"
+import { PRICING } from "@screensaver-art/ui"
 import { createClient } from "@/lib/supabase/client"
 import { createCheckoutSession } from "@/app/actions/stripe"
 import type { User } from "@supabase/supabase-js"
 
 const features = [
   "Unlimited animated artworks",
-  "Nightly AI curation",
+  "Regular new artwork additions",
   "All art styles included",
   "High-resolution display",
-  "Seamless macOS integration",
-  "Regular new additions",
   "Cancel anytime",
 ]
 
@@ -66,13 +65,13 @@ export function PricingSection() {
           <div className="relative rounded-3xl bg-linear-to-b from-primary/20 to-transparent p-px">
             <div className="rounded-3xl bg-card p-8 lg:p-12">
               <div className="text-center mb-8">
-                <span className="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-                  Full Access
-                </span>
-                <div className="flex items-end justify-center gap-1">
-                  <span className="text-5xl lg:text-6xl font-bold text-foreground">$0.99</span>
-                  <span className="text-muted-foreground mb-2">/month</span>
+                <div className="flex items-end justify-center gap-2">
+                  <span className="text-5xl lg:text-6xl font-bold text-foreground">{PRICING.promoPrice}</span>
+                  <span className="text-muted-foreground mb-2">{PRICING.interval}</span>
                 </div>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Regular {PRICING.regularPrice}{PRICING.interval} · Promo valid through {PRICING.promoThrough}
+                </p>
                 <p className="mt-2 text-sm text-muted-foreground">
                   Billed monthly
                 </p>

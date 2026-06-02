@@ -11,7 +11,7 @@ export default function SignUpPage() {
     <SignUpForm
       onSubmit={async ({ email, password }) => {
         const supabase = createClient()
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -19,6 +19,15 @@ export default function SignUpPage() {
           },
         })
         if (error) return { error: error.message }
+        // Supabase hides "email already registered" to prevent enumeration: it
+        // returns a fake user (no error, no email sent) with an empty identities
+        // array. Detect that so we don't wrongly claim a confirmation was sent.
+        if (data.user && data.user.identities && data.user.identities.length === 0) {
+          return {
+            error:
+              'An account with this email already exists. Try signing in, or reset your password if you forgot it.',
+          }
+        }
         router.push('/auth/sign-up-success')
         return {}
       }}

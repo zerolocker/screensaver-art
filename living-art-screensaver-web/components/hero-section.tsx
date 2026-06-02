@@ -52,9 +52,12 @@ export function HeroSection() {
             variant="outline"
             size="lg"
             className="rounded-full px-8 py-6 text-lg border-foreground/20 gap-2"
+            asChild
           >
-            Learn More
-            <ArrowRight className="w-5 h-5" />
+            <a href="#features">
+              Learn More
+              <ArrowRight className="w-5 h-5" />
+            </a>
           </Button>
         </div>
 

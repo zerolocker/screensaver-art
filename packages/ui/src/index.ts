@@ -20,5 +20,8 @@ export type { SignUpFormProps } from './components/sign-up-form'
 export { SubscriptionCard } from './components/subscription-card'
 export type { Subscription, SubscriptionCardProps } from './components/subscription-card'
 
+// Pricing
+export { PRICING } from './pricing'
+
 // Utilities
 export { cn } from './utils'

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Loader2, CheckCircle, XCircle, AlertCircle, Clock } from 'lucide-react'
 import { Button } from './button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card'
+import { PRICING } from '../pricing'
 
 export interface Subscription {
   id: string
@@ -108,7 +109,7 @@ export function SubscriptionCard({ subscription, onSubscribe, onManage }: Subscr
           <div className="space-y-3">
             <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
               <p className="font-medium text-foreground">Living Art Screensaver</p>
-              <p className="text-sm text-muted-foreground">$0.99/month</p>
+              <p className="text-sm text-muted-foreground">{PRICING.promoPrice}{PRICING.interval}</p>
             </div>
             <Button
               onClick={handleManage}
@@ -131,6 +132,22 @@ export function SubscriptionCard({ subscription, onSubscribe, onManage }: Subscr
             <p className="text-sm text-muted-foreground">
               Subscribe to unlock the full Living Art experience with unlimited animated artworks and nightly AI curation.
             </p>
+            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-medium">
+                <Clock className="w-3 h-3" />
+                Limited time
+              </span>
+              <div className="mt-2 flex items-end gap-2">
+                <span className="text-lg font-semibold text-muted-foreground line-through">
+                  {PRICING.regularPrice}
+                </span>
+                <span className="text-3xl font-bold text-foreground leading-none">{PRICING.promoPrice}</span>
+                <span className="text-muted-foreground">{PRICING.interval}</span>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground/80">
+                Promo price valid through {PRICING.promoThrough}
+              </p>
+            </div>
             <Button
               onClick={handleSubscribe}
               className="w-full"
@@ -142,7 +159,7 @@ export function SubscriptionCard({ subscription, onSubscribe, onManage }: Subscr
                   Loading...
                 </>
               ) : (
-                'Subscribe for $0.99/month'
+                `Subscribe for ${PRICING.promoPrice}${PRICING.interval}`
               )}
             </Button>
           </div>

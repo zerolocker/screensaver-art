@@ -78,6 +78,9 @@ const electronAPI = {
     send: (input: SendReportInput): Promise<{ ok: boolean; id?: string; error?: string }> =>
       ipcRenderer.invoke('report:send', input),
   },
+  app: {
+    getVersion: (): Promise<string> => ipcRenderer.invoke('app:getVersion'),
+  },
 }
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI)

@@ -70,6 +70,9 @@ export interface ElectronAPI {
   report: {
     send: (input: SendReportInput) => Promise<{ ok: boolean; id?: string; error?: string }>
   }
+  app: {
+    getVersion: () => Promise<string>
+  }
 }
 
 declare global {

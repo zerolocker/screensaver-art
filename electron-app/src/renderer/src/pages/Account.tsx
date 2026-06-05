@@ -52,9 +52,12 @@ export function AccountPage({ session }: AccountPageProps) {
   const [reporting, setReporting] = useState(false)
   const [reportResult, setReportResult] = useState<{ ok: boolean; id?: string; error?: string } | null>(null)
 
+  const [appVersion, setAppVersion] = useState<string | null>(null)
+
   useEffect(() => {
     fetchSubscription()
     refreshLocalState()
+    window.electronAPI.app.getVersion().then(setAppVersion).catch(() => {})
     const off = window.electronAPI.cache.onProgress((p) => {
       setProgress(p)
       // Refresh the cache stats on each progress event so the file count and
@@ -480,6 +483,9 @@ export function AccountPage({ session }: AccountPageProps) {
                 </p>
               )}
             </div>
+            <p className="text-xs text-muted-foreground">
+              Living Art Screensaver{appVersion ? ` v${appVersion}` : ''}
+            </p>
           </CardContent>
         </Card>
       </div>

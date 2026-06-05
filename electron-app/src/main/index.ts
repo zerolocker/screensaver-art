@@ -130,6 +130,9 @@ ipcMain.handle('installer:openSystemSettings', () => {
 ipcMain.handle('shell:openExternal', (_evt, url: string) => shell.openExternal(url))
 ipcMain.handle('shell:openPath', (_evt, path: string) => shell.openPath(path))
 
+// App info — version comes from the bundled package.json (release.sh bumps it).
+ipcMain.handle('app:getVersion', () => app.getVersion())
+
 // ---------------------------------------------------------------------------
 // Logging + error reporting
 // ---------------------------------------------------------------------------

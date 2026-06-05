@@ -273,7 +273,10 @@ website redeploy).
 `scripts/release.sh` bumps `electron-app/package.json`, builds a **signed +
 notarized** universal DMG (`pnpm dist:mac:release`, reads `electron-app/release.env`),
 commits the bump, tags `vX.Y.Z`, pushes, and `gh release create`s the release
-with the DMG attached under the stable name **`Living-Art-Screensaver-mac.dmg`**.
+with the DMG attached under a versioned, platform-tagged name
+(**`Living-Art-Screensaver-<version>-mac.dmg`**) — that asset name is the filename
+users get on download (the `/download/:os` route passes it through via
+`Content-Disposition`).
 Toggles: `DRY_RUN=1` (build only, nothing pushed/published), `SKIP_BUILD=1`
 (reuse the existing DMG to re-publish), `ALLOW_BRANCH=1` (release off non-master).
 Prereqs: `release.env` present, `gh` authed (repo scope), Xcode + xcodegen.

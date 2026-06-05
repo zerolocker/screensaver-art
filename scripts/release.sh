@@ -36,7 +36,7 @@ cd "$REPO_ROOT"
 ELECTRON_DIR="$REPO_ROOT/electron-app"
 PKG="$ELECTRON_DIR/package.json"
 GH_REPO="zerolocker/screensaver-art"
-STABLE_ASSET="Living-Art-Screensaver-mac.dmg"
+ASSET_BASE="Living-Art-Screensaver"   # release asset → ${ASSET_BASE}-<version>-mac.dmg
 
 BUMP="${1:-patch}"
 
@@ -109,10 +109,12 @@ else
   [ -f "$DMG" ] || die "Build finished but DMG not found: $DMG"
 fi
 
-# Stable, version-less asset name so the release always carries the same filename.
-STABLE_PATH="$ELECTRON_DIR/dist/$STABLE_ASSET"
-cp "$DMG" "$STABLE_PATH"
-say "DMG ready: $STABLE_PATH ($(du -h "$STABLE_PATH" | cut -f1))"
+# Versioned, platform-tagged asset name — this is the filename users get on download
+# (the website /download/mac route hands off GitHub's asset name via Content-Disposition).
+ASSET_NAME="${ASSET_BASE}-${NEW_VERSION}-mac.dmg"
+ASSET_PATH="$ELECTRON_DIR/dist/$ASSET_NAME"
+cp "$DMG" "$ASSET_PATH"
+say "DMG ready: $ASSET_PATH ($(du -h "$ASSET_PATH" | cut -f1))"
 
 if [ "${DRY_RUN:-0}" = "1" ]; then
   say "DRY_RUN=1 — built only. Version bump left UNCOMMITTED in the working tree."
@@ -134,13 +136,13 @@ git push origin "$BRANCH"
 git push origin "$TAG"
 
 # ── Publish GitHub Release ───────────────────────────────────────────────────
-say "Publishing GitHub Release $TAG with $STABLE_ASSET"
+say "Publishing GitHub Release $TAG with $ASSET_NAME"
 gh release create "$TAG" \
   --repo "$GH_REPO" \
   --title "$TAG" \
   --generate-notes \
   --latest \
-  "$STABLE_PATH#Living Art Screensaver (macOS, universal)"
+  "$ASSET_PATH#Living Art Screensaver (macOS, universal)"
 
 say "Done. $TAG is live."
 cat <<EOF

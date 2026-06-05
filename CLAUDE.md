@@ -257,6 +257,55 @@ The `temporary-exception` entitlements are accepted by Developer ID notarization
 
 ---
 
+## Releasing a new version
+
+The website's "Download for Mac" button doesn't link to a fixed file — it links
+to **`/download/mac`**, a Next.js route that resolves "latest" from this repo's
+**GitHub Releases** at request time. So shipping a new version = publishing a new
+GitHub Release with the DMG attached; the link updates itself within ~2 min (no
+website redeploy).
+
+### One command
+```bash
+./scripts/release.sh            # patch bump (1.0.0 → 1.0.1)
+./scripts/release.sh minor      # or: major / 1.4.2 (explicit)
+```
+`scripts/release.sh` bumps `electron-app/package.json`, builds a **signed +
+notarized** universal DMG (`pnpm dist:mac:release`, reads `electron-app/release.env`),
+commits the bump, tags `vX.Y.Z`, pushes, and `gh release create`s the release
+with the DMG attached under the stable name **`Living-Art-Screensaver-mac.dmg`**.
+Toggles: `DRY_RUN=1` (build only, nothing pushed/published), `SKIP_BUILD=1`
+(reuse the existing DMG to re-publish), `ALLOW_BRANCH=1` (release off non-master).
+Prereqs: `release.env` present, `gh` authed (repo scope), Xcode + xcodegen.
+
+### The download link (`/download/:os`)
+- `living-art-screensaver-web/app/download/[os]/route.ts` — `mac` → latest `.dmg`,
+  `win` → latest `.exe` (Windows scaffolded, no build ships yet). 302s to the
+  signed asset URL; returns 5xx (not a public fallback) if the token is missing
+  or the release lookup fails. The platform segment is required — there is no
+  bare `/download` default.
+- The four "Download" buttons (hero/pricing/cta/account) point at `/download/mac`.
+- **One-time:** the route + button changes must be deployed once (push to master →
+  Vercel) before the first release link works. Per-release, no website change.
+
+### The `GITHUB_RELEASE_TOKEN` (always required)
+The route **always** goes through the GitHub API with a server-side token — it
+never redirects to a public asset URL. This keeps it identical whether the repo
+is public or private (making the repo private is a zero-change event). The token
+is **`GITHUB_RELEASE_TOKEN`**, a fine-grained PAT with `Contents: Read-only` on
+this repo, set in two places:
+- **Vercel** project env (Production + Preview + Development) — for the deployed site.
+- **`living-art-screensaver-web/.env.local`** (gitignored) — for `pnpm dev`.
+
+With the token, the route asks the API for the asset with
+`Accept: application/octet-stream` and 302s to the short-lived **signed**
+`objects.githubusercontent.com` URL, which downloads fine for anonymous users on
+public or private repos (bytes never flow through Vercel). If the token is
+missing the route returns 500 by design — so a private repo can never silently
+hand out broken public links.
+
+---
+
 ## Repo history
 - `living-art-screensaver-web` was originally a separate repo (`zerolocker/living-art-screensaver-web`).
   It was merged into this repo on 2026-03-22 via `git subtree add --prefix=living-art-screensaver-web ... --squash`.

@@ -43,7 +43,7 @@ export function HeroSection() {
             className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 py-6 text-lg font-medium gap-2"
             asChild
           >
-            <a href="/download">
+            <a href="/download/mac">
               <Download className="w-5 h-5" />
               Download for Mac
             </a>

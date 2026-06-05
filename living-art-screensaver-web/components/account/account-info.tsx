@@ -43,7 +43,7 @@ export function AccountInfo({ user }: AccountInfoProps) {
         <div className="pt-4 border-t border-border">
           <h4 className="text-sm font-medium text-foreground mb-2">macOS Setup Instructions</h4>
           <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-            <li><a href="/download" className="text-primary underline underline-offset-2">Download, open, and drag to Applications folder</a></li>
+            <li><a href="/download/mac" className="text-primary underline underline-offset-2">Download, open, and drag to Applications folder</a></li>
             <li>Open the app in Applications folder and sign in with this account</li>
           </ol>
         </div>

@@ -79,7 +79,7 @@ Cloudflare R2          GitHub Pages           Vercel
 
 - **Auth:** Supabase email/password, handled in the Electron app. Sessions persist in Chromium localStorage.
 - **Billing:** Stripe ($0.99/month). Webhooks sync subscription status to Supabase. The website hosts the Stripe portal; the Electron app deep-links to it.
-- **Gallery API:** `GET /api/gallery?collection=classic` — same gating endpoint as before. Free users get 2 items, subscribers get the full list. The Electron app downloads whatever the API returns.
+- **Gallery API:** `GET /api/gallery?collection=classic` — same gating endpoint as before. Free users get up to 100 items, subscribers get the full list. The Electron app downloads whatever the API returns.
 - **Cache obfuscation:** every video is XOR'd byte-by-byte with a fixed 32-byte cycling key plus an 8-byte magic header (`LARTV001`), and stored on disk as `<hash>.bin`. The same key + algorithm lives in both `electron-app/src/main/obfuscation.ts` and `screensaver-macos/ScreensaverArtExtension/Constants.swift`. This is not cryptography — anyone willing to disassemble either binary can recover the key. The intent is to deter the casual "drag the MP4 out of the cache and post it" path. Anything stronger would be over-engineered for a $0.99 product.
 
 ---

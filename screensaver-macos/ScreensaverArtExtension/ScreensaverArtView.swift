@@ -26,7 +26,6 @@ class ScreensaverArtView: ScreenSaverView {
     private var shuffledOrder: [Int]        = []
     private var orderPos:      Int          = 0
     private var isSubscribed:  Bool         = true
-    private var totalCount:    Int          = 0
     private var freeLoopCount: Int          = 0
     private let upsellAfterLoops            = 1
 
@@ -95,7 +94,6 @@ class ScreensaverArtView: ScreenSaverView {
         shuffledOrder = Array(0..<newItems.count).shuffled()
         orderPos      = 0
         isSubscribed  = manifest?.isSubscribed ?? true
-        totalCount    = manifest?.totalCount ?? 0
         freeLoopCount = 0
         lastManifestMtime = manifestMtime()
         hideUpsell()
@@ -319,7 +317,7 @@ class ScreensaverArtView: ScreenSaverView {
         upsellVisible = true
         advanceTimer?.invalidate()
 
-        let overlay = UpsellOverlay(frame: bounds, totalCount: totalCount > 0 ? totalCount : items.count)
+        let overlay = UpsellOverlay(frame: bounds)
         overlay.autoresizingMask = [.width, .height]
         overlay.alphaValue = 0
         addSubview(overlay)

@@ -121,15 +121,15 @@ Without this, classes like `bg-primary` used only in `packages/ui` components wo
 ### The product model
 - Users subscribe at `living-art-screensaver.com` ($0.99/month via Stripe), or directly inside the Electron app's "Account & Setup" tab (deep-links into the website's billing portal)
 - **Subscribed**: Electron app downloads + caches all gallery items
-- **Not subscribed**: Electron app downloads + caches the first 2 items only
+- **Not subscribed**: Electron app downloads + caches the first 100 items only
 - The screensaver doesn't know or care about subscriptions — it just plays whatever is in the cache directory
 
 ### Where gating happens
-Gating still lives server-side in `/api/gallery`. The endpoint inspects the Bearer token, checks Supabase `subscriptions`, and returns either the full list or the first 2 items. Same response for both subscribed and free users:
+Gating still lives server-side in `/api/gallery`. The endpoint inspects the Bearer token, checks Supabase `subscriptions`, and returns either the full list or the first 100 items (`FREE_ITEM_COUNT`). Same response for both subscribed and free users:
 ```
 { items: GalleryItem[], isSubscribed: boolean, totalCount: number }
 ```
-The Electron app caches whatever comes back and removes any local `.bin` files that aren't in the latest response (so an expired subscription shrinks the cache to 2 items on the next sync).
+The Electron app caches whatever comes back and removes any local `.bin` files that aren't in the latest response (so an expired subscription shrinks the cache to the free `FREE_ITEM_COUNT` items on the next sync).
 
 ### Auth flow
 1. User opens the Electron app

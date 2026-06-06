@@ -3,23 +3,16 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { UpsellBanner } from './UpsellBanner'
 
 describe('<UpsellBanner />', () => {
-  it('renders the new copy (no $0.99 mention)', () => {
+  it('renders the benefit-led copy', () => {
     render(<UpsellBanner onSubscribe={() => {}} />)
-    expect(screen.getByText("You're watching the free preview")).toBeInTheDocument()
-    // Body should match the deliberate copy change
-    expect(screen.getByText(/Subscribe to unlock the full gallery/)).toBeInTheDocument()
-    // Make sure we didn't accidentally reintroduce the old price-mention copy
-    expect(screen.queryByText(/\$0\.99/)).toBeNull()
+    expect(screen.getByText('Unlock the full gallery')).toBeInTheDocument()
+    expect(screen.getByText(/unlock every living artwork/i)).toBeInTheDocument()
   })
 
-  it('shows the artwork count when totalCount is provided', () => {
-    render(<UpsellBanner totalCount={123} onSubscribe={() => {}} />)
-    expect(screen.getByText(/all 123 living artworks/i)).toBeInTheDocument()
-  })
-
-  it('omits the count gracefully when totalCount is missing', () => {
+  it('shows the promo price on the subscribe button', () => {
     render(<UpsellBanner onSubscribe={() => {}} />)
-    expect(screen.queryByText(/living artworks/i)).toBeNull()
+    // Accessible name concatenates the split price text nodes ("$0.99" + "/month").
+    expect(screen.getByRole('button', { name: /\$0\.99\/month/ })).toBeInTheDocument()
   })
 
   it('fires onSubscribe when the button is clicked', () => {

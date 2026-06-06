@@ -9,10 +9,7 @@ import Cocoa
 
 class UpsellOverlay: NSView {
 
-    private let totalCount: Int
-
-    init(frame: NSRect, totalCount: Int) {
-        self.totalCount = totalCount
+    override init(frame: NSRect) {
         super.init(frame: frame)
         build()
     }
@@ -32,12 +29,13 @@ class UpsellOverlay: NSView {
         stack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(stack)
 
-        let heading = label("Unlock \(totalCount) Living Artworks",
+        let heading = label("Unlock the full gallery",
                             size: 28, weight: .semibold, color: .white)
         heading.alignment = .center
 
+        // Price mirrors PRICING.promoPrice in packages/ui/src/pricing.ts — keep in sync.
         let body = label(
-            "You're watching the free preview.\nSubscribe to unlock the full gallery.",
+            "You're on the free plan. Subscribe to unlock every living artwork.",
             size: 15, color: NSColor(white: 0.85, alpha: 1)
         )
         body.alignment            = .center

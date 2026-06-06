@@ -111,7 +111,6 @@ export function GalleryPage({ session }: GalleryPageProps) {
 
       {gallery && !gallery.isSubscribed && (
         <UpsellBanner
-          totalCount={gallery.totalCount}
           onSubscribe={() =>
             window.electronAPI.shell.openExternal('https://living-art-screensaver.com/account')
           }

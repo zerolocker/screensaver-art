@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyNativeAuth } from '@/lib/auth/verify-native-auth'
 
 const GALLERY_URL = 'https://zerolocker.github.io/screensaver-art/gallery.json'
-const FREE_ITEM_COUNT = 2
+export const FREE_ITEM_COUNT = 100
 
 interface GalleryItem {
   src: string

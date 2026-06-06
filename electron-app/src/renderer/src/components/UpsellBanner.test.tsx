@@ -6,7 +6,7 @@ describe('<UpsellBanner />', () => {
   it('renders the benefit-led copy', () => {
     render(<UpsellBanner onSubscribe={() => {}} />)
     expect(screen.getByText('Unlock the full gallery')).toBeInTheDocument()
-    expect(screen.getByText(/stream every living artwork/i)).toBeInTheDocument()
+    expect(screen.getByText(/unlock every living artwork/i)).toBeInTheDocument()
   })
 
   it('shows the promo price on the subscribe button', () => {

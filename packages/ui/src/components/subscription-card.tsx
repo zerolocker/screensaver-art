@@ -130,13 +130,9 @@ export function SubscriptionCard({ subscription, onSubscribe, onManage }: Subscr
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Subscribe to unlock the full Living Art experience with unlimited animated artworks and nightly AI curation.
+             You're on the free plan. Subscribe to unlock every living artwork — plus new pieces added all the time.
             </p>
             <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-medium">
-                <Clock className="w-3 h-3" />
-                Limited time
-              </span>
               <div className="mt-2 flex items-end gap-2">
                 <span className="text-lg font-semibold text-muted-foreground line-through">
                   {PRICING.regularPrice}
@@ -159,7 +155,7 @@ export function SubscriptionCard({ subscription, onSubscribe, onManage }: Subscr
                   Loading...
                 </>
               ) : (
-                `Subscribe for ${PRICING.promoPrice}${PRICING.interval}`
+                'Subscribe'
               )}
             </Button>
           </div>

@@ -35,7 +35,7 @@ class UpsellOverlay: NSView {
 
         // Price mirrors PRICING.promoPrice in packages/ui/src/pricing.ts — keep in sync.
         let body = label(
-            "You're on the free plan. Subscribe to stream every living artwork —\nplus new pieces added all the time — for just $0.99/month.",
+            "You're on the free plan. Subscribe to unlock every living artwork.",
             size: 15, color: NSColor(white: 0.85, alpha: 1)
         )
         body.alignment            = .center

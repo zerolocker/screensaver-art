@@ -9,8 +9,10 @@ import {
   Button,
 } from '@screensaver-art/ui'
 import type { Subscription } from '@screensaver-art/ui'
-import { GALLERY_ENDPOINT, SUBSCRIPTION_VERIFY_ENDPOINT, ERROR_REPORT_ENDPOINT } from '../lib/api'
+import { GALLERY_ENDPOINT, SUBSCRIPTION_VERIFY_ENDPOINT } from '../lib/api'
 import { log } from '../lib/log'
+import { getAccessToken } from '../lib/supabase'
+import { useErrorReport } from '../lib/useErrorReport'
 import {
   Loader2,
   Trash2,
@@ -49,15 +51,11 @@ export function AccountPage({ session }: AccountPageProps) {
 
   const [clearing, setClearing] = useState(false)
 
-  const [reporting, setReporting] = useState(false)
-  const [reportResult, setReportResult] = useState<{ ok: boolean; id?: string; error?: string } | null>(null)
-
-  const [appVersion, setAppVersion] = useState<string | null>(null)
+  const { reporting, sendReport } = useErrorReport()
 
   useEffect(() => {
     fetchSubscription()
     refreshLocalState()
-    window.electronAPI.app.getVersion().then(setAppVersion).catch(() => {})
     const off = window.electronAPI.cache.onProgress((p) => {
       setProgress(p)
       // Refresh the cache stats on each progress event so the file count and
@@ -68,21 +66,45 @@ export function AccountPage({ session }: AccountPageProps) {
         window.electronAPI.cache.getStats().then(setCacheStats).catch(() => {})
       }
     })
-    return off
+    // Re-check subscription + local state whenever the window regains focus.
+    // This is what makes a just-completed purchase show up "instantly": after
+    // the user finishes the browser checkout flow and switches back to the app,
+    // the focus event fires and we re-verify — no tab toggle or restart needed.
+    const onFocus = () => {
+      fetchSubscription()
+      refreshLocalState()
+    }
+    window.addEventListener('focus', onFocus)
+    return () => {
+      off()
+      window.removeEventListener('focus', onFocus)
+    }
   }, [])
 
   async function fetchSubscription() {
     setSubLoading(true)
     try {
+      const accessToken = await getAccessToken()
       const res = await fetch(SUBSCRIPTION_VERIFY_ENDPOINT, {
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        headers: { Authorization: `Bearer ${accessToken}` },
       })
       if (res.ok) {
         const data = await res.json()
-        if (data.subscription) setSubscription(data.subscription)
+        // Always mirror the server's answer (including null) so a refetch
+        // reflects the *current* state — a brand-new purchase flips us to
+        // subscribed, a cancellation flips us back.
+        setSubscription(data.subscription ?? null)
+      } else {
+        // Don't fail silently. A 401 here (e.g. a stale token) is exactly why a
+        // real subscription can look "stuck" on the free tier — log it so it
+        // shows up in the diagnostics report instead of vanishing.
+        log.warn('account', 'subscription verify failed', { status: res.status })
       }
-    } catch {
-      // offline — fine
+    } catch (err) {
+      // Offline — keep showing whatever we last had, but record it.
+      log.warn('account', 'subscription verify threw', {
+        error: err instanceof Error ? err.message : String(err),
+      })
     } finally {
       setSubLoading(false)
     }
@@ -133,7 +155,8 @@ export function AccountPage({ session }: AccountPageProps) {
     setSyncError(null)
     setProgress(null)
     const url = `${GALLERY_ENDPOINT}?collection=classic`
-    const result = await window.electronAPI.cache.sync(url, session.access_token)
+    const accessToken = await getAccessToken()
+    const result = await window.electronAPI.cache.sync(url, accessToken)
     if (!result.ok) {
       setSyncError(result.error)
     } else {
@@ -148,23 +171,6 @@ export function AccountPage({ session }: AccountPageProps) {
     await window.electronAPI.cache.clear()
     await refreshLocalState()
     setClearing(false)
-  }
-
-  // Assemble a debug snapshot in the main process and upload it to the website's
-  // error-report bucket. Surfaced both on errors and as a proactive button.
-  async function handleSendReport(reason: string, errorText?: string | null) {
-    setReporting(true)
-    setReportResult(null)
-    log.info('account', 'sending error report', { reason })
-    const result = await window.electronAPI.report.send({
-      endpoint: ERROR_REPORT_ENDPOINT,
-      accessToken: session.access_token,
-      reason,
-      error: errorText ?? undefined,
-      rendererContext: { installError, syncError, installer },
-    })
-    setReportResult(result)
-    setReporting(false)
   }
 
   function isActiveSubscription(sub: Subscription | null): boolean {
@@ -326,7 +332,9 @@ export function AccountPage({ session }: AccountPageProps) {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleSendReport('install_error', installError)}
+                      onClick={() =>
+                        sendReport('install_error', installError, { installError, syncError, installer })
+                      }
                       disabled={reporting}
                       className="shrink-0"
                     >
@@ -443,49 +451,6 @@ export function AccountPage({ session }: AccountPageProps) {
                 )}
               </Button>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Diagnostics / error reporting */}
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle className="text-foreground">Diagnostics</CardTitle>
-            <CardDescription>
-              Something not working? Send us a debug report — app version, system info, screensaver
-              install state, and recent logs. No video content is included.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between gap-3">
-              <Button
-                variant="outline"
-                onClick={() => handleSendReport('manual')}
-                disabled={reporting}
-              >
-                {reporting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending…
-                  </>
-                ) : (
-                  <>
-                    <Bug className="mr-2 h-4 w-4" /> Send error report
-                  </>
-                )}
-              </Button>
-              {reportResult?.ok && (
-                <p className="text-xs text-green-500">
-                  Report sent. Reference ID: <code className="font-mono">{reportResult.id}</code>
-                </p>
-              )}
-              {reportResult && !reportResult.ok && (
-                <p className="text-xs text-red-500">
-                  Couldn’t send report: {reportResult.error ?? 'unknown error'}
-                </p>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Living Art Screensaver{appVersion ? ` v${appVersion}` : ''}
-            </p>
           </CardContent>
         </Card>
       </div>

@@ -9,10 +9,9 @@ describe('<UpsellBanner />', () => {
     expect(screen.getByText(/unlock every living artwork/i)).toBeInTheDocument()
   })
 
-  it('shows the promo price on the subscribe button', () => {
+  it('shows the subscribe button', () => {
     render(<UpsellBanner onSubscribe={() => {}} />)
-    // Accessible name concatenates the split price text nodes ("$0.99" + "/month").
-    expect(screen.getByRole('button', { name: /\$0\.99\/month/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Subscribe' })).toBeInTheDocument()
   })
 
   it('fires onSubscribe when the button is clicked', () => {

@@ -25,6 +25,17 @@ const FAKE_HOME = vi.hoisted(() => {
   return dir
 })
 
+// cache-sync.ts pulls in electron transitively (via ./logger, which imports
+// `app`). We don't run inside Electron and the electron *binary* may not even
+// be installed, so importing the real module throws "Electron failed to install
+// correctly". Stub it: logger.ts disables file logging when app.getPath is
+// absent, and cache-sync only uses BrowserWindow as a type. (vi.mock is hoisted
+// above the imports below.)
+vi.mock('electron', () => ({
+  app: {},
+  BrowserWindow: class {},
+}))
+
 import { syncGallery, clearCache, PATHS, type ApiResponse } from './cache-sync'
 import { MAGIC, KEY, filenameForUrl } from './obfuscation'
 

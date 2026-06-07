@@ -6,6 +6,7 @@ import { LoginPage } from './pages/Login'
 import { SignUpPage } from './pages/SignUp'
 import { GalleryPage } from './pages/Gallery'
 import { AccountPage } from './pages/Account'
+import { HelpPage } from './pages/Help'
 import { Sidebar } from './pages/Sidebar'
 
 export function App() {
@@ -66,6 +67,7 @@ export function App() {
         <Routes>
           <Route path="/gallery" element={<GalleryPage session={session} />} />
           <Route path="/account" element={<AccountPage session={session} />} />
+          <Route path="/help" element={<HelpPage />} />
           <Route path="*" element={<Navigate to="/gallery" replace />} />
         </Routes>
       </main>

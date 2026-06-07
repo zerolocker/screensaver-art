@@ -12,3 +12,20 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     autoRefreshToken: true,
   },
 })
+
+/**
+ * Returns a guaranteed-fresh access token for native API calls (gallery,
+ * subscription verify, error reports).
+ *
+ * Why not just use `session.access_token` from React state? In Electron the
+ * renderer's background timers get throttled, so supabase-js's auto-refresh can
+ * lag behind the 1-hour token expiry — leaving a stale (expired) token in the
+ * component prop. Hitting `/api/*` with that token returns 401, which surfaced
+ * as "Unauthorized" on the error-report button and as a silently-stuck
+ * subscription status. `getSession()` transparently refreshes an expired token
+ * before returning it, closing that gap.
+ */
+export async function getAccessToken(): Promise<string | null> {
+  const { data } = await supabase.auth.getSession()
+  return data.session?.access_token ?? null
+}

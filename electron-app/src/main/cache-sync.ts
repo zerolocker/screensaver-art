@@ -6,7 +6,7 @@ import { existsSync } from 'fs'
 import { mkdir, writeFile, readdir, unlink, rename } from 'fs/promises'
 import { homedir } from 'os'
 import { join } from 'path'
-import { BrowserWindow } from 'electron'
+import type { BrowserWindow } from 'electron'
 import { obfuscate, filenameForUrl } from './obfuscation'
 import { log } from './logger'
 

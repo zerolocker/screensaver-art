@@ -114,6 +114,14 @@ pnpm dist:mac:release
 ```
 This signs with the hardened runtime, notarizes via Apple, and staples the ticket. (Equivalently, pass `LART_CODESIGN_IDENTITY` + `APPLE_KEYCHAIN_PROFILE` inline to `pnpm dist:mac`.) See `CLAUDE.md` → "Code signing & notarization" for how it works.
 
+**Cut a public release (one command):**
+```bash
+./scripts/release.sh          # patch bump (1.0.0 → 1.0.1); also: minor / major / 1.2.0
+```
+This bumps `electron-app/package.json`, builds the signed + notarized DMG, commits + tags `vX.Y.Z`, pushes, and publishes a GitHub Release with the DMG attached. The website's "Download for Mac" button (`/download/mac`) resolves "latest" from GitHub Releases at request time, so the new version goes live within ~2 min — no website redeploy.
+
+> ⚠️ `pnpm dist:mac` / `pnpm dist:mac:release` only build a DMG **locally** — they do **not** bump the version or publish anything. To actually ship a new version, run `./scripts/release.sh`. See `CLAUDE.md` → "Releasing a new version" for the toggles (`DRY_RUN`, `SKIP_BUILD`, `ALLOW_BRANCH`) and full details.
+
 **Run the website locally:**
 ```bash
 cd living-art-screensaver-web

@@ -23,6 +23,10 @@
  * DRY RUN by default — prints what it *would* do and changes nothing.
  * Pass --apply to actually mutate Stripe.
  *
+ * Run history: the launch monthly→quarterly migration ($0.99/mo -> $2.97/quarter)
+ * was applied to both test and live in 2026-06. Kept as the template for future
+ * price/interval changes — see living-art-screensaver-web/docs/stripe-webhooks.md.
+ *
  * Usage (from living-art-screensaver-web/):
  *   # preview (test mode)
  *   STRIPE_SECRET_KEY=sk_test_... OLD_PRICE_ID=price_oldMonthly NEW_PRICE_ID=price_newQuarterly \

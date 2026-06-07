@@ -1,0 +1,40 @@
+name: Test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # pnpm workspace: no root package.json, so pin the version explicitly.
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.2.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # Install the whole workspace from the root lockfile — the website
+      # resolves @screensaver-art/ui through the workspace, so a per-package
+      # install would fail.
+      - name: Install (workspace root)
+        run: pnpm install --frozen-lockfile
+
+      - name: Website tests (incl. price-drift guard)
+        working-directory: living-art-screensaver-web
+        run: pnpm test
+        env:
+          # The price-drift guard validates the price customers are ACTUALLY
+          # charged, so it points at the LIVE Price. STRIPE_READONLY_KEY must be
+          # a *restricted* live key (rk_live_…) scoped to "Prices: Read" only —
+          # never a full sk_live_, since CI secrets are reachable from same-repo
+          # PRs. If either is unset the guard self-skips (suite still runs).
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_READONLY_KEY }}
+          STRIPE_PRICE_ID: ${{ secrets.STRIPE_PRICE_ID }}

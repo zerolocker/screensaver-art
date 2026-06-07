@@ -11,6 +11,14 @@ export async function createCheckoutSession(productId: string, origin: string) {
     return { error: 'Product not found' }
   }
 
+  // The charged amount is the Stripe catalog Price (test vs live differ by ID),
+  // set per-environment in Vercel. See docs/stripe-webhooks.md.
+  const priceId = process.env.STRIPE_PRICE_ID
+  if (!priceId) {
+    console.error('STRIPE_PRICE_ID is not configured')
+    return { error: 'Pricing is not configured. Please contact support.' }
+  }
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -48,19 +56,13 @@ export async function createCheckoutSession(productId: string, origin: string) {
     customer: customerId,
     mode: 'subscription',
     payment_method_types: ['card'],
+    // Lets users enter a Stripe promotion code at checkout. Doubles as the
+    // zero-cost way to smoke-test the *live* flow: a 100%-off live coupon runs
+    // the full checkout → webhook → Supabase path without a real charge.
+    allow_promotion_codes: true,
     line_items: [
       {
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: product.name,
-            description: product.description,
-          },
-          unit_amount: product.priceInCents,
-          recurring: {
-            interval: product.interval,
-          },
-        },
+        price: priceId,
         quantity: 1,
       },
     ],

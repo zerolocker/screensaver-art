@@ -39,14 +39,10 @@ export function CTASection() {
           >
             <a href="/download/mac">
               <Download className="w-5 h-5" />
-              Download Now
+              Download for Mac
             </a>
           </Button>
         </div>
-
-        <p className="mt-6 text-sm text-muted-foreground">
-          Available exclusively for macOS
-        </p>
       </div>
     </section>
   )

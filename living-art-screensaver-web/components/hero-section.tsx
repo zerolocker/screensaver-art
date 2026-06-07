@@ -34,7 +34,7 @@ export function HeroSection() {
         </h1>
 
         <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed text-pretty">
-          Turn your idle display into a dynamic, evolving art gallery. AI-powered animated artworks that bring masterpieces to life.
+          Turn your idle display into an evolving gallery. AI-animated artworks across every style, with new pieces added regularly.
         </p>
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -61,12 +61,11 @@ export function HeroSection() {
           </Button>
         </div>
 
-        <p className="mt-6 text-sm text-muted-foreground">
-          Only <span className="text-muted-foreground/70 line-through">{PRICING.regularPrice}</span>{" "}
-          <span className="text-primary font-semibold">{PRICING.promoPrice}{PRICING.interval}</span> — Cancel anytime
+        <p className="mt-6 text-sm text-foreground">
+          <span className="font-semibold">Free forever</span> — {PRICING.freeItemCount} artworks to enjoy.
         </p>
-        <p className="mt-1 text-xs text-muted-foreground/70">
-          Promo valid through {PRICING.promoThrough}
+        <p className="mt-1 text-sm text-muted-foreground">
+          Want more? The full gallery plus daily new art is {PRICING.promoPrice}{PRICING.interval}.
         </p>
       </div>
     </section>

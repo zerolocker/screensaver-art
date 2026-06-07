@@ -52,7 +52,7 @@ export function PricingSection() {
             Simple, Affordable Pricing
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
-            Transform your Mac into a living art gallery for less than a cup of coffee per month.
+            {PRICING.freeItemCount} artworks, free forever. Want more? Unlock the full gallery, plus daily new art.
           </p>
         </div>
 
@@ -61,14 +61,12 @@ export function PricingSection() {
             <div className="rounded-3xl bg-card p-8 lg:p-12">
               <div className="text-center mb-8">
                 <div className="flex items-end justify-center gap-2">
+                  <span className="text-2xl lg:text-3xl font-semibold text-muted-foreground/70 line-through mb-2">{PRICING.regularPrice}</span>
                   <span className="text-5xl lg:text-6xl font-bold text-foreground">{PRICING.promoPrice}</span>
                   <span className="text-muted-foreground mb-2">{PRICING.interval}</span>
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Regular {PRICING.regularPrice}{PRICING.interval} · Promo valid through {PRICING.promoThrough}
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Billed monthly
+                  {PRICING.billingNote} · promo through {PRICING.promoThrough}
                 </p>
               </div>
 

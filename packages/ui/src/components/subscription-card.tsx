@@ -110,6 +110,7 @@ export function SubscriptionCard({ subscription, onSubscribe, onManage }: Subscr
             <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
               <p className="font-medium text-foreground">Living Art Screensaver</p>
               <p className="text-sm text-muted-foreground">{PRICING.promoPrice}{PRICING.interval}</p>
+              <p className="text-xs text-muted-foreground/80">{PRICING.billingNote}</p>
             </div>
             <Button
               onClick={handleManage}
@@ -130,7 +131,7 @@ export function SubscriptionCard({ subscription, onSubscribe, onManage }: Subscr
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-             You're on the free plan. Subscribe to unlock every living artwork — plus new pieces added all the time.
+             You're on the free plan — {PRICING.freeItemCount} artworks. Subscribe to unlock the full gallery plus a new piece every day.
             </p>
             <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
               <div className="mt-2 flex items-end gap-2">
@@ -141,7 +142,7 @@ export function SubscriptionCard({ subscription, onSubscribe, onManage }: Subscr
                 <span className="text-muted-foreground">{PRICING.interval}</span>
               </div>
               <p className="mt-1 text-xs text-muted-foreground/80">
-                Promo price valid through {PRICING.promoThrough}
+                {PRICING.billingNote} · promo price valid through {PRICING.promoThrough}
               </p>
             </div>
             <Button

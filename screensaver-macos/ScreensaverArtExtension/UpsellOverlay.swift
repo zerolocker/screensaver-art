@@ -33,9 +33,8 @@ class UpsellOverlay: NSView {
                             size: 28, weight: .semibold, color: .white)
         heading.alignment = .center
 
-        // Price mirrors PRICING.promoPrice in packages/ui/src/pricing.ts — keep in sync.
         let body = label(
-            "You're on the free plan. Subscribe to unlock every living artwork.",
+            "You're on the free plan. Unlock the full gallery — plus a new piece every day.",
             size: 15, color: NSColor(white: 0.85, alpha: 1)
         )
         body.alignment            = .center

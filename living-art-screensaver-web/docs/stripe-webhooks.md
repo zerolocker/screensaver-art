@@ -27,7 +27,28 @@ The webhook handler lives at `app/api/webhooks/stripe/route.ts` and handles thes
 | **What the UI displays** | `PRICING` in `packages/ui/src/pricing.ts` | Compiled into the website *and* the Electron app at build time. Carries promo/regular/`promoThrough` framing Stripe can't hold. |
 | **Product metadata** (name, features) | `lib/products.ts` | Display/registry only — no price number. |
 
-Keep `PRICING.promoPrice` in sync with the Stripe Price amount when either changes (they change ~once a year, by hand, in a PR).
+**Billing is batched** to cut Stripe's per-transaction fee (2.9% + $0.33 hurts on a sub-$1 charge): the headline is per-month (`$0.99/month`) but Stripe charges **`$2.97` once every `3` months** (`PRICING.billedAmount` / `PRICING.billingPeriodMonths`). The Stripe catalog Price is therefore `unit_amount = 297` on `recurring.interval = month`, `recurring.interval_count = 3`. Keep `PRICING.billedAmount` in sync with the Price's `unit_amount` and `PRICING.billingPeriodMonths` with its `interval_count` — the `pricing-drift.test.ts` guard fails CI if they drift.
+
+### Changing the price or billing interval (+ migrating existing subscribers)
+
+A Stripe Price is **immutable** — you can't edit its amount or interval. To change either you **create a new Price and repoint the app at it**, then migrate the customers already on the old Price. Do the whole thing **per mode** (test first, then live — they have separate Prices and customers).
+
+1. **Create the new Price** (dashboard or `stripe prices create …`, see the live-mode CLI above). Note the new `price_…`.
+2. **Repoint the app** — set `STRIPE_PRICE_ID` to the new id (`.env.local` for dev, Vercel Preview/Dev = test id, Vercel Production = live id) and redeploy. New checkouts now use it.
+3. **Update the displayed price** in `packages/ui/src/pricing.ts` (`billedAmount` / `billingPeriodMonths` / headline) in the same PR, so the drift test stays green.
+4. **Migrate existing subscribers** with `scripts/migrate-to-quarterly.mjs` — it moves every active subscription from the old Price to the new one. **Active** subs switch immediately and are invoiced now with proration (`billing_cycle_anchor: 'now'`, `proration_behavior: 'create_prorations'`); **trialing** subs switch with no charge and convert at trial end; everything else is skipped. It's **dry-run by default**:
+   ```bash
+   cd living-art-screensaver-web
+   # preview (no changes) — run in the mode you're migrating:
+   STRIPE_SECRET_KEY=sk_…  OLD_PRICE_ID=price_oldMonthly  NEW_PRICE_ID=price_newQuarterly \
+     node scripts/migrate-to-quarterly.mjs
+   # execute:
+     … node scripts/migrate-to-quarterly.mjs --apply
+   ```
+   The script only touches **Stripe** — the resulting `customer.subscription.updated` + `invoice.paid` webhooks re-sync each Supabase row (status + `current_period_end`) via the canonical handler. **Make sure the webhook endpoint for that mode is live before `--apply`.**
+5. **Archive the old Price** in the dashboard once nobody is on it (set it inactive) so it can't be reused by mistake.
+
+> Why immediate-with-proration is safe here: the daily rate is unchanged ($0.99/mo == $2.97 / 90 days), so switching mid-cycle credits the unused days of the current month and charges a fresh quarter — the net is ~$2.97 minus that credit, never an overcharge. A subscriber whose card fails the immediate charge lands in `past_due` (the normal dunning path) — same as any failed renewal.
 
 ---
 
@@ -109,13 +130,14 @@ Production must run in **live mode**. Do this in the Stripe dashboard with the *
 0. **Activate your account** first (business details + bank account for payouts) — required before live charges work.
 1. Toggle **Test mode off**.
 2. **Developers → API keys** → copy the live secret key (`sk_live_…`).
-2a. **Create the live Price** (test Prices don't exist in live mode). Either in the dashboard (**Product catalog** → the Living Art product → add a $0.99/month recurring price) or via CLI, then copy the live `price_…`:
+2a. **Create the live Price** (test Prices don't exist in live mode). Either in the dashboard (**Product catalog** → the Living Art product → add a **$2.97 every 3 months** recurring price) or via CLI, then copy the live `price_…`:
    ```bash
    # In live mode (use your sk_live_ key):
    stripe products create --name "Living Art Screensaver" \
      --description "Transform your Mac into a living art gallery" --api-key sk_live_…
-   stripe prices create --product prod_… --unit-amount 99 --currency usd \
-     -d "recurring[interval]=month" --api-key sk_live_…   # → live price_…
+   # $2.97 billed once every 3 months (interval_count=3) — one transaction, not three.
+   stripe prices create --product prod_… --unit-amount 297 --currency usd \
+     -d "recurring[interval]=month" -d "recurring[interval_count]=3" --api-key sk_live_…   # → live price_…
    ```
 3. **Developers → Webhooks** → [https://dashboard.stripe.com/webhooks](https://dashboard.stripe.com/webhooks) → **"Add endpoint"**.
 4. Set the endpoint URL:
@@ -171,7 +193,7 @@ Two worries to separate:
 
    - **Best — 100%-off live coupon (zero cost):** in live mode create a coupon (100% off) + a promotion code (e.g. `LAUNCHTEST`). The checkout already passes `allow_promotion_codes: true`, so enter the code at checkout → a real `active` subscription is created, `$0.00` charged, and the live webhook fires + writes to Supabase. Delete/expire the promo code afterward. This validates everything.
    - **Free trial (zero cost now):** add `subscription_data.trial_period_days` to the checkout session → status `trialing`, no charge until the trial ends (cancel before then). Validates most of the flow; the card is saved.
-   - **Real charge + refund (~$0.30 fee):** subscribe with your own card, then refund from the dashboard. Note Stripe does **not** return the processing fee on refunds, so this costs the ~2.9% + $0.30 fee on $0.99 (~$0.33). No code change needed.
+   - **Real charge + refund (~$0.42 fee):** subscribe with your own card, then refund from the dashboard. Note Stripe does **not** return the processing fee on refunds, so this costs the ~2.9% + $0.33 fee on the $2.97 quarterly charge (~$0.42). No code change needed.
 
    For recurring-billing behavior (renewals, trial-end, dunning) without waiting a month, use **[test clocks](https://docs.stripe.com/billing/testing/test-clocks)** — test mode only, but they validate the same webhook handlers.
 

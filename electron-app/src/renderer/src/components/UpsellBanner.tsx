@@ -14,9 +14,9 @@ export function UpsellBanner({ onSubscribe }: UpsellBannerProps) {
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-foreground">Unlock the full gallery</p>
         <p className="text-sm text-muted-foreground">
-          You're on the free plan. Subscribe to unlock every living artwork — plus new pieces
-          added all the time — for just {PRICING.promoPrice}
-          {PRICING.interval}.
+          You're on the free plan — {PRICING.freeItemCount} artworks. Unlock the full gallery plus a
+          new piece every day for {PRICING.promoPrice}
+          {PRICING.interval}. {PRICING.billingNote}.
         </p>
       </div>
       <Button onClick={onSubscribe} className="shrink-0">

@@ -12,6 +12,10 @@ import { PRICING } from '../../../packages/ui/src/pricing'
 // Stripe can't hold the promo/regular/end-date framing — so this test is the
 // thing that stops them silently drifting apart. See docs/stripe-webhooks.md.
 //
+// Billing is batched (monthly headline, charged once every billingPeriodMonths
+// months to cut Stripe's per-transaction fee), so the Stripe Price carries the
+// *quarterly* amount (billedAmount) on a `month` interval with interval_count = 3.
+//
 // It runs against whichever Stripe mode the env points at:
 //   - locally: loads .env.local (test key + test Price)
 //   - CI: set STRIPE_SECRET_KEY + STRIPE_PRICE_ID as secrets to activate it
@@ -50,8 +54,16 @@ function intervalWord(interval: string): string {
 }
 
 describe('pricing drift: displayed PRICING vs Stripe catalog Price', () => {
+  // Offline invariant: the per-month headline times the billing period must equal
+  // the amount we actually batch into one charge. Guards the "$0.99/mo" framing.
+  it('billedAmount equals promoPrice × billingPeriodMonths', () => {
+    expect(displayPriceToCents(PRICING.billedAmount)).toBe(
+      displayPriceToCents(PRICING.promoPrice) * PRICING.billingPeriodMonths,
+    )
+  })
+
   it.runIf(configured)(
-    'PRICING.promoPrice matches the Stripe Price amount/currency/interval',
+    'PRICING matches the Stripe Price amount/currency/interval/interval_count',
     async () => {
       const stripe = new Stripe(secretKey!)
       const price = await stripe.prices.retrieve(priceId!)
@@ -60,10 +72,12 @@ describe('pricing drift: displayed PRICING vs Stripe catalog Price', () => {
       expect(price.active).toBe(true)
       expect(price.type).toBe('recurring')
 
-      // Amount the user is charged == amount we advertise.
-      expect(price.unit_amount).toBe(displayPriceToCents(PRICING.promoPrice))
+      // Amount the user is charged == the batched amount we advertise, billed
+      // once every billingPeriodMonths months.
+      expect(price.unit_amount).toBe(displayPriceToCents(PRICING.billedAmount))
       expect(price.currency).toBe('usd')
       expect(price.recurring?.interval).toBe(intervalWord(PRICING.interval))
+      expect(price.recurring?.interval_count).toBe(PRICING.billingPeriodMonths)
     },
     20_000,
   )

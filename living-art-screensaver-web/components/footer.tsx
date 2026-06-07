@@ -24,7 +24,7 @@ export function Footer() {
               <span className="font-semibold text-lg text-foreground">Living Art</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
-              Transform your Mac into a dynamic art gallery with AI-powered animated artworks. A new masterpiece awaits every day.
+              Turn your idle display into a living art gallery.
             </p>
           </div>
 
@@ -72,7 +72,7 @@ export function Footer() {
             &copy; {new Date().getFullYear()} Living Art Screensaver. All rights reserved.
           </p>
           <p className="text-sm text-muted-foreground">
-            Made with AI, for art lovers.
+            Made by an art lover, for art lovers.
           </p>
         </div>
       </div>

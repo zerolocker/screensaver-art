@@ -104,7 +104,7 @@ Without this, classes like `bg-primary` used only in `packages/ui` components wo
 | Service | What it does |
 |---|---|
 | **Supabase** | Auth (email/password) + `subscriptions` table + `user-error-reports` Storage bucket (private; debug reports from the Electron app) |
-| **Stripe** | Payments — $0.99/month, single tier |
+| **Stripe** | Payments — $0.99/month billed quarterly ($2.97 every 3 months, to cut per-transaction fees), single tier |
 | **Cloudflare R2** | Hosts MP4 video assets (public, no auth) |
 | **Vercel** | Hosts the Next.js website |
 | **GitHub Pages** | Hosts `gallery.json` and `index.html` at `https://zerolocker.github.io/screensaver-art/` — deployed natively from `master` (Settings → Pages → "Deploy from a branch") |
@@ -119,7 +119,7 @@ Without this, classes like `bg-primary` used only in `packages/ui` components wo
 ## Subscription & Gating Architecture
 
 ### The product model
-- Users subscribe at `living-art-screensaver.com` ($0.99/month via Stripe), or directly inside the Electron app's "Account & Setup" tab (deep-links into the website's billing portal)
+- Users subscribe at `living-art-screensaver.com` ($0.99/month, billed quarterly as $2.97 every 3 months via Stripe), or directly inside the Electron app's "Account & Setup" tab (deep-links into the website's billing portal)
 - **Subscribed**: Electron app downloads + caches all gallery items
 - **Not subscribed**: Electron app downloads + caches the first 100 items only
 - The screensaver doesn't know or care about subscriptions — it just plays whatever is in the cache directory

@@ -14,8 +14,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'Living Art Screensaver | Transform Your Mac Into a Living Gallery',
-  description: 'Turn your idle Mac display into a dynamic, evolving art gallery. AI-powered animated artworks across all art styles, with nightly curation.',
+  title: 'Living Art Screensaver',
+  description: 'A screensaver that turns your idle display into a living art gallery, showcasing AI-animated artworks across every style, with new pieces added regularly.',
   generator: 'v0.app',
   icons: {
     icon: { url: '/icon.svg', type: 'image/svg+xml' },

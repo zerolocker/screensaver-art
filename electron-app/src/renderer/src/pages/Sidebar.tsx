@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Images, User, LogOut } from 'lucide-react'
+import { Images, User, LifeBuoy, LogOut } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { cn } from '@screensaver-art/ui'
 import type { Session } from '@supabase/supabase-js'
@@ -19,6 +19,7 @@ export function Sidebar({ session }: SidebarProps) {
   const links = [
     { path: '/gallery', label: 'Gallery', icon: Images },
     { path: '/account', label: 'Account', icon: User },
+    { path: '/help', label: 'Help', icon: LifeBuoy },
   ]
 
   return (

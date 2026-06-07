@@ -33,6 +33,8 @@ The webhook handler lives at `app/api/webhooks/stripe/route.ts` and handles thes
 
 A Stripe Price is **immutable** — you can't edit its amount or interval. To change either you **create a new Price and repoint the app at it**, then migrate the customers already on the old Price. Do the whole thing **per mode** (test first, then live — they have separate Prices and customers).
 
+> ✅ **Already done once:** the launch **monthly → quarterly** switch ($0.99/mo → $2.97 every 3 months) was completed in **2026-06** — new Prices created in both modes, `STRIPE_PRICE_ID` repointed, and existing subscribers migrated with the script in step 4. The steps below are the **evergreen procedure** for any future price/interval change.
+
 1. **Create the new Price** (dashboard or `stripe prices create …`, see the live-mode CLI above). Note the new `price_…`.
 2. **Repoint the app** — set `STRIPE_PRICE_ID` to the new id (`.env.local` for dev, Vercel Preview/Dev = test id, Vercel Production = live id) and redeploy. New checkouts now use it.
 3. **Update the displayed price** in `packages/ui/src/pricing.ts` (`billedAmount` / `billingPeriodMonths` / headline) in the same PR, so the drift test stays green.

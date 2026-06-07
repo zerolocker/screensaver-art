@@ -26,7 +26,7 @@ This is a pnpm workspace monorepo containing:
 ## How it works end-to-end
 
 1. User downloads the **Living Art Screensaver** desktop app (Electron).
-2. They sign in inside the app and (optionally) subscribe via Stripe at $0.99/month.
+2. They sign in inside the app and (optionally) subscribe via Stripe — $0.99/month, billed quarterly ($2.97 every 3 months).
 3. The app fetches the gallery from `living-art-screensaver.com/api/gallery`, downloads each MP4, **XOR-obfuscates** it, and writes it into the shared cache at `/Users/Shared/LivingArtScreensaver/videos/`. `/Users/Shared/` is nobody's app container, so writing there triggers no macOS "access data from other apps" prompt; the sandboxed screensaver reads it via a filesystem-exception entitlement.
 4. The app installs the native screensaver — on macOS it registers the embedded **`.appex`** extension with `pluginkit` (one-time), then offers a one-click "Set" to make it the active screensaver. Subsequent runs of the app just refresh the cache.
 5. The screensaver itself is a thin player: it reads the cache manifest, decrypts each `.bin` to a temp file, and crossfades between them. It has no network access and no UI for accounts.
@@ -78,7 +78,7 @@ Cloudflare R2          GitHub Pages           Vercel
 ```
 
 - **Auth:** Supabase email/password, handled in the Electron app. Sessions persist in Chromium localStorage.
-- **Billing:** Stripe ($0.99/month). Webhooks sync subscription status to Supabase. The website hosts the Stripe portal; the Electron app deep-links to it.
+- **Billing:** Stripe — $0.99/month, billed quarterly ($2.97 every 3 months, to cut per-transaction fees). Webhooks sync subscription status to Supabase. The website hosts the Stripe portal; the Electron app deep-links to it.
 - **Gallery API:** `GET /api/gallery?collection=classic` — same gating endpoint as before. Free users get up to 100 items, subscribers get the full list. The Electron app downloads whatever the API returns.
 - **Cache obfuscation:** every video is XOR'd byte-by-byte with a fixed 32-byte cycling key plus an 8-byte magic header (`LARTV001`), and stored on disk as `<hash>.bin`. The same key + algorithm lives in both `electron-app/src/main/obfuscation.ts` and `screensaver-macos/ScreensaverArtExtension/Constants.swift`. This is not cryptography — anyone willing to disassemble either binary can recover the key. The intent is to deter the casual "drag the MP4 out of the cache and post it" path. Anything stronger would be over-engineered for a $0.99 product.
 

@@ -7,15 +7,10 @@ import { Check, Download, Loader2 } from "lucide-react"
 import { PRICING } from "@screensaver-art/ui"
 import { createClient } from "@/lib/supabase/client"
 import { createCheckoutSession } from "@/app/actions/stripe"
+import { getProduct } from "@/lib/products"
 import type { User } from "@supabase/supabase-js"
 
-const features = [
-  "Unlimited animated artworks",
-  "Regular new artwork additions",
-  "All art styles included",
-  "High-resolution display",
-  "Cancel anytime",
-]
+const features = getProduct("living-art-monthly")?.features ?? []
 
 export function PricingSection() {
   const [user, setUser] = useState<User | null>(null)

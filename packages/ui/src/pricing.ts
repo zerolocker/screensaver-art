@@ -2,8 +2,9 @@
  * Promotional pricing shown across the marketing site + Electron app.
  *
  * NOTE: this controls the *displayed* price only. What Stripe actually charges
- * is configured separately in the website's `lib/products.ts` (`priceInCents`).
- * While the promo runs, keep `promoPrice` in sync with that real charge.
+ * is the Stripe catalog Price (referenced by the website's `STRIPE_PRICE_ID`
+ * env var — different ID per test/live). While the promo runs, keep `promoPrice`
+ * in sync with that Price's amount.
  *
  * The promo is a limited-time launch offer: `promoPrice` now, reverting to
  * `regularPrice` after `promoThrough`. Centralised here so the end date + both

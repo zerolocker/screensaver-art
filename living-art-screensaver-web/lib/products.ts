@@ -2,26 +2,26 @@ export interface Product {
   id: string
   name: string
   description: string
-  priceInCents: number
-  interval: 'month' | 'year'
   features: string[]
 }
 
-// This is the source of truth for all products.
-// All UI to display products should pull from this array.
+// Registry of purchasable products. NOTE: the *charged price* is NOT here — it
+// lives in Stripe as a catalog Price (referenced via the STRIPE_PRICE_ID env
+// var, different ID per test/live). The *displayed price* is in
+// `@screensaver-art/ui`'s `PRICING`. Keep this file to display metadata only so
+// there is no third copy of the price to drift out of sync.
 export const PRODUCTS: Product[] = [
   {
     id: 'living-art-monthly',
     name: 'Living Art Screensaver',
     description: 'Transform your Mac into a living art gallery',
-    priceInCents: 99, // $0.99/month
-    interval: 'month',
+    // Single source of truth for the pricing-page feature checklist.
     features: [
       'Unlimited animated artworks',
-      'Nightly AI curation',
+      'Regular new artwork additions',
       'All art styles included',
-      'High-resolution displays',
-      'New artwork every day',
+      'High-resolution display',
+      'Cancel anytime',
     ],
   },
 ]

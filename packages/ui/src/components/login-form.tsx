@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Loader2 } from 'lucide-react'
 import { Button } from './button'
 import { Input } from './input'
@@ -15,6 +15,11 @@ export interface LoginFormProps {
   onSignUpClick?: () => void
   /** Brand title shown at the top */
   title?: string
+  /**
+   * Extra sign-in options (passwordless code, OAuth buttons) rendered below the
+   * password form, separated by an "or" divider. Rendered outside the <form>.
+   */
+  alternativeActions?: ReactNode
 }
 
 export function LoginForm({
@@ -22,6 +27,7 @@ export function LoginForm({
   onForgotPassword,
   onSignUpClick,
   title = 'Living Art',
+  alternativeActions,
 }: LoginFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -57,7 +63,9 @@ export function LoginForm({
           <Label htmlFor="login-email">Email</Label>
           <Input
             id="login-email"
+            name="email"
             type="email"
+            autoComplete="username"
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -81,7 +89,9 @@ export function LoginForm({
           </div>
           <Input
             id="login-password"
+            name="password"
             type="password"
+            autoComplete="current-password"
             placeholder="Your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -108,6 +118,20 @@ export function LoginForm({
           )}
         </Button>
       </form>
+
+      {alternativeActions && (
+        <div className="space-y-4">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">or</span>
+            </div>
+          </div>
+          {alternativeActions}
+        </div>
+      )}
 
       {onSignUpClick && (
         <p className="text-center text-sm text-muted-foreground">

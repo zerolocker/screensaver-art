@@ -4,6 +4,7 @@ import { supabase } from './lib/supabase'
 import type { Session } from '@supabase/supabase-js'
 import { LoginPage } from './pages/Login'
 import { SignUpPage } from './pages/SignUp'
+import { OtpPage } from './pages/Otp'
 import { GalleryPage } from './pages/Gallery'
 import { AccountPage } from './pages/Account'
 import { HelpPage } from './pages/Help'
@@ -52,6 +53,7 @@ export function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
+            <Route path="/otp" element={<OtpPage />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </div>

@@ -17,6 +17,8 @@ export { LoginForm } from './components/login-form'
 export type { LoginFormProps } from './components/login-form'
 export { SignUpForm } from './components/sign-up-form'
 export type { SignUpFormProps } from './components/sign-up-form'
+export { OtpForm } from './components/otp-form'
+export type { OtpFormProps } from './components/otp-form'
 export { SubscriptionCard } from './components/subscription-card'
 export type { Subscription, SubscriptionCardProps } from './components/subscription-card'
 

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { LoginForm } from '@screensaver-art/ui'
+import { Button, LoginForm } from '@screensaver-art/ui'
 import { supabase } from '../lib/supabase'
 
 export function LoginPage() {
@@ -22,6 +22,16 @@ export function LoginPage() {
         )
       }}
       onSignUpClick={() => navigate('/signup')}
+      alternativeActions={
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          onClick={() => navigate('/otp')}
+        >
+          Email me a sign-in code
+        </Button>
+      }
     />
   )
 }

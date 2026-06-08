@@ -81,6 +81,14 @@ const electronAPI = {
   app: {
     getVersion: (): Promise<string> => ipcRenderer.invoke('app:getVersion'),
   },
+  auth: {
+    // Fires when the OS hands back an OAuth deep link (livingart://auth-callback).
+    onCallback: (cb: (url: string) => void): (() => void) => {
+      const handler = (_evt: IpcRendererEvent, url: string): void => cb(url)
+      ipcRenderer.on('auth:callback', handler)
+      return () => ipcRenderer.removeListener('auth:callback', handler)
+    },
+  },
 }
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI)

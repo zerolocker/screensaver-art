@@ -34,6 +34,11 @@ module.exports = {
   productName: 'Living Art Screensaver',
   copyright: 'Copyright © 2026 Living Art',
 
+  // Custom URL scheme for OAuth deep links (livingart://auth-callback). This
+  // registers CFBundleURLTypes on macOS and the protocol in the Windows
+  // installer so the OS hands the post-login redirect back to the app.
+  protocols: [{ name: 'Living Art Screensaver', schemes: ['livingart'] }],
+
   // Repair/sign the embedded .appex after the universal merge (which invalidates
   // its signature), and staple the notarization ticket after signing.
   afterPack: 'scripts/afterpack-sign.cjs',

@@ -6,6 +6,12 @@ import { getStatus, install, uninstall, activate, openSystemSettings } from './i
 import { syncGallery, clearCache, PATHS, type CachedManifest } from './cache-sync'
 import { log, installGlobalHandlers, recordRendererLog, getLogFilePath } from './logger'
 import { sendReport, type SendReportInput } from './report'
+import {
+  registerDeepLinkProtocol,
+  handleDeepLinkUrl,
+  extractDeepLinkFromArgv,
+  flushPendingDeepLink,
+} from './deeplink'
 
 const is = { dev: !app.isPackaged }
 
@@ -44,6 +50,11 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => mainWindow?.show())
   mainWindow.on('closed', () => { mainWindow = null })
+
+  // Deliver any OAuth deep link that arrived before the renderer was ready.
+  mainWindow.webContents.on('did-finish-load', () => {
+    if (mainWindow) flushPendingDeepLink(mainWindow)
+  })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
@@ -149,13 +160,44 @@ ipcMain.handle('report:send', (_evt, input: SendReportInput) => sendReport(input
 // ---------------------------------------------------------------------------
 // Lifecycle
 // ---------------------------------------------------------------------------
-app.whenReady().then(() => {
-  createWindow()
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-})
+// A single instance lock is required for OAuth deep links on Windows/Linux,
+// where the callback URL is delivered as argv to a *second* launch. The first
+// (primary) instance receives it via the 'second-instance' event.
+const gotSingleInstanceLock = app.requestSingleInstanceLock()
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit()
-})
+if (!gotSingleInstanceLock) {
+  app.quit()
+} else {
+  registerDeepLinkProtocol()
+
+  // macOS: the deep link arrives as an event on the running instance.
+  app.on('open-url', (event, url) => {
+    event.preventDefault()
+    handleDeepLinkUrl(url, () => mainWindow)
+  })
+
+  // Windows/Linux: a second launch carries the URL in argv; forward + focus.
+  app.on('second-instance', (_event, argv) => {
+    const url = extractDeepLinkFromArgv(argv)
+    if (url) handleDeepLinkUrl(url, () => mainWindow)
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
+    }
+  })
+
+  // Windows/Linux cold start: launched directly via the deep link.
+  const coldStartUrl = extractDeepLinkFromArgv(process.argv)
+  if (coldStartUrl) handleDeepLinkUrl(coldStartUrl, () => mainWindow)
+
+  app.whenReady().then(() => {
+    createWindow()
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    })
+  })
+
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') app.quit()
+  })
+}

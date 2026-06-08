@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { supabase } from './lib/supabase'
 import type { Session } from '@supabase/supabase-js'
+import { startOAuth, completeOAuthFromUrl, type OAuthProvider } from './lib/oauth'
 import { LoginPage } from './pages/Login'
 import { SignUpPage } from './pages/SignUp'
 import { OtpPage } from './pages/Otp'
@@ -13,7 +14,30 @@ import { Sidebar } from './pages/Sidebar'
 export function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [oauthPending, setOauthPending] = useState<OAuthProvider | null>(null)
+  const [oauthError, setOauthError] = useState<string | null>(null)
   const navigate = useNavigate()
+
+  // OAuth round-trips through the system browser and returns via a livingart://
+  // deep link. The main process forwards that URL here; we exchange it for a
+  // session (which then emits SIGNED_IN and navigates to the gallery).
+  useEffect(() => {
+    return window.electronAPI.auth.onCallback(async (url) => {
+      const { error } = await completeOAuthFromUrl(url)
+      if (error) setOauthError(error)
+      setOauthPending(null)
+    })
+  }, [])
+
+  async function handleStartOAuth(provider: OAuthProvider): Promise<void> {
+    setOauthError(null)
+    setOauthPending(provider)
+    const { error } = await startOAuth(provider)
+    if (error) {
+      setOauthError(error)
+      setOauthPending(null)
+    }
+  }
 
   useEffect(() => {
     // Get initial session
@@ -51,7 +75,16 @@ export function App() {
       <div className="titlebar-drag flex items-center justify-center min-h-screen">
         <div className="w-full max-w-md p-8 titlebar-no-drag">
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/login"
+              element={
+                <LoginPage
+                  oauthPending={oauthPending}
+                  oauthError={oauthError}
+                  onStartOAuth={handleStartOAuth}
+                />
+              }
+            />
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/otp" element={<OtpPage />} />
             <Route path="*" element={<Navigate to="/login" replace />} />

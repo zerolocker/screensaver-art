@@ -1,8 +1,16 @@
 import { useNavigate } from 'react-router-dom'
 import { Button, LoginForm } from '@screensaver-art/ui'
 import { supabase } from '../lib/supabase'
+import { OAuthButtons } from '../components/OAuthButtons'
+import type { OAuthProvider } from '../lib/oauth'
 
-export function LoginPage() {
+interface LoginPageProps {
+  oauthPending: OAuthProvider | null
+  oauthError: string | null
+  onStartOAuth: (provider: OAuthProvider) => void
+}
+
+export function LoginPage({ oauthPending, oauthError, onStartOAuth }: LoginPageProps) {
   const navigate = useNavigate()
 
   return (
@@ -23,14 +31,23 @@ export function LoginPage() {
       }}
       onSignUpClick={() => navigate('/signup')}
       alternativeActions={
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          onClick={() => navigate('/otp')}
-        >
-          Email me a sign-in code
-        </Button>
+        <div className="space-y-3">
+          <OAuthButtons pending={oauthPending} onStart={onStartOAuth} />
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={() => navigate('/otp')}
+          >
+            Email me a sign-in code
+          </Button>
+          {oauthError && (
+            <div className="flex items-start gap-2 p-3 text-sm rounded-lg bg-red-500/[0.06] border border-red-500/20">
+              <span className="text-red-400 shrink-0">✕</span>
+              <span className="text-neutral-300">{oauthError}</span>
+            </div>
+          )}
+        </div>
       }
     />
   )

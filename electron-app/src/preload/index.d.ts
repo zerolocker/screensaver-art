@@ -46,6 +46,7 @@ export interface ElectronAPI {
     getStats: () => Promise<CacheStats>
     clear: () => Promise<{ success: boolean }>
     getDir: () => Promise<string>
+    getSyncState: () => Promise<{ syncing: boolean }>
     sync: (
       apiUrl: string,
       accessToken: string | null,

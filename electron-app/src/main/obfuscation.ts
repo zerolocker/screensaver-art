@@ -38,3 +38,16 @@ export function obfuscate(plaintext: Buffer): Buffer {
   }
   return out
 }
+
+// XOR `chunk` with the cycling KEY, where `offset` is the chunk's byte position
+// within the plaintext (NOT counting the magic header). This lets us obfuscate a
+// download as a stream without buffering the whole MP4 — concatenating the magic
+// header with obfuscateChunk() over consecutive chunks produces bytes identical
+// to obfuscate(wholeBuffer), regardless of where the chunk boundaries fall.
+export function obfuscateChunk(chunk: Buffer, offset: number): Buffer {
+  const out = Buffer.allocUnsafe(chunk.length)
+  for (let i = 0; i < chunk.length; i++) {
+    out[i] = chunk[i] ^ KEY[(offset + i) % KEY.length]
+  }
+  return out
+}

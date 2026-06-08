@@ -9,7 +9,7 @@ import {
   Button,
 } from '@screensaver-art/ui'
 import type { Subscription } from '@screensaver-art/ui'
-import { GALLERY_ENDPOINT, SUBSCRIPTION_VERIFY_ENDPOINT } from '../lib/api'
+import { SUBSCRIPTION_VERIFY_ENDPOINT } from '../lib/api'
 import { log } from '../lib/log'
 import { getAccessToken } from '../lib/supabase'
 import { useErrorReport } from '../lib/useErrorReport'
@@ -25,8 +25,9 @@ import {
   Bug,
 } from 'lucide-react'
 import type { Session } from '@supabase/supabase-js'
-import type { CacheProgress, CacheStats, InstallerStatus } from '../../../preload'
+import type { InstallerStatus } from '../../../preload'
 import { UpsellBanner } from '../components/UpsellBanner'
+import { useGallerySync } from '../lib/SyncProvider'
 
 interface AccountPageProps {
   session: Session
@@ -36,7 +37,6 @@ export function AccountPage({ session }: AccountPageProps) {
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [subLoading, setSubLoading] = useState(true)
 
-  const [cacheStats, setCacheStats] = useState<CacheStats | null>(null)
   const [installer, setInstaller] = useState<InstallerStatus | null>(null)
 
   const [installing, setInstalling] = useState(false)
@@ -44,39 +44,38 @@ export function AccountPage({ session }: AccountPageProps) {
   const [uninstalling, setUninstalling] = useState(false)
   const [installError, setInstallError] = useState<string | null>(null)
 
-  const [syncing, setSyncing] = useState(false)
-  const [syncError, setSyncError] = useState<string | null>(null)
-  const [progress, setProgress] = useState<CacheProgress | null>(null)
-  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null)
-
   const [clearing, setClearing] = useState(false)
+
+  // Gallery sync is owned by the app-wide SyncProvider (auto-sync on open +
+  // sidebar status). The Account page just surfaces the detail + a manual button.
+  const {
+    syncing,
+    progress,
+    cacheStats,
+    lastSyncedAt,
+    error: syncError,
+    lastTrigger,
+    syncNow,
+    refreshStats,
+  } = useGallerySync()
 
   const { reporting, sendReport } = useErrorReport()
 
   useEffect(() => {
     fetchSubscription()
-    refreshLocalState()
-    const off = window.electronAPI.cache.onProgress((p) => {
-      setProgress(p)
-      // Refresh the cache stats on each progress event so the file count and
-      // total size tick up live as videos arrive — otherwise the user only
-      // sees the "Downloading 12/184" text and the headline number stays
-      // frozen at whatever it was before sync started.
-      if (p.phase === 'cached' || p.phase === 'downloading' || p.phase === 'done') {
-        window.electronAPI.cache.getStats().then(setCacheStats).catch(() => {})
-      }
-    })
-    // Re-check subscription + local state whenever the window regains focus.
+    refreshInstaller()
+    // Re-check subscription + installer status whenever the window regains focus.
     // This is what makes a just-completed purchase show up "instantly": after
     // the user finishes the browser checkout flow and switches back to the app,
     // the focus event fires and we re-verify — no tab toggle or restart needed.
+    // (Cache stats + sync progress are owned by the SyncProvider, which has its
+    // own focus listener for the stale re-sync.)
     const onFocus = () => {
       fetchSubscription()
-      refreshLocalState()
+      refreshInstaller()
     }
     window.addEventListener('focus', onFocus)
     return () => {
-      off()
       window.removeEventListener('focus', onFocus)
     }
   }, [])
@@ -110,13 +109,8 @@ export function AccountPage({ session }: AccountPageProps) {
     }
   }
 
-  async function refreshLocalState() {
-    const [stats, status] = await Promise.all([
-      window.electronAPI.cache.getStats(),
-      window.electronAPI.installer.status(),
-    ])
-    setCacheStats(stats)
-    setInstaller(status)
+  async function refreshInstaller() {
+    setInstaller(await window.electronAPI.installer.status())
   }
 
   async function handleInstall() {
@@ -124,7 +118,7 @@ export function AccountPage({ session }: AccountPageProps) {
     setInstallError(null)
     const result = await window.electronAPI.installer.install()
     if (!result.ok) setInstallError(result.error ?? 'Installation failed')
-    await refreshLocalState()
+    await refreshInstaller()
     setInstalling(false)
   }
 
@@ -135,7 +129,7 @@ export function AccountPage({ session }: AccountPageProps) {
     setInstallError(null)
     const result = await window.electronAPI.installer.uninstall()
     if (!result.ok) setInstallError(result.error ?? 'Uninstall failed')
-    await refreshLocalState()
+    await refreshInstaller()
     setUninstalling(false)
   }
 
@@ -146,30 +140,18 @@ export function AccountPage({ session }: AccountPageProps) {
     setInstallError(null)
     const result = await window.electronAPI.installer.activate()
     if (!result.ok) setInstallError(result.error ?? 'Could not set the screensaver')
-    await refreshLocalState()
+    await refreshInstaller()
     setActivating(false)
   }
 
   async function handleSync() {
-    setSyncing(true)
-    setSyncError(null)
-    setProgress(null)
-    const url = `${GALLERY_ENDPOINT}?collection=classic`
-    const accessToken = await getAccessToken()
-    const result = await window.electronAPI.cache.sync(url, accessToken)
-    if (!result.ok) {
-      setSyncError(result.error)
-    } else {
-      setLastSyncedAt(result.manifest.syncedAt)
-    }
-    await refreshLocalState()
-    setSyncing(false)
+    await syncNow({ trigger: 'manual' })
   }
 
   async function handleClearCache() {
     setClearing(true)
     await window.electronAPI.cache.clear()
-    await refreshLocalState()
+    await refreshStats()
     setClearing(false)
   }
 
@@ -421,7 +403,12 @@ export function AccountPage({ session }: AccountPageProps) {
                 )}
               </p>
             )}
-            {syncError && <p className="text-xs text-red-500">{syncError}</p>}
+            {/* Only surface the error inline for an explicit manual sync; an
+                auto-sync failure (e.g. offline at launch) is shown quietly in
+                the sidebar instead of as a red error here. */}
+            {syncError && lastTrigger === 'manual' && (
+              <p className="text-xs text-red-500">{syncError}</p>
+            )}
 
             <div className="flex gap-3">
               <Button onClick={handleSync} disabled={syncing} className="flex-1">

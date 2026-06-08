@@ -3,7 +3,7 @@ import { join } from 'path'
 import { stat, readdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import { getStatus, install, uninstall, activate, openSystemSettings } from './installer'
-import { syncGallery, clearCache, PATHS, type CachedManifest } from './cache-sync'
+import { syncGallery, cancelSync, isSyncing, clearCache, PATHS, type CachedManifest } from './cache-sync'
 import { log, installGlobalHandlers, recordRendererLog, getLogFilePath } from './logger'
 import { sendReport, type SendReportInput } from './report'
 
@@ -104,6 +104,11 @@ ipcMain.handle('cache:clear', async () => {
 
 ipcMain.handle('cache:getDir', () => PATHS.CACHE_DIR)
 
+// Lets a renderer that mounts mid-sync (e.g. the auto-sync kicked off before the
+// Account tab was opened) reflect the in-progress state instead of showing an
+// idle "Sync Now" button.
+ipcMain.handle('cache:getSyncState', () => ({ syncing: isSyncing() }))
+
 ipcMain.handle(
   'cache:sync',
   async (_evt, payload: { apiUrl: string; accessToken: string | null }): Promise<{ ok: true; manifest: CachedManifest } | { ok: false; error: string }> => {
@@ -159,3 +164,9 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
+
+// Abort any in-flight sync on quit. The manifest is written before downloads and
+// each video is written via a temp file + atomic rename, so an interrupted sync
+// can't corrupt the cache — cancelSync just stops the in-flight fetch/stream
+// promptly so quit isn't delayed. The next launch auto-syncs and resumes.
+app.on('before-quit', () => cancelSync())

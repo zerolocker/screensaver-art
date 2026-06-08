@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { obfuscate, filenameForUrl, MAGIC, KEY } from './obfuscation'
+import { obfuscate, obfuscateChunk, filenameForUrl, MAGIC, KEY } from './obfuscation'
 
 // The obfuscation logic is mirrored byte-for-byte in screensaver/Constants.swift
 // + screensaver/CachedGallery.swift. If any of these tests start failing,
@@ -48,6 +48,44 @@ describe('obfuscate', () => {
     const plain = Buffer.alloc(12345)
     const out = obfuscate(plain)
     expect(out.length).toBe(MAGIC.length + plain.length)
+  })
+})
+
+describe('obfuscateChunk', () => {
+  // The streaming download path obfuscates chunk-by-chunk as bytes arrive off
+  // the network. The result MUST be byte-identical to obfuscate(wholeBuffer)
+  // no matter where the chunk boundaries happen to fall — otherwise a video
+  // would decrypt to garbage depending on the user's network packetisation.
+  function streamObfuscate(plain: Buffer, chunkSizes: number[]): Buffer {
+    const parts: Buffer[] = [MAGIC]
+    let offset = 0
+    let pos = 0
+    for (const size of chunkSizes) {
+      const chunk = plain.subarray(pos, pos + size)
+      parts.push(obfuscateChunk(chunk, offset))
+      offset += chunk.length
+      pos += size
+    }
+    return Buffer.concat(parts)
+  }
+
+  it('matches obfuscate() when split on the key boundary', () => {
+    const plain = Buffer.from('FAKE_MP4_BYTES_'.repeat(20), 'utf8')
+    expect(streamObfuscate(plain, [KEY.length, KEY.length, plain.length])).toEqual(
+      obfuscate(plain),
+    )
+  })
+
+  it('matches obfuscate() for arbitrary, uneven chunk boundaries', () => {
+    const plain = Buffer.alloc(1000)
+    for (let i = 0; i < plain.length; i++) plain[i] = (i * 31 + 7) & 0xff
+    // Deliberately ragged splits that cross the 32-byte key cycle mid-chunk.
+    expect(streamObfuscate(plain, [1, 5, 31, 33, 100, 7, 823])).toEqual(obfuscate(plain))
+  })
+
+  it('matches obfuscate() with a single whole-buffer chunk', () => {
+    const plain = Buffer.from('one shot', 'utf8')
+    expect(streamObfuscate(plain, [plain.length])).toEqual(obfuscate(plain))
   })
 })
 

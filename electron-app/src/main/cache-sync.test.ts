@@ -36,7 +36,7 @@ vi.mock('electron', () => ({
   BrowserWindow: class {},
 }))
 
-import { syncGallery, clearCache, PATHS, type ApiResponse } from './cache-sync'
+import { syncGallery, cancelSync, isSyncing, clearCache, PATHS, type ApiResponse } from './cache-sync'
 import { MAGIC, KEY, filenameForUrl } from './obfuscation'
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -51,12 +51,47 @@ function makeJsonResponse(body: unknown, ok = true, status = 200): Response {
   } as unknown as Response
 }
 
-function makeBinaryResponse(bytes: Buffer, ok = true): Response {
+function streamFromBytes(bytes: Buffer): ReadableStream<Uint8Array> {
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(new Uint8Array(bytes))
+      controller.close()
+    },
+  })
+}
+
+// The download path streams `res.body`, so asset responses now expose a web
+// ReadableStream rather than arrayBuffer().
+function makeStreamResponse(bytes: Buffer, ok = true): Response {
   return {
     ok,
     status: ok ? 200 : 500,
-    arrayBuffer: () =>
-      Promise.resolve(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)),
+    body: ok ? streamFromBytes(bytes) : null,
+  } as unknown as Response
+}
+
+// A body that yields a chunk and then errors — simulates a dropped connection
+// mid-download.
+function makeErroringResponse(): Response {
+  return {
+    ok: true,
+    status: 200,
+    body: new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new Uint8Array([1, 2, 3, 4]))
+        controller.error(new Error('connection reset'))
+      },
+    }),
+  } as unknown as Response
+}
+
+// A body that never produces bytes and never closes — a hung download we expect
+// to be torn down by cancelSync() (it would otherwise hit the stall timeout).
+function makeHangingResponse(): Response {
+  return {
+    ok: true,
+    status: 200,
+    body: new ReadableStream<Uint8Array>({ start() {} }),
   } as unknown as Response
 }
 
@@ -80,6 +115,13 @@ function decryptCachedFile(path: string): Buffer {
   return out
 }
 
+function fakeWindow(send: ReturnType<typeof vi.fn>): Parameters<typeof syncGallery>[2] {
+  return {
+    isDestroyed: () => false,
+    webContents: { send },
+  } as unknown as Parameters<typeof syncGallery>[2]
+}
+
 // ─── Suite ──────────────────────────────────────────────────────────────────
 
 describe('cache-sync', () => {
@@ -91,6 +133,8 @@ describe('cache-sync', () => {
   })
 
   afterEach(async () => {
+    // Belt-and-suspenders: never let an in-flight sync leak into the next test.
+    if (isSyncing()) cancelSync()
     vi.unstubAllGlobals()
     await clearCache()
   })
@@ -121,8 +165,8 @@ describe('cache-sync', () => {
         .mockResolvedValueOnce(
           makeJsonResponse(fakeApiResponse(apiItems, { isSubscribed: true, totalCount: 2 })),
         )
-        .mockResolvedValueOnce(makeBinaryResponse(videoBytesA))
-        .mockResolvedValueOnce(makeBinaryResponse(videoBytesB))
+        .mockResolvedValueOnce(makeStreamResponse(videoBytesA))
+        .mockResolvedValueOnce(makeStreamResponse(videoBytesB))
 
       const manifest = await syncGallery('https://api/gallery', 'token-xyz', null)
 
@@ -141,7 +185,8 @@ describe('cache-sync', () => {
       expect(existsSync(join(PATHS.VIDEOS_DIR, manifest.items[1].filename))).toBe(true)
       expect(existsSync(PATHS.MANIFEST_PATH)).toBe(true)
 
-      // Round-trip: decrypted bytes match what was downloaded
+      // Round-trip: decrypted bytes match what was downloaded (proves the
+      // streaming chunk-wise XOR produces the same bytes as the whole-buffer path)
       expect(decryptCachedFile(join(PATHS.VIDEOS_DIR, manifest.items[0].filename))).toEqual(
         videoBytesA,
       )
@@ -158,25 +203,27 @@ describe('cache-sync', () => {
       const apiItems = [{ src: 'https://r2.example/a.mp4', title: 'A', type: 'video' }]
       fetchMock
         .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(apiItems)))
-        .mockResolvedValueOnce(makeBinaryResponse(Buffer.from('x')))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('x')))
 
       await syncGallery('https://api/gallery?collection=classic', 'tok', null)
 
       const galleryCall = fetchMock.mock.calls[0]
       expect(galleryCall[0]).toBe('https://api/gallery?collection=classic')
-      expect(galleryCall[1]).toEqual({ headers: { Authorization: 'Bearer tok' } })
+      expect(galleryCall[1]).toMatchObject({ headers: { Authorization: 'Bearer tok' } })
+      expect(galleryCall[1].signal).toBeInstanceOf(AbortSignal)
 
       const assetCall = fetchMock.mock.calls[1]
       expect(assetCall[0]).toBe('https://r2.example/a.mp4')
-      // No second arg = no auth on asset fetch (R2 is public; sending the
-      // Supabase token there would just leak it)
-      expect(assetCall[1]).toBeUndefined()
+      // No auth header on the asset fetch (R2 is public; sending the Supabase
+      // token there would just leak it) — only an abort signal.
+      expect(assetCall[1].headers).toBeUndefined()
+      expect(assetCall[1].signal).toBeInstanceOf(AbortSignal)
     })
 
     it('omits the Authorization header when no token is provided', async () => {
       fetchMock.mockResolvedValueOnce(makeJsonResponse(fakeApiResponse([])))
       await syncGallery('https://api/gallery', null, null)
-      expect(fetchMock.mock.calls[0][1]).toEqual({ headers: {} })
+      expect(fetchMock.mock.calls[0][1]).toMatchObject({ headers: {} })
     })
 
     it('throws when the gallery API returns non-OK', async () => {
@@ -189,7 +236,7 @@ describe('cache-sync', () => {
 
       fetchMock
         .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items)))
-        .mockResolvedValueOnce(makeBinaryResponse(Buffer.from('mp4-1')))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('mp4-1')))
       await syncGallery('https://api/gallery', null, null)
       expect(fetchMock).toHaveBeenCalledTimes(2)
 
@@ -215,9 +262,9 @@ describe('cache-sync', () => {
         .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items, { totalCount: 2 })))
         .mockImplementationOnce(async () => {
           manifestAtFirstDownload = JSON.parse(readFileSync(PATHS.MANIFEST_PATH, 'utf8'))
-          return makeBinaryResponse(Buffer.from('a'))
+          return makeStreamResponse(Buffer.from('a'))
         })
-        .mockResolvedValueOnce(makeBinaryResponse(Buffer.from('b')))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('b')))
 
       await syncGallery('https://api/gallery', null, null)
 
@@ -241,6 +288,129 @@ describe('cache-sync', () => {
       expect(dirContents).not.toContain('gallery.json.tmp')
     })
 
+    it('writes each video via a temp file and leaves no .tmp behind on success', async () => {
+      // Downloads stream into <hash>.bin.tmp and atomically rename into place,
+      // so the final .bin only ever appears fully written — and no temp sibling
+      // is left lying around afterwards.
+      const items = [{ src: 'https://r2.example/a.mp4', title: 'A', type: 'video' }]
+      fetchMock
+        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items)))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('mp4-bytes')))
+
+      await syncGallery('https://api/gallery', null, null)
+
+      const names = readdirSync(PATHS.VIDEOS_DIR)
+      expect(names).toContain(filenameForUrl(items[0].src))
+      expect(names.some((n) => n.endsWith('.tmp'))).toBe(false)
+    })
+
+    it('leaves neither a .bin nor a .tmp when a download dies mid-stream', async () => {
+      // The core partial-failure guarantee: an interrupted download must not
+      // leave a truncated .bin (which would be skipped forever) or a stray .tmp.
+      const items = [{ src: 'https://r2.example/a.mp4', title: 'A', type: 'video' }]
+      fetchMock.mockImplementation((url: string) => {
+        if (url === 'https://api/gallery')
+          return Promise.resolve(makeJsonResponse(fakeApiResponse(items)))
+        return Promise.resolve(makeErroringResponse()) // errors on every attempt
+      })
+
+      await syncGallery('https://api/gallery', null, null)
+
+      const dest = join(PATHS.VIDEOS_DIR, filenameForUrl(items[0].src))
+      expect(existsSync(dest)).toBe(false)
+      expect(existsSync(dest + '.tmp')).toBe(false)
+      expect(readdirSync(PATHS.VIDEOS_DIR).some((n) => n.endsWith('.tmp'))).toBe(false)
+    })
+
+    it('sweeps a stale .tmp left by a previously-interrupted sync', async () => {
+      // Seed the videos dir via a trivial sync, then drop a leftover temp file
+      // as if a previous run had been killed mid-write. The next sync removes it.
+      fetchMock.mockResolvedValueOnce(makeJsonResponse(fakeApiResponse([])))
+      await syncGallery('https://api/gallery', null, null)
+
+      const stale = join(PATHS.VIDEOS_DIR, 'deadbeefdeadbeef.bin.tmp')
+      writeFileSync(stale, 'partial leftover')
+      expect(existsSync(stale)).toBe(true)
+
+      fetchMock.mockReset()
+      fetchMock.mockResolvedValueOnce(makeJsonResponse(fakeApiResponse([])))
+      await syncGallery('https://api/gallery', null, null)
+
+      expect(existsSync(stale)).toBe(false)
+    })
+
+    it('retries a transient download failure and then succeeds', async () => {
+      const items = [{ src: 'https://r2.example/a.mp4', title: 'A', type: 'video' }]
+      let attempts = 0
+      fetchMock.mockImplementation((url: string) => {
+        if (url === 'https://api/gallery')
+          return Promise.resolve(makeJsonResponse(fakeApiResponse(items)))
+        attempts++
+        if (attempts === 1) return Promise.resolve(makeStreamResponse(Buffer.alloc(0), false))
+        return Promise.resolve(makeStreamResponse(Buffer.from('a-bytes')))
+      })
+
+      const manifest = await syncGallery('https://api/gallery', null, null)
+
+      expect(attempts).toBeGreaterThanOrEqual(2)
+      expect(existsSync(join(PATHS.VIDEOS_DIR, manifest.items[0].filename))).toBe(true)
+      expect(decryptCachedFile(join(PATHS.VIDEOS_DIR, manifest.items[0].filename))).toEqual(
+        Buffer.from('a-bytes'),
+      )
+    })
+
+    it('dedupes concurrent syncs — a second call joins the in-flight run', async () => {
+      const items = [{ src: 'https://r2.example/a.mp4', title: 'A', type: 'video' }]
+      fetchMock
+        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items)))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('a')))
+
+      const p1 = syncGallery('https://api/gallery', null, null)
+      const p2 = syncGallery('https://api/gallery', null, null)
+      const [m1, m2] = await Promise.all([p1, p2])
+
+      // The second caller joined the first run, so only one gallery fetch fired.
+      const galleryCalls = fetchMock.mock.calls.filter((c) => c[0] === 'https://api/gallery')
+      expect(galleryCalls).toHaveLength(1)
+      expect(m1).toBe(m2)
+    })
+
+    it('cancelSync stops a hanging download and leaves the existing cache intact', async () => {
+      // First, cache one item so there's an existing playlist to protect.
+      fetchMock
+        .mockResolvedValueOnce(
+          makeJsonResponse(
+            fakeApiResponse([{ src: 'https://r2.example/old.mp4', title: 'Old', type: 'video' }]),
+          ),
+        )
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('old')))
+      await syncGallery('https://api/gallery', null, null)
+      const oldFile = join(PATHS.VIDEOS_DIR, filenameForUrl('https://r2.example/old.mp4'))
+      expect(existsSync(oldFile)).toBe(true)
+
+      // New sync whose only item hangs forever; cancel mid-download.
+      fetchMock.mockReset()
+      const newItems = [{ src: 'https://r2.example/new.mp4', title: 'New', type: 'video' }]
+      fetchMock.mockImplementation((url: string) => {
+        if (url === 'https://api/gallery')
+          return Promise.resolve(makeJsonResponse(fakeApiResponse(newItems)))
+        return Promise.resolve(makeHangingResponse())
+      })
+
+      const p = syncGallery('https://api/gallery', null, null)
+      expect(isSyncing()).toBe(true)
+      await new Promise((r) => setTimeout(r, 50)) // let it reach the hanging download
+      cancelSync()
+      await p
+
+      expect(isSyncing()).toBe(false)
+      // The new item never finished — no .bin, no .tmp.
+      expect(existsSync(join(PATHS.VIDEOS_DIR, filenameForUrl(newItems[0].src)))).toBe(false)
+      expect(readdirSync(PATHS.VIDEOS_DIR).some((n) => n.endsWith('.tmp'))).toBe(false)
+      // Orphan cleanup is skipped on a cancelled run, so the old file survives.
+      expect(existsSync(oldFile)).toBe(true)
+    })
+
     it('only deletes orphans AFTER downloads complete (cache only grows mid-sync)', async () => {
       // Pre-seed the cache with an orphan that won't be in the new gallery.
       // While the new download is in flight, the orphan must still exist so
@@ -256,7 +426,7 @@ describe('cache-sync', () => {
         .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(newItems)))
         .mockImplementationOnce(async () => {
           orphanExistedDuringDownload = existsSync(orphanPath)
-          return makeBinaryResponse(Buffer.from('new bytes'))
+          return makeStreamResponse(Buffer.from('new bytes'))
         })
 
       await syncGallery('https://api/gallery', null, null)
@@ -278,9 +448,9 @@ describe('cache-sync', () => {
         .mockResolvedValueOnce(
           makeJsonResponse(fakeApiResponse(all, { isSubscribed: true, totalCount: 3 })),
         )
-        .mockResolvedValueOnce(makeBinaryResponse(Buffer.from('A')))
-        .mockResolvedValueOnce(makeBinaryResponse(Buffer.from('B')))
-        .mockResolvedValueOnce(makeBinaryResponse(Buffer.from('C')))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('A')))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('B')))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('C')))
       await syncGallery('https://api/gallery', null, null)
       expect(readdirSync(PATHS.VIDEOS_DIR)).toHaveLength(3)
 
@@ -306,16 +476,12 @@ describe('cache-sync', () => {
       ]
       fetchMock
         .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items)))
-        .mockResolvedValueOnce(makeBinaryResponse(Buffer.from('a')))
-        .mockResolvedValueOnce(makeBinaryResponse(Buffer.from('b')))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('a')))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('b')))
 
       const send = vi.fn()
-      const fakeWindow = {
-        isDestroyed: () => false,
-        webContents: { send },
-      } as unknown as Parameters<typeof syncGallery>[2]
 
-      await syncGallery('https://api/gallery', null, fakeWindow)
+      await syncGallery('https://api/gallery', null, fakeWindow(send))
 
       const phases = send.mock.calls.map((c) => (c[1] as { phase: string }).phase)
       expect(phases[0]).toBe('fetching-gallery')
@@ -339,18 +505,17 @@ describe('cache-sync', () => {
         { src: 'https://r2.example/a.mp4', title: 'A', type: 'video' },
         { src: 'https://r2.example/b.mp4', title: 'B', type: 'video' },
       ]
-      fetchMock
-        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items)))
-        .mockResolvedValueOnce(makeBinaryResponse(Buffer.from(''), false)) // A fails
-        .mockResolvedValueOnce(makeBinaryResponse(Buffer.from('b-bytes'))) // B succeeds
+      // A fails on every attempt (so retries are exhausted); B succeeds.
+      fetchMock.mockImplementation((url: string) => {
+        if (url === 'https://api/gallery')
+          return Promise.resolve(makeJsonResponse(fakeApiResponse(items)))
+        if (url === items[0].src) return Promise.resolve(makeStreamResponse(Buffer.alloc(0), false))
+        return Promise.resolve(makeStreamResponse(Buffer.from('b-bytes')))
+      })
 
       const send = vi.fn()
-      const fakeWindow = {
-        isDestroyed: () => false,
-        webContents: { send },
-      } as unknown as Parameters<typeof syncGallery>[2]
 
-      const manifest = await syncGallery('https://api/gallery', null, fakeWindow)
+      const manifest = await syncGallery('https://api/gallery', null, fakeWindow(send))
 
       expect(existsSync(join(PATHS.VIDEOS_DIR, manifest.items[1].filename))).toBe(true)
       expect(existsSync(join(PATHS.VIDEOS_DIR, manifest.items[0].filename))).toBe(false)
@@ -368,7 +533,7 @@ describe('cache-sync', () => {
       ]
       fetchMock
         .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items)))
-        .mockResolvedValueOnce(makeBinaryResponse(Buffer.from('v-bytes')))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('v-bytes')))
 
       const m = await syncGallery('https://api/gallery', null, null)
 
@@ -386,7 +551,7 @@ describe('cache-sync', () => {
       const items = [{ src: 'https://r2.example/a.mp4', title: 'A', type: 'video' }]
       fetchMock
         .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items)))
-        .mockResolvedValueOnce(makeBinaryResponse(Buffer.from('a')))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('a')))
       await syncGallery('https://api/gallery', null, null)
       expect(readdirSync(PATHS.VIDEOS_DIR)).not.toHaveLength(0)
       expect(existsSync(PATHS.MANIFEST_PATH)).toBe(true)

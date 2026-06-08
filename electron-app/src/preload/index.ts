@@ -48,6 +48,7 @@ const electronAPI = {
     getStats: (): Promise<CacheStats> => ipcRenderer.invoke('cache:getStats'),
     clear: (): Promise<{ success: boolean }> => ipcRenderer.invoke('cache:clear'),
     getDir: (): Promise<string> => ipcRenderer.invoke('cache:getDir'),
+    getSyncState: (): Promise<{ syncing: boolean }> => ipcRenderer.invoke('cache:getSyncState'),
     sync: (
       apiUrl: string,
       accessToken: string | null,

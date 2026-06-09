@@ -24,7 +24,14 @@ fi
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
-# 1. Build the screensaver extension (Release = universal) via Xcode.
+# 1. Build the screensaver extension (Release = universal) via Xcode, stamping
+#    its version from this Electron app's package.json. pluginkit caches appex
+#    registrations by CFBundleVersion, so this version MUST bump every release —
+#    otherwise an updated app keeps running the old screensaver code (the app's
+#    launch-time re-register only takes effect when the version actually changes).
+LART_APPEX_VERSION="$(node -p "require('${ELECTRON_DIR}/package.json').version")"
+export LART_APPEX_VERSION
+echo "→ Stamping appex version from package.json: ${LART_APPEX_VERSION}"
 APPEX="$(bash "${REPO_ROOT}/screensaver-macos/build.sh" Release | tail -1)"
 
 # 2. Build the PaperSaver activation helper (universal) via SwiftPM.

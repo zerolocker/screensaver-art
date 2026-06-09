@@ -32,9 +32,20 @@ ARCH_ARGS=()
 if [ "$CONFIG" = "Release" ]; then
     ARCH_ARGS=(ARCHS="arm64 x86_64" ONLY_ACTIVE_ARCH=NO)
 fi
+# Stamp the appex version from the embedding Electron app's version (passed in
+# via LART_APPEX_VERSION by bundle-appex.sh). This MUST change every release:
+# pluginkit caches extension registrations by CFBundleVersion, so a static
+# version means a new app version's appex keeps running the OLD code until the
+# version actually bumps. Falls back to the project.yml default if unset.
+VERSION_ARGS=()
+if [ -n "${LART_APPEX_VERSION:-}" ]; then
+    VERSION_ARGS=(CURRENT_PROJECT_VERSION="$LART_APPEX_VERSION" MARKETING_VERSION="$LART_APPEX_VERSION")
+    echo "    stamping appex version: $LART_APPEX_VERSION" >&2
+fi
 xcodebuild -project ScreensaverArt.xcodeproj -scheme DevHost \
     -configuration "$CONFIG" -derivedDataPath build \
-    "${ARCH_ARGS[@]+"${ARCH_ARGS[@]}"}" CODE_SIGNING_ALLOWED=YES build >&2
+    "${ARCH_ARGS[@]+"${ARCH_ARGS[@]}"}" \
+    "${VERSION_ARGS[@]+"${VERSION_ARGS[@]}"}" CODE_SIGNING_ALLOWED=YES build >&2
 
 APPEX="$DIR/build/Build/Products/$CONFIG/DevHost.app/Contents/PlugIns/ScreensaverArtExtension.appex"
 [ -d "$APPEX" ] || { echo "Build did not produce $APPEX" >&2; exit 1; }

@@ -3,23 +3,23 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
 import type { InstallerStatus } from '../../../preload'
+import { log } from './log'
 
 interface InstallerContextValue {
+  // Null until the first status read resolves.
   installer: InstallerStatus | null
-  /** The screensaver is installed but not the active one — the "Set" banner shows. */
+  // Registered but not the active screensaver — the top-of-app "Set" banner shows.
   needsActivation: boolean
-  installing: boolean
+  // A one-click "Set" is in flight.
   activating: boolean
-  uninstalling: boolean
+  // Most recent setup (auto-register) or activation failure, if any.
   error: string | null
-  refresh: () => Promise<void>
-  install: () => Promise<void>
   activate: () => Promise<void>
-  uninstall: () => Promise<void>
 }
 
 const InstallerContext = createContext<InstallerContextValue | null>(null)
@@ -30,32 +30,25 @@ export function useInstaller(): InstallerContextValue {
   return ctx
 }
 
-// Single source of truth for the screensaver installer status + actions. Lifted
-// out of the Account page so the "set your screensaver" banner can live at the
-// top of the app (above the upsell banner) on any page — the banner and the
-// Account card read the same state, so a one-click "Set" updates both at once.
+// Owns the screensaver installer state for the whole (signed-in) app. Mounting
+// this == the user is past login, which is exactly when we want to auto-register
+// the embedded .appex (so the report on a failure carries the user id, and there
+// is no manual "Install" step to puzzle over). Registration is idempotent and
+// version-aware in the main process: it only re-registers when the appex is
+// missing from pluginkit or the app was updated since we last registered.
 export function InstallerProvider({ children }: { children: ReactNode }) {
   const [installer, setInstaller] = useState<InstallerStatus | null>(null)
-  const [installing, setInstalling] = useState(false)
   const [activating, setActivating] = useState(false)
-  const [uninstalling, setUninstalling] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Guards the auto-register so it runs once per session, not again on every
+  // focus / StrictMode double-mount.
+  const ensuredRef = useRef(false)
 
   const refresh = useCallback(async () => {
     setInstaller(await window.electronAPI.installer.status())
   }, [])
 
-  const install = useCallback(async () => {
-    setInstalling(true)
-    setError(null)
-    const result = await window.electronAPI.installer.install()
-    if (!result.ok) setError(result.error ?? 'Installation failed')
-    await refresh()
-    setInstalling(false)
-  }, [refresh])
-
-  // One-click "Set as your screensaver" — flips the active screensaver to ours
-  // via the PaperSaver helper, no trip through System Settings required.
   const activate = useCallback(async () => {
     setActivating(true)
     setError(null)
@@ -65,38 +58,51 @@ export function InstallerProvider({ children }: { children: ReactNode }) {
     setActivating(false)
   }, [refresh])
 
-  // Unregister the .appex from the system (pluginkit -r, via the PaperSaver
-  // helper). After this it no longer appears in System Settings → Screen Saver.
-  const uninstall = useCallback(async () => {
-    setUninstalling(true)
-    setError(null)
-    const result = await window.electronAPI.installer.uninstall()
-    if (!result.ok) setError(result.error ?? 'Uninstall failed')
-    await refresh()
-    setUninstalling(false)
-  }, [refresh])
-
   useEffect(() => {
-    void refresh()
-    // Re-check on focus so a change made in System Settings (or a just-completed
-    // "Set") is reflected app-wide — this keeps the top-of-app banner and the
-    // Account card in agreement no matter where the user acted.
-    const onFocus = (): void => void refresh()
+    let cancelled = false
+
+    void (async () => {
+      const status = await window.electronAPI.installer.status()
+      if (cancelled) return
+      setInstaller(status)
+
+      // Auto-register once, only where it can actually work. If the bundle is
+      // missing the app shows a blocking recovery screen instead (see App), so
+      // don't bother trying to register a missing file.
+      if (status.supported && status.bundledExtensionExists && !ensuredRef.current) {
+        ensuredRef.current = true
+        try {
+          const result = await window.electronAPI.installer.ensureRegistered()
+          if (!result.ok) {
+            setError(result.error ?? 'Could not set up the screensaver')
+            log.warn('installer', 'auto-register failed', { error: result.error })
+          }
+        } catch (err) {
+          setError(err instanceof Error ? err.message : String(err))
+        } finally {
+          if (!cancelled) setInstaller(await window.electronAPI.installer.status())
+        }
+      }
+    })()
+
+    // Re-read status on focus so a change made in System Settings is reflected
+    // app-wide. Read-only — never auto-registers (that's once-per-launch above).
+    const onFocus = (): void => {
+      window.electronAPI.installer.status().then(setInstaller).catch(() => {})
+    }
     window.addEventListener('focus', onFocus)
-    return () => window.removeEventListener('focus', onFocus)
-  }, [refresh])
+    return () => {
+      cancelled = true
+      window.removeEventListener('focus', onFocus)
+    }
+  }, [])
 
   const value: InstallerContextValue = {
     installer,
     needsActivation: !!(installer?.supported && installer.registered && !installer.active),
-    installing,
     activating,
-    uninstalling,
     error,
-    refresh,
-    install,
     activate,
-    uninstall,
   }
 
   return <InstallerContext.Provider value={value}>{children}</InstallerContext.Provider>

@@ -62,8 +62,8 @@ const electronAPI = {
   },
   installer: {
     status: (): Promise<InstallerStatus> => ipcRenderer.invoke('installer:status'),
-    install: (): Promise<{ ok: boolean; error?: string }> => ipcRenderer.invoke('installer:install'),
-    uninstall: (): Promise<{ ok: boolean; error?: string }> => ipcRenderer.invoke('installer:uninstall'),
+    ensureRegistered: (): Promise<{ ok: boolean; error?: string; registered: boolean }> =>
+      ipcRenderer.invoke('installer:ensureRegistered'),
     activate: (): Promise<{ ok: boolean; error?: string }> => ipcRenderer.invoke('installer:activate'),
   },
   shell: {
@@ -80,6 +80,7 @@ const electronAPI = {
   },
   app: {
     getVersion: (): Promise<string> => ipcRenderer.invoke('app:getVersion'),
+    restart: (): Promise<void> => ipcRenderer.invoke('app:restart'),
   },
 }
 

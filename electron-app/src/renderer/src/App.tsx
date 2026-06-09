@@ -8,8 +8,9 @@ import { GalleryPage } from './pages/Gallery'
 import { AccountPage } from './pages/Account'
 import { HelpPage } from './pages/Help'
 import { Sidebar } from './pages/Sidebar'
+import { ScreensaverUnavailable } from './pages/ScreensaverUnavailable'
 import { SyncProvider } from './lib/SyncProvider'
-import { InstallerProvider } from './lib/InstallerProvider'
+import { InstallerProvider, useInstaller } from './lib/InstallerProvider'
 
 export function App() {
   const [session, setSession] = useState<Session | null>(null)
@@ -64,19 +65,34 @@ export function App() {
   return (
     <SyncProvider>
       <InstallerProvider>
-        <div className="flex h-screen">
-          <Sidebar session={session} />
-          <main className="flex-1 overflow-y-auto">
-            <div className="titlebar-drag h-10 sticky top-0 z-10" />
-            <Routes>
-              <Route path="/gallery" element={<GalleryPage session={session} />} />
-              <Route path="/account" element={<AccountPage session={session} />} />
-              <Route path="/help" element={<HelpPage />} />
-              <Route path="*" element={<Navigate to="/gallery" replace />} />
-            </Routes>
-          </main>
-        </div>
+        <AuthedShell session={session} />
       </InstallerProvider>
     </SyncProvider>
+  )
+}
+
+// The signed-in app shell. Lives inside InstallerProvider so it can short-circuit
+// to a recovery screen when the embedded screensaver component is missing (a
+// damaged/incomplete install) — without it the app can't do its one job.
+function AuthedShell({ session }: { session: Session }) {
+  const { installer } = useInstaller()
+
+  if (installer && installer.supported && !installer.bundledExtensionExists) {
+    return <ScreensaverUnavailable installer={installer} />
+  }
+
+  return (
+    <div className="flex h-screen">
+      <Sidebar session={session} />
+      <main className="flex-1 overflow-y-auto">
+        <div className="titlebar-drag h-10 sticky top-0 z-10" />
+        <Routes>
+          <Route path="/gallery" element={<GalleryPage session={session} />} />
+          <Route path="/account" element={<AccountPage session={session} />} />
+          <Route path="/help" element={<HelpPage />} />
+          <Route path="*" element={<Navigate to="/gallery" replace />} />
+        </Routes>
+      </main>
+    </div>
   )
 }

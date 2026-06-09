@@ -1,8 +1,8 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { stat, readdir } from 'fs/promises'
-import { existsSync } from 'fs'
-import { getStatus, install, uninstall, activate } from './installer'
+import { existsSync, readFileSync, writeFileSync } from 'fs'
+import { getStatus, ensureRegistered, activate } from './installer'
 import { syncGallery, cancelSync, isSyncing, clearCache, PATHS, type CachedManifest } from './cache-sync'
 import { log, installGlobalHandlers, recordRendererLog, getLogFilePath } from './logger'
 import { sendReport, type SendReportInput } from './report'
@@ -124,8 +124,38 @@ ipcMain.handle(
 )
 
 ipcMain.handle('installer:status', () => getStatus())
-ipcMain.handle('installer:install', () => install())
-ipcMain.handle('installer:uninstall', () => uninstall())
+
+// Records which appex version we last registered, so ensureRegistered can tell
+// "already current" from "the app was updated, re-register". Lives in userData
+// (not the bundle) so it survives app updates. Best-effort: a read/write failure
+// just means we re-register once more than strictly necessary.
+const INSTALLER_STATE_FILE = join(app.getPath('userData'), 'installer-state.json')
+function readRegisteredVersion(): string | null {
+  try {
+    const v = JSON.parse(readFileSync(INSTALLER_STATE_FILE, 'utf8')).registeredAppexVersion
+    return typeof v === 'string' ? v : null
+  } catch {
+    return null
+  }
+}
+function writeRegisteredVersion(version: string | null): void {
+  try {
+    writeFileSync(INSTALLER_STATE_FILE, JSON.stringify({ registeredAppexVersion: version }))
+  } catch (err) {
+    log.warn('installer', 'could not persist registered appex version', {
+      error: err instanceof Error ? err.message : String(err),
+    })
+  }
+}
+
+// Auto-register the screensaver (called once per launch by the renderer, post
+// sign-in). Persists the version only when we actually (re)registered.
+ipcMain.handle('installer:ensureRegistered', async () => {
+  const result = await ensureRegistered(readRegisteredVersion())
+  if (result.ok && result.didRegister) writeRegisteredVersion(result.version)
+  return { ok: result.ok, error: result.error, registered: result.registered }
+})
+
 ipcMain.handle('installer:activate', () => activate())
 
 ipcMain.handle('shell:openExternal', (_evt, url: string) => shell.openExternal(url))
@@ -133,6 +163,13 @@ ipcMain.handle('shell:openPath', (_evt, path: string) => shell.openPath(path))
 
 // App info — version comes from the bundled package.json (release.sh bumps it).
 ipcMain.handle('app:getVersion', () => app.getVersion())
+
+// Relaunch the app — the recovery action on the "screensaver component missing"
+// screen (a fresh launch re-runs the auto-register).
+ipcMain.handle('app:restart', () => {
+  app.relaunch()
+  app.exit(0)
+})
 
 // ---------------------------------------------------------------------------
 // Logging + error reporting

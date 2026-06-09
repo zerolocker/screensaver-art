@@ -74,17 +74,28 @@ function helperPath(): string {
 }
 
 export type InstallerStatus = {
+  // The host OS, straight from process.platform (e.g. 'darwin', 'win32'). Lets
+  // the renderer tailor copy without re-deriving the platform itself.
   platform: NodeJS.Platform
+  // Whether screensaver install is implemented on this OS at all. Currently only
+  // macOS ('darwin'); everything below is false on unsupported platforms.
   supported: boolean
-  // The appex is present in this app's resources/PlugIns (so install can run).
+  // The appex is actually present inside this app bundle (Contents/PlugIns). When
+  // false on a supported OS the app is broken (incomplete download / damaged
+  // bundle) — the renderer blocks with a recovery screen rather than trying to
+  // register a missing file.
   bundledExtensionExists: boolean
-  // pluginkit knows about our extension.
+  // pluginkit knows about our extension (it's registered with the system and
+  // shows up in System Settings → Screen Saver). Registration is done
+  // automatically on launch; this reflects whether it succeeded.
   registered: boolean
   // Our screensaver is registered AND set as the active one, so it will actually
   // display. Gated on `registered` — an unregistered appex can't be active even
   // when the system preference still names it (see getStatus). The "Set" banner
-  // and the "Set as your screensaver" pill gate on this.
+  // gates on `registered && !active`.
   active: boolean
+  // The bundle path pluginkit has on file for our extension, or null if not
+  // registered. Surfaced in diagnostics/error reports to spot a stale path.
   registeredPath: string | null
 }
 
@@ -162,22 +173,28 @@ function killScreensaverProcesses(): Promise<void> {
   })
 }
 
-export async function install(): Promise<{ ok: boolean; error?: string }> {
-  if (process.platform !== 'darwin') {
-    return { ok: false, error: `Screensaver install is not supported on ${process.platform} yet.` }
+// Read the CFBundleVersion of the bundled appex (the value stamped from the
+// app version at build time). This is what we compare against the last version
+// we registered, to detect "the app was updated since we last registered".
+// Returns null if it can't be read (treated as "don't thrash" — see below).
+async function bundledAppexVersion(): Promise<string | null> {
+  const plist = join(bundledAppexPath(), 'Contents', 'Info.plist')
+  try {
+    const { code, stdout } = await _testHooks.run('/usr/libexec/PlistBuddy', [
+      '-c', 'Print :CFBundleVersion', plist,
+    ])
+    if (code !== 0) return null
+    return stdout.trim() || null
+  } catch {
+    return null
   }
-  const appex = bundledAppexPath()
-  if (!existsSync(appex)) {
-    log.error('installer', 'bundled appex missing', { appex })
-    return { ok: false, error: `Bundled screensaver missing at ${appex}. Run scripts/bundle-appex.sh.` }
-  }
+}
 
-  log.info('installer', 'install: registering appex', { appex })
-  await killScreensaverProcesses()
-
-  // The helper registers via pluginkit AND re-queries to confirm the extension
-  // actually landed (pluginkit -a can report odd exit states), reporting back
-  // `{ registered, path }`. Trust that verified result rather than the raw exit.
+// Register the appex via the PaperSaver helper. The helper runs pluginkit AND
+// re-queries to confirm the extension actually landed (pluginkit -a can report
+// odd exit states), reporting back `{ registered, path }`. Trust that verified
+// result rather than the raw exit code.
+async function registerAppex(appex: string): Promise<{ ok: boolean; error?: string }> {
   const { code, stdout, stderr } = await runHelper(['register', appex])
   let registered = false
   try {
@@ -189,28 +206,66 @@ export async function install(): Promise<{ ok: boolean; error?: string }> {
     // Surface the helper's actual report (not just "exit 0") — the most common
     // cause is a broken appex code signature, which pluginkit refuses silently.
     const detail = stderr.trim() || stdout.trim() || `helper exit ${code}`
-    log.error('installer', 'install: registration not confirmed', { code, stdout: stdout.trim(), stderr: stderr.trim() })
+    log.error('installer', 'register: not confirmed', { code, stdout: stdout.trim(), stderr: stderr.trim() })
     return { ok: false, error: `Failed to register the screensaver (${detail}).` }
   }
-  log.info('installer', 'install: registered', { stdout: stdout.trim() })
+  log.info('installer', 'register: confirmed', { stdout: stdout.trim() })
   return { ok: true }
 }
 
-export async function uninstall(): Promise<{ ok: boolean; error?: string }> {
+export interface EnsureResult {
+  ok: boolean
+  error?: string
+  registered: boolean
+  // The bundled appex version we evaluated (so the caller can persist it after a
+  // successful (re)register). Null if it couldn't be read.
+  version: string | null
+  // Whether we actually (re)registered this call (vs. it already being current).
+  didRegister: boolean
+}
+
+// Idempotent "make sure the screensaver is registered and up to date", run
+// automatically on app launch instead of a manual install button. Registers the
+// appex when it isn't registered yet OR when the bundled build changed since we
+// last registered (an app update) — pluginkit caches by CFBundleVersion, so a
+// re-register only refreshes the system's copy when the version actually bumped,
+// and killScreensaverProcesses() drops any process still running the old code.
+//
+// `lastRegisteredVersion` is the version we recorded after our previous
+// successful register (persisted in the main process's userData); pass null on a
+// machine that has never registered.
+export async function ensureRegistered(lastRegisteredVersion: string | null): Promise<EnsureResult> {
   if (process.platform !== 'darwin') {
-    return { ok: false, error: `Not supported on ${process.platform}.` }
+    return { ok: true, registered: false, version: null, didRegister: false }
   }
+  const appex = bundledAppexPath()
+  if (!existsSync(appex)) {
+    // Should never happen for a real install — the renderer blocks on
+    // bundledExtensionExists before we get here — but guard defensively.
+    log.error('installer', 'ensureRegistered: bundled appex missing', { appex })
+    return { ok: false, error: `Bundled screensaver missing at ${appex}.`, registered: false, version: null, didRegister: false }
+  }
+
+  const version = await bundledAppexVersion()
+  const { registered } = await queryRegistration()
+
+  // Already registered and current → nothing to do. If we can't read the bundled
+  // version (null), don't re-register on every launch (which would needlessly
+  // kill System Settings/ScreenSaverEngine each time) — assume the existing
+  // registration is fine.
+  if (registered && (version === null || lastRegisteredVersion === version)) {
+    return { ok: true, registered: true, version, didRegister: false }
+  }
+
+  log.info('installer', 'ensureRegistered: (re)registering appex', {
+    appex, version, lastRegisteredVersion, wasRegistered: registered,
+  })
   await killScreensaverProcesses()
-  // Prefer the path pluginkit actually has registered; fall back to ours.
-  const { registeredPath } = await queryRegistration()
-  const target = registeredPath || bundledAppexPath()
-  log.info('installer', 'uninstall: unregistering appex', { target })
-  const { code, stderr } = await runHelper(['unregister', target])
-  if (code !== 0) {
-    log.error('installer', 'uninstall failed', { code, stderr: stderr.trim() })
-    return { ok: false, error: stderr.trim() || `Could not unregister the screensaver (helper exit ${code}).` }
+  const result = await registerAppex(appex)
+  if (!result.ok) {
+    return { ok: false, error: result.error, registered: false, version, didRegister: false }
   }
-  return { ok: true }
+  return { ok: true, registered: true, version, didRegister: true }
 }
 
 // One-click "Set as your screensaver" via the PaperSaver helper.

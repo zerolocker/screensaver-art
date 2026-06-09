@@ -25,7 +25,7 @@ vi.mock('electron', () => ({
   app: { isPackaged: false },
 }))
 
-import { getStatus, install, uninstall, activate, _testHooks } from './installer'
+import { getStatus, ensureRegistered, activate, _testHooks } from './installer'
 
 const APPEX = () => process.env.LART_APPEX_PATH!
 const HELPER = () => process.env.LART_HELPER_PATH!
@@ -165,70 +165,89 @@ describe('installer', () => {
     })
   })
 
-  describe('install', () => {
-    it('returns an error on non-darwin platforms', async () => {
-      setPlatform('win32')
-      const result = await install()
-      expect(result.ok).toBe(false)
-      expect(result.error).toMatch(/win32/)
-    })
-
-    it('returns an error if the bundled extension is missing', async () => {
-      const result = await install()
-      expect(result.ok).toBe(false)
-      expect(result.error).toMatch(/Bundled screensaver missing/)
-    })
-
-    it('registers via the helper and confirms via its report', async () => {
-      plantBundle(APPEX())
+  describe('ensureRegistered', () => {
+    // Canned PlistBuddy reply for the bundled appex's CFBundleVersion.
+    const withVersion = (
+      version: string,
+      extra: (cmd: string, args: ReadonlyArray<string>) => RunResult | null = () => null,
+    ) => {
       runImpl = (cmd, args) => {
-        if (cmd === HELPER() && args[0] === 'register') {
-          return { code: 0, stdout: foundJson(), stderr: '' }
-        }
-        return defaultRunImpl(cmd, args)
+        if (cmd === '/usr/libexec/PlistBuddy') return { code: 0, stdout: version, stderr: '' }
+        return extra(cmd, args) ?? defaultRunImpl(cmd, args)
       }
-      const result = await install()
-      expect(result.ok).toBe(true)
-      // killall ran (fire-and-forget) before the helper register call.
+    }
+
+    it('no-ops on non-darwin platforms', async () => {
+      setPlatform('win32')
+      const r = await ensureRegistered(null)
+      expect(r.ok).toBe(true)
+      expect(r.didRegister).toBe(false)
+      expect(r.registered).toBe(false)
+    })
+
+    it('fails when the bundled extension is missing', async () => {
+      const r = await ensureRegistered(null)
+      expect(r.ok).toBe(false)
+      expect(r.error).toMatch(/missing/i)
+    })
+
+    it('registers when not yet registered, killing stale processes first', async () => {
+      plantBundle(APPEX())
+      withVersion('1.0.3', (cmd, args) =>
+        cmd === HELPER() && args[0] === 'register'
+          ? { code: 0, stdout: foundJson(), stderr: '' }
+          : null,
+      )
+      const r = await ensureRegistered(null)
+      expect(r.ok).toBe(true)
+      expect(r.didRegister).toBe(true)
+      expect(r.registered).toBe(true)
+      expect(r.version).toBe('1.0.3')
       expect(spawnCalls.some((c) => c.cmd === 'sh')).toBe(true)
       const reg = runCalls.find((c) => c.cmd === HELPER() && c.args[0] === 'register')
-      expect(reg).toBeDefined()
       expect(reg!.args).toEqual(['register', APPEX()])
     })
 
-    it('fails when the helper does not register the extension', async () => {
+    it('does nothing when already registered at the same version', async () => {
       plantBundle(APPEX())
-      runImpl = (cmd, args) => {
-        if (cmd === HELPER() && args[0] === 'register') {
-          return { code: 1, stdout: '', stderr: 'register failed: boom' }
-        }
-        return defaultRunImpl(cmd, args)
-      }
-      const result = await install()
-      expect(result.ok).toBe(false)
-      expect(result.error).toMatch(/register/i)
-    })
-  })
-
-  describe('uninstall', () => {
-    it('returns an error on non-darwin platforms', async () => {
-      setPlatform('linux')
-      const result = await uninstall()
-      expect(result.ok).toBe(false)
+      withVersion('1.0.3', (cmd, args) =>
+        cmd === HELPER() && args[0] === 'find'
+          ? { code: 0, stdout: foundJson(), stderr: '' }
+          : null,
+      )
+      const r = await ensureRegistered('1.0.3')
+      expect(r.ok).toBe(true)
+      expect(r.didRegister).toBe(false)
+      // No re-register, no process kill — it was already current.
+      expect(spawnCalls.some((c) => c.cmd === 'sh')).toBe(false)
+      expect(runCalls.some((c) => c.cmd === HELPER() && c.args[0] === 'register')).toBe(false)
     })
 
-    it('unregisters the registered path via the helper', async () => {
-      runImpl = (cmd, args) => {
-        if (cmd === HELPER() && args[0] === 'find') {
-          return { code: 0, stdout: foundJson(), stderr: '' }
-        }
-        return defaultRunImpl(cmd, args)
-      }
-      const result = await uninstall()
-      expect(result.ok).toBe(true)
-      const rm = runCalls.find((c) => c.cmd === HELPER() && c.args[0] === 'unregister')
-      expect(rm).toBeDefined()
-      expect(rm!.args).toEqual(['unregister', APPEX()])
+    it('re-registers when the bundled version changed (app updated)', async () => {
+      plantBundle(APPEX())
+      withVersion('1.0.4', (cmd, args) =>
+        cmd === HELPER() && (args[0] === 'find' || args[0] === 'register')
+          ? { code: 0, stdout: foundJson(), stderr: '' }
+          : null,
+      )
+      const r = await ensureRegistered('1.0.3')
+      expect(r.didRegister).toBe(true)
+      expect(r.version).toBe('1.0.4')
+      expect(spawnCalls.some((c) => c.cmd === 'sh')).toBe(true)
+      expect(runCalls.some((c) => c.cmd === HELPER() && c.args[0] === 'register')).toBe(true)
+    })
+
+    it('reports failure when the helper does not register', async () => {
+      plantBundle(APPEX())
+      withVersion('1.0.3', (cmd, args) =>
+        cmd === HELPER() && args[0] === 'register'
+          ? { code: 1, stdout: '', stderr: 'register failed: boom' }
+          : null,
+      )
+      const r = await ensureRegistered(null)
+      expect(r.ok).toBe(false)
+      expect(r.error).toMatch(/register/i)
+      expect(r.registered).toBe(false)
     })
   })
 

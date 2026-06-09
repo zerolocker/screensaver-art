@@ -12,22 +12,10 @@ import type { Subscription } from '@screensaver-art/ui'
 import { SUBSCRIPTION_VERIFY_ENDPOINT } from '../lib/api'
 import { log } from '../lib/log'
 import { getAccessToken } from '../lib/supabase'
-import { useErrorReport } from '../lib/useErrorReport'
-import {
-  Loader2,
-  Trash2,
-  HardDrive,
-  FolderOpen,
-  Monitor,
-  CheckCircle2,
-  RefreshCw,
-  AlertCircle,
-  Bug,
-} from 'lucide-react'
+import { Loader2, Trash2, HardDrive, FolderOpen, RefreshCw } from 'lucide-react'
 import type { Session } from '@supabase/supabase-js'
 import { AppBanners } from '../components/AppBanners'
 import { useGallerySync } from '../lib/SyncProvider'
-import { useInstaller } from '../lib/InstallerProvider'
 
 interface AccountPageProps {
   session: Session
@@ -36,17 +24,6 @@ interface AccountPageProps {
 export function AccountPage({ session }: AccountPageProps) {
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [subLoading, setSubLoading] = useState(true)
-
-  // Screensaver install/activate state is owned by the app-wide InstallerProvider
-  // so the top-of-app "Set" banner and this card stay in sync.
-  const {
-    installer,
-    installing,
-    uninstalling,
-    error: installError,
-    install: handleInstall,
-    uninstall: handleUninstall,
-  } = useInstaller()
 
   const [clearing, setClearing] = useState(false)
 
@@ -62,8 +39,6 @@ export function AccountPage({ session }: AccountPageProps) {
     syncNow,
     refreshStats,
   } = useGallerySync()
-
-  const { reporting, sendReport } = useErrorReport()
 
   useEffect(() => {
     fetchSubscription()
@@ -183,116 +158,9 @@ export function AccountPage({ session }: AccountPageProps) {
           />
         )}
 
-        {/* Screensaver install */}
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle className="text-foreground flex items-center gap-2">
-              <Monitor className="w-4 h-4" /> Screensaver
-            </CardTitle>
-            <CardDescription>
-              {installer?.supported
-                ? 'Install the screensaver and set it as your active screensaver. This app keeps its video cache up to date in the background.'
-                : `Screensaver install isn't supported on ${installer?.platform ?? 'this platform'} yet — coming soon.`}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {installer?.supported && (
-              <>
-                {/* Status row — pill on the left, uninstall pushed to the right */}
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    {installer.active ? (
-                      <>
-                        <CheckCircle2 className="w-5 h-5 text-green-500" />
-                        <p className="text-foreground">Set as your screensaver</p>
-                      </>
-                    ) : installer.registered ? (
-                      <>
-                        <CheckCircle2 className="w-5 h-5 text-green-500" />
-                        <p className="text-foreground">Installed</p>
-                      </>
-                    ) : (
-                      <>
-                        <AlertCircle className="w-5 h-5 text-amber-500" />
-                        <p className="text-foreground">Not installed</p>
-                      </>
-                    )}
-                  </div>
-
-                  {installer.registered && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleUninstall}
-                      disabled={uninstalling}
-                      className="ml-auto shrink-0"
-                    >
-                      {uninstalling ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Uninstalling…
-                        </>
-                      ) : (
-                        'Uninstall from System Settings'
-                      )}
-                    </Button>
-                  )}
-                </div>
-
-                {/* The "Set as your screensaver" prompt now lives in the
-                    top-of-app ScreensaverSetBanner (above the upsell banner), so
-                    it's visible from any page — not just here. */}
-
-                {!installer.bundledExtensionExists && (
-                  <p className="text-xs text-amber-500">
-                    The screensaver bundle is missing from this app's resources. Run{' '}
-                    <code className="font-mono">scripts/bundle-appex.sh</code> from{' '}
-                    <code className="font-mono">electron-app/</code> before launching.
-                  </p>
-                )}
-                {installError && (
-                  <div className="flex items-center justify-between gap-3 rounded-lg border border-red-500/30 bg-red-500/10 p-3">
-                    <p className="text-xs text-red-500">{installError}</p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        sendReport('install_error', installError, { installError, syncError, installer })
-                      }
-                      disabled={reporting}
-                      className="shrink-0"
-                    >
-                      {reporting ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending…
-                        </>
-                      ) : (
-                        <>
-                          <Bug className="mr-2 h-4 w-4" /> Send error report
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                )}
-
-                {!installer.registered && (
-                  <Button
-                    onClick={handleInstall}
-                    disabled={installing || !installer.bundledExtensionExists}
-                    className="w-full"
-                  >
-                    {installing ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Installing…
-                      </>
-                    ) : (
-                      'Install Screensaver'
-                    )}
-                  </Button>
-                )}
-              </>
-            )}
-          </CardContent>
-        </Card>
+        {/* The screensaver is registered automatically on launch (see
+            InstallerProvider), and the one-click "Set" prompt lives in the
+            top-of-app banner — so there's no Screensaver card to manage here. */}
 
         {/* Gallery sync */}
         <Card className="bg-card border-border">

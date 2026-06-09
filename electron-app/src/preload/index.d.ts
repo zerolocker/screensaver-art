@@ -55,8 +55,7 @@ export interface ElectronAPI {
   }
   installer: {
     status: () => Promise<InstallerStatus>
-    install: () => Promise<{ ok: boolean; error?: string }>
-    uninstall: () => Promise<{ ok: boolean; error?: string }>
+    ensureRegistered: () => Promise<{ ok: boolean; error?: string; registered: boolean }>
     activate: () => Promise<{ ok: boolean; error?: string }>
   }
   shell: {
@@ -72,6 +71,7 @@ export interface ElectronAPI {
   }
   app: {
     getVersion: () => Promise<string>
+    restart: () => Promise<void>
   }
 }
 

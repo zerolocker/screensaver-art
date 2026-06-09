@@ -58,7 +58,6 @@ export interface ElectronAPI {
     install: () => Promise<{ ok: boolean; error?: string }>
     uninstall: () => Promise<{ ok: boolean; error?: string }>
     activate: () => Promise<{ ok: boolean; error?: string }>
-    openSystemSettings: () => Promise<{ ok: true }>
   }
   shell: {
     openExternal: (url: string) => Promise<void>

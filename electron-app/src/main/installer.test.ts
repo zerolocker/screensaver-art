@@ -25,7 +25,7 @@ vi.mock('electron', () => ({
   app: { isPackaged: false },
 }))
 
-import { getStatus, install, uninstall, activate, openSystemSettings, _testHooks } from './installer'
+import { getStatus, install, uninstall, activate, _testHooks } from './installer'
 
 const APPEX = () => process.env.LART_APPEX_PATH!
 const HELPER = () => process.env.LART_HELPER_PATH!
@@ -255,22 +255,6 @@ describe('installer', () => {
       const result = await activate()
       expect(result.ok).toBe(false)
       expect(result.error).toMatch(/activate failed: nope/)
-    })
-  })
-
-  describe('openSystemSettings', () => {
-    it('does nothing on non-darwin', () => {
-      setPlatform('win32')
-      openSystemSettings()
-      expect(spawnCalls).toHaveLength(0)
-    })
-
-    it('spawns `open` via sh -c on darwin', () => {
-      openSystemSettings()
-      expect(spawnCalls).toHaveLength(1)
-      expect(spawnCalls[0].cmd).toBe('sh')
-      expect(spawnCalls[0].args[0]).toBe('-c')
-      expect(spawnCalls[0].args[1]).toMatch(/ScreenSaver-Settings.extension/)
     })
   })
 })

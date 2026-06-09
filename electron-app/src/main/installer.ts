@@ -262,15 +262,3 @@ export async function getDiagnostics(): Promise<InstallerDiagnostics> {
   log.debug('installer', 'diagnostics gathered', { codesignOk: codesign?.ok, registered: status.registered })
   return { status, appexPath, codesign, helperFind }
 }
-
-export function openSystemSettings(): void {
-  if (process.platform !== 'darwin') return
-  const cmd = `
-    open 'x-apple.systempreferences:com.apple.ScreenSaver-Settings.extension' 2>/dev/null ||
-    open 'x-apple.systempreferences:com.apple.preference.screensaver'          2>/dev/null ||
-    open -a 'System Settings'                                                   2>/dev/null ||
-    open -a 'System Preferences'                                                2>/dev/null ||
-    true
-  `
-  _testHooks.spawn('sh', ['-c', cmd], { detached: true, stdio: 'ignore' }).unref()
-}

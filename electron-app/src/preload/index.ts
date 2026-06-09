@@ -65,7 +65,6 @@ const electronAPI = {
     install: (): Promise<{ ok: boolean; error?: string }> => ipcRenderer.invoke('installer:install'),
     uninstall: (): Promise<{ ok: boolean; error?: string }> => ipcRenderer.invoke('installer:uninstall'),
     activate: (): Promise<{ ok: boolean; error?: string }> => ipcRenderer.invoke('installer:activate'),
-    openSystemSettings: (): Promise<{ ok: true }> => ipcRenderer.invoke('installer:openSystemSettings'),
   },
   shell: {
     openExternal: (url: string): Promise<void> => ipcRenderer.invoke('shell:openExternal', url),

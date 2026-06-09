@@ -25,9 +25,9 @@ import {
   Bug,
 } from 'lucide-react'
 import type { Session } from '@supabase/supabase-js'
-import type { InstallerStatus } from '../../../preload'
-import { UpsellBanner } from '../components/UpsellBanner'
+import { AppBanners } from '../components/AppBanners'
 import { useGallerySync } from '../lib/SyncProvider'
+import { useInstaller } from '../lib/InstallerProvider'
 
 interface AccountPageProps {
   session: Session
@@ -37,12 +37,16 @@ export function AccountPage({ session }: AccountPageProps) {
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [subLoading, setSubLoading] = useState(true)
 
-  const [installer, setInstaller] = useState<InstallerStatus | null>(null)
-
-  const [installing, setInstalling] = useState(false)
-  const [activating, setActivating] = useState(false)
-  const [uninstalling, setUninstalling] = useState(false)
-  const [installError, setInstallError] = useState<string | null>(null)
+  // Screensaver install/activate state is owned by the app-wide InstallerProvider
+  // so the top-of-app "Set" banner and this card stay in sync.
+  const {
+    installer,
+    installing,
+    uninstalling,
+    error: installError,
+    install: handleInstall,
+    uninstall: handleUninstall,
+  } = useInstaller()
 
   const [clearing, setClearing] = useState(false)
 
@@ -63,16 +67,14 @@ export function AccountPage({ session }: AccountPageProps) {
 
   useEffect(() => {
     fetchSubscription()
-    refreshInstaller()
-    // Re-check subscription + installer status whenever the window regains focus.
-    // This is what makes a just-completed purchase show up "instantly": after
-    // the user finishes the browser checkout flow and switches back to the app,
-    // the focus event fires and we re-verify — no tab toggle or restart needed.
-    // (Cache stats + sync progress are owned by the SyncProvider, which has its
-    // own focus listener for the stale re-sync.)
+    // Re-check the subscription whenever the window regains focus. This is what
+    // makes a just-completed purchase show up "instantly": after the user
+    // finishes the browser checkout flow and switches back to the app, the focus
+    // event fires and we re-verify — no tab toggle or restart needed. (Installer
+    // status has its own focus refresh in the InstallerProvider; cache stats +
+    // sync progress are owned by the SyncProvider.)
     const onFocus = () => {
       fetchSubscription()
-      refreshInstaller()
     }
     window.addEventListener('focus', onFocus)
     return () => {
@@ -109,41 +111,6 @@ export function AccountPage({ session }: AccountPageProps) {
     }
   }
 
-  async function refreshInstaller() {
-    setInstaller(await window.electronAPI.installer.status())
-  }
-
-  async function handleInstall() {
-    setInstalling(true)
-    setInstallError(null)
-    const result = await window.electronAPI.installer.install()
-    if (!result.ok) setInstallError(result.error ?? 'Installation failed')
-    await refreshInstaller()
-    setInstalling(false)
-  }
-
-  // Unregister the .appex from the system (pluginkit -r, via the PaperSaver
-  // helper). After this it no longer appears in System Settings → Screen Saver.
-  async function handleUninstall() {
-    setUninstalling(true)
-    setInstallError(null)
-    const result = await window.electronAPI.installer.uninstall()
-    if (!result.ok) setInstallError(result.error ?? 'Uninstall failed')
-    await refreshInstaller()
-    setUninstalling(false)
-  }
-
-  // One-click "Set as your screensaver" — flips the active screensaver to ours
-  // via the PaperSaver helper, no trip through System Settings required.
-  async function handleActivate() {
-    setActivating(true)
-    setInstallError(null)
-    const result = await window.electronAPI.installer.activate()
-    if (!result.ok) setInstallError(result.error ?? 'Could not set the screensaver')
-    await refreshInstaller()
-    setActivating(false)
-  }
-
   async function handleSync() {
     await syncNow({ trigger: 'manual' })
   }
@@ -173,13 +140,7 @@ export function AccountPage({ session }: AccountPageProps) {
         <h2 className="text-xl font-semibold text-foreground titlebar-no-drag">Account & Setup</h2>
       </div>
 
-      {!subLoading && !isActiveSubscription(subscription) && (
-        <UpsellBanner
-          onSubscribe={() =>
-            window.electronAPI.shell.openExternal('https://living-art-screensaver.com/account')
-          }
-        />
-      )}
+      <AppBanners showUpsell={!subLoading && !isActiveSubscription(subscription)} />
 
       <div className="space-y-6">
         {/* Account info */}
@@ -277,29 +238,9 @@ export function AccountPage({ session }: AccountPageProps) {
                   )}
                 </div>
 
-                {/* "Not set" banner — one-click activation, no System Settings trip */}
-                {installer.registered && !installer.active && (
-                  <div className="flex items-center gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
-                    <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-foreground">
-                        Screen Saver isn’t set to Living Art yet
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Set it as your active screensaver to see your gallery.
-                      </p>
-                    </div>
-                    <Button onClick={handleActivate} disabled={activating} size="sm">
-                      {activating ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Setting…
-                        </>
-                      ) : (
-                        'Set'
-                      )}
-                    </Button>
-                  </div>
-                )}
+                {/* The "Set as your screensaver" prompt now lives in the
+                    top-of-app ScreensaverSetBanner (above the upsell banner), so
+                    it's visible from any page — not just here. */}
 
                 {!installer.bundledExtensionExists && (
                   <p className="text-xs text-amber-500">
@@ -333,30 +274,21 @@ export function AccountPage({ session }: AccountPageProps) {
                   </div>
                 )}
 
-                <div className="flex gap-3">
-                  {!installer.registered ? (
-                    <Button
-                      onClick={handleInstall}
-                      disabled={installing || !installer.bundledExtensionExists}
-                      className="flex-1"
-                    >
-                      {installing ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Installing…
-                        </>
-                      ) : (
-                        'Install Screensaver'
-                      )}
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      onClick={() => window.electronAPI.installer.openSystemSettings()}
-                    >
-                      Open System Settings
-                    </Button>
-                  )}
-                </div>
+                {!installer.registered && (
+                  <Button
+                    onClick={handleInstall}
+                    disabled={installing || !installer.bundledExtensionExists}
+                    className="w-full"
+                  >
+                    {installing ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Installing…
+                      </>
+                    ) : (
+                      'Install Screensaver'
+                    )}
+                  </Button>
+                )}
               </>
             )}
           </CardContent>

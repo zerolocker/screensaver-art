@@ -2,7 +2,7 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { stat, readdir } from 'fs/promises'
 import { existsSync } from 'fs'
-import { getStatus, install, uninstall, activate, openSystemSettings } from './installer'
+import { getStatus, install, uninstall, activate } from './installer'
 import { syncGallery, cancelSync, isSyncing, clearCache, PATHS, type CachedManifest } from './cache-sync'
 import { log, installGlobalHandlers, recordRendererLog, getLogFilePath } from './logger'
 import { sendReport, type SendReportInput } from './report'
@@ -127,10 +127,6 @@ ipcMain.handle('installer:status', () => getStatus())
 ipcMain.handle('installer:install', () => install())
 ipcMain.handle('installer:uninstall', () => uninstall())
 ipcMain.handle('installer:activate', () => activate())
-ipcMain.handle('installer:openSystemSettings', () => {
-  openSystemSettings()
-  return { ok: true }
-})
 
 ipcMain.handle('shell:openExternal', (_evt, url: string) => shell.openExternal(url))
 ipcMain.handle('shell:openPath', (_evt, path: string) => shell.openPath(path))

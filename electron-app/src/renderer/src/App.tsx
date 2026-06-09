@@ -9,6 +9,7 @@ import { AccountPage } from './pages/Account'
 import { HelpPage } from './pages/Help'
 import { Sidebar } from './pages/Sidebar'
 import { SyncProvider } from './lib/SyncProvider'
+import { InstallerProvider } from './lib/InstallerProvider'
 
 export function App() {
   const [session, setSession] = useState<Session | null>(null)
@@ -62,18 +63,20 @@ export function App() {
 
   return (
     <SyncProvider>
-      <div className="flex h-screen">
-        <Sidebar session={session} />
-        <main className="flex-1 overflow-y-auto">
-          <div className="titlebar-drag h-10 sticky top-0 z-10" />
-          <Routes>
-            <Route path="/gallery" element={<GalleryPage session={session} />} />
-            <Route path="/account" element={<AccountPage session={session} />} />
-            <Route path="/help" element={<HelpPage />} />
-            <Route path="*" element={<Navigate to="/gallery" replace />} />
-          </Routes>
-        </main>
-      </div>
+      <InstallerProvider>
+        <div className="flex h-screen">
+          <Sidebar session={session} />
+          <main className="flex-1 overflow-y-auto">
+            <div className="titlebar-drag h-10 sticky top-0 z-10" />
+            <Routes>
+              <Route path="/gallery" element={<GalleryPage session={session} />} />
+              <Route path="/account" element={<AccountPage session={session} />} />
+              <Route path="/help" element={<HelpPage />} />
+              <Route path="*" element={<Navigate to="/gallery" replace />} />
+            </Routes>
+          </main>
+        </div>
+      </InstallerProvider>
     </SyncProvider>
   )
 }

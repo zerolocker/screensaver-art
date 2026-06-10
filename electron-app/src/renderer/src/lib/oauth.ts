@@ -13,6 +13,32 @@ export const OAUTH_PROVIDER_LABELS: Record<OAuthProvider, string> = {
   azure: 'Microsoft',
 }
 
+// Per-provider OAuth options, following Supabase's social-login guides:
+//
+// - Azure (Microsoft): the `email` scope is REQUIRED. Supabase Auth needs a
+//   valid email back from Azure and rejects the sign-in otherwise, which is why
+//   Microsoft login was failing. `offline_access` additionally yields a provider
+//   refresh token. https://supabase.com/docs/guides/auth/social-login/auth-azure
+//
+// - Apple: takes no extra scopes or query params here (the scopes are configured
+//   on Supabase's side, and Apple doesn't support a `prompt` param). Passing one
+//   would error. https://supabase.com/docs/guides/auth/social-login/auth-apple
+//
+// - Google: `prompt: select_account` shows the account chooser so a user already
+//   signed into Google in their browser can pick a different account. We do NOT
+//   request `access_type: offline` / `prompt: consent` (which the docs suggest
+//   only when you need the *provider* refresh token to call Google APIs) — we
+//   never call Google on the user's behalf, and Supabase issues its own session
+//   refresh token regardless. https://supabase.com/docs/guides/auth/social-login/auth-google
+const PROVIDER_OPTIONS: Record<
+  OAuthProvider,
+  { scopes?: string; queryParams?: Record<string, string> }
+> = {
+  apple: {},
+  google: { queryParams: { prompt: 'select_account' } },
+  azure: { scopes: 'email offline_access', queryParams: { prompt: 'select_account' } },
+}
+
 /**
  * Kick off an OAuth sign-in. We never embed the provider's page in an Electron
  * window (Google blocks embedded webviews); instead we open the real system
@@ -22,16 +48,14 @@ export const OAUTH_PROVIDER_LABELS: Record<OAuthProvider, string> = {
  * later in completeOAuthFromUrl when the deep link fires.
  */
 export async function startOAuth(provider: OAuthProvider): Promise<{ error?: string }> {
-  // `select_account` forces the account chooser so a user already signed into a
-  // Google/Microsoft account in their browser can still pick a different one.
-  // Apple has a single Apple ID and doesn't take this param, so we omit it.
-  const queryParams = provider === 'apple' ? undefined : { prompt: 'select_account' }
+  const { scopes, queryParams } = PROVIDER_OPTIONS[provider]
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: provider as Provider,
     options: {
       redirectTo: REDIRECT_URL,
       skipBrowserRedirect: true,
+      scopes,
       queryParams,
     },
   })

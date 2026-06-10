@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Loader2 } from 'lucide-react'
 import { Button } from './button'
 import { Input } from './input'
@@ -13,12 +13,20 @@ export interface SignUpFormProps {
   onLoginClick?: () => void
   /** Brand title shown at the top */
   title?: string
+  /**
+   * Passwordless sign-up options (OAuth buttons, email code) rendered above the
+   * password form, separated by an "or" divider. These create the account on
+   * first use, so they're the quickest way to sign up. Rendered outside the
+   * <form>.
+   */
+  alternativeActions?: ReactNode
 }
 
 export function SignUpForm({
   onSubmit,
   onLoginClick,
   title = 'Living Art',
+  alternativeActions,
 }: SignUpFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -59,8 +67,39 @@ export function SignUpForm({
       <div className="text-center space-y-2">
         <h1 className="font-serif text-2xl font-bold text-foreground">{title}</h1>
         <h2 className="text-xl font-semibold text-foreground">Create your account</h2>
-        <p className="text-muted-foreground">Start your living art journey</p>
+        {onLoginClick ? (
+          <p className="text-muted-foreground">
+            Already have an account?{' '}
+            <button
+              type="button"
+              onClick={onLoginClick}
+              className="text-primary hover:underline"
+            >
+              Sign in
+            </button>
+          </p>
+        ) : (
+          <p className="text-muted-foreground">Start your living art journey</p>
+        )}
       </div>
+
+      {/* Passwordless sign-up first — no password to choose, account created on
+          first use. The email/password form below is the fallback. */}
+      {alternativeActions && (
+        <div className="space-y-4">
+          {alternativeActions}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                or sign up with a password
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
@@ -126,19 +165,6 @@ export function SignUpForm({
           )}
         </Button>
       </form>
-
-      {onLoginClick && (
-        <p className="text-center text-sm text-muted-foreground">
-          Already have an account?{' '}
-          <button
-            type="button"
-            onClick={onLoginClick}
-            className="text-primary hover:underline"
-          >
-            Sign in
-          </button>
-        </p>
-      )}
     </div>
   )
 }

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
-import { supabase } from './lib/supabase'
+import { supabase, getStoredSession } from './lib/supabase'
 import type { Session } from '@supabase/supabase-js'
 import { startOAuth, completeOAuthFromUrl, type OAuthProvider } from './lib/oauth'
+import { log } from './lib/log'
 import { LoginPage } from './pages/Login'
 import { SignUpPage } from './pages/SignUp'
 import { OtpPage } from './pages/Otp'
@@ -13,6 +14,11 @@ import { Sidebar } from './pages/Sidebar'
 import { ScreensaverUnavailable } from './pages/ScreensaverUnavailable'
 import { SyncProvider } from './lib/SyncProvider'
 import { InstallerProvider, useInstaller } from './lib/InstallerProvider'
+
+// How long to wait for getSession() to validate/refresh the token at startup
+// before falling back to the stored session. Comfortably covers a normal online
+// refresh (a few hundred ms) without making an offline launch sit on a spinner.
+const INITIAL_SESSION_TIMEOUT_MS = 2000
 
 export function App() {
   const [session, setSession] = useState<Session | null>(null)
@@ -43,18 +49,71 @@ export function App() {
   }
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session)
-      setLoading(false)
-    })
+    let cancelled = false
 
-    // Listen for auth changes
+    // Decide the initial auth state without letting an offline/slow network hang
+    // the UI. getSession() returns a *validated, refreshed* session when it can,
+    // but if the stored access token is expired and we're offline it retries the
+    // refresh for ~25s before giving up — which would freeze startup on a spinner.
+    // So we race it against a short timeout and, if it doesn't win, fall back to
+    // the session supabase-js already has in storage.
+    //
+    // Why the stored fallback matters: it keeps the user signed in for everything
+    // that doesn't need the network — browsing the cached gallery, setting the
+    // screensaver, viewing the account — instead of bouncing them to login or
+    // hanging just because they're offline. Two ways that happens at launch:
+    //
+    //   • "Offline at cold start": right after launch the network often isn't up
+    //     yet (Wi-Fi reconnecting after sleep/wake, the OS still bringing up
+    //     networking after login/boot), so the refresh HTTPS call to Supabase
+    //     fails even though the stored session is valid.
+    //
+    //   • "Throttled renderer": this runs in an Electron (Chromium) renderer,
+    //     which suspends/throttles timers and network in hidden or just-woken
+    //     windows to save power, stalling the refresh request mid-flight.
+    //
+    // supabase-js auto-refreshes the token and emits TOKEN_REFRESHED (handled
+    // below) once connectivity returns, swapping the stale session for a fresh
+    // one. This also fixed the older "it asked me to sign in again, but relaunching
+    // signed me right back in" bug (a transient refresh failure no longer logs you
+    // out). A genuinely revoked session is cleared by supabase-js before
+    // getSession() returns, so getStoredSession() yields null → the login screen.
+    async function resolveInitialSession(): Promise<void> {
+      const validated = await Promise.race([
+        supabase.auth.getSession().then(({ data }) => data.session),
+        new Promise<undefined>((resolve) =>
+          setTimeout(resolve, INITIAL_SESSION_TIMEOUT_MS),
+        ),
+      ])
+      if (cancelled) return
+
+      if (validated) {
+        setSession(validated)
+      } else {
+        // No fresh session in time. Fall back to the persisted session: present
+        // ⇒ stay signed in (offline / slow refresh); absent ⇒ genuinely signed
+        // out (getSession returns null fast when nothing is stored).
+        const stored = getStoredSession()
+        if (stored) {
+          log.info('auth', 'using stored session at startup; will refresh when online')
+        }
+        setSession(stored)
+      }
+      setLoading(false)
+    }
+
+    void resolveInitialSession()
+
+    // Listen for auth changes. We deliberately ignore INITIAL_SESSION here — it
+    // reports null on the same transient/offline failure above and would clobber
+    // the stored-session fallback; resolveInitialSession owns the initial decision.
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'INITIAL_SESSION') return
       setSession(session)
-      // Only navigate on actual sign-in/sign-out, not token refreshes
+      setLoading(false)
+      // Only navigate on actual sign-in/sign-out, not token refreshes.
       if (event === 'SIGNED_IN') {
         navigate('/gallery')
       } else if (event === 'SIGNED_OUT') {
@@ -62,7 +121,10 @@ export function App() {
       }
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      cancelled = true
+      subscription.unsubscribe()
+    }
   }, [navigate])
 
   if (loading) {
@@ -88,7 +150,16 @@ export function App() {
                 />
               }
             />
-            <Route path="/signup" element={<SignUpPage />} />
+            <Route
+              path="/signup"
+              element={
+                <SignUpPage
+                  oauthPending={oauthPending}
+                  oauthError={oauthError}
+                  onStartOAuth={handleStartOAuth}
+                />
+              }
+            />
             <Route path="/otp" element={<OtpPage />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>

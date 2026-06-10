@@ -9,7 +9,8 @@ export function OtpPage() {
     <OtpForm
       title="Living Art Screensaver"
       onRequestCode={async (email) => {
-        // `shouldCreateUser: true` is bugged. Don't set it to true.
+        // Supabase's implementation of `shouldCreateUser: true` is buggy.
+        // Don't set it to true.
         const { error } = await supabase.auth.signInWithOtp({
           email,
           options: { shouldCreateUser: false },

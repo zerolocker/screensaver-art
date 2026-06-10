@@ -2,8 +2,16 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SignUpForm } from '@screensaver-art/ui'
 import { supabase } from '../lib/supabase'
+import { PasswordlessOptions } from '../components/PasswordlessOptions'
+import type { OAuthProvider } from '../lib/oauth'
 
-export function SignUpPage() {
+interface SignUpPageProps {
+  oauthPending: OAuthProvider | null
+  oauthError: string | null
+  onStartOAuth: (provider: OAuthProvider) => void
+}
+
+export function SignUpPage({ oauthPending, oauthError, onStartOAuth }: SignUpPageProps) {
   const navigate = useNavigate()
   const [success, setSuccess] = useState(false)
 
@@ -51,6 +59,16 @@ export function SignUpPage() {
         return {}
       }}
       onLoginClick={() => navigate('/login')}
+      alternativeActions={
+        // No email-code option here: OTP can't create accounts (shouldCreateUser
+        // is off), so it's sign-in only. OAuth still doubles as passwordless
+        // sign-up.
+        <PasswordlessOptions
+          pending={oauthPending}
+          error={oauthError}
+          onStart={onStartOAuth}
+        />
+      }
     />
   )
 }

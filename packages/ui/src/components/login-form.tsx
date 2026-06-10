@@ -16,7 +16,7 @@ export interface LoginFormProps {
   /** Brand title shown at the top */
   title?: string
   /**
-   * Extra sign-in options (passwordless code, OAuth buttons) rendered below the
+   * Extra sign-in options (passwordless code, OAuth buttons) rendered above the
    * password form, separated by an "or" divider. Rendered outside the <form>.
    */
   alternativeActions?: ReactNode
@@ -54,9 +54,41 @@ export function LoginForm({
     <div className="space-y-6">
       <div className="text-center space-y-2">
         <h1 className="font-serif text-2xl font-bold text-foreground">{title}</h1>
-        <h2 className="text-xl font-semibold text-foreground">Welcome back</h2>
-        <p className="text-muted-foreground">Sign in to your account</p>
+        <h2 className="text-xl font-semibold text-foreground">Welcome</h2>
+        {/* Most people open the app as a new user, so lead with sign-up. */}
+        {onSignUpClick ? (
+          <p className="text-muted-foreground">
+            Don&apos;t have an account?{' '}
+            <button
+              type="button"
+              onClick={onSignUpClick}
+              className="text-primary hover:underline"
+            >
+              Sign up
+            </button>
+          </p>
+        ) : (
+          <p className="text-muted-foreground">Sign in to your account</p>
+        )}
       </div>
+
+      {/* Passwordless options (OAuth + email code) come first — they double as
+          sign-up, so they're the fastest path for the typical new user. */}
+      {alternativeActions && (
+        <div className="space-y-4">
+          {alternativeActions}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                or
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
@@ -118,33 +150,6 @@ export function LoginForm({
           )}
         </Button>
       </form>
-
-      {alternativeActions && (
-        <div className="space-y-4">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">or</span>
-            </div>
-          </div>
-          {alternativeActions}
-        </div>
-      )}
-
-      {onSignUpClick && (
-        <p className="text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{' '}
-          <button
-            type="button"
-            onClick={onSignUpClick}
-            className="text-primary hover:underline"
-          >
-            Sign up
-          </button>
-        </p>
-      )}
     </div>
   )
 }

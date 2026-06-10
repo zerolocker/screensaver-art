@@ -68,7 +68,7 @@ export function OtpForm({ onRequestCode, onVerify, onBack, title = 'Living Art' 
         <p className="text-muted-foreground">
           {stage === 'email'
             ? 'No password needed — we’ll email you a one-time sign-in code.'
-            : `We sent a 6-digit code to ${email}.`}
+            : `We emailed a sign-in code to ${email}. Enter it below.`}
         </p>
       </div>
 
@@ -110,14 +110,14 @@ export function OtpForm({ onRequestCode, onVerify, onBack, title = 'Living Art' 
       ) : (
         <form onSubmit={handleVerify} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="otp-code">6-digit code</Label>
+            <Label htmlFor="otp-code">Sign-in code</Label>
             <Input
               id="otp-code"
               name="otp-code"
               type="text"
               inputMode="numeric"
               autoComplete="one-time-code"
-              placeholder="12345678"
+              placeholder="123456"
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
               required

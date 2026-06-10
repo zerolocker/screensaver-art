@@ -117,8 +117,7 @@ export function OtpForm({ onRequestCode, onVerify, onBack, title = 'Living Art' 
               type="text"
               inputMode="numeric"
               autoComplete="one-time-code"
-              maxLength={6}
-              placeholder="123456"
+              placeholder="12345678"
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
               required

@@ -1,11 +1,51 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Images, User, LifeBuoy, LogOut } from 'lucide-react'
+import { Images, User, LifeBuoy, LogOut, Loader2, CheckCircle2, CloudOff } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { cn } from '@screensaver-art/ui'
 import type { Session } from '@supabase/supabase-js'
+import type { ReactNode } from 'react'
+import { useGallerySync } from '../lib/SyncProvider'
 
 interface SidebarProps {
   session: Session
+}
+
+// Compact, always-visible status for the background auto-sync. Lives in the
+// sidebar so it's readable from any tab while sync runs silently. Renders
+// nothing (no empty bordered box) until there's something to report.
+function SyncStatus() {
+  const { syncing, progress, error, lastSyncedAt } = useGallerySync()
+
+  let content: ReactNode = null
+  if (syncing) {
+    const detail =
+      progress && (progress.phase === 'downloading' || progress.phase === 'cached')
+        ? `Syncing ${progress.index}/${progress.total}`
+        : 'Syncing gallery…'
+    content = (
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+        <span className="truncate">{detail}</span>
+      </div>
+    )
+  } else if (error) {
+    content = (
+      <div className="flex items-center gap-2 text-xs text-amber-500">
+        <CloudOff className="w-3.5 h-3.5 shrink-0" />
+        <span className="truncate">Offline — using cached art</span>
+      </div>
+    )
+  } else if (lastSyncedAt) {
+    content = (
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <CheckCircle2 className="w-3.5 h-3.5 text-green-500 shrink-0" />
+        <span className="truncate">Synced {new Date(lastSyncedAt).toLocaleTimeString()}</span>
+      </div>
+    )
+  }
+
+  if (!content) return null
+  return <div className="px-4 py-3 border-t border-border">{content}</div>
 }
 
 export function Sidebar({ session }: SidebarProps) {
@@ -49,6 +89,9 @@ export function Sidebar({ session }: SidebarProps) {
           </button>
         ))}
       </nav>
+
+      {/* Background sync status */}
+      <SyncStatus />
 
       {/* User / sign out */}
       <div className="p-3 border-t border-border">

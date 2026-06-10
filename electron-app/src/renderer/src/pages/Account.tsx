@@ -9,24 +9,13 @@ import {
   Button,
 } from '@screensaver-art/ui'
 import type { Subscription } from '@screensaver-art/ui'
-import { GALLERY_ENDPOINT, SUBSCRIPTION_VERIFY_ENDPOINT } from '../lib/api'
+import { SUBSCRIPTION_VERIFY_ENDPOINT } from '../lib/api'
 import { log } from '../lib/log'
 import { getAccessToken } from '../lib/supabase'
-import { useErrorReport } from '../lib/useErrorReport'
-import {
-  Loader2,
-  Trash2,
-  HardDrive,
-  FolderOpen,
-  Monitor,
-  CheckCircle2,
-  RefreshCw,
-  AlertCircle,
-  Bug,
-} from 'lucide-react'
+import { Loader2, Trash2, HardDrive, FolderOpen, RefreshCw } from 'lucide-react'
 import type { Session } from '@supabase/supabase-js'
-import type { CacheProgress, CacheStats, InstallerStatus } from '../../../preload'
-import { UpsellBanner } from '../components/UpsellBanner'
+import { AppBanners } from '../components/AppBanners'
+import { useGallerySync } from '../lib/SyncProvider'
 
 interface AccountPageProps {
   session: Session
@@ -36,47 +25,34 @@ export function AccountPage({ session }: AccountPageProps) {
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [subLoading, setSubLoading] = useState(true)
 
-  const [cacheStats, setCacheStats] = useState<CacheStats | null>(null)
-  const [installer, setInstaller] = useState<InstallerStatus | null>(null)
-
-  const [installing, setInstalling] = useState(false)
-  const [activating, setActivating] = useState(false)
-  const [uninstalling, setUninstalling] = useState(false)
-  const [installError, setInstallError] = useState<string | null>(null)
-
-  const [syncing, setSyncing] = useState(false)
-  const [syncError, setSyncError] = useState<string | null>(null)
-  const [progress, setProgress] = useState<CacheProgress | null>(null)
-  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null)
-
   const [clearing, setClearing] = useState(false)
 
-  const { reporting, sendReport } = useErrorReport()
+  // Gallery sync is owned by the app-wide SyncProvider (auto-sync on open +
+  // sidebar status). The Account page just surfaces the detail + a manual button.
+  const {
+    syncing,
+    progress,
+    cacheStats,
+    lastSyncedAt,
+    error: syncError,
+    lastTrigger,
+    syncNow,
+    refreshStats,
+  } = useGallerySync()
 
   useEffect(() => {
     fetchSubscription()
-    refreshLocalState()
-    const off = window.electronAPI.cache.onProgress((p) => {
-      setProgress(p)
-      // Refresh the cache stats on each progress event so the file count and
-      // total size tick up live as videos arrive — otherwise the user only
-      // sees the "Downloading 12/184" text and the headline number stays
-      // frozen at whatever it was before sync started.
-      if (p.phase === 'cached' || p.phase === 'downloading' || p.phase === 'done') {
-        window.electronAPI.cache.getStats().then(setCacheStats).catch(() => {})
-      }
-    })
-    // Re-check subscription + local state whenever the window regains focus.
-    // This is what makes a just-completed purchase show up "instantly": after
-    // the user finishes the browser checkout flow and switches back to the app,
-    // the focus event fires and we re-verify — no tab toggle or restart needed.
+    // Re-check the subscription whenever the window regains focus. This is what
+    // makes a just-completed purchase show up "instantly": after the user
+    // finishes the browser checkout flow and switches back to the app, the focus
+    // event fires and we re-verify — no tab toggle or restart needed. (Installer
+    // status has its own focus refresh in the InstallerProvider; cache stats +
+    // sync progress are owned by the SyncProvider.)
     const onFocus = () => {
       fetchSubscription()
-      refreshLocalState()
     }
     window.addEventListener('focus', onFocus)
     return () => {
-      off()
       window.removeEventListener('focus', onFocus)
     }
   }, [])
@@ -110,66 +86,14 @@ export function AccountPage({ session }: AccountPageProps) {
     }
   }
 
-  async function refreshLocalState() {
-    const [stats, status] = await Promise.all([
-      window.electronAPI.cache.getStats(),
-      window.electronAPI.installer.status(),
-    ])
-    setCacheStats(stats)
-    setInstaller(status)
-  }
-
-  async function handleInstall() {
-    setInstalling(true)
-    setInstallError(null)
-    const result = await window.electronAPI.installer.install()
-    if (!result.ok) setInstallError(result.error ?? 'Installation failed')
-    await refreshLocalState()
-    setInstalling(false)
-  }
-
-  // Unregister the .appex from the system (pluginkit -r, via the PaperSaver
-  // helper). After this it no longer appears in System Settings → Screen Saver.
-  async function handleUninstall() {
-    setUninstalling(true)
-    setInstallError(null)
-    const result = await window.electronAPI.installer.uninstall()
-    if (!result.ok) setInstallError(result.error ?? 'Uninstall failed')
-    await refreshLocalState()
-    setUninstalling(false)
-  }
-
-  // One-click "Set as your screensaver" — flips the active screensaver to ours
-  // via the PaperSaver helper, no trip through System Settings required.
-  async function handleActivate() {
-    setActivating(true)
-    setInstallError(null)
-    const result = await window.electronAPI.installer.activate()
-    if (!result.ok) setInstallError(result.error ?? 'Could not set the screensaver')
-    await refreshLocalState()
-    setActivating(false)
-  }
-
   async function handleSync() {
-    setSyncing(true)
-    setSyncError(null)
-    setProgress(null)
-    const url = `${GALLERY_ENDPOINT}?collection=classic`
-    const accessToken = await getAccessToken()
-    const result = await window.electronAPI.cache.sync(url, accessToken)
-    if (!result.ok) {
-      setSyncError(result.error)
-    } else {
-      setLastSyncedAt(result.manifest.syncedAt)
-    }
-    await refreshLocalState()
-    setSyncing(false)
+    await syncNow({ trigger: 'manual' })
   }
 
   async function handleClearCache() {
     setClearing(true)
     await window.electronAPI.cache.clear()
-    await refreshLocalState()
+    await refreshStats()
     setClearing(false)
   }
 
@@ -191,13 +115,7 @@ export function AccountPage({ session }: AccountPageProps) {
         <h2 className="text-xl font-semibold text-foreground titlebar-no-drag">Account & Setup</h2>
       </div>
 
-      {!subLoading && !isActiveSubscription(subscription) && (
-        <UpsellBanner
-          onSubscribe={() =>
-            window.electronAPI.shell.openExternal('https://living-art-screensaver.com/account')
-          }
-        />
-      )}
+      <AppBanners showUpsell={!subLoading && !isActiveSubscription(subscription)} />
 
       <div className="space-y-6">
         {/* Account info */}
@@ -240,145 +158,9 @@ export function AccountPage({ session }: AccountPageProps) {
           />
         )}
 
-        {/* Screensaver install */}
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle className="text-foreground flex items-center gap-2">
-              <Monitor className="w-4 h-4" /> Screensaver
-            </CardTitle>
-            <CardDescription>
-              {installer?.supported
-                ? 'Install the screensaver and set it as your active screensaver. This app keeps its video cache up to date in the background.'
-                : `Screensaver install isn't supported on ${installer?.platform ?? 'this platform'} yet — coming soon.`}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {installer?.supported && (
-              <>
-                {/* Status row — pill on the left, uninstall pushed to the right */}
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    {installer.active ? (
-                      <>
-                        <CheckCircle2 className="w-5 h-5 text-green-500" />
-                        <p className="text-foreground">Set as your screensaver</p>
-                      </>
-                    ) : installer.registered ? (
-                      <>
-                        <CheckCircle2 className="w-5 h-5 text-green-500" />
-                        <p className="text-foreground">Installed</p>
-                      </>
-                    ) : (
-                      <>
-                        <AlertCircle className="w-5 h-5 text-amber-500" />
-                        <p className="text-foreground">Not installed</p>
-                      </>
-                    )}
-                  </div>
-
-                  {installer.registered && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleUninstall}
-                      disabled={uninstalling}
-                      className="ml-auto shrink-0"
-                    >
-                      {uninstalling ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Uninstalling…
-                        </>
-                      ) : (
-                        'Uninstall from System Settings'
-                      )}
-                    </Button>
-                  )}
-                </div>
-
-                {/* "Not set" banner — one-click activation, no System Settings trip */}
-                {installer.registered && !installer.active && (
-                  <div className="flex items-center gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
-                    <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-foreground">
-                        Screen Saver isn’t set to Living Art yet
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Set it as your active screensaver to see your gallery.
-                      </p>
-                    </div>
-                    <Button onClick={handleActivate} disabled={activating} size="sm">
-                      {activating ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Setting…
-                        </>
-                      ) : (
-                        'Set'
-                      )}
-                    </Button>
-                  </div>
-                )}
-
-                {!installer.bundledExtensionExists && (
-                  <p className="text-xs text-amber-500">
-                    The screensaver bundle is missing from this app's resources. Run{' '}
-                    <code className="font-mono">scripts/bundle-appex.sh</code> from{' '}
-                    <code className="font-mono">electron-app/</code> before launching.
-                  </p>
-                )}
-                {installError && (
-                  <div className="flex items-center justify-between gap-3 rounded-lg border border-red-500/30 bg-red-500/10 p-3">
-                    <p className="text-xs text-red-500">{installError}</p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        sendReport('install_error', installError, { installError, syncError, installer })
-                      }
-                      disabled={reporting}
-                      className="shrink-0"
-                    >
-                      {reporting ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending…
-                        </>
-                      ) : (
-                        <>
-                          <Bug className="mr-2 h-4 w-4" /> Send error report
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                )}
-
-                <div className="flex gap-3">
-                  {!installer.registered ? (
-                    <Button
-                      onClick={handleInstall}
-                      disabled={installing || !installer.bundledExtensionExists}
-                      className="flex-1"
-                    >
-                      {installing ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Installing…
-                        </>
-                      ) : (
-                        'Install Screensaver'
-                      )}
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      onClick={() => window.electronAPI.installer.openSystemSettings()}
-                    >
-                      Open System Settings
-                    </Button>
-                  )}
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+        {/* The screensaver is registered automatically on launch (see
+            InstallerProvider), and the one-click "Set" prompt lives in the
+            top-of-app banner — so there's no Screensaver card to manage here. */}
 
         {/* Gallery sync */}
         <Card className="bg-card border-border">
@@ -421,7 +203,12 @@ export function AccountPage({ session }: AccountPageProps) {
                 )}
               </p>
             )}
-            {syncError && <p className="text-xs text-red-500">{syncError}</p>}
+            {/* Only surface the error inline for an explicit manual sync; an
+                auto-sync failure (e.g. offline at launch) is shown quietly in
+                the sidebar instead of as a red error here. */}
+            {syncError && lastTrigger === 'manual' && (
+              <p className="text-xs text-red-500">{syncError}</p>
+            )}
 
             <div className="flex gap-3">
               <Button onClick={handleSync} disabled={syncing} className="flex-1">

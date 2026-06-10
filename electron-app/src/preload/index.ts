@@ -48,6 +48,7 @@ const electronAPI = {
     getStats: (): Promise<CacheStats> => ipcRenderer.invoke('cache:getStats'),
     clear: (): Promise<{ success: boolean }> => ipcRenderer.invoke('cache:clear'),
     getDir: (): Promise<string> => ipcRenderer.invoke('cache:getDir'),
+    getSyncState: (): Promise<{ syncing: boolean }> => ipcRenderer.invoke('cache:getSyncState'),
     sync: (
       apiUrl: string,
       accessToken: string | null,
@@ -61,10 +62,9 @@ const electronAPI = {
   },
   installer: {
     status: (): Promise<InstallerStatus> => ipcRenderer.invoke('installer:status'),
-    install: (): Promise<{ ok: boolean; error?: string }> => ipcRenderer.invoke('installer:install'),
-    uninstall: (): Promise<{ ok: boolean; error?: string }> => ipcRenderer.invoke('installer:uninstall'),
+    ensureRegistered: (): Promise<{ ok: boolean; error?: string; registered: boolean }> =>
+      ipcRenderer.invoke('installer:ensureRegistered'),
     activate: (): Promise<{ ok: boolean; error?: string }> => ipcRenderer.invoke('installer:activate'),
-    openSystemSettings: (): Promise<{ ok: true }> => ipcRenderer.invoke('installer:openSystemSettings'),
   },
   shell: {
     openExternal: (url: string): Promise<void> => ipcRenderer.invoke('shell:openExternal', url),
@@ -80,6 +80,7 @@ const electronAPI = {
   },
   app: {
     getVersion: (): Promise<string> => ipcRenderer.invoke('app:getVersion'),
+    restart: (): Promise<void> => ipcRenderer.invoke('app:restart'),
   },
   auth: {
     // Fires when the OS hands back an OAuth deep link (livingart://auth-callback).

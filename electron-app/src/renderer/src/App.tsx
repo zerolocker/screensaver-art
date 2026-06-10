@@ -10,6 +10,9 @@ import { GalleryPage } from './pages/Gallery'
 import { AccountPage } from './pages/Account'
 import { HelpPage } from './pages/Help'
 import { Sidebar } from './pages/Sidebar'
+import { ScreensaverUnavailable } from './pages/ScreensaverUnavailable'
+import { SyncProvider } from './lib/SyncProvider'
+import { InstallerProvider, useInstaller } from './lib/InstallerProvider'
 
 export function App() {
   const [session, setSession] = useState<Session | null>(null)
@@ -92,6 +95,25 @@ export function App() {
         </div>
       </div>
     )
+  }
+
+  return (
+    <SyncProvider>
+      <InstallerProvider>
+        <AuthedShell session={session} />
+      </InstallerProvider>
+    </SyncProvider>
+  )
+}
+
+// The signed-in app shell. Lives inside InstallerProvider so it can short-circuit
+// to a recovery screen when the embedded screensaver component is missing (a
+// damaged/incomplete install) — without it the app can't do its one job.
+function AuthedShell({ session }: { session: Session }) {
+  const { installer } = useInstaller()
+
+  if (installer && installer.supported && !installer.bundledExtensionExists) {
+    return <ScreensaverUnavailable installer={installer} />
   }
 
   return (

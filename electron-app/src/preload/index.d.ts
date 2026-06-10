@@ -46,6 +46,7 @@ export interface ElectronAPI {
     getStats: () => Promise<CacheStats>
     clear: () => Promise<{ success: boolean }>
     getDir: () => Promise<string>
+    getSyncState: () => Promise<{ syncing: boolean }>
     sync: (
       apiUrl: string,
       accessToken: string | null,
@@ -54,10 +55,8 @@ export interface ElectronAPI {
   }
   installer: {
     status: () => Promise<InstallerStatus>
-    install: () => Promise<{ ok: boolean; error?: string }>
-    uninstall: () => Promise<{ ok: boolean; error?: string }>
+    ensureRegistered: () => Promise<{ ok: boolean; error?: string; registered: boolean }>
     activate: () => Promise<{ ok: boolean; error?: string }>
-    openSystemSettings: () => Promise<{ ok: true }>
   }
   shell: {
     openExternal: (url: string) => Promise<void>
@@ -72,6 +71,7 @@ export interface ElectronAPI {
   }
   app: {
     getVersion: () => Promise<string>
+    restart: () => Promise<void>
   }
   auth: {
     onCallback: (cb: (url: string) => void) => () => void

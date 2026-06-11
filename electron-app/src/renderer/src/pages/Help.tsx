@@ -32,9 +32,7 @@ export function HelpPage() {
           <CardHeader>
             <CardTitle className="text-foreground">Feedback</CardTitle>
             <CardDescription>
-              Got feedback? Something not working? Tell us below — we attach your app version, system
-              info, screensaver state, and recent logs (no video content) so we can help. You can
-              also attach a screenshot.
+              Got feedback? Something not working? Tell us below!
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">

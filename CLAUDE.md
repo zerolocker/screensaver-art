@@ -103,7 +103,7 @@ Without this, classes like `bg-primary` used only in `packages/ui` components wo
 ## Infrastructure
 | Service | What it does |
 |---|---|
-| **Supabase** | Auth (email/password) + `subscriptions` table + `user-error-reports` Storage bucket (private; debug reports from the Electron app) |
+| **Supabase** | Auth (passwordless: email one-time code + Apple/Google/Microsoft OAuth) + `subscriptions` table + `user-error-reports` Storage bucket (private; debug reports from the Electron app) |
 | **Stripe** | Payments — $0.99/month billed quarterly ($2.97 every 3 months, to cut per-transaction fees), single tier |
 | **Cloudflare R2** | Hosts MP4 video assets (public, no auth) |
 | **Vercel** | Hosts the Next.js website |
@@ -132,8 +132,19 @@ Gating still lives server-side in `/api/gallery`. The endpoint inspects the Bear
 The Electron app caches whatever comes back and removes any local `.bin` files that aren't in the latest response (so an expired subscription shrinks the cache to the free `FREE_ITEM_COUNT` items on the next sync).
 
 ### Auth flow
+Auth is **passwordless** — there is no email/password sign-in or sign-up. The same
+single screen serves both (a first-time email/provider just creates the account):
+- **Email one-time code** (`signInWithOtp` + `verifyOtp`, `shouldCreateUser: true`)
+- **Social sign-in** — Apple / Google / Microsoft via `signInWithOAuth` using the
+  **PKCE** flow. The app opens the system browser and the provider returns via the
+  `livingart://auth-callback?code=…` deep link, which `exchangeCodeForSession`
+  swaps for a session. The website uses the identical PKCE flow (`/auth/callback`);
+  provider config (labels, scopes/query params) is shared in `@screensaver-art/ui`.
+
 1. User opens the Electron app
-2. Signs in with email + password — `@supabase/supabase-js` handles the round-trip; session persists in Chromium localStorage
+2. Signs in passwordlessly (email code or a social provider); `@supabase/supabase-js`
+   persists the session in Chromium localStorage. On later launches the app falls
+   back to the stored session when offline so local features keep working.
 3. App calls `GET /api/gallery` with `Authorization: Bearer <access_token>`
 4. App downloads each MP4, XOR-obfuscates it, writes it to the cache directory, and updates `gallery.json` (the manifest)
 5. App auto-registers the embedded `.appex` on launch via the PaperSaver helper (`pluginkit -a`) — version-aware, so an app update re-registers the new build — then offers a one-click "Set" banner (also via the helper) to make it the active screensaver, or the user can pick it in System Settings
@@ -315,5 +326,6 @@ hand out broken public links.
   The old repo is archived and read-only.
 - 2026-04-25: Architecture refactor — the Electron app became the sole installer and the screensaver was reduced to a pure player. Auth, subscription verification, gallery fetching, and upsell were all removed from the screensaver. Cache files are now XOR-obfuscated.
 - 2026-05-30: Migrated the macOS screensaver from the legacy `.saver` plug-in to a modern ExtensionKit **`.appex`** (`screensaver/` → `screensaver-macos/`, built with Xcode/xcodegen). The cache moved from the `legacyScreenSaver` sandbox container to `/Users/Shared/LivingArtScreensaver/`, which **eliminated the "access data from other apps" TCC prompt** (deleted `mac-permission.ts`). Install now uses `pluginkit`; activation is one-click via a new PaperSaver-backed helper (`screensaver-helper/`) surfaced as a "Set" banner in the app. The packaged app is a universal (Intel + Apple Silicon) DMG. Developer-ID signing + notarization remains a TODO.
-- 2026-06-07: Switched billing from monthly to **quarterly** — still $0.99/month, but charged as **$2.97 every 3 months** to cut Stripe's per-transaction fee on a sub-$1 charge. Also **repositioned the marketing as free-forward** (free with 100 artworks; upsell "the full gallery plus a new piece every day"). The interval/amount live in the Stripe Price (`STRIPE_PRICE_ID`); display data was centralised in `@screensaver-art/ui`'s `PRICING` (`billedAmount`, `billingPeriodMonths`, `billingNote`, `freeItemCount`) and guarded by the `pricing-drift` test. Existing subscribers were migrated to the new Price (immediate + prorated) via `living-art-screensaver-web/scripts/migrate-to-quarterly.mjs`.
+- 2026-06-07: Switched billing from monthly to **quarterly** — still $0.99/month, but charged as **$2.97 every 3 months** to cut Stripe's per-transaction fee on a sub-$1 charge. Also **repositioned the marketing as free-forward** (free with 100 artworks; upsell "the full gallery plus new pieces every day"). The interval/amount live in the Stripe Price (`STRIPE_PRICE_ID`); display data was centralised in `@screensaver-art/ui`'s `PRICING` (`billedAmount`, `billingPeriodMonths`, `billingNote`, `freeItemCount`) and guarded by the `pricing-drift` test. Existing subscribers were migrated to the new Price (immediate + prorated) via `living-art-screensaver-web/scripts/migrate-to-quarterly.mjs`.
 - 2026-06-08: **Removed the manual "Install Screensaver" step.** The Electron app now auto-registers the embedded `.appex` on launch (post sign-in) via a new `installer:ensureRegistered` — **version-aware**, so it re-registers only when the appex isn't registered or the app was updated. This fixed a real flaw: the appex `CFBundleVersion` was hardcoded (`"1"`), so a new app version's screensaver kept running **stale code** (pluginkit caches by version, and nothing re-triggered registration). Now `bundle-appex.sh` stamps the appex version from `package.json`, the launch-time re-register drops the old running process, and the whole Screensaver card (install/uninstall/status) was deleted from the Account page — leaving just the top-of-app "Set" banner. A missing embedded appex shows a blocking recovery screen (send report + restart) instead. Manual uninstall was dropped (lingering pluginkit registration is harmless).
+- 2026-06-10: **Went passwordless-only** (PR #25). Removed email/password sign-in + sign-up from both the Electron app and the website (deleted `LoginForm`/`SignUpForm` and the website's sign-up/forgot/reset/success pages). The single auth screen is now **email one-time code** (`signInWithOtp`, `shouldCreateUser: true`) + **Apple/Google/Microsoft OAuth**; both create the account on first use. Provider config (labels, scopes — incl. Azure's required `email` scope) is shared in `@screensaver-art/ui` (`oauth.ts`, `OAuthButtons`). **Unified both clients on the PKCE flow**: the app exchanges the `livingart://auth-callback?code=…` deep link via `exchangeCodeForSession`, matching the website's `/auth/callback`. Also made auth **offline-resilient** — startup falls back to the stored session (read directly from localStorage) instead of bouncing to login or hanging when a token refresh can't reach the network, and the Gallery shows a calm offline notice (auto-retrying on reconnect) instead of a fetch error.

@@ -12,11 +12,17 @@ export {
   CardContent,
 } from './components/card'
 
-// Shared form components
-export { LoginForm } from './components/login-form'
-export type { LoginFormProps } from './components/login-form'
-export { SignUpForm } from './components/sign-up-form'
-export type { SignUpFormProps } from './components/sign-up-form'
+// Shared auth components (passwordless: social + email one-time code)
+export { OtpForm } from './components/otp-form'
+export type { OtpFormProps } from './components/otp-form'
+export { OAuthButtons } from './components/oauth-buttons'
+export type { OAuthButtonsProps } from './components/oauth-buttons'
+export {
+  OAUTH_PROVIDERS,
+  OAUTH_PROVIDER_LABELS,
+  OAUTH_PROVIDER_OPTIONS,
+} from './oauth'
+export type { OAuthProvider } from './oauth'
 export { SubscriptionCard } from './components/subscription-card'
 export type { Subscription, SubscriptionCardProps } from './components/subscription-card'
 

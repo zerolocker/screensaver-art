@@ -131,7 +131,7 @@ export function SubscriptionCard({ subscription, onSubscribe, onManage }: Subscr
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-             You're on the free plan — {PRICING.freeItemCount} artworks. Subscribe to unlock the full gallery plus a new piece every day.
+             You're on the free plan — {PRICING.freeItemCount} artworks. Subscribe to unlock the full gallery plus new pieces every day.
             </p>
             <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
               <div className="mt-2 flex items-end gap-2">

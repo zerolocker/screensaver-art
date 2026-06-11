@@ -1,27 +1,38 @@
 import { useNavigate } from 'react-router-dom'
-import { LoginForm } from '@screensaver-art/ui'
-import { supabase } from '../lib/supabase'
+import { PasswordlessOptions } from '../components/PasswordlessOptions'
+import type { OAuthProvider } from '../lib/oauth'
 
-export function LoginPage() {
+interface LoginPageProps {
+  oauthPending: OAuthProvider | null
+  oauthError: string | null
+  onStartOAuth: (provider: OAuthProvider) => void
+}
+
+// Single passwordless auth screen — no email/password. Social sign-in and the
+// email one-time code both create the account on first use, so there's no
+// separate sign-up step.
+export function LoginPage({ oauthPending, oauthError, onStartOAuth }: LoginPageProps) {
   const navigate = useNavigate()
 
   return (
-    <LoginForm
-      title="Living Art Screensaver"
-      onSubmit={async ({ email, password }) => {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        })
-        if (error) return { error: error.message }
-        return {}
-      }}
-      onForgotPassword={() => {
-        window.electronAPI.shell.openExternal(
-          'https://living-art-screensaver.com/auth/forgot-password',
-        )
-      }}
-      onSignUpClick={() => navigate('/signup')}
-    />
+    <div className="space-y-6">
+      <div className="text-center space-y-2">
+        <h1 className="font-serif text-2xl font-bold text-foreground">Living Art Screensaver</h1>
+        <p className="text-muted-foreground">
+          Sign in or create an account to continue.
+        </p>
+      </div>
+
+      <PasswordlessOptions
+        pending={oauthPending}
+        error={oauthError}
+        onStart={onStartOAuth}
+        onEmailCode={() => navigate('/otp')}
+      />
+
+      <p className="text-center text-xs text-muted-foreground">
+        No password needed. We’ll email you a one-time code, or use a provider above.
+      </p>
+    </div>
   )
 }

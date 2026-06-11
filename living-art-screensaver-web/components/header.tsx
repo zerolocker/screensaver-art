@@ -75,7 +75,7 @@ export function Header() {
                   <Link href="/auth/login">Sign in</Link>
                 </Button>
                 <Button asChild variant="default" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6">
-                  <Link href="/auth/sign-up">Get Started</Link>
+                  <Link href="/auth/login">Get Started</Link>
                 </Button>
               </>
             )}
@@ -128,7 +128,7 @@ export function Header() {
                     <Link href="/auth/login" onClick={() => setIsMenuOpen(false)}>Sign in</Link>
                   </Button>
                   <Button asChild variant="default" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full w-full">
-                    <Link href="/auth/sign-up" onClick={() => setIsMenuOpen(false)}>Get Started</Link>
+                    <Link href="/auth/login" onClick={() => setIsMenuOpen(false)}>Get Started</Link>
                   </Button>
                 </div>
               )}

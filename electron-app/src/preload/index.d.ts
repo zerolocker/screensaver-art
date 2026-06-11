@@ -73,6 +73,9 @@ export interface ElectronAPI {
     getVersion: () => Promise<string>
     restart: () => Promise<void>
   }
+  auth: {
+    onCallback: (cb: (url: string) => void) => () => void
+  }
 }
 
 declare global {

@@ -109,6 +109,8 @@ Without this, classes like `bg-primary` used only in `packages/ui` components wo
 | **Vercel** | Hosts the Next.js website |
 | **GitHub Pages** | Hosts `gallery.json` and `index.html` at `https://zerolocker.github.io/screensaver-art/` — deployed natively from `master` (Settings → Pages → "Deploy from a branch") |
 
+The Apple (6-month) and Microsoft/Azure (24-month) sign-in secrets **expire** and must be rotated. Dates + procedure live in `docs/secret-rotation.md`; `.github/secret-rotation.json` is the source of truth and `.github/workflows/secret-rotation-reminder.yml` auto-opens a reminder issue before each due date.
+
 ## Add new art pieces
 1. Upload MP4 to Cloudflare R2 bucket `screensaver-assets` under the `gallery/` prefix.
 2. Add an entry to `gallery.json` — include `src` (full R2 URL), `title`, `type`, `date`, `collection`, `image_prompt`, `video_prompt`.

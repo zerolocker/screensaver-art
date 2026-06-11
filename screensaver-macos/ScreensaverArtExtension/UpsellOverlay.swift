@@ -34,7 +34,7 @@ class UpsellOverlay: NSView {
         heading.alignment = .center
 
         let body = label(
-            "You're on the free plan. Subscribe to unlock the full gallery — plus a new piece every day.",
+            "You're on the free plan. Subscribe to unlock the full gallery — plus new pieces every day.",
             size: 15, color: NSColor(white: 0.85, alpha: 1)
         )
         body.alignment            = .center

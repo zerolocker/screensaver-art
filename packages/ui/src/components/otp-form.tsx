@@ -63,12 +63,12 @@ export function OtpForm({ onRequestCode, onVerify, onBack, title = 'Living Art' 
       <div className="text-center space-y-2">
         <h1 className="font-serif text-2xl font-bold text-foreground">{title}</h1>
         <h2 className="text-xl font-semibold text-foreground">
-          {stage === 'email' ? 'Sign in with a code' : 'Enter your code'}
+          {stage === 'email' ? 'Continue with email' : 'Enter your code'}
         </h2>
         <p className="text-muted-foreground">
           {stage === 'email'
-            ? 'No password needed — we’ll email you a one-time sign-in code.'
-            : `We emailed a sign-in code to ${email}. Enter it below.`}
+            ? 'No password needed — we’ll email you a one-time code to sign in or create your account.'
+            : `We emailed a code to ${email}. Enter it below.`}
         </p>
       </div>
 

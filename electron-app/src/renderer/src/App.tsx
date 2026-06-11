@@ -5,7 +5,6 @@ import type { Session } from '@supabase/supabase-js'
 import { startOAuth, completeOAuthFromUrl, type OAuthProvider } from './lib/oauth'
 import { log } from './lib/log'
 import { LoginPage } from './pages/Login'
-import { SignUpPage } from './pages/SignUp'
 import { OtpPage } from './pages/Otp'
 import { GalleryPage } from './pages/Gallery'
 import { AccountPage } from './pages/Account'
@@ -144,16 +143,6 @@ export function App() {
               path="/login"
               element={
                 <LoginPage
-                  oauthPending={oauthPending}
-                  oauthError={oauthError}
-                  onStartOAuth={handleStartOAuth}
-                />
-              }
-            />
-            <Route
-              path="/signup"
-              element={
-                <SignUpPage
                   oauthPending={oauthPending}
                   oauthError={oauthError}
                   onStartOAuth={handleStartOAuth}

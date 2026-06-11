@@ -1,27 +1,28 @@
-import { Loader2 } from 'lucide-react'
-import { Button } from '@screensaver-art/ui'
-import { OAUTH_PROVIDER_LABELS, type OAuthProvider } from '../lib/oauth'
+'use client'
 
-interface OAuthButtonsProps {
+import { Loader2 } from 'lucide-react'
+import { Button } from './button'
+import { OAUTH_PROVIDERS, OAUTH_PROVIDER_LABELS, type OAuthProvider } from '../oauth'
+
+export interface OAuthButtonsProps {
   /** Provider whose sign-in is mid-flight (shows a spinner), or null. */
   pending: OAuthProvider | null
-  onStart: (provider: OAuthProvider) => void
+  /** Start sign-in with the chosen provider. */
+  onSelect: (provider: OAuthProvider) => void
 }
 
-const PROVIDERS: OAuthProvider[] = ['apple', 'google', 'azure']
-
-export function OAuthButtons({ pending, onStart }: OAuthButtonsProps) {
+export function OAuthButtons({ pending, onSelect }: OAuthButtonsProps) {
   const busy = pending !== null
   return (
     <div className="space-y-2">
-      {PROVIDERS.map((provider) => (
+      {OAUTH_PROVIDERS.map((provider) => (
         <Button
           key={provider}
           type="button"
           variant="outline"
           className="w-full justify-center gap-2"
           disabled={busy}
-          onClick={() => onStart(provider)}
+          onClick={() => onSelect(provider)}
         >
           {pending === provider ? (
             <Loader2 className="h-4 w-4 animate-spin" />

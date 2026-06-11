@@ -12,10 +12,8 @@ import { extractDeepLinkFromArgv } from './deeplink'
 
 describe('extractDeepLinkFromArgv', () => {
   it('finds a livingart:// url among process argv (Windows/Linux delivery)', () => {
-    const argv = ['electron', '.', 'livingart://auth-callback#access_token=x&refresh_token=y']
-    expect(extractDeepLinkFromArgv(argv)).toBe(
-      'livingart://auth-callback#access_token=x&refresh_token=y',
-    )
+    const argv = ['electron', '.', 'livingart://auth-callback?code=abc123']
+    expect(extractDeepLinkFromArgv(argv)).toBe('livingart://auth-callback?code=abc123')
   })
 
   it('returns null when no deep link is present', () => {

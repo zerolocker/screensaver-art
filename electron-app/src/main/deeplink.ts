@@ -3,7 +3,7 @@ import { join } from 'path'
 import { log } from './logger'
 
 // Custom URL scheme the OS hands back to us after an OAuth round-trip in the
-// system browser: livingart://auth-callback#access_token=...&refresh_token=...
+// system browser: livingart://auth-callback?code=... (PKCE).
 export const DEEP_LINK_PROTOCOL = 'livingart'
 
 // If a deep link arrives before the renderer is ready (cold start on Windows,
@@ -32,9 +32,9 @@ export function registerDeepLinkProtocol(): void {
 }
 
 /**
- * Forward a deep-link URL to the renderer (which parses the tokens and calls
- * supabase.setSession). Stashes it if the window isn't ready yet, and brings
- * the window to the front so the user lands back on the app after the browser.
+ * Forward a deep-link URL to the renderer (which parses the PKCE `code` and calls
+ * supabase.exchangeCodeForSession). Stashes it if the window isn't ready yet, and
+ * brings the window to the front so the user lands back on the app after the browser.
  */
 export function handleDeepLinkUrl(url: string, getWindow: () => BrowserWindow | null): void {
   log.info('deeplink', 'received deep link', { scheme: url.split('://')[0] })

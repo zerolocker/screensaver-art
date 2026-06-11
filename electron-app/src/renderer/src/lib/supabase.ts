@@ -10,6 +10,12 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     // Electron stores session in localStorage (Chromium provides this)
     persistSession: true,
     autoRefreshToken: true,
+    // PKCE — the same OAuth flow the website uses (@supabase/ssr is PKCE too).
+    // signInWithOAuth stashes a code verifier in localStorage and the provider
+    // redirects back with `?code=…`, which completeOAuthFromUrl exchanges for a
+    // session (see lib/oauth.ts). Keeping both clients on one flow means one
+    // mental model and a simpler callback (a `code`, not URL-hash tokens).
+    flowType: 'pkce',
   },
 })
 

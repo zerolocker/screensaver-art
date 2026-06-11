@@ -9,11 +9,12 @@ export function OtpPage() {
     <OtpForm
       title="Living Art Screensaver"
       onRequestCode={async (email) => {
-        // Supabase's implementation of `shouldCreateUser: true` is buggy.
-        // Don't set it to true.
+        // shouldCreateUser: true (the Supabase default) makes the code flow double
+        // as sign-up — a first-time email gets an account created on verification.
+        // This is now the only email-based path (password auth was removed).
         const { error } = await supabase.auth.signInWithOtp({
           email,
-          options: { shouldCreateUser: false },
+          options: { shouldCreateUser: true },
         })
         if (error) return { error: error.message }
         return {}

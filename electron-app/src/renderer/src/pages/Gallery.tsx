@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { Loader2, Lock, Play, ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { Loader2, Lock, Play, ChevronLeft, ChevronRight, X, WifiOff } from 'lucide-react'
 import { GALLERY_ENDPOINT } from '../lib/api'
 import { AppBanners } from '../components/AppBanners'
 import type { Session } from '@supabase/supabase-js'
@@ -27,15 +27,12 @@ export function GalleryPage({ session }: GalleryPageProps) {
   const [gallery, setGallery] = useState<GalleryResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isOnline, setIsOnline] = useState(() => navigator.onLine)
   const [previewItem, setPreviewItem] = useState<ArtItem | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    fetchGallery()
-  }, [session])
-
-  async function fetchGallery() {
+  const fetchGallery = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -52,7 +49,29 @@ export function GalleryPage({ session }: GalleryPageProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [session])
+
+  useEffect(() => {
+    fetchGallery()
+  }, [fetchGallery])
+
+  // Track connectivity. The gallery list comes from the server, so a refetch
+  // (e.g. after returning to this tab or waking the machine) fails when offline.
+  // Rather than flash a scary "Failed to fetch" + "Try again", we show a calm
+  // offline notice and re-fetch automatically once the connection is back.
+  useEffect(() => {
+    const handleOnline = (): void => {
+      setIsOnline(true)
+      fetchGallery()
+    }
+    const handleOffline = (): void => setIsOnline(false)
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  }, [fetchGallery])
 
   // Escape key closes preview modal
   useEffect(() => {
@@ -70,7 +89,9 @@ export function GalleryPage({ session }: GalleryPageProps) {
     scrollRef.current?.closest('main')?.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
 
-  if (loading) {
+  // Only block the whole view while we have nothing to show yet. A refetch over
+  // already-loaded data keeps the gallery on screen instead of flashing a spinner.
+  if (loading && !gallery) {
     return (
       <div className="flex items-center justify-center h-full">
         <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -78,7 +99,24 @@ export function GalleryPage({ session }: GalleryPageProps) {
     )
   }
 
-  if (error) {
+  if (error && !gallery) {
+    // Offline is the usual reason a fresh load fails. Show a calm, on-brand notice
+    // (the screensaver keeps playing from the cache) and recover automatically —
+    // the online/offline effect refetches when the connection returns.
+    if (!isOnline) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full gap-3 px-6 text-center">
+          <WifiOff className="w-8 h-8 text-muted-foreground" />
+          <div className="space-y-1">
+            <p className="font-medium text-foreground">You’re offline</p>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              Your screensaver keeps playing from the cache. Reconnect to browse the
+              gallery — it’ll refresh automatically.
+            </p>
+          </div>
+        </div>
+      )
+    }
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4">
         <p className="text-red-500">{error}</p>

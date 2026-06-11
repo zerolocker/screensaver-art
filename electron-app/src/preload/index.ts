@@ -43,6 +43,20 @@ export interface SendReportInput {
   rendererContext?: unknown
 }
 
+export interface FeedbackImage {
+  dataUrl: string
+  bytes: number
+  width: number
+  height: number
+}
+
+export interface SendFeedbackInput {
+  endpoint: string
+  accessToken: string | null
+  message: string
+  image?: FeedbackImage | null
+}
+
 const electronAPI = {
   cache: {
     getStats: (): Promise<CacheStats> => ipcRenderer.invoke('cache:getStats'),
@@ -77,6 +91,10 @@ const electronAPI = {
   report: {
     send: (input: SendReportInput): Promise<{ ok: boolean; id?: string; error?: string }> =>
       ipcRenderer.invoke('report:send', input),
+  },
+  feedback: {
+    send: (input: SendFeedbackInput): Promise<{ ok: boolean; id?: string; error?: string }> =>
+      ipcRenderer.invoke('feedback:send', input),
   },
   app: {
     getVersion: (): Promise<string> => ipcRenderer.invoke('app:getVersion'),

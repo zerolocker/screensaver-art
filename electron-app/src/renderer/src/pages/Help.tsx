@@ -5,15 +5,16 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  Button,
+  FeedbackForm,
 } from '@screensaver-art/ui'
-import { Loader2, Bug } from 'lucide-react'
-import { useErrorReport } from '../lib/useErrorReport'
+import { useFeedback } from '../lib/useFeedback'
 
-// "Help" tab — diagnostics + error reporting. Lives in its own tab (below
-// Gallery and Account) so it's easy to find when something goes wrong.
+// "Help" tab — feedback + diagnostics. Sending feedback always attaches a debug
+// snapshot (app version, system info, screensaver install state, recent logs), so
+// this doubles as the "something's broken" channel. Lives in its own tab (below
+// Gallery and Account) so it's easy to find.
 export function HelpPage() {
-  const { reporting, reportResult, sendReport } = useErrorReport()
+  const { submitFeedback } = useFeedback()
   const [appVersion, setAppVersion] = useState<string | null>(null)
 
   useEffect(() => {
@@ -27,39 +28,17 @@ export function HelpPage() {
       </div>
 
       <div className="space-y-6">
-        {/* Diagnostics / error reporting */}
         <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-foreground">Diagnostics</CardTitle>
+            <CardTitle className="text-foreground">Feedback</CardTitle>
             <CardDescription>
-              Something not working? Send us a debug report — app version, system info, screensaver
-              install state, and recent logs. No video content is included.
+              Got feedback? Something not working? Tell us below — we attach your app version, system
+              info, screensaver state, and recent logs (no video content) so we can help. You can
+              also attach a screenshot.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex items-center justify-between gap-3">
-              <Button variant="outline" onClick={() => sendReport('manual')} disabled={reporting}>
-                {reporting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending…
-                  </>
-                ) : (
-                  <>
-                    <Bug className="mr-2 h-4 w-4" /> Send error report
-                  </>
-                )}
-              </Button>
-              {reportResult?.ok && (
-                <p className="text-xs text-green-500">
-                  Report sent. Reference ID: <code className="font-mono">{reportResult.id}</code>
-                </p>
-              )}
-              {reportResult && !reportResult.ok && (
-                <p className="text-xs text-red-500">
-                  Couldn’t send report: {reportResult.error ?? 'unknown error'}
-                </p>
-              )}
-            </div>
+            <FeedbackForm onSubmit={submitFeedback} />
             <p className="text-xs text-muted-foreground">
               Living Art Screensaver{appVersion ? ` v${appVersion}` : ''}
             </p>

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { AccountHeader } from '@/components/account/account-header'
 import { SubscriptionCard } from '@/components/account/subscription-card'
 import { AccountInfo } from '@/components/account/account-info'
+import { FeedbackCard } from '@/components/account/feedback-card'
 import { syncSubscriptionFromSession } from '@/app/actions/stripe'
 
 interface AccountPageProps {
@@ -43,6 +44,8 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             <SubscriptionCard subscription={subscription} />
             <AccountInfo user={user} />
           </div>
+
+          <FeedbackCard />
         </div>
       </main>
     </div>

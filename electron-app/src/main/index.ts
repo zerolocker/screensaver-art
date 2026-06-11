@@ -5,7 +5,7 @@ import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { getStatus, ensureRegistered, activate } from './installer'
 import { syncGallery, cancelSync, isSyncing, clearCache, PATHS, type CachedManifest } from './cache-sync'
 import { log, installGlobalHandlers, recordRendererLog, getLogFilePath } from './logger'
-import { sendReport, type SendReportInput } from './report'
+import { sendReport, sendFeedback, type SendReportInput, type SendFeedbackInput } from './report'
 import {
   registerDeepLinkProtocol,
   handleDeepLinkUrl,
@@ -194,6 +194,9 @@ ipcMain.handle('log:getFilePath', () => getLogFilePath())
 
 // Assemble a debug snapshot and upload it to the website's error-report bucket.
 ipcMain.handle('report:send', (_evt, input: SendReportInput) => sendReport(input))
+
+// Upload user feedback (message + optional image) with the same diagnostics block.
+ipcMain.handle('feedback:send', (_evt, input: SendFeedbackInput) => sendFeedback(input))
 
 // ---------------------------------------------------------------------------
 // Lifecycle

@@ -41,6 +41,20 @@ export interface SendReportInput {
   rendererContext?: unknown
 }
 
+export interface FeedbackImage {
+  dataUrl: string
+  bytes: number
+  width: number
+  height: number
+}
+
+export interface SendFeedbackInput {
+  endpoint: string
+  accessToken: string | null
+  message: string
+  image?: FeedbackImage | null
+}
+
 export interface ElectronAPI {
   cache: {
     getStats: () => Promise<CacheStats>
@@ -68,6 +82,9 @@ export interface ElectronAPI {
   }
   report: {
     send: (input: SendReportInput) => Promise<{ ok: boolean; id?: string; error?: string }>
+  }
+  feedback: {
+    send: (input: SendFeedbackInput) => Promise<{ ok: boolean; id?: string; error?: string }>
   }
   app: {
     getVersion: () => Promise<string>

@@ -1,6 +1,7 @@
 // Base UI components
 export { Button, buttonVariants } from './components/button'
 export { Input } from './components/input'
+export { Textarea } from './components/textarea'
 export { Label } from './components/label'
 export {
   Card,
@@ -25,6 +26,12 @@ export {
 export type { OAuthProvider } from './oauth'
 export { SubscriptionCard } from './components/subscription-card'
 export type { Subscription, SubscriptionCardProps } from './components/subscription-card'
+
+// Feedback (shared by the Electron app + website)
+export { FeedbackForm } from './components/feedback-form'
+export type { FeedbackFormProps } from './components/feedback-form'
+export { resizeImageToWebp } from './image-resize'
+export type { ResizedImage, ResizeOptions } from './image-resize'
 
 // Pricing
 export { PRICING } from './pricing'

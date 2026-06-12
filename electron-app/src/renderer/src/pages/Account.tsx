@@ -16,6 +16,7 @@ import { Loader2, Trash2, HardDrive, FolderOpen, RefreshCw } from 'lucide-react'
 import type { Session } from '@supabase/supabase-js'
 import { AppBanners } from '../components/AppBanners'
 import { useGallerySync } from '../lib/SyncProvider'
+import { useUpdate } from '../lib/UpdateProvider'
 
 interface AccountPageProps {
   session: Session
@@ -26,6 +27,22 @@ export function AccountPage({ session }: AccountPageProps) {
   const [subLoading, setSubLoading] = useState(true)
 
   const [clearing, setClearing] = useState(false)
+
+  // App version + auto-update. The update state itself (and the "Relaunch"
+  // prompt) is owned by UpdateProvider / AppBanners; this card just shows the
+  // version and a manual "Check for updates" escape hatch.
+  const { state: update, check: checkForUpdates } = useUpdate()
+  const [appVersion, setAppVersion] = useState<string | null>(null)
+  const [checkedOnce, setCheckedOnce] = useState(false)
+
+  useEffect(() => {
+    window.electronAPI.app.getVersion().then(setAppVersion).catch(() => {})
+  }, [])
+
+  async function handleCheckForUpdates() {
+    setCheckedOnce(true)
+    await checkForUpdates()
+  }
 
   // Gallery sync is owned by the app-wide SyncProvider (auto-sync on open +
   // sidebar status). The Account page just surfaces the detail + a manual button.
@@ -238,6 +255,54 @@ export function AccountPage({ session }: AccountPageProps) {
                 )}
               </Button>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* About / updates — new versions download in the background and surface
+            the "Relaunch to update" banner above; this is a manual check. */}
+        <Card className="bg-card border-border">
+          <CardHeader>
+            <CardTitle className="text-foreground">About</CardTitle>
+            <CardDescription>
+              {appVersion ? `Living Art Screensaver v${appVersion}` : 'Living Art Screensaver'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={handleCheckForUpdates}
+                variant="outline"
+                disabled={update.status === 'checking' || update.status === 'downloading'}
+              >
+                {update.status === 'checking' ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Checking…
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="mr-2 h-4 w-4" /> Check for updates
+                  </>
+                )}
+              </Button>
+            </div>
+            {update.status === 'downloading' && (
+              <p className="text-sm text-muted-foreground">
+                Downloading update{typeof update.percent === 'number' ? ` — ${update.percent}%` : '…'}
+              </p>
+            )}
+            {update.status === 'ready' && (
+              <p className="text-sm text-muted-foreground">
+                An update is ready — use the banner above to relaunch.
+              </p>
+            )}
+            {update.status === 'error' && (
+              <p className="text-sm text-red-500">
+                Couldn&rsquo;t check for updates{update.error ? `: ${update.error}` : '.'}
+              </p>
+            )}
+            {update.status === 'idle' && checkedOnce && (
+              <p className="text-sm text-muted-foreground">You&rsquo;re on the latest version.</p>
+            )}
           </CardContent>
         </Card>
       </div>

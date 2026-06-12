@@ -25,6 +25,14 @@ export interface CachedManifest {
   syncedAt: string
 }
 
+export type UpdateStatus = 'idle' | 'checking' | 'available' | 'downloading' | 'ready' | 'error'
+export interface UpdateState {
+  status: UpdateStatus
+  version?: string
+  percent?: number
+  error?: string
+}
+
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 export interface RendererLogEntry {
   level: LogLevel
@@ -89,6 +97,12 @@ export interface ElectronAPI {
   app: {
     getVersion: () => Promise<string>
     restart: () => Promise<void>
+  }
+  update: {
+    getState: () => Promise<UpdateState>
+    check: () => Promise<void>
+    quitAndInstall: () => Promise<void>
+    onEvent: (cb: (state: UpdateState) => void) => () => void
   }
   auth: {
     onCallback: (cb: (url: string) => void) => () => void

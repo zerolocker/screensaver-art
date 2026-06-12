@@ -116,6 +116,22 @@ ASSET_PATH="$ELECTRON_DIR/dist/$ASSET_NAME"
 cp "$DMG" "$ASSET_PATH"
 say "DMG ready: $ASSET_PATH ($(du -h "$ASSET_PATH" | cut -f1))"
 
+# ── Auto-update assets (electron-updater / Squirrel.Mac) ─────────────────────
+# The .zip is what an installed app downloads to update IN PLACE (it can't update
+# from a DMG); latest-mac.yml is the manifest the website /updates feed serves;
+# the .blockmap enables differential downloads. Unlike the DMG these keep their
+# built, SPACE-FREE names — latest-mac.yml references the zip by its exact
+# filename, and GitHub would rewrite spaces in an uploaded asset name to dots and
+# break that lookup. So do NOT rename them. (Build name set in electron-builder.cjs
+# mac.artifactName: Living-Art-Screensaver-<version>-universal.zip.)
+UPDATE_ZIP="$ELECTRON_DIR/dist/${ASSET_BASE}-${NEW_VERSION}-universal.zip"
+UPDATE_BLOCKMAP="${UPDATE_ZIP}.blockmap"
+UPDATE_YML="$ELECTRON_DIR/dist/latest-mac.yml"
+for f in "$UPDATE_ZIP" "$UPDATE_BLOCKMAP" "$UPDATE_YML"; do
+  [ -f "$f" ] || die "Expected auto-update asset not found: $f (build it, or check electron-builder.cjs mac.target/publish)."
+done
+say "Auto-update assets ready: $(basename "$UPDATE_ZIP") + latest-mac.yml (+ blockmap)"
+
 if [ "${DRY_RUN:-0}" = "1" ]; then
   say "DRY_RUN=1 — built only. Version bump left UNCOMMITTED in the working tree."
   say "Nothing pushed or published. Inspect, then re-run without DRY_RUN to release."
@@ -136,13 +152,17 @@ git push origin "$BRANCH"
 git push origin "$TAG"
 
 # ── Publish GitHub Release ───────────────────────────────────────────────────
-say "Publishing GitHub Release $TAG with $ASSET_NAME"
+# Attach the DMG (manual download) + the auto-update set (zip, blockmap, yml).
+say "Publishing GitHub Release $TAG with $ASSET_NAME + auto-update assets"
 gh release create "$TAG" \
   --repo "$GH_REPO" \
   --title "$TAG" \
   --generate-notes \
   --latest \
-  "$ASSET_PATH#Living Art Screensaver (macOS, universal)"
+  "$ASSET_PATH#Living Art Screensaver (macOS, universal)" \
+  "$UPDATE_ZIP" \
+  "$UPDATE_BLOCKMAP" \
+  "$UPDATE_YML"
 
 say "Done. $TAG is live."
 cat <<EOF

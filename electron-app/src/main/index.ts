@@ -4,6 +4,7 @@ import { stat, readdir } from 'fs/promises'
 import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { getStatus, ensureRegistered, activate } from './installer'
 import { syncGallery, cancelSync, isSyncing, clearCache, PATHS, type CachedManifest } from './cache-sync'
+import { initUpdater, getUpdateState, checkForUpdates, quitAndInstall } from './updater'
 import { log, installGlobalHandlers, recordRendererLog, getLogFilePath } from './logger'
 import { sendReport, sendFeedback, type SendReportInput, type SendFeedbackInput } from './report'
 import {
@@ -169,6 +170,13 @@ ipcMain.handle('installer:ensureRegistered', async () => {
 
 ipcMain.handle('installer:activate', () => activate())
 
+// ---------------------------------------------------------------------------
+// Auto-update (electron-updater). No-op in dev / unpackaged builds.
+// ---------------------------------------------------------------------------
+ipcMain.handle('update:getState', () => getUpdateState())
+ipcMain.handle('update:check', () => checkForUpdates())
+ipcMain.handle('update:quitAndInstall', () => quitAndInstall())
+
 ipcMain.handle('shell:openExternal', (_evt, url: string) => shell.openExternal(url))
 ipcMain.handle('shell:openPath', (_evt, path: string) => shell.openPath(path))
 
@@ -233,6 +241,9 @@ if (!gotSingleInstanceLock) {
 
   app.whenReady().then(() => {
     createWindow()
+    // Start checking for updates in the background (downloads silently, then the
+    // renderer shows a "Relaunch to update" banner). No-op unless packaged.
+    initUpdater(() => mainWindow)
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })

@@ -27,6 +27,14 @@ export interface CachedManifest {
   syncedAt: string
 }
 
+export type UpdateStatus = 'idle' | 'checking' | 'available' | 'downloading' | 'ready' | 'error'
+export interface UpdateState {
+  status: UpdateStatus
+  version?: string
+  percent?: number
+  error?: string
+}
+
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
 export interface RendererLogEntry {
   level: LogLevel
@@ -99,6 +107,16 @@ const electronAPI = {
   app: {
     getVersion: (): Promise<string> => ipcRenderer.invoke('app:getVersion'),
     restart: (): Promise<void> => ipcRenderer.invoke('app:restart'),
+  },
+  update: {
+    getState: (): Promise<UpdateState> => ipcRenderer.invoke('update:getState'),
+    check: (): Promise<void> => ipcRenderer.invoke('update:check'),
+    quitAndInstall: (): Promise<void> => ipcRenderer.invoke('update:quitAndInstall'),
+    onEvent: (cb: (state: UpdateState) => void): (() => void) => {
+      const handler = (_evt: IpcRendererEvent, state: UpdateState): void => cb(state)
+      ipcRenderer.on('update:event', handler)
+      return () => ipcRenderer.removeListener('update:event', handler)
+    },
   },
   auth: {
     // Fires when the OS hands back an OAuth deep link (livingart://auth-callback).

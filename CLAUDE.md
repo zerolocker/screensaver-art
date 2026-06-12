@@ -320,6 +320,45 @@ public or private repos (bytes never flow through Vercel). If the token is
 missing the route returns 500 by design — so a private repo can never silently
 hand out broken public links.
 
+### Auto-update (electron-updater)
+
+The installed Mac app updates itself (Claude-Desktop style): it downloads a new
+release in the background and shows a **"Relaunch to update"** banner. No more
+re-downloading the DMG and dragging it into `/Applications`.
+
+- **How it works.** `electron-app/src/main/updater.ts` wraps `electron-updater`'s
+  `autoUpdater` — it checks on launch + every 6 h, downloads silently
+  (`autoDownload`), and pushes state to the renderer (`update:event` IPC). The
+  renderer's `UpdateProvider` + `UpdateBanner` (top of the `AppBanners` stack)
+  surface the relaunch prompt; `quitAndInstall()` installs + relaunches. Account →
+  "About" has a manual **Check for updates**.
+- **Where updates come from.** electron-builder's `publish: generic` (in
+  `electron-builder.cjs`) points the app at **`/updates`** on the website. That
+  route (`app/updates/[...path]/route.ts`) serves the updater's files from the
+  latest GitHub release through the **same `GITHUB_RELEASE_TOKEN` proxy** as
+  `/download` (shared logic in `lib/github-release.ts`): `latest-mac.yml` is
+  proxied inline, the `.zip`/`.blockmap` 302 to a signed CDN URL. So auto-update
+  keeps the "private repo = zero-change" property — no token is baked into the app.
+- **Build artifacts.** `mac.target` now also builds a **`zip`** (Squirrel.Mac
+  updates from a zip, not the DMG) and electron-builder emits `latest-mac.yml` +
+  the zip `.blockmap`. `scripts/release.sh` uploads all three to the GitHub
+  release **under their built, space-free names** — `latest-mac.yml` references
+  the zip by exact filename, and GitHub rewrites spaces in asset names to dots,
+  which would break the lookup (hence `mac.artifactName` =
+  `Living-Art-Screensaver-<version>-universal.zip`). The DMG keeps its own
+  hyphenated name as before.
+- **Signing is mandatory.** Squirrel.Mac only applies a **Developer-ID-signed +
+  notarized** update (the release path already does this); auto-update is a no-op
+  in dev / ad-hoc builds (`app.isPackaged` guard). The embedded `.appex` needs no
+  special handling: it ships inside the same signed/notarized/stapled `.app` the
+  zip wraps, and `installer.ts`'s version-aware `ensureRegistered` re-registers it
+  with `pluginkit` on the post-update relaunch (the bumped appex `CFBundleVersion`
+  triggers it).
+- **Caveats.** Auto-update only kicks in **from the next release onward** — the
+  first build that contains the updater still has to be installed manually (the
+  user's current build has no updater). And the app must run from `/Applications`
+  (not the DMG / a translocated path) for Squirrel to swap it in place.
+
 ---
 
 ## Repo history
@@ -331,3 +370,4 @@ hand out broken public links.
 - 2026-06-07: Switched billing from monthly to **quarterly** — still $0.99/month, but charged as **$2.97 every 3 months** to cut Stripe's per-transaction fee on a sub-$1 charge. Also **repositioned the marketing as free-forward** (free with 100 artworks; upsell "the full gallery plus new pieces every day"). The interval/amount live in the Stripe Price (`STRIPE_PRICE_ID`); display data was centralised in `@screensaver-art/ui`'s `PRICING` (`billedAmount`, `billingPeriodMonths`, `billingNote`, `freeItemCount`) and guarded by the `pricing-drift` test. Existing subscribers were migrated to the new Price (immediate + prorated) via `living-art-screensaver-web/scripts/migrate-to-quarterly.mjs`.
 - 2026-06-08: **Removed the manual "Install Screensaver" step.** The Electron app now auto-registers the embedded `.appex` on launch (post sign-in) via a new `installer:ensureRegistered` — **version-aware**, so it re-registers only when the appex isn't registered or the app was updated. This fixed a real flaw: the appex `CFBundleVersion` was hardcoded (`"1"`), so a new app version's screensaver kept running **stale code** (pluginkit caches by version, and nothing re-triggered registration). Now `bundle-appex.sh` stamps the appex version from `package.json`, the launch-time re-register drops the old running process, and the whole Screensaver card (install/uninstall/status) was deleted from the Account page — leaving just the top-of-app "Set" banner. A missing embedded appex shows a blocking recovery screen (send report + restart) instead. Manual uninstall was dropped (lingering pluginkit registration is harmless).
 - 2026-06-10: **Went passwordless-only** (PR #25). Removed email/password sign-in + sign-up from both the Electron app and the website (deleted `LoginForm`/`SignUpForm` and the website's sign-up/forgot/reset/success pages). The single auth screen is now **email one-time code** (`signInWithOtp`, `shouldCreateUser: true`) + **Apple/Google/Microsoft OAuth**; both create the account on first use. Provider config (labels, scopes — incl. Azure's required `email` scope) is shared in `@screensaver-art/ui` (`oauth.ts`, `OAuthButtons`). **Unified both clients on the PKCE flow**: the app exchanges the `livingart://auth-callback?code=…` deep link via `exchangeCodeForSession`, matching the website's `/auth/callback`. Also made auth **offline-resilient** — startup falls back to the stored session (read directly from localStorage) instead of bouncing to login or hanging when a token refresh can't reach the network, and the Gallery shows a calm offline notice (auto-retrying on reconnect) instead of a fetch error.
+- 2026-06-11: **Added background auto-update** (`electron-updater`). The installed Mac app now downloads new releases silently and shows a **"Relaunch to update"** banner — no more re-downloading the DMG. New `src/main/updater.ts` + `update:*` IPC, renderer `UpdateProvider`/`UpdateBanner` (top of the `AppBanners` stack) + an Account "About" check button. electron-builder gained a **`zip`** mac target (Squirrel.Mac updates from a zip) and a `publish: generic` block pointed at the website's new **`/updates`** feed, which serves `latest-mac.yml` + the zip/blockmap from the latest GitHub release through the same `GITHUB_RELEASE_TOKEN` proxy as `/download` (shared `lib/github-release.ts`) — preserving "private repo = zero-change". `release.sh` uploads the three update assets under space-free names (`mac.artifactName` → `Living-Art-Screensaver-<v>-universal.zip`; GitHub rewrites spaces to dots, which would break the manifest→zip lookup). Auto-update needs Developer-ID signing + notarization (no-op in dev) and only kicks in from the **next** release onward (the first build with the updater installs manually). The embedded `.appex` needs no special handling — it rides inside the same signed zip and the version-aware `ensureRegistered` re-registers it on the post-update relaunch. See *Releasing a new version › Auto-update*.

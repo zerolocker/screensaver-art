@@ -120,24 +120,34 @@ incoherent soup.
 ## Gallery tags (the `tags` field)
 
 Every `gallery.json` entry carries a **`tags` array** that drives the filter pills
-in the Electron app's Gallery. **Each distinct tag becomes its own pill on a single
-row**, so the vocabulary is **closed and intentionally small** — set exactly one
-tag from this list, and **never invent a new value** (a new one silently adds a
-pill and bloats the row):
+in the Electron app's Gallery. Each pill is a **museum "wing"**, modelled on how
+encyclopedic museums (the Met, Louvre, British Museum…) organize their collections:
+**culture/region for ancient & non-Western art, era for the Western timeline.**
+Each distinct tag becomes a pill, so the vocabulary is **closed** — set **exactly
+one** tag from this list, and **never invent a new value**:
 
-| Tag | Use for |
+| Tag (wing) | Use for |
 |---|---|
-| `Ancient` | Prehistory & antiquity, non-Asian (Egypt, Mesopotamia, Greece/Rome, Etruscan, Scythian, pre-Columbian Americas, Minoan/Mycenaean, Hellenistic…) |
-| `Asian` | East & South Asian traditions of **any** era (Ukiyo-e, Chinese/Japanese ink & dynastic painting, Mughal, Buddhist sculpture, Joseon, Han/Tang artifacts…) |
-| `Medieval` | ~5th–14th c. European / Christian / Insular (Byzantine, Gothic, Romanesque, Carolingian, Viking, illuminated manuscripts, Celtic knotwork) |
-| `Renaissance & Baroque` | 15th–18th c. European (Renaissance, Mannerism, Flemish/Dutch, Baroque, Rococo, Caravaggism, chiaroscuro/tenebrism) |
-| `19th Century` | Neoclassicism, Romanticism, Realism, Barbizon/Hudson River, Impressionism, Post-Impressionism, Symbolism, Art Nouveau |
-| `Modern` | 20th-c. movements (Cubism, Surrealism, Bauhaus, Abstract/Expressionism, Futurism, Art Deco, Minimalism…) |
+| `Prehistoric` | Paleolithic/Neolithic cave & rock art, megalithic |
+| `Egyptian` | Ancient Egypt, Amarna, Fayum, Coptic |
+| `Ancient Near East` | Mesopotamia (Sumer/Assyria), Persia (Achaemenid/Sasanian), Scythian & steppe |
+| `Greek & Roman` | Classical antiquity + Aegean — Minoan, Mycenaean, Cycladic, Etruscan, Hellenistic |
+| `Arts of the Americas` | Pre-Columbian (Aztec, Maya, Inca, Olmec, Nazca, Moche, Mississippian…) |
+| `Arts of Africa & Oceania` | Sub-Saharan African & Pacific traditions |
+| `Japanese` | Ukiyo-e, Sumi-e, Nanga, Kano, Edo screens, Kamakura, Jōmon/Kofun |
+| `Chinese & Korean` | Chinese dynastic painting & bronzes (Han/Tang/Song/Ming…), Goryeo/Joseon |
+| `South & Southeast Asian` | India & SE Asia — Mughal, Gandhāran, Gupta, Chola, Khmer |
+| `Islamic` | Persian, Arab, Ottoman, Fatimid, Islamic geometric |
+| `Medieval & Byzantine` | ~5th–14th c. European — Byzantine, Gothic, Romanesque, Carolingian, Viking, illumination, Celtic |
+| `Renaissance & Baroque` | 15th–18th c. European — Renaissance, Mannerism, Flemish/Dutch, Baroque, Rococo |
+| `19th Century` | Neoclassicism, Romanticism, Realism, Barbizon/Hudson River, Impressionism, Symbolism, Art Nouveau |
+| `Modern` | 20th-c. movements — Cubism, Surrealism, Bauhaus, Abstract/Expressionism, Futurism, Art Deco |
 | `Contemporary` | Recent / digital / genre looks. **Legacy only** — those styles were cut from the menu, so you won't generate them; the tag stays for pieces already in the gallery. |
 
-Rule of thumb: **tag by era, except** East/South-Asian traditions always get
-`Asian` (Western era labels fit them poorly). Pick the single best fit — a new
-piece you curate will be one of the first six tags, never `Contemporary`.
+Rule of thumb: **assign by culture/region for ancient & non-Western pieces, by era
+for European ones.** Pick the single best-fitting wing. Some wings have few or no
+pieces yet (`Ancient Near East`, `Arts of Africa & Oceania`, `Islamic`) — that's
+fine, they fill as you curate. A new piece you curate is never `Contemporary`.
 
 ---
 

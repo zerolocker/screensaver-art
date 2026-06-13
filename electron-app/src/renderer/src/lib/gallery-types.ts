@@ -27,13 +27,22 @@ export function tagsOf(item: ArtItem): string[] {
   return item.tags && item.tags.length > 0 ? item.tags : [MISC_TAG]
 }
 
-// Canonical pill order (the closed tag vocabulary, roughly chronological). Any tag
-// outside this list — e.g. the Misc fallback — sorts to the end, keeping its
-// first-seen order. See curation/PROMPT_GUIDANCE.md "Gallery tags".
+// Canonical pill order (the closed tag vocabulary — museum "wings": world cultures
+// first, then the Western timeline). Any tag outside this list — e.g. the Misc
+// fallback — sorts to the end, keeping its first-seen order. See
+// curation/PROMPT_GUIDANCE.md "Gallery tags".
 export const TAG_ORDER = [
-  'Ancient',
-  'Asian',
-  'Medieval',
+  'Prehistoric',
+  'Egyptian',
+  'Ancient Near East',
+  'Greek & Roman',
+  'Arts of the Americas',
+  'Arts of Africa & Oceania',
+  'Japanese',
+  'Chinese & Korean',
+  'South & Southeast Asian',
+  'Islamic',
+  'Medieval & Byzantine',
   'Renaissance & Baroque',
   '19th Century',
   'Modern',

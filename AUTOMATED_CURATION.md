@@ -33,7 +33,7 @@ You are building a screensaver app that showcases classic and modern artworks br
 4.  **Update App:**
     *   Edit `gallery.json` to include the new video in the beginning of the array.
     *   Format: `{ src: 'https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/filename_animated.mp4', title: 'Title - Style (AI Animated)', type: 'video', date: 'YYYY-MM-DD', tags: ['Category'], image_prompt: 'THE_IMAGE_PROMPT_USED', video_prompt: 'THE_VIDEO_PROMPT_USED' }`
-    *   Set `tags` to **exactly one** category from the closed list in `curation/PROMPT_GUIDANCE.md` ("Gallery tags") — it drives the Gallery filter pills, so **never invent a new tag value**. For the styles you curate it'll be one of `Ancient`, `Asian`, `Medieval`, `Renaissance & Baroque`, `19th Century`, or `Modern`.
+    *   Set `tags` to **exactly one** museum "wing" from the closed list in `curation/PROMPT_GUIDANCE.md` ("Gallery tags") — it drives the Gallery filter pills, so **never invent a new tag value**. Assign by culture/region for ancient & non-Western pieces, by era for European ones (e.g. `Egyptian`, `Greek & Roman`, `Japanese`, `Chinese & Korean`, `Islamic`, `Medieval & Byzantine`, `Renaissance & Baroque`, `19th Century`, `Modern`). Never use `Contemporary` (legacy-only).
 
 5.  **Repeat:** Perform steps 2-4 a total of **3 times** to create 3 unique pieces.
 

@@ -5,7 +5,7 @@
     "type": "video",
     "date": "2026-04-19",
     "tags": [
-      "Medieval"
+      "Medieval & Byzantine"
     ],
     "image_prompt": "A beautiful medieval scene with knights and castles, in the style of Carolingian Minuscule Calligraphy illuminated manuscript",
     "video_prompt": "Subtle animation, bringing the classical scene to life, gentle motion",
@@ -39,7 +39,7 @@
     "type": "video",
     "date": "2026-04-13",
     "tags": [
-      "Asian"
+      "Japanese"
     ],
     "image_prompt": "A traditional Japanese Ukiyo-e woodblock print featuring a tranquil snowy landscape with a lone pine tree and a small wooden bridge, flat colors, distinct outlines",
     "video_prompt": "Gentle snowflakes falling steadily across the tranquil landscape, subtle wind moving the pine needles slightly, calm and serene"
@@ -72,7 +72,7 @@
     "type": "video",
     "date": "2026-04-06",
     "tags": [
-      "Asian"
+      "Japanese"
     ],
     "image_prompt": "A classic Ukiyo-e woodblock print of a majestic wave crashing near Mount Fuji.",
     "video_prompt": "The massive wave crashes dramatically, foam spraying in the air, the water surges with power, traditional ukiyo-e style animation."
@@ -83,7 +83,7 @@
     "type": "video",
     "date": "2026-04-05",
     "tags": [
-      "Ancient"
+      "Greek & Roman"
     ],
     "image_prompt": "A Minoan Fresco depicting dolphins and fish in a vibrant ancient Aegean palace, earthy colors and cracked plaster texture",
     "video_prompt": "A Minoan Fresco depicting dolphins and fish jumping in a vibrant ancient Aegean palace, earthy colors and cracked plaster texture, subtle animation of water and dolphins"
@@ -94,7 +94,7 @@
     "type": "video",
     "date": "2026-04-05",
     "tags": [
-      "Medieval"
+      "Medieval & Byzantine"
     ],
     "image_prompt": "A breathtaking Gothic Stained Glass window depicting a knight and a dragon, vivid lapis lazuli and ruby glass, sunlight shining through",
     "video_prompt": "A breathtaking Gothic Stained Glass window depicting a knight and a dragon, vivid lapis lazuli and ruby glass, sunlight moving and shining through"
@@ -105,7 +105,7 @@
     "type": "video",
     "date": "2026-04-05",
     "tags": [
-      "Medieval"
+      "Medieval & Byzantine"
     ],
     "image_prompt": "A grand Byzantine Mosaic of a regal emperor in golden robes surrounded by saints, glowing golden tesserae, highly detailed",
     "video_prompt": "A grand Byzantine Mosaic of a regal emperor in golden robes surrounded by saints, golden tesserae shimmering in candlelight, subtle animation"
@@ -127,7 +127,7 @@
     "type": "video",
     "date": "2026-04-04",
     "tags": [
-      "Asian"
+      "Japanese"
     ],
     "image_prompt": "A Ukiyo-e Japanese woodblock print of a serene mountain landscape with cherry blossoms and a small river",
     "video_prompt": "A serene mountain landscape with cherry blossoms blowing in the wind and a small river flowing, Ukiyo-e Japanese woodblock print style, subtle movement"
@@ -160,7 +160,7 @@
     "type": "video",
     "date": "2026-04-03",
     "tags": [
-      "Asian"
+      "Japanese"
     ],
     "image_prompt": "A tranquil village scene in autumn, painted in the Japanese Nanga literati painting style, using ink wash and soft brushstrokes.",
     "video_prompt": "Animate this painting. The village leaves gently sway in the autumn breeze."
@@ -215,7 +215,7 @@
     "type": "video",
     "date": "2026-03-29",
     "tags": [
-      "Ancient"
+      "Greek & Roman"
     ],
     "image_prompt": "A beautiful Mycenaean Fresco of warriors on chariots",
     "video_prompt": "Animate the artwork naturally"
@@ -226,7 +226,7 @@
     "type": "video",
     "date": "2026-03-29",
     "tags": [
-      "Asian"
+      "Japanese"
     ],
     "image_prompt": "A classical Kano School Ink Painting depicting a serene landscape with a river and mountains",
     "video_prompt": "Gentle movement of the river, subtle swaying of the trees, a crane takes flight"
@@ -237,7 +237,7 @@
     "type": "video",
     "date": "2026-03-29",
     "tags": [
-      "Ancient"
+      "Arts of the Americas"
     ],
     "image_prompt": "A colorful Aztec Codices Art illustration depicting an ancient ritual with traditional symbols",
     "video_prompt": "Flames flicker at the ritual altar, priests chant and raise their hands"
@@ -259,7 +259,7 @@
     "type": "video",
     "date": "2026-03-29",
     "tags": [
-      "Asian"
+      "Japanese"
     ],
     "image_prompt": "A classical Ukiyo-e woodblock print of Mount Fuji in winter, snow falling gently, delicate lines and flat colors, 19th-century Edo period style",
     "video_prompt": "Gentle snowfall, subtle drift of clouds, very slight shimmering of the snow on the mountain, subtle cinematic motion"
@@ -281,7 +281,7 @@
     "type": "video",
     "date": "2026-03-26",
     "tags": [
-      "Asian"
+      "Chinese & Korean"
     ],
     "image_prompt": "A serene Goryeo Buddhist Painting style artwork depicting an elegant bodhisattva with intricate gold patterns on red and green silk, highly detailed, historical art style",
     "video_prompt": "A serene Goryeo Buddhist Painting style artwork depicting an elegant bodhisattva with intricate gold patterns on red and green silk, gentle breathing, subtle shimmering of the gold details, slow and meditative movement, very slight swaying of the silk garments"
@@ -292,7 +292,7 @@
     "type": "video",
     "date": "2026-03-26",
     "tags": [
-      "Ancient"
+      "Egyptian"
     ],
     "image_prompt": "A Coptic Textile Art style artwork showing stylized figures with vibrant woven colors, ancient Egyptian and early Christian fusion, intricate geometric borders",
     "video_prompt": "A Coptic Textile Art style artwork showing stylized figures with vibrant woven colors, ancient Egyptian and early Christian fusion, slow fluid motion of the threads, a gentle breathing motion of the figures, subtle rippling of the fabric"
@@ -303,7 +303,7 @@
     "type": "video",
     "date": "2026-03-25",
     "tags": [
-      "Asian"
+      "Chinese & Korean"
     ],
     "image_prompt": "A serene mountain river in the style of Song Dynasty Landscape Painting",
     "video_prompt": "A serene mountain river flowing gently in the style of Song Dynasty Landscape Painting"
@@ -325,7 +325,7 @@
     "type": "video",
     "date": "2026-03-22",
     "tags": [
-      "Ancient"
+      "Egyptian"
     ],
     "image_prompt": "A highly detailed and naturalistic Fayum Mummy Portrait of a young person on a wooden panel, encaustic wax painting, expressive eyes, Roman Egypt era.",
     "video_prompt": "The candlelight subtly shifts across the textured encaustic wax surface, the eyes of the portrait seem to follow the viewer, Roman Egypt style.",
@@ -337,7 +337,7 @@
     "type": "video",
     "date": "2026-03-20",
     "tags": [
-      "Asian"
+      "Japanese"
     ],
     "image_prompt": "A vivid Kamakura Period Emakimono style depiction of samurai and monks in a lush forest",
     "video_prompt": "A vivid Kamakura Period Emakimono style depiction of samurai and monks in a lush forest coming to life, gentle movements, traditional Japanese scroll art style",
@@ -349,7 +349,7 @@
     "type": "video",
     "date": "2026-03-20",
     "tags": [
-      "Asian"
+      "Chinese & Korean"
     ],
     "image_prompt": "A Joseon Dynasty Minhwa style painting of a tiger and a magpie under a pine tree",
     "video_prompt": "A Joseon Dynasty Minhwa style painting of a tiger and a magpie under a pine tree coming to life, subtle movement of the leaves, tiger breathing, traditional Korean folk art style",
@@ -361,7 +361,7 @@
     "type": "video",
     "date": "2026-03-19",
     "tags": [
-      "Medieval"
+      "Medieval & Byzantine"
     ],
     "image_prompt": "A beautiful Ottonian illuminated manuscript page showing a glowing fountain in a garden, bright colors, gold leaf",
     "video_prompt": "Gentle flickering of candlelight over the intricate gold leaf of the illuminated manuscript, revealing medieval script elements.",
@@ -409,7 +409,7 @@
     "type": "video",
     "date": "2026-03-14",
     "tags": [
-      "Medieval"
+      "Medieval & Byzantine"
     ],
     "image_prompt": "A beautiful intricate design of an artifact in the style of Anglo-Saxon Metalwork, high quality, masterpiece",
     "video_prompt": "Subtle gleaming of gold, slow panning over the intricate design",
@@ -421,7 +421,7 @@
     "type": "video",
     "date": "2026-03-14",
     "tags": [
-      "Medieval"
+      "Medieval & Byzantine"
     ],
     "image_prompt": "A breathtaking scene composed of colorful translucent shards in the style of Gothic Stained Glass, high quality, masterpiece",
     "video_prompt": "Magical sunlight shining through the colorful glass, subtle dust motes floating",
@@ -433,7 +433,7 @@
     "type": "video",
     "date": "2026-03-14",
     "tags": [
-      "Ancient"
+      "Prehistoric"
     ],
     "image_prompt": "A vivid Neolithic Rock Art painting of ancient animals and hunters, earthy red and black tones, rough stone texture",
     "video_prompt": "Subtle animation: hunters appear to move in the flickering firelight, adding life to the rough stone wall.",
@@ -445,7 +445,7 @@
     "type": "video",
     "date": "2026-03-14",
     "tags": [
-      "Ancient"
+      "Greek & Roman"
     ],
     "image_prompt": "An Etruscan Tomb Painting depicting musicians and dancers at a banquet, vibrant colors on plaster, ancient Italian style",
     "video_prompt": "Subtle animation: the musicians play their instruments, dancers sway slightly, and shadows flicker from torches.",
@@ -457,7 +457,7 @@
     "type": "video",
     "date": "2026-03-14",
     "tags": [
-      "Asian"
+      "Chinese & Korean"
     ],
     "image_prompt": "A detailed Han Dynasty Relief carving in stone, showing chariots, horses, and mythical creatures, ancient Chinese art",
     "video_prompt": "Subtle animation: the chariots roll slowly, mythical creatures breathe, and dust settles on the ancient stone.",
@@ -469,7 +469,7 @@
     "type": "video",
     "date": "2026-03-13",
     "tags": [
-      "Asian"
+      "Chinese & Korean"
     ],
     "image_prompt": "A beautiful Ming Dynasty Silk Painting depicting an ancient mountain landscape with scholars drinking tea, extremely detailed, traditional chinese painting",
     "video_prompt": "Animate the scene with slow camera panning, gentle mist rolling over the mountains, and subtle movements of the characters.",
@@ -481,7 +481,7 @@
     "type": "video",
     "date": "2026-03-13",
     "tags": [
-      "Ancient"
+      "Prehistoric"
     ],
     "image_prompt": "A vivid Paleolithic Cave Painting of ancient bisons and hunters, earthy ochre and charcoal tones, rough rock texture",
     "video_prompt": "Animate the Paleolithic cave painting with subtle flickering firelight shadows, slowly panning across the rough wall as hunters seem to move.",
@@ -493,7 +493,7 @@
     "type": "video",
     "date": "2026-03-13",
     "tags": [
-      "Medieval"
+      "Medieval & Byzantine"
     ],
     "image_prompt": "A medieval Romanesque Fresco depicting saints in bright lapis lazuli and gold leaf, cracked plaster texture, religious art style",
     "video_prompt": "Animate the Romanesque fresco with subtle shifting shadows and golden glints reflecting off the gold leaf as if lit by candlelight.",
@@ -505,7 +505,7 @@
     "type": "video",
     "date": "2026-03-13",
     "tags": [
-      "Asian"
+      "Japanese"
     ],
     "image_prompt": "A beautiful Edo period Byobu folding screen painting of cranes standing in a shallow river surrounded by golden clouds and pine trees, ink and gold leaf on paper, 17th-century Japanese art style.",
     "video_prompt": "Subtle animation: the golden clouds drift slowly, the river water ripples gently, and the cranes make slight head movements, a serene and peaceful atmosphere.",
@@ -517,7 +517,7 @@
     "type": "video",
     "date": "2026-03-13",
     "tags": [
-      "Ancient"
+      "Greek & Roman"
     ],
     "image_prompt": "A highly detailed Hellenistic floor mosaic depicting the ocean god Poseidon surrounded by sea creatures, made of thousands of tiny colored stone tesserae",
     "video_prompt": "Subtle animation: the tesserae shimmering as if underwater, gentle caustics and light rays moving across the mosaic surface, very slow zoom out",
@@ -529,7 +529,7 @@
     "type": "video",
     "date": "2026-03-13",
     "tags": [
-      "Asian"
+      "Japanese"
     ],
     "image_prompt": "A breathtaking Edo period Sumi-e ink wash painting of misty mountains with a small solitary figure walking on a winding path, elegant brush strokes, minimalist composition",
     "video_prompt": "Subtle animation: mist slowly rolling through the mountains, gentle breeze moving the trees, ink spreading effect, very calm and meditative",
@@ -541,7 +541,7 @@
     "type": "video",
     "date": "2026-03-13",
     "tags": [
-      "Medieval"
+      "Medieval & Byzantine"
     ],
     "image_prompt": "A detailed and intricate Gothic Illuminated Manuscript page depicting a lively medieval marketplace, rich with gold leaf accents, deep blues, and reds, ornate borders",
     "video_prompt": "Subtle animation: candlelight flickering, gold leaf shimmering, slight movement of figures, elegant slow pan across the manuscript",
@@ -601,7 +601,7 @@
     "type": "video",
     "date": "2026-03-10",
     "tags": [
-      "Asian"
+      "South & Southeast Asian"
     ],
     "image_prompt": "An intricate Mughal miniature painting depicting a lush palace garden with fountains, exotic birds, and courtiers in colorful silks. Fine details, flat perspective with layered depth, and vibrant natural pigments. 16th-century Indian influence.",
     "video_prompt": "The fountains spray fine mist, the exotic birds flutter their wings and hop between branches, and the courtiers engage in quiet conversation. The intricate patterns on their silks shimmer slightly. Mughal miniature style animation.",
@@ -613,7 +613,7 @@
     "type": "video",
     "date": "2026-03-10",
     "tags": [
-      "Ancient"
+      "Egyptian"
     ],
     "image_prompt": "A stylized wall painting in the style of Ancient Egyptian tomb art. A procession of figures carrying offerings along the Nile, with papyrus reeds and a stylized sun. Profile views, bold outlines, and earthy ochre and turquoise tones. Pharaonic era influence.",
     "video_prompt": "The figures move in a rhythmic, stylized procession. The papyrus reeds sway gently by the riverbank, and the waters of the Nile ripple under the golden sun. Ancient Egyptian wall painting style animation.",
@@ -709,7 +709,7 @@
     "type": "video",
     "date": "2026-02-28",
     "tags": [
-      "Asian"
+      "Japanese"
     ],
     "image_prompt": "A serene landscape of Mount Fuji with cherry blossoms in the foreground, traditional Japanese village, Ukiyo-e style, woodblock print texture, detailed line work",
     "video_prompt": "The cherry blossoms gently sway in the wind, a few petals drift through the air, and the water in the river flows slowly. Ukiyo-e style animation.",
@@ -720,7 +720,7 @@
     "title": "Golden Mosaic - Byzantine (AI Animated)",
     "type": "video",
     "tags": [
-      "Medieval"
+      "Medieval & Byzantine"
     ],
     "collection": "classic"
   },
@@ -792,7 +792,7 @@
     "title": "Mystical Knotwork - Celtic (AI Animated)",
     "type": "video",
     "tags": [
-      "Medieval"
+      "Medieval & Byzantine"
     ],
     "collection": "classic"
   },
@@ -954,7 +954,7 @@
     "title": "Dark Cathedral - Gothic (AI Animated)",
     "type": "video",
     "tags": [
-      "Medieval"
+      "Medieval & Byzantine"
     ],
     "collection": "classic"
   },
@@ -1017,7 +1017,7 @@
     "title": "Great Wave - Ukiyo-e (AI Animated)",
     "type": "video",
     "tags": [
-      "Asian"
+      "Japanese"
     ],
     "collection": "classic"
   },
@@ -1152,7 +1152,7 @@
     "title": "Cherry Blossom Waves - Ukiyo-e (AI Animated)",
     "type": "video",
     "tags": [
-      "Asian"
+      "Japanese"
     ],
     "collection": "classic"
   },

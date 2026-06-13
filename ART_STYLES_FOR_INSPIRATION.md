@@ -1,0 +1,228 @@
+# Art Styles for Inspiration
+
+Menu of styles for the nightly curation bot. **Pick one style per piece**, favouring
+the high-end, museum-canon spirit described in
+[`curation/PROMPT_GUIDANCE.md`](curation/PROMPT_GUIDANCE.md) (the "Brand & taste"
+section). The `##` headings are categories, **not** styles — never pick a heading.
+When you add a new style, append it under the section it best fits.
+
+## Western fine art — Classical to 19th century
+
+- Classical art
+- Medieval art
+- Byzantine art
+- Byzantine Mosaic
+- Romanesque art
+- Romanesque Fresco
+- Gothic art
+- Gothic Stained Glass
+- Illuminated Manuscript
+- Carolingian Illumination
+- Carolingian Minuscule Calligraphy
+- Carolingian Ivory Carving
+- Ottonian Illuminated Manuscript
+- Anglo-Saxon Metalwork
+- Viking Runestone Art
+- Proto-Renaissance
+- Sienese School
+- Early Netherlandish Oil Painting
+- Flemish Primitives
+- Hieronymus Bosch
+- Renaissance art
+- Renaissance oil painting
+- Renaissance Fresco
+- Mannerism
+- Tudor Portrait Miniature
+- Dutch Golden Age
+- Baroque
+- Baroque Oil Painting
+- Utrecht Caravaggism
+- Rococo
+- Neoclassicism
+- Romanticism
+- Hudson River School
+- Barbizon School
+- Realism
+- Macchiaioli
+- Tonalism
+- Academic art
+- Pre-Raphaelite Brotherhood
+- Arts and Crafts Movement
+- Ashcan School
+- Impressionism
+- Impressionist landscape
+- Post-Impressionism
+- Symbolism
+- Art Nouveau
+
+## Modern & conceptual art movements (late-19th century onward)
+
+- Modern art
+- Expressionism
+- Fauvism
+- Cubism
+- Futurism
+- Dada
+- Surrealism
+- Magic Realism
+- Constructivism
+- Suprematism
+- De Stijl
+- Bauhaus
+- Art Deco
+- Precisionism
+- Social Realism
+- Abstract art
+- Abstract Expressionism
+- Color Field painting
+- Action painting
+- Hard-edge painting
+- Minimalism
+- Op Art
+- Pop Art
+- Photorealism
+- Hyperrealism
+- Neo-Expressionism
+- Postmodern art
+- Contemporary art
+- Conceptual art
+- Performance art
+- Fluxus
+- Installation art
+- Land art
+- Environmental art
+- Relational art
+- Video art
+- New media art
+- Street art
+- Graffiti art
+- Psychedelic Art
+- Afrofuturism
+
+## Techniques, media & cross-cutting visual styles
+
+- Fresco
+- Watercolor
+- Pointillism
+- Chiaroscuro
+- Tenebrism
+- Trompe-l'œil
+- Cloisonnism
+- Papercut Art
+- Biomorphic
+- Biomechanical
+- Maximalism
+- Noir
+- Mid-Century Modern
+- Brutalism
+- Ghibli-esque
+
+## World & regional traditions (Asian, Islamic, African, Oceanic, indigenous, folk)
+
+- Chinese ink painting
+- Sumi-e Ink Wash
+- Song Dynasty Landscape Painting
+- Yuan Dynasty Landscape
+- Ming Dynasty Silk Painting
+- Nanga
+- Kano School Ink Painting
+- Ukiyo-e
+- Ukiyo-e Japanese woodblock print
+- Kamakura Period Emakimono
+- Edo Period Byobu (Folding Screen)
+- Edo period Netsuke carving
+- Joseon Dynasty Minhwa
+- Goryeo Buddhist Painting
+- Rinpa School
+- Yamato-e
+- Korean Celadon
+- Chinese Blue-and-White Porcelain
+- Mughal miniature
+- Rajput Painting
+- Pahari Miniature
+- Gond painting
+- Gandharan Buddhist sculpture
+- Gupta Empire Mathura Sculpture
+- Chola Dynasty Bronze Sculpture
+- Pala Dynasty Bronze
+- Tibetan Thangka
+- Khmer Angkor Stone Sculpture
+- Javanese Borobudur Relief
+- Thai Sukhothai Buddha
+- Islamic geometric art
+- Fatimid Rock Crystal Carving
+- Persian Safavid Miniature
+- Ottoman Iznik Ceramics
+- Timurid Manuscript Illumination
+- Mamluk Metalwork
+- Nasrid (Alhambra) Ornament
+- Arabic Calligraphy
+- Yoruba Sculpture
+- Benin Bronzes
+- Ife Sculpture
+- Asante Goldwork
+- Dogon Sculpture
+- Ethiopian Illuminated Manuscript
+- Māori Whakairo Carving
+- Aboriginal Australian Bark Painting
+- Sepik River Carving
+- Rapa Nui (Easter Island) Moai
+- Celtic Knotwork
+- Indigenous art traditions
+- Folk art
+- Outsider art
+- Naïve art
+
+## Ancient & archaeological art (antiquity & prehistory)
+
+- Paleolithic Cave Painting
+- Neolithic Rock Art
+- Megalithic Passage Tomb Art
+- Cycladic Art
+- Minoan Fresco
+- Minoan Pottery
+- Mycenaean Fresco
+- Ancient Egyptian Wall Painting
+- Amarna Period Art
+- Fayum Mummy Portraits
+- Coptic Textile Art
+- Sumerian Cuneiform Relief
+- Mesopotamian Cylinder Seal Impression
+- Assyrian bas-relief
+- Achaemenid Persian metalwork
+- Sasanian Silverwork
+- Hellenistic Mosaic
+- Macedonian Court Mosaic
+- Etruscan Tomb Painting
+- Etruscan Bucchero pottery
+- Etruscan Terracotta Sarcophagus
+- Iberian Sculpture
+- Nabataean Rock-Cut Architecture
+- Bactrian Gold Artifact
+- Scythian Animal Style
+- Scythian Goldwork
+- Xiongnu Animal Style Bronze
+- Celtic Metalwork
+- Han Dynasty Relief
+- Tang Dynasty Sancai
+- Jomon Cord-Marked Pottery
+- Jomon Pottery
+- Kofun Period Haniwa
+- Dong Son Bronze Drum Engraving
+- Mayan Stela Relief
+- Aztec Codices Art
+- Inca Textile Pattern
+- Moche Ceramics
+- Nazca Lines
+- Olmec Colossal Heads
+- Teotihuacan Fresco
+- Mississippian Copper Plates
+- Anasazi Black-on-White Pottery
+- Mogollon Pottery Art
+- Babylonian Glazed-Brick Relief
+- Hittite Relief
+- Phoenician Ivory Carving
+- Luristan Bronzes
+- Nubian (Kushite) Art
+- Nok Terracotta
+- San Rock Art

@@ -9,6 +9,7 @@ import { log } from '../lib/log'
 import {
   type ArtItem,
   tagsOf,
+  orderTags,
   UNDATED_FALLBACK,
   DEFAULT_SELECTION_COUNT,
 } from '../lib/gallery-types'
@@ -157,7 +158,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
 
   const items = useMemo(() => gallery?.items ?? [], [gallery])
 
-  // Distinct tags across the gallery, in first-seen order (Misc fallback baked in).
+  // Distinct tags across the gallery, in canonical pill order (Misc fallback baked in).
   const allTags = useMemo(() => {
     const seen: string[] = []
     const set = new Set<string>()
@@ -169,7 +170,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
         }
       }
     }
-    return seen
+    return orderTags(seen)
   }, [items])
 
   // Display order: by date added (undated pieces fall back to launch date).

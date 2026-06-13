@@ -16,3 +16,9 @@ node_modules
 /screensaver-macos/ScreensaverArt.xcodeproj/
 /screensaver-helper/.build/
 
+# Gallery curation tool — transient working files (the tool + guidance are committed).
+/curation/selections.json
+/curation/last-removed.json
+/curation/.backups/
+/curation/.analysis/
+

@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gallery Curation — Living Art Screensaver</title>
+<style>
+  :root {
+    --bg: #0e0f13;
+    --panel: #16181f;
+    --panel-2: #1d2029;
+    --border: #2a2e3a;
+    --text: #e7e9ee;
+    --muted: #9aa0ad;
+    --accent: #6ea8fe;
+    --corrupt: #f0883e;
+    --undesirable: #f15a6c;
+    --ok: #56d364;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding-bottom: 80px;
+  }
+  a { color: var(--accent); }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(14,15,19,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+  }
+  .head-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  h1 { font-size: 18px; margin: 0; font-weight: 650; }
+  .sub { color: var(--muted); font-size: 13px; margin: 2px 0 0; }
+  .spacer { flex: 1; }
+
+  .counts { display: flex; gap: 14px; font-size: 13px; color: var(--muted); align-items: center; }
+  .counts b { color: var(--text); }
+  .pill { padding: 2px 9px; border-radius: 999px; font-weight: 600; font-size: 12px; }
+  .pill.corrupt { background: rgba(240,136,62,0.16); color: var(--corrupt); }
+  .pill.undesirable { background: rgba(241,90,108,0.16); color: var(--undesirable); }
+
+  .filters { display: flex; gap: 6px; }
+  .filters button, .btn {
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .filters button.active { background: var(--accent); color: #08121f; border-color: var(--accent); font-weight: 600; }
+  .btn:hover, .filters button:hover { border-color: var(--accent); }
+  #status { font-size: 13px; color: var(--muted); min-width: 86px; text-align: right; }
+  #status.saved { color: var(--ok); }
+
+  .note {
+    margin: 12px 20px 0;
+    padding: 10px 14px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .note code { background: var(--panel-2); padding: 1px 6px; border-radius: 5px; color: var(--text); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 18px;
+    padding: 18px 20px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .card.flagged-corrupt { border-color: var(--corrupt); box-shadow: 0 0 0 1px var(--corrupt) inset; }
+  .card.flagged-undesirable { border-color: var(--undesirable); box-shadow: 0 0 0 1px var(--undesirable) inset; }
+
+  .vidwrap { position: relative; background: #000; aspect-ratio: 16/9; }
+  .vidwrap video { width: 100%; height: 100%; display: block; object-fit: cover; background: #000; }
+  .badge {
+    position: absolute; top: 8px; left: 8px;
+    font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+    text-transform: uppercase; letter-spacing: .04em; display: none;
+  }
+  .card.flagged-corrupt .badge.corrupt { display: block; background: var(--corrupt); color: #1a1205; }
+  .card.flagged-undesirable .badge.undesirable { display: block; background: var(--undesirable); color: #1f0608; }
+
+  .body { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .title { font-weight: 600; font-size: 14px; }
+  .meta { color: var(--muted); font-size: 12px; }
+  .prompts { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; }
+  .prompt-label { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .03em; }
+  .prompt-text { color: #cfd3dc; }
+  .prompt-text.empty { color: #6b7180; font-style: italic; }
+
+  .actions { display: flex; gap: 8px; margin-top: 4px; }
+  .flag {
+    flex: 1; border: 1px solid var(--border); background: var(--panel-2); color: var(--text);
+    border-radius: 8px; padding: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .flag:hover { border-color: var(--muted); }
+  .flag.corrupt.on { background: var(--corrupt); color: #1a1205; border-color: var(--corrupt); }
+  .flag.undesirable.on { background: var(--undesirable); color: #1f0608; border-color: var(--undesirable); }
+
+  footer {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(14,15,19,0.95); backdrop-filter: blur(8px);
+    border-top: 1px solid var(--border);
+    padding: 12px 20px; display: flex; align-items: center; gap: 16px;
+  }
+  footer .summary { font-size: 13px; color: var(--muted); }
+  footer .summary b { color: var(--text); }
+  .btn.primary { background: var(--accent); color: #08121f; border-color: var(--accent); font-weight: 650; }
+  .empty-state { padding: 60px 20px; text-align: center; color: var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <div class="head-row">
+    <div>
+      <h1>Gallery Curation</h1>
+      <p class="sub">Flag corrupted (glitchy / single-color / broken) or undesirable (off-theme / low-quality) pieces.</p>
+    </div>
+    <div class="spacer"></div>
+    <div class="counts">
+      <span><b id="c-total">0</b> total</span>
+      <span class="pill corrupt"><b id="c-corrupt">0</b> corrupted</span>
+      <span class="pill undesirable"><b id="c-undesirable">0</b> undesirable</span>
+    </div>
+    <div class="filters" id="filters">
+      <button data-filter="all" class="active">All</button>
+      <button data-filter="flagged">Flagged</button>
+      <button data-filter="unflagged">Unflagged</button>
+    </div>
+    <span id="status">&nbsp;</span>
+  </div>
+</header>
+
+<div class="note">
+  Flags <b>autosave</b> to <code>curation/selections.json</code>. When you're done,
+  return to Claude and say <code>process curation selections</code> — Claude deletes
+  the flagged pieces from <code>gallery.json</code> and refines the nightly-curation prompt guidance.
+</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>
+  <div class="summary"><b id="f-flagged">0</b> flagged for removal &middot; <b id="f-remaining">0</b> will remain</div>
+  <div class="spacer" style="flex:1"></div>
+  <button class="btn primary" id="flush">Save now</button>
+</footer>
+
+<script>
+const state = { items: [], selections: new Map(), filter: 'all' };
+const grid = document.getElementById('grid');
+const statusEl = document.getElementById('status');
+
+// Legacy flags written before the "ugly" -> "undesirable" rename still load.
+const normalizeReason = (r) => (r === 'ugly' ? 'undesirable' : r);
+
+const io = new IntersectionObserver((entries) => {
+  for (const e of entries) {
+    const v = e.target;
+    if (e.isIntersecting) {
+      if (!v.src && v.dataset.src) v.src = v.dataset.src;
+      v.play().catch(() => {});
+    } else {
+      v.pause();
+    }
+  }
+}, { rootMargin: '400px 0px' });
+
+async function load() {
+  const [gal, sel] = await Promise.all([
+    fetch('/api/gallery').then(r => r.json()),
+    fetch('/api/selections').then(r => r.json()).catch(() => ({ flagged: [] })),
+  ]);
+  state.items = gal.items || [];
+  for (const f of (sel.flagged || [])) state.selections.set(f.src, normalizeReason(f.reason));
+  render();
+  updateCounts();
+}
+
+function passesFilter(item) {
+  if (state.filter === 'all') return true;
+  const flagged = state.selections.has(item.src);
+  return state.filter === 'flagged' ? flagged : !flagged;
+}
+
+function render() {
+  grid.innerHTML = '';
+  const visible = state.items.filter(passesFilter);
+  if (!visible.length) {
+    grid.innerHTML = '<div class="empty-state">Nothing to show for this filter.</div>';
+    return;
+  }
+  for (const item of visible) grid.appendChild(card(item));
+}
+
+function card(item) {
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.dataset.src = item.src;
+  applyFlagClass(el, item.src);
+
+  const ip = item.image_prompt ? esc(item.image_prompt) : '<span class="empty">no recorded image prompt</span>';
+  const vp = item.video_prompt ? esc(item.video_prompt) : '<span class="empty">no recorded video prompt</span>';
+
+  el.innerHTML = `
+    <div class="vidwrap">
+      <span class="badge corrupt">corrupted</span>
+      <span class="badge undesirable">undesirable</span>
+      <video muted loop playsinline preload="none" data-src="${esc(item.src)}"></video>
+    </div>
+    <div class="body">
+      <div class="title">${esc(item.title || '(untitled)')}</div>
+      <div class="meta">${esc(item.date || 'no date')} &middot; ${esc(item.type || '')}</div>
+      <div class="prompts">
+        <div><div class="prompt-label">Image prompt</div><div class="prompt-text">${ip}</div></div>
+        <div><div class="prompt-label">Video prompt</div><div class="prompt-text">${vp}</div></div>
+      </div>
+      <div class="actions">
+        <button class="flag corrupt" data-reason="corrupted">⚠ Corrupted</button>
+        <button class="flag undesirable" data-reason="undesirable">✕ Undesirable</button>
+      </div>
+    </div>`;
+
+  const video = el.querySelector('video');
+  io.observe(video);
+  video.addEventListener('click', () => { video.paused ? video.play() : video.pause(); });
+
+  for (const btn of el.querySelectorAll('.flag')) {
+    syncBtn(btn, item.src);
+    btn.addEventListener('click', () => toggle(item.src, btn.dataset.reason, el));
+  }
+  return el;
+}
+
+function toggle(src, reason, el) {
+  const cur = state.selections.get(src);
+  if (cur === reason) state.selections.delete(src);
+  else state.selections.set(src, reason);
+  applyFlagClass(el, src);
+  for (const btn of el.querySelectorAll('.flag')) syncBtn(btn, src);
+  updateCounts();
+  scheduleSave();
+}
+
+function applyFlagClass(el, src) {
+  el.classList.remove('flagged-corrupt', 'flagged-undesirable');
+  const r = state.selections.get(src);
+  if (r === 'corrupted') el.classList.add('flagged-corrupt');
+  else if (r === 'undesirable') el.classList.add('flagged-undesirable');
+}
+
+function syncBtn(btn, src) {
+  btn.classList.toggle('on', state.selections.get(src) === btn.dataset.reason);
+}
+
+function updateCounts() {
+  let corrupt = 0, undesirable = 0;
+  for (const r of state.selections.values()) r === 'corrupted' ? corrupt++ : undesirable++;
+  const flagged = corrupt + undesirable;
+  document.getElementById('c-total').textContent = state.items.length;
+  document.getElementById('c-corrupt').textContent = corrupt;
+  document.getElementById('c-undesirable').textContent = undesirable;
+  document.getElementById('f-flagged').textContent = flagged;
+  document.getElementById('f-remaining').textContent = state.items.length - flagged;
+}
+
+let saveTimer;
+function scheduleSave() {
+  setStatus('Saving…', false);
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(save, 500);
+}
+
+async function save() {
+  const flagged = [...state.selections.entries()].map(([src, reason]) => {
+    const it = state.items.find(i => i.src === src) || {};
+    return { src, title: it.title || '', reason };
+  });
+  try {
+    await fetch('/api/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ flagged }),
+    });
+    setStatus('Saved ✓', true);
+  } catch {
+    setStatus('Save failed', false);
+  }
+}
+
+function setStatus(text, ok) {
+  statusEl.textContent = text;
+  statusEl.classList.toggle('saved', !!ok);
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+document.getElementById('filters').addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  state.filter = btn.dataset.filter;
+  for (const b of document.querySelectorAll('#filters button')) b.classList.toggle('active', b === btn);
+  render();
+});
+
+document.getElementById('flush').addEventListener('click', save);
+
+load();
+</script>
+</body>
+</html>

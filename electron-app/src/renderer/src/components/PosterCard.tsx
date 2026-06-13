@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Check } from 'lucide-react'
+import { Check, Lock } from 'lucide-react'
 import { observePoster, spawnPreview } from '../lib/poster-engine'
 import type { ArtItem } from '../lib/gallery-types'
 
@@ -10,15 +10,28 @@ const HOVER_DELAY_MS = 220
 interface PosterCardProps {
   item: ArtItem
   selected: boolean
+  // Locked = a non-subscriber's piece beyond the free count. The tick becomes a
+  // lock that prompts to subscribe instead of toggling selection.
+  locked: boolean
   hidden: boolean
   onToggle: () => void
+  onSubscribe: () => void
   onOpen: () => void
 }
 
 // One gallery cell: a static first-frame poster (captured by the poster engine),
-// a selection tick, and a hover-to-play live preview. Always mounted — visibility
-// is toggled via `hidden` (display:none) so filtering/sorting never re-captures.
-export function PosterCard({ item, selected, hidden, onToggle, onOpen }: PosterCardProps) {
+// a selection tick (or a lock for non-subscribers), and a hover-to-play live
+// preview. Always mounted — visibility is toggled via `hidden` (display:none) so
+// filtering/sorting never re-captures.
+export function PosterCard({
+  item,
+  selected,
+  locked,
+  hidden,
+  onToggle,
+  onSubscribe,
+  onOpen,
+}: PosterCardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
 
@@ -79,21 +92,36 @@ export function PosterCard({ item, selected, hidden, onToggle, onOpen }: PosterC
         <p className="text-white text-xs font-medium truncate">{item.title}</p>
       </div>
 
-      {/* Selection tick — always visible and above the hover-preview video. */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation()
-          onToggle()
-        }}
-        title={selected ? 'Playing — click to remove' : 'Add to your screensaver'}
-        className={`absolute top-2 right-2 z-10 w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all hover:scale-110 ${
-          selected
-            ? 'bg-primary border-primary text-primary-foreground'
-            : 'bg-black/50 border-white/80 text-transparent hover:border-white hover:bg-black/70'
-        }`}
-      >
-        <Check className="w-3.5 h-3.5" strokeWidth={3} />
-      </button>
+      {/* Selection tick — or a lock for non-subscribers. Always visible and above
+          the hover-preview video. */}
+      {locked ? (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onSubscribe()
+          }}
+          title="Subscribe to unlock"
+          aria-label="Subscribe to unlock this piece"
+          className="absolute top-2 right-2 z-10 w-7 h-7 rounded-full flex items-center justify-center border-2 border-white/80 bg-black/55 text-white transition-all hover:scale-110 hover:border-white hover:bg-black/75"
+        >
+          <Lock className="w-3.5 h-3.5" strokeWidth={2.5} />
+        </button>
+      ) : (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onToggle()
+          }}
+          title={selected ? 'Playing — click to remove' : 'Add to your screensaver'}
+          className={`absolute top-2 right-2 z-10 w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all hover:scale-110 ${
+            selected
+              ? 'bg-primary border-primary text-primary-foreground'
+              : 'bg-black/50 border-white/80 text-transparent hover:border-white hover:bg-black/70'
+          }`}
+        >
+          <Check className="w-3.5 h-3.5" strokeWidth={3} />
+        </button>
+      )}
     </div>
   )
 }

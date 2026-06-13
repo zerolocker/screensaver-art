@@ -27,6 +27,15 @@ export function tagsOf(item: ArtItem): string[] {
   return item.tags && item.tags.length > 0 ? item.tags : [MISC_TAG]
 }
 
+// Free-text match over an item's title + tags (case-insensitive). An empty/blank
+// query matches everything, so the search box is a pure narrowing filter.
+export function matchesQuery(item: ArtItem, query: string): boolean {
+  const q = query.trim().toLowerCase()
+  if (!q) return true
+  if (item.title.toLowerCase().includes(q)) return true
+  return tagsOf(item).some((t) => t.toLowerCase().includes(q))
+}
+
 // Canonical pill order (the closed tag vocabulary — museum "wings": world cultures
 // first, then the Western timeline). Any tag outside this list — e.g. the Misc
 // fallback — sorts to the end, keeping its first-seen order. See

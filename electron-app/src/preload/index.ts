@@ -23,7 +23,6 @@ export type CacheProgress =
 export interface CachedManifest {
   items: { filename: string; title: string; type: string }[]
   isSubscribed: boolean
-  totalCount: number
   syncedAt: string
 }
 
@@ -74,8 +73,9 @@ const electronAPI = {
     sync: (
       apiUrl: string,
       accessToken: string | null,
+      pruneDeselected = false,
     ): Promise<{ ok: true; manifest: CachedManifest } | { ok: false; error: string }> =>
-      ipcRenderer.invoke('cache:sync', { apiUrl, accessToken }),
+      ipcRenderer.invoke('cache:sync', { apiUrl, accessToken, pruneDeselected }),
     onProgress: (cb: (p: CacheProgress) => void): (() => void) => {
       const handler = (_evt: IpcRendererEvent, p: CacheProgress): void => cb(p)
       ipcRenderer.on('cache:progress', handler)

@@ -36,7 +36,15 @@ vi.mock('electron', () => ({
   BrowserWindow: class {},
 }))
 
-import { syncGallery, cancelSync, isSyncing, clearCache, PATHS, type ApiResponse } from './cache-sync'
+import {
+  syncGallery,
+  cancelSync,
+  isSyncing,
+  clearCache,
+  PATHS,
+  FREE_COUNT,
+  type ApiResponse,
+} from './cache-sync'
 import { MAGIC, KEY, filenameForUrl } from './obfuscation'
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -97,12 +105,14 @@ function makeHangingResponse(): Response {
 
 function fakeApiResponse(
   items: { src: string; title: string; type: string }[],
-  opts: Partial<Pick<ApiResponse, 'isSubscribed' | 'totalCount'>> = {},
+  opts: Partial<Pick<ApiResponse, 'isSubscribed' | 'freeCount'>> = {},
 ): ApiResponse {
   return {
     items,
     isSubscribed: opts.isSubscribed ?? true,
-    totalCount: opts.totalCount ?? items.length,
+    // Default well above the tiny test galleries, so nothing is "locked" unless a
+    // test opts into a small freeCount to exercise the non-subscriber lock path.
+    freeCount: opts.freeCount ?? FREE_COUNT,
   }
 }
 
@@ -163,7 +173,7 @@ describe('cache-sync', () => {
 
       fetchMock
         .mockResolvedValueOnce(
-          makeJsonResponse(fakeApiResponse(apiItems, { isSubscribed: true, totalCount: 2 })),
+          makeJsonResponse(fakeApiResponse(apiItems, { isSubscribed: true })),
         )
         .mockResolvedValueOnce(makeStreamResponse(videoBytesA))
         .mockResolvedValueOnce(makeStreamResponse(videoBytesB))
@@ -177,7 +187,6 @@ describe('cache-sync', () => {
         type: 'video',
       })
       expect(manifest.isSubscribed).toBe(true)
-      expect(manifest.totalCount).toBe(2)
       expect(manifest.syncedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/)
 
       // Files written
@@ -259,7 +268,7 @@ describe('cache-sync', () => {
       let manifestAtFirstDownload: { items: { filename: string }[] } | null = null
 
       fetchMock
-        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items, { totalCount: 2 })))
+        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items)))
         .mockImplementationOnce(async () => {
           manifestAtFirstDownload = JSON.parse(readFileSync(PATHS.MANIFEST_PATH, 'utf8'))
           return makeStreamResponse(Buffer.from('a'))
@@ -436,70 +445,128 @@ describe('cache-sync', () => {
       expect(existsSync(join(PATHS.VIDEOS_DIR, filenameForUrl(newItems[0].src)))).toBe(true)
     })
 
-    it('removes cached files that are no longer in the gallery (e.g. subscription expired)', async () => {
+    it('evicts locked pieces when a subscription lapses (beyond freeCount)', async () => {
       const all = [
         { src: 'https://r2.example/a.mp4', title: 'A', type: 'video' },
         { src: 'https://r2.example/b.mp4', title: 'B', type: 'video' },
         { src: 'https://r2.example/c.mp4', title: 'C', type: 'video' },
       ]
 
-      // Sync 1: subscribed, cache all three
+      // Sync 1: subscribed → all three cached.
       fetchMock
         .mockResolvedValueOnce(
-          makeJsonResponse(fakeApiResponse(all, { isSubscribed: true, totalCount: 3 })),
+          makeJsonResponse(fakeApiResponse(all, { isSubscribed: true })),
         )
         .mockResolvedValueOnce(makeStreamResponse(Buffer.from('A')))
         .mockResolvedValueOnce(makeStreamResponse(Buffer.from('B')))
         .mockResolvedValueOnce(makeStreamResponse(Buffer.from('C')))
-      await syncGallery('https://api/gallery', null, null)
+      await syncGallery('https://api/gallery', null, null, [all[0].src, all[1].src, all[2].src])
       expect(readdirSync(PATHS.VIDEOS_DIR)).toHaveLength(3)
 
-      // Sync 2: subscription expired, only first 2 returned. The third file
-      // should be evicted; the first two stay (already cached).
+      // Sync 2: subscription lapsed. The API still returns the FULL list, but
+      // isSubscribed=false + freeCount=2 makes the third piece "locked" — it must
+      // be evicted (re-enforcing gating) even though it's still selected, while
+      // the first two stay (already cached, still unlocked).
       fetchMock.mockReset()
       fetchMock.mockResolvedValueOnce(
-        makeJsonResponse(fakeApiResponse(all.slice(0, 2), { isSubscribed: false, totalCount: 3 })),
+        makeJsonResponse(fakeApiResponse(all, { isSubscribed: false, freeCount: 2 })),
       )
-      const m2 = await syncGallery('https://api/gallery', null, null)
+      const m2 = await syncGallery('https://api/gallery', null, null, [
+        all[0].src,
+        all[1].src,
+        all[2].src,
+      ])
 
       const remaining = readdirSync(PATHS.VIDEOS_DIR).sort()
-      expect(remaining).toHaveLength(2)
-      expect(remaining).toEqual([m2.items[0].filename, m2.items[1].filename].sort())
+      expect(remaining).toEqual([filenameForUrl(all[0].src), filenameForUrl(all[1].src)].sort())
+      expect(m2.items.map((i) => i.title)).toEqual(['A', 'B'])
       expect(m2.isSubscribed).toBe(false)
-      expect(m2.totalCount).toBe(3)
     })
 
-    it('caches only the selected items and prunes deselected ones', async () => {
+    it('never downloads a locked piece, even if it is in the selection', async () => {
+      const all = [
+        { src: 'https://r2.example/a.mp4', title: 'A', type: 'video' },
+        { src: 'https://r2.example/b.mp4', title: 'B', type: 'video' },
+      ]
+
+      // Non-subscriber with freeCount=1 → only A is unlocked. B is selected but
+      // must never be fetched or cached.
+      fetchMock
+        .mockResolvedValueOnce(
+          makeJsonResponse(fakeApiResponse(all, { isSubscribed: false, freeCount: 1 })),
+        )
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('A')))
+      const m = await syncGallery('https://api/gallery', null, null, [all[0].src, all[1].src])
+
+      expect(m.items.map((i) => i.title)).toEqual(['A']) // B excluded from the play set
+      expect(existsSync(join(PATHS.VIDEOS_DIR, filenameForUrl(all[0].src)))).toBe(true)
+      expect(existsSync(join(PATHS.VIDEOS_DIR, filenameForUrl(all[1].src)))).toBe(false)
+      expect(fetchMock).toHaveBeenCalledTimes(2) // gallery + A only (never B)
+    })
+
+    it('downloads only the selected items (unselected ones are not fetched)', async () => {
       const all = [
         { src: 'https://r2.example/a.mp4', title: 'A', type: 'video' },
         { src: 'https://r2.example/b.mp4', title: 'B', type: 'video' },
         { src: 'https://r2.example/c.mp4', title: 'C', type: 'video' },
       ]
 
-      // Sync 1: select A and C only — B is never downloaded.
+      // Select A and C only — B is never downloaded.
       fetchMock
-        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(all, { totalCount: 3 })))
+        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(all)))
         .mockResolvedValueOnce(makeStreamResponse(Buffer.from('A')))
         .mockResolvedValueOnce(makeStreamResponse(Buffer.from('C')))
       const m1 = await syncGallery('https://api/gallery', null, null, [all[0].src, all[2].src])
 
       expect(m1.items.map((i) => i.title).sort()).toEqual(['A', 'C'])
-      expect(m1.totalCount).toBe(3) // full collection size is preserved
       expect(existsSync(join(PATHS.VIDEOS_DIR, filenameForUrl(all[0].src)))).toBe(true)
       expect(existsSync(join(PATHS.VIDEOS_DIR, filenameForUrl(all[1].src)))).toBe(false)
       expect(existsSync(join(PATHS.VIDEOS_DIR, filenameForUrl(all[2].src)))).toBe(true)
       // Only the two selected videos were fetched (1 gallery + 2 assets).
       expect(fetchMock).toHaveBeenCalledTimes(3)
+    })
 
-      // Sync 2: change selection to just B. A and C become orphans and are pruned.
-      fetchMock.mockReset()
+    it('an auto sync KEEPS a deselected (still-unlocked) file; a manual sync prunes it', async () => {
+      const all = [
+        { src: 'https://r2.example/a.mp4', title: 'A', type: 'video' },
+        { src: 'https://r2.example/b.mp4', title: 'B', type: 'video' },
+        { src: 'https://r2.example/c.mp4', title: 'C', type: 'video' },
+      ]
+
+      // Seed: select all three.
       fetchMock
-        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(all, { totalCount: 3 })))
+        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(all)))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('A')))
         .mockResolvedValueOnce(makeStreamResponse(Buffer.from('B')))
-      await syncGallery('https://api/gallery', null, null, [all[1].src])
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('C')))
+      await syncGallery('https://api/gallery', null, null, [all[0].src, all[1].src, all[2].src])
+      expect(readdirSync(PATHS.VIDEOS_DIR)).toHaveLength(3)
 
-      const remaining = readdirSync(PATHS.VIDEOS_DIR)
-      expect(remaining).toEqual([filenameForUrl(all[1].src)])
+      // Auto sync (pruneDeselected defaults false), deselect C — its .bin stays
+      // (cache is decoupled from the play set), but it drops out of the manifest.
+      fetchMock.mockReset()
+      fetchMock.mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(all)))
+      const mAuto = await syncGallery('https://api/gallery', null, null, [all[0].src, all[1].src])
+      expect(mAuto.items.map((i) => i.title).sort()).toEqual(['A', 'B'])
+      expect(existsSync(join(PATHS.VIDEOS_DIR, filenameForUrl(all[2].src)))).toBe(true) // kept
+      expect(readdirSync(PATHS.VIDEOS_DIR)).toHaveLength(3)
+
+      // Manual sync (pruneDeselected=true) with the same selection — now C is
+      // tidied away because the manual sync prunes deselected items.
+      fetchMock.mockReset()
+      fetchMock.mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(all)))
+      const mManual = await syncGallery(
+        'https://api/gallery',
+        null,
+        null,
+        [all[0].src, all[1].src],
+        true,
+      )
+      expect(mManual.items.map((i) => i.title).sort()).toEqual(['A', 'B'])
+      expect(existsSync(join(PATHS.VIDEOS_DIR, filenameForUrl(all[2].src)))).toBe(false) // pruned
+      expect(readdirSync(PATHS.VIDEOS_DIR).sort()).toEqual(
+        [filenameForUrl(all[0].src), filenameForUrl(all[1].src)].sort(),
+      )
     })
 
     it('defaults a null selection to the first FREE_COUNT items', async () => {
@@ -511,7 +578,7 @@ describe('cache-sync', () => {
         { src: 'https://r2.example/b.mp4', title: 'B', type: 'video' },
       ]
       fetchMock
-        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items, { totalCount: 2 })))
+        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items)))
         .mockResolvedValueOnce(makeStreamResponse(Buffer.from('a')))
         .mockResolvedValueOnce(makeStreamResponse(Buffer.from('b')))
 
@@ -521,7 +588,7 @@ describe('cache-sync', () => {
 
     it('caches nothing when the selection is empty', async () => {
       const items = [{ src: 'https://r2.example/a.mp4', title: 'A', type: 'video' }]
-      fetchMock.mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items, { totalCount: 1 })))
+      fetchMock.mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items)))
 
       const m = await syncGallery('https://api/gallery', null, null, [])
 

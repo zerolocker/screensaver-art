@@ -1,11 +1,15 @@
 import { useEffect, useRef } from 'react'
-import { X, Check } from 'lucide-react'
+import { X, Check, Lock } from 'lucide-react'
 import { type ArtItem, tagsOf } from '../lib/gallery-types'
 
 interface ArtModalProps {
   item: ArtItem
   selected: boolean
+  // Locked = a non-subscriber's piece beyond the free count: the add action
+  // becomes "Subscribe to unlock".
+  locked: boolean
   onToggle: () => void
+  onSubscribe: () => void
   onClose: () => void
 }
 
@@ -18,7 +22,7 @@ function formatDate(date?: string): string | null {
 
 // Larger preview of a single piece with its metadata (title, tags, date added)
 // and an add/remove action. Click-outside or Escape closes.
-export function ArtModal({ item, selected, onToggle, onClose }: ArtModalProps) {
+export function ArtModal({ item, selected, locked, onToggle, onSubscribe, onClose }: ArtModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
@@ -65,22 +69,31 @@ export function ArtModal({ item, selected, onToggle, onClose }: ArtModalProps) {
             <h3 className="font-semibold text-foreground truncate">{item.title}</h3>
             <p className="text-xs text-muted-foreground mt-0.5">{meta}</p>
           </div>
-          <button
-            onClick={onToggle}
-            className={`shrink-0 inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors ${
-              selected
-                ? 'bg-secondary text-foreground border border-border hover:bg-muted'
-                : 'bg-primary text-primary-foreground hover:brightness-105'
-            }`}
-          >
-            {selected ? (
-              <>
-                <Check className="w-4 h-4" /> In your screensaver
-              </>
-            ) : (
-              'Add to screensaver'
-            )}
-          </button>
+          {locked ? (
+            <button
+              onClick={onSubscribe}
+              className="shrink-0 inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium bg-primary text-primary-foreground transition-colors hover:brightness-105"
+            >
+              <Lock className="w-4 h-4" /> Subscribe to unlock
+            </button>
+          ) : (
+            <button
+              onClick={onToggle}
+              className={`shrink-0 inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors ${
+                selected
+                  ? 'bg-secondary text-foreground border border-border hover:bg-muted'
+                  : 'bg-primary text-primary-foreground hover:brightness-105'
+              }`}
+            >
+              {selected ? (
+                <>
+                  <Check className="w-4 h-4" /> In your screensaver
+                </>
+              ) : (
+                'Add to screensaver'
+              )}
+            </button>
+          )}
         </div>
 
         <button

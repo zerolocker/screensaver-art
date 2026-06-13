@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
-import { Loader2, WifiOff, ArrowDownUp } from 'lucide-react'
+import { Loader2, WifiOff, ArrowDownUp, Search, X, CheckCheck } from 'lucide-react'
 import { GALLERY_ENDPOINT } from '../lib/api'
 import { AppBanners } from '../components/AppBanners'
 import { PosterCard } from '../components/PosterCard'
@@ -10,6 +10,7 @@ import {
   type ArtItem,
   tagsOf,
   orderTags,
+  matchesQuery,
   UNDATED_FALLBACK,
   DEFAULT_SELECTION_COUNT,
 } from '../lib/gallery-types'
@@ -18,7 +19,9 @@ import type { Session } from '@supabase/supabase-js'
 interface GalleryResponse {
   items: ArtItem[]
   isSubscribed: boolean
-  totalCount: number
+  // Free-tier threshold from the server: a non-subscriber may play/cache only
+  // the first `freeCount` items; the rest are "locked".
+  freeCount: number
 }
 
 interface GalleryPageProps {
@@ -29,6 +32,8 @@ type Tab = 'all' | 'selected'
 type SortOrder = 'oldest' | 'newest'
 
 const SORT_KEY = 'lart-gallery-sort'
+// Where the subscribe CTA points (the website's billing portal deep-link).
+const SUBSCRIBE_URL = 'https://living-art-screensaver.com/account'
 // After the last tick, wait this long before re-syncing the cache, so rapid
 // toggling triggers one sync, not one per click.
 const SYNC_DEBOUNCE_MS = 1500
@@ -46,6 +51,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
     () => (localStorage.getItem(SORT_KEY) as SortOrder) || 'oldest',
   )
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set())
+  const [query, setQuery] = useState('')
   // Frozen snapshot of the selection when the "Selected" tab was entered, so
   // unticking a piece there dims it in place instead of making it vanish.
   const [selectedScope, setSelectedScope] = useState<Set<string>>(new Set())
@@ -68,9 +74,9 @@ export function GalleryPage({ session }: GalleryPageProps) {
 
       // Resolve the selection: stored explicit list, or the default first N (in
       // API order — same default cache-sync applies for a null selection).
+      const freeCount = data.freeCount ?? DEFAULT_SELECTION_COUNT
       const stored = await window.electronAPI.selection.get()
-      const initial =
-        stored.selected ?? data.items.slice(0, DEFAULT_SELECTION_COUNT).map((i) => i.src)
+      const initial = stored.selected ?? data.items.slice(0, freeCount).map((i) => i.src)
       setSelected(new Set(initial))
       setSelectionReady(true)
     } catch (err) {
@@ -103,10 +109,15 @@ export function GalleryPage({ session }: GalleryPageProps) {
     return () => window.clearTimeout(syncTimer.current)
   }, [])
 
+  const onSubscribe = useCallback(() => {
+    window.electronAPI.shell.openExternal(SUBSCRIBE_URL)
+  }, [])
+
   const persistAndSync = useCallback(
     (next: Set<string>) => {
       // Persist immediately so a toggle is never lost, but debounce the cache
-      // re-sync (download newly-selected, prune newly-deselected).
+      // re-sync (download newly-selected). Deselected items stay cached on this
+      // auto sync — only a manual "Sync Now" prunes them.
       window.electronAPI.selection.set([...next]).catch((err) => {
         log.warn('selection', 'failed to persist selection', { error: String(err) })
       })
@@ -118,8 +129,19 @@ export function GalleryPage({ session }: GalleryPageProps) {
     [syncNow],
   )
 
+  const items = useMemo(() => gallery?.items ?? [], [gallery])
+  const freeCount = gallery?.freeCount ?? DEFAULT_SELECTION_COUNT
+
+  // Locked = a non-subscriber's pieces beyond the free count (in API order).
+  // These can't be ticked or cached — the tick becomes a "Subscribe to unlock".
+  const lockedSrcs = useMemo(() => {
+    if (!gallery || gallery.isSubscribed) return new Set<string>()
+    return new Set(gallery.items.slice(freeCount).map((i) => i.src))
+  }, [gallery, freeCount])
+
   const toggle = useCallback(
     (src: string) => {
+      if (lockedSrcs.has(src)) return // locked pieces aren't toggleable
       setSelected((prev) => {
         const next = new Set(prev)
         if (next.has(src)) next.delete(src)
@@ -128,7 +150,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
         return next
       })
     },
-    [persistAndSync],
+    [persistAndSync, lockedSrcs],
   )
 
   const switchTab = useCallback(
@@ -155,8 +177,6 @@ export function GalleryPage({ session }: GalleryPageProps) {
       return next
     })
   }, [])
-
-  const items = useMemo(() => gallery?.items ?? [], [gallery])
 
   // Distinct tags across the gallery, in canonical pill order (Misc fallback baked in).
   const allTags = useMemo(() => {
@@ -187,15 +207,38 @@ export function GalleryPage({ session }: GalleryPageProps) {
     (item: ArtItem): boolean => {
       if (tab === 'selected' && !selectedScope.has(item.src)) return false
       if (activeTags.size > 0 && !tagsOf(item).some((t) => activeTags.has(t))) return false
+      if (!matchesQuery(item, query)) return false
       return true
     },
-    [tab, selectedScope, activeTags],
+    [tab, selectedScope, activeTags, query],
   )
 
-  const visibleCount = useMemo(
-    () => sortedItems.filter(isVisible).length,
-    [sortedItems, isVisible],
+  const visibleItems = useMemo(() => sortedItems.filter(isVisible), [sortedItems, isVisible])
+  const visibleCount = visibleItems.length
+
+  // Select All operates on the currently-shown, unlockable pieces. It toggles:
+  // if every shown unlocked piece is already selected, it deselects them;
+  // otherwise it selects them all.
+  const visibleUnlockedSrcs = useMemo(
+    () => visibleItems.filter((it) => !lockedSrcs.has(it.src)).map((it) => it.src),
+    [visibleItems, lockedSrcs],
   )
+  const allVisibleSelected =
+    visibleUnlockedSrcs.length > 0 && visibleUnlockedSrcs.every((s) => selected.has(s))
+
+  const toggleSelectAll = useCallback(() => {
+    if (visibleUnlockedSrcs.length === 0) return
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (visibleUnlockedSrcs.every((s) => next.has(s))) {
+        for (const s of visibleUnlockedSrcs) next.delete(s)
+      } else {
+        for (const s of visibleUnlockedSrcs) next.add(s)
+      }
+      persistAndSync(next)
+      return next
+    })
+  }, [visibleUnlockedSrcs, persistAndSync])
 
   // Block the whole view only while we have nothing yet; a refetch keeps the grid.
   if (loading && !gallery) {
@@ -238,7 +281,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
         Pick the art you want your screensaver to play.
       </p>
       <div className="sticky top-3 z-20 -mx-6 px-6 pt-3 pb-3 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-4">
           <div className="flex items-center gap-5">
             <TabButton active={tab === 'all'} onClick={() => switchTab('all')}>
               All <span className="text-xs opacity-65 tabular-nums">{items.length}</span>
@@ -247,7 +290,45 @@ export function GalleryPage({ session }: GalleryPageProps) {
               Selected <span className="text-xs opacity-65 tabular-nums">{selected.size}</span>
             </TabButton>
           </div>
+
+          <button
+            onClick={toggleSelectAll}
+            disabled={visibleUnlockedSrcs.length === 0}
+            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            title={
+              allVisibleSelected
+                ? 'Deselect all the pieces shown'
+                : 'Select all the pieces shown'
+            }
+          >
+            <CheckCheck className="w-3.5 h-3.5" />
+            {allVisibleSelected ? 'Deselect all' : 'Select all'}
+          </button>
+
           <div className="flex-1" />
+
+          {/* Search — narrows the shown pieces by title or tag. */}
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search…"
+              aria-label="Search the gallery by title or tag"
+              className="w-44 rounded-md border border-border bg-transparent pl-8 pr-7 py-1.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30"
+            />
+            {query && (
+              <button
+                onClick={() => setQuery('')}
+                aria-label="Clear search"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
           <button
             onClick={toggleSort}
             className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -281,18 +362,20 @@ export function GalleryPage({ session }: GalleryPageProps) {
         )}
       </div>
 
-      {/* Empty states for the Selected tab */}
+      {/* Empty states */}
       {selectionReady && tab === 'selected' && selected.size === 0 && (
         <div className="text-center text-sm text-muted-foreground border border-dashed border-border rounded-lg py-12 px-6 mt-2">
           Nothing selected yet. Switch to <b className="text-foreground">All</b> and tick the pieces
           you want your screensaver to play.
         </div>
       )}
-      {tab === 'selected' && selected.size > 0 && visibleCount === 0 && (
-        <div className="text-center text-sm text-muted-foreground border border-dashed border-border rounded-lg py-12 px-6 mt-2">
-          No selected pieces match these filters.
-        </div>
-      )}
+      {visibleCount === 0 &&
+        items.length > 0 &&
+        !(tab === 'selected' && selected.size === 0) && (
+          <div className="text-center text-sm text-muted-foreground border border-dashed border-border rounded-lg py-12 px-6 mt-2">
+            No pieces match {query.trim() ? <>“{query.trim()}”</> : 'these filters'}.
+          </div>
+        )}
 
       {/* Art grid — all cards stay mounted; visibility is toggled so filtering
           and sorting never re-capture posters. */}
@@ -305,8 +388,10 @@ export function GalleryPage({ session }: GalleryPageProps) {
             key={item.src}
             item={item}
             selected={selected.has(item.src)}
+            locked={lockedSrcs.has(item.src)}
             hidden={!isVisible(item)}
             onToggle={() => toggle(item.src)}
+            onSubscribe={onSubscribe}
             onOpen={() => setModalItem(item)}
           />
         ))}
@@ -316,7 +401,9 @@ export function GalleryPage({ session }: GalleryPageProps) {
         <ArtModal
           item={modalItem}
           selected={selected.has(modalItem.src)}
+          locked={lockedSrcs.has(modalItem.src)}
           onToggle={() => toggle(modalItem.src)}
+          onSubscribe={onSubscribe}
           onClose={() => setModalItem(null)}
         />
       )}

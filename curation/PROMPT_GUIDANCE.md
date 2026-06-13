@@ -45,14 +45,12 @@ them even before any round-specific learnings exist.
   still-life wants a gentle drift of light; a stormy seascape *should* have
   crashing waves, lashing rain, forked lightning and wind-torn sails. Make the
   motion as dramatic as the depicted scene genuinely calls for — but keep it
-  **physically plausible**: real-world physics (wind, water, fire, smoke, light,
-  cloth, dust), never the subject's own form mutating.
-- **Never animate anything that should morph, melt, regrow, or teleport.** Avoid
-  verbs like *transform, morph, grow, dissolve, spawn, multiply, regenerate*.
-  These produce the glitchy "AI soup" look.
-- **Don't move what shouldn't move.** Carved stone, statues, mosaics, and
-  architecture should hold their form; animate the *environment* (light, dust,
-  shadow, atmosphere), not the artifact's geometry.
+  **physically plausible**: real-world physics (e.g. wind, water, fire, smoke, light,
+  cloth, dust), never the subject's own form mutating. Statues, mosaics, and
+  architecture should hold their form.
+- **Never animate anything that should morph, melt, or teleport.** Avoid
+  verbs like *morph, melt, teleport, transform, dissolve, regenerate*.
+  These produce the glitchy "AI soup" look. 
 - **One clear subject, one clear motion.** Multiple simultaneous animated
   subjects tend to collide into artifacts. Describe a single focal motion.
 - **Avoid faces/eyes/hands as the animated focus** unless the source style
@@ -84,12 +82,7 @@ Put these in the **image prompt** to kill the museum-object look:
 > gallery wall, no spotlight, no museum label, no plain studio background, the
 > artwork fills the frame.
 
-Banned **motion** verbs for the subject (carvings, statues, reliefs, metalwork,
-figures): *morph, shift, writhe, march, roar, transform, melt, grow, dissolve,
-pulse, sway, move.* Animate the **environment / physics** instead — which can be
-as dramatic as the scene warrants (light, shadow, dust, smoke, fire, wind, rain,
-lightning, water, waves, shimmer). Avoid prompts that pile up many
-fantastical/organic creatures plus "chaotic / lively" motion — they collapse into
+Avoid prompts that pile up many "chaotic / lively" motion — they collapse into
 incoherent soup.
 
 ---
@@ -157,10 +150,6 @@ extracted first frame (contact sheets).
   Carolingian, Viking) and ultra-terse image prompts produced off-target frames —
   e.g. Cycladic was a tiny figure lost in a vast empty room; the Viking
   "runestone" was just a plain rock in a field.
-- **Asking carved/static figures to physically move → melting.** "patterns
-  morphing and shifting" (Anasazi), "figures march… beasts roar" (Mesopotamian
-  seal), "the king drawing his bow and the lions moving" (Assyrian relief),
-  animals "shift and writhe" (Scythian).
 - **Chaotic many-creature surreal scenes → AI soup.** The Bosch "fantastical
   creatures… pulse and sway… lively and chaotic" prompt produced a red hell-blob
   mess.
@@ -168,19 +157,9 @@ extracted first frame (contact sheets).
   Poly, Liminal, Pop Art — the older prompt-less hand-added pieces) were all
   flagged, confirming the "pre-21st-century only" theme rule.
 
-**Data-integrity bug (NOT a prompt issue) — flagged for the bot:**
-- Three entries with different titles/prompts — *Hieronymus Bosch surreal
-  garden*, *Pre-Raphaelite forest*, *Byzantine golden angel* — serve a
-  **byte-identical** video (all 10,379,826 bytes; identical first frame). The
-  nightly bot uploaded the **same MP4 under three names**, i.e. the veo step was
-  skipped/failed and a stale local file was re-uploaded. Added an upload-integrity
-  guardrail to `AUTOMATED_CURATION.md`.
-
 **New / reinforced rules** (folded into the sections above):
 - Added the **"render in-situ, not as a museum object"** hard rule + an
   always-include negative-cue block (no museum/glass/pedestal/label…).
 - Banned **placeholder video prompts**; require one concrete motion matched to the scene.
-- Expanded the banned **subject-motion verb** list (march, roar, writhe, pulse,
-  sway, shift…).
 
 <!-- Claude appends new rounds above this line. -->

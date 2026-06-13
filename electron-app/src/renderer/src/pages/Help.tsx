@@ -22,11 +22,7 @@ export function HelpPage() {
   }, [])
 
   return (
-    <div className="p-6 max-w-2xl">
-      <div className="titlebar-drag mb-6">
-        <h2 className="text-xl font-semibold text-foreground titlebar-no-drag">Help</h2>
-      </div>
-
+    <div className="p-6">
       <div className="space-y-6">
         <Card className="bg-card border-border">
           <CardHeader>

@@ -117,6 +117,30 @@ incoherent soup.
 
 ---
 
+## Gallery tags (the `tags` field)
+
+Every `gallery.json` entry carries a **`tags` array** that drives the filter pills
+in the Electron app's Gallery. **Each distinct tag becomes its own pill on a single
+row**, so the vocabulary is **closed and intentionally small** — set exactly one
+tag from this list, and **never invent a new value** (a new one silently adds a
+pill and bloats the row):
+
+| Tag | Use for |
+|---|---|
+| `Ancient` | Prehistory & antiquity, non-Asian (Egypt, Mesopotamia, Greece/Rome, Etruscan, Scythian, pre-Columbian Americas, Minoan/Mycenaean, Hellenistic…) |
+| `Asian` | East & South Asian traditions of **any** era (Ukiyo-e, Chinese/Japanese ink & dynastic painting, Mughal, Buddhist sculpture, Joseon, Han/Tang artifacts…) |
+| `Medieval` | ~5th–14th c. European / Christian / Insular (Byzantine, Gothic, Romanesque, Carolingian, Viking, illuminated manuscripts, Celtic knotwork) |
+| `Renaissance & Baroque` | 15th–18th c. European (Renaissance, Mannerism, Flemish/Dutch, Baroque, Rococo, Caravaggism, chiaroscuro/tenebrism) |
+| `19th Century` | Neoclassicism, Romanticism, Realism, Barbizon/Hudson River, Impressionism, Post-Impressionism, Symbolism, Art Nouveau |
+| `Modern` | 20th-c. movements (Cubism, Surrealism, Bauhaus, Abstract/Expressionism, Futurism, Art Deco, Minimalism…) |
+| `Contemporary` | Recent / digital / genre looks. **Legacy only** — those styles were cut from the menu, so you won't generate them; the tag stays for pieces already in the gallery. |
+
+Rule of thumb: **tag by era, except** East/South-Asian traditions always get
+`Asian` (Western era labels fit them poorly). Pick the single best fit — a new
+piece you curate will be one of the first six tags, never `Contemporary`.
+
+---
+
 ## Round log (newest first)
 
 Each entry is appended by Claude after a curation round. Format:

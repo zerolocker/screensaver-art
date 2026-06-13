@@ -31,7 +31,7 @@ You are building a screensaver app that showcases classic and modern artworks br
     *   **Clean up before generating the next piece:** after a successful upload, delete the local image and video.
 
 4.  **Update App:**
-    *   Edit `gallery.json` to include the new video in the beginning of the array.
+    *   `gallery.json` is kept **sorted by `date` ascending** (oldest first, newest last). Use **today's date** for the new piece and **append it to the end of the array** — that keeps the file sorted without re-sorting anything else.
     *   Format: `{ src: 'https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/filename_animated.mp4', title: 'Title - Style (AI Animated)', type: 'video', date: 'YYYY-MM-DD', tags: ['Category'], image_prompt: 'THE_IMAGE_PROMPT_USED', video_prompt: 'THE_VIDEO_PROMPT_USED' }`
     *   Set `tags` to **exactly one** museum "wing" from the closed list in `curation/PROMPT_GUIDANCE.md` ("Gallery tags") — it drives the Gallery filter pills, so **never invent a new tag value**. Assign by culture/region for ancient & non-Western pieces, by era for European ones (e.g. `Egyptian`, `Greek & Roman`, `Japanese`, `Chinese & Korean`, `Islamic`, `Medieval & Byzantine`, `Renaissance & Baroque`, `19th Century`, `Modern`). Never use `Contemporary` (legacy-only).
 

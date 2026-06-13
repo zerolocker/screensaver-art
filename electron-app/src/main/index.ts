@@ -206,6 +206,14 @@ ipcMain.handle('update:quitAndInstall', () => quitAndInstall())
 ipcMain.handle('shell:openExternal', (_evt, url: string) => shell.openExternal(url))
 ipcMain.handle('shell:openPath', (_evt, path: string) => shell.openPath(path))
 
+// Lets the gallery's "Fullscreen" preview mode push the app window into native
+// macOS fullscreen so a piece fills the whole display. (Native fullscreen has
+// an unavoidable ~0.5s Space animation; users who dislike it can switch the
+// preview to "In-app" in the gallery options menu, which never calls this.)
+ipcMain.handle('window:setFullScreen', (_evt, value: boolean) => {
+  mainWindow?.setFullScreen(Boolean(value))
+})
+
 // App info — version comes from the bundled package.json (release.sh bumps it).
 ipcMain.handle('app:getVersion', () => app.getVersion())
 

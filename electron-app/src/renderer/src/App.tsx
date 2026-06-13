@@ -183,7 +183,12 @@ function AuthedShell({ session }: { session: Session }) {
     <div className="flex h-screen">
       <Sidebar session={session} />
       <main className="flex-1 overflow-y-auto">
-        <div className="titlebar-drag h-10 sticky top-0 z-10" />
+        {/* Draggable titlebar strip. Height matches the sidebar title's top
+            inset (pt-8) so each page's content starts at the same height as the
+            "Living Art Screensaver" title. Frosted + on top so scrolled content
+            can't show through it; the gallery's sticky controls pin just below it
+            at top-8. */}
+        <div className="titlebar-drag h-8 sticky top-0 z-30 bg-background/95 backdrop-blur-sm" />
         <Routes>
           <Route path="/gallery" element={<GalleryPage session={session} />} />
           <Route path="/account" element={<AccountPage session={session} />} />

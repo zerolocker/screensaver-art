@@ -233,9 +233,11 @@ export function GalleryPage({ session }: GalleryPageProps) {
 
   return (
     <div className="px-6 pb-8">
-      {/* Sticky filter header (sits below the 40px draggable titlebar strip
-          rendered by the app shell, hence top-10). */}
-      <div className="sticky top-10 z-20 -mx-6 px-6 pt-3 pb-3 bg-background/95 backdrop-blur-sm border-b border-border">
+      <AppBanners showUpsell={!!gallery && !gallery.isSubscribed} />
+      <p className="text-sm text-muted-foreground mb-4">
+        Pick the art you want your screensaver to play.
+      </p>
+      <div className="sticky top-3 z-20 -mx-6 px-6 pt-3 pb-3 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-5">
             <TabButton active={tab === 'all'} onClick={() => switchTab('all')}>
@@ -277,10 +279,6 @@ export function GalleryPage({ session }: GalleryPageProps) {
             })}
           </div>
         )}
-      </div>
-
-      <div className="pt-4">
-        <AppBanners showUpsell={!!gallery && !gallery.isSubscribed} />
       </div>
 
       {/* Empty states for the Selected tab */}

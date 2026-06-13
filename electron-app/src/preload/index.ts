@@ -82,6 +82,11 @@ const electronAPI = {
       return () => ipcRenderer.removeListener('cache:progress', handler)
     },
   },
+  selection: {
+    get: (): Promise<{ selected: string[] | null }> => ipcRenderer.invoke('selection:get'),
+    set: (selected: string[]): Promise<{ ok: boolean; error?: string }> =>
+      ipcRenderer.invoke('selection:set', selected),
+  },
   installer: {
     status: (): Promise<InstallerStatus> => ipcRenderer.invoke('installer:status'),
     ensureRegistered: (): Promise<{ ok: boolean; error?: string; registered: boolean }> =>

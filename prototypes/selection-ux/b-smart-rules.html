@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Option B — Smart mixes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="shared.css" />
+  <style>
+    .modes {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+      gap: 10px; margin-bottom: 16px;
+    }
+    .mode-card {
+      text-align: left; background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px; cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    .mode-card:hover { border-color: color-mix(in oklab, var(--primary) 40%, var(--border)); }
+    .mode-card.active {
+      border-color: var(--primary);
+      background: color-mix(in oklab, var(--primary) 8%, var(--card));
+    }
+    .mode-card .name { font-weight: 600; display: flex; gap: 8px; align-items: center; margin-bottom: 4px; }
+    .mode-card .desc { color: var(--muted-foreground); font-size: 12px; }
+    .badge {
+      font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+      background: var(--primary); color: var(--primary-foreground);
+      padding: 2px 7px; border-radius: 999px;
+    }
+    .controls { margin-top: 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .controls input[type='range'] { flex: 1; min-width: 90px; }
+    .controls .n { font-variant-numeric: tabular-nums; font-size: 13px; width: 30px; }
+    .controls .btn { padding: 4px 10px; font-size: 12px; display: inline-flex; gap: 6px; align-items: center; }
+    .controls .btn svg { width: 12px; height: 12px; }
+
+    .statusline {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      padding: 12px 0; margin-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .autonote { color: var(--muted-foreground); font-size: 12px; }
+
+    .excluded { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .excluded:empty { display: none; }
+    .xchip {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--secondary); border: 1px dashed var(--border); border-radius: 999px;
+      padding: 3px 6px 3px 12px; font-size: 12px; color: var(--muted-foreground);
+    }
+    .xchip button {
+      border: none; background: transparent; color: var(--muted-foreground); cursor: pointer;
+      display: flex; padding: 2px; border-radius: 50%;
+    }
+    .xchip button:hover { color: var(--foreground); }
+    .xchip button svg { width: 11px; height: 11px; }
+
+    /* rule modes show the exclude button; custom mode shows checkmarks */
+    .grid.mode-rule .check { display: none; }
+    .grid.mode-custom .actions { display: none; }
+    .grid.mode-rule .card { cursor: default; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="back" href="index.html">&larr; All options</a>
+      <h1>Option B — Smart mixes</h1>
+      <p class="sub">
+        Pick a strategy instead of individual pieces — the selection keeps itself fresh as new art
+        lands in the gallery every day. Hover a piece to exclude it from any mix, or go fully
+        hand-picked. Changes apply immediately.
+      </p>
+    </header>
+
+    <div class="modes" id="modes"></div>
+
+    <div class="statusline">
+      <span class="chip" id="count"></span>
+      <span class="autonote" id="autonote"></span>
+    </div>
+
+    <div class="excluded" id="excluded"></div>
+
+    <div class="grid mode-rule" id="grid"></div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    const KEY = 'lart-proto-b'
+
+    const MODES = {
+      classic: {
+        name: 'Classic 100',
+        badge: 'Default',
+        desc: 'The first 100 pieces of the gallery — a stable starter set.',
+        note: 'A fixed set: it never changes unless you switch mixes.',
+      },
+      latest: {
+        name: 'Latest 100',
+        desc: 'The 100 newest pieces in the gallery.',
+        note: 'Auto-updates: brand-new art replaces the oldest piece in the mix.',
+      },
+      random: {
+        name: 'Surprise me',
+        desc: 'A random mix of the size you choose. Reshuffle any time.',
+        note: 'Stays the same mix until you reshuffle.',
+      },
+      all: {
+        name: 'Everything',
+        desc: 'The entire gallery.',
+        note: 'Auto-updates: every new piece joins automatically.',
+      },
+      custom: {
+        name: 'Hand-picked',
+        desc: 'Choose exactly the pieces you want, one by one.',
+        note: 'Click pieces below to add or remove them.',
+      },
+    }
+
+    const grid = document.getElementById('grid')
+    const modesEl = document.getElementById('modes')
+    const countEl = document.getElementById('count')
+    const autonoteEl = document.getElementById('autonote')
+    const excludedEl = document.getElementById('excluded')
+
+    let items = []
+    const cards = new Map()
+    const modeCards = new Map()
+    let state = null
+
+    init()
+
+    async function init() {
+      items = await loadGallery()
+      state = loadState(KEY, null) ?? {
+        mode: 'classic',
+        n: 100,
+        seed: 42,
+        excluded: [],
+        custom: defaultIds(items),
+      }
+
+      // mode cards
+      for (const [id, m] of Object.entries(MODES)) {
+        const card = document.createElement('div')
+        card.className = 'mode-card'
+        card.innerHTML = `<div class="name">${m.name}${m.badge ? ` <span class="badge">${m.badge}</span>` : ''}</div><div class="desc">${m.desc}</div>`
+        if (id === 'random') {
+          const controls = document.createElement('div')
+          controls.className = 'controls'
+          controls.innerHTML = `
+            <input type="range" id="nSlider" min="25" max="${items.length}" step="1" value="${state.n}" />
+            <span class="n" id="nValue">${state.n}</span>
+            <button class="btn" id="reshuffle" title="New random mix">${ICONS.rotate} Reshuffle</button>`
+          controls.addEventListener('click', (e) => e.stopPropagation())
+          card.appendChild(controls)
+        }
+        card.addEventListener('click', () => {
+          state.mode = id
+          update()
+        })
+        modesEl.appendChild(card)
+        modeCards.set(id, card)
+      }
+
+      document.getElementById('nSlider').addEventListener('input', (e) => {
+        state.n = Number(e.target.value)
+        state.mode = 'random'
+        update()
+      })
+      document.getElementById('reshuffle').addEventListener('click', () => {
+        state.seed = Math.floor(Math.random() * 1e9)
+        state.mode = 'random'
+        update()
+      })
+
+      // art cards (created once; shown/hidden per mode)
+      for (const item of items) {
+        const card = document.createElement('div')
+        card.className = 'card'
+        card.dataset.id = item.id
+        const video = makeVideo(item)
+        hoverPlay(card, video)
+        const title = document.createElement('div')
+        title.className = 'title'
+        title.textContent = item.title
+        const check = document.createElement('div')
+        check.className = 'check'
+        check.innerHTML = ICONS.check
+        const actions = document.createElement('div')
+        actions.className = 'actions'
+        const ban = document.createElement('button')
+        ban.className = 'iconbtn'
+        ban.innerHTML = ICONS.ban
+        ban.title = "Don't play this piece"
+        ban.addEventListener('click', (e) => {
+          e.stopPropagation()
+          if (!state.excluded.includes(item.id)) state.excluded.push(item.id)
+          update()
+        })
+        actions.appendChild(ban)
+        card.append(video, title, check, actions)
+        card.addEventListener('click', () => {
+          if (state.mode !== 'custom') return
+          const i = state.custom.indexOf(item.id)
+          i === -1 ? state.custom.push(item.id) : state.custom.splice(i, 1)
+          update()
+        })
+        grid.appendChild(card)
+        cards.set(item.id, card)
+      }
+
+      update()
+    }
+
+    function includedIds() {
+      if (state.mode === 'custom') return state.custom.slice()
+      let base
+      if (state.mode === 'classic') base = items.slice(0, FREE_COUNT)
+      else if (state.mode === 'latest')
+        base = items
+          .slice()
+          .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+          .slice(0, FREE_COUNT)
+      else if (state.mode === 'random') base = seededShuffle(items, state.seed).slice(0, state.n)
+      else base = items.slice()
+      const excluded = new Set(state.excluded)
+      return base.map((it) => it.id).filter((id) => !excluded.has(id))
+    }
+
+    function update() {
+      const custom = state.mode === 'custom'
+      const included = new Set(includedIds())
+
+      grid.classList.toggle('mode-custom', custom)
+      grid.classList.toggle('mode-rule', !custom)
+
+      for (const item of items) {
+        const card = cards.get(item.id)
+        if (custom) {
+          card.style.display = ''
+          const on = included.has(item.id)
+          card.classList.toggle('on', on)
+          card.classList.toggle('off', !on)
+        } else {
+          card.style.display = included.has(item.id) ? '' : 'none'
+          card.classList.remove('on', 'off')
+        }
+      }
+
+      for (const [id, card] of modeCards) card.classList.toggle('active', state.mode === id)
+      document.getElementById('nValue').textContent = state.n
+      document.getElementById('nSlider').value = state.n
+
+      countEl.innerHTML = `Your screensaver will play <b>${included.size}</b> of ${items.length} pieces · ${estSize(included.size)}`
+      autonoteEl.textContent = MODES[state.mode].note
+
+      // excluded chips (rule modes only — in custom you simply don't pick)
+      excludedEl.innerHTML = ''
+      if (!custom && state.excluded.length) {
+        const label = document.createElement('span')
+        label.className = 'muted'
+        label.textContent = `Excluded (${state.excluded.length}):`
+        excludedEl.appendChild(label)
+        for (const id of state.excluded) {
+          const chip = document.createElement('span')
+          chip.className = 'xchip'
+          chip.append(items[id].title)
+          const restore = document.createElement('button')
+          restore.innerHTML = ICONS.x
+          restore.title = 'Restore'
+          restore.addEventListener('click', () => {
+            state.excluded = state.excluded.filter((x) => x !== id)
+            update()
+          })
+          chip.appendChild(restore)
+          excludedEl.appendChild(chip)
+        }
+        const clear = document.createElement('button')
+        clear.className = 'btn ghost'
+        clear.textContent = 'Restore all'
+        clear.addEventListener('click', () => {
+          state.excluded = []
+          update()
+        })
+        excludedEl.appendChild(clear)
+      }
+
+      saveState(KEY, state)
+    }
+  </script>
+</body>
+</html>

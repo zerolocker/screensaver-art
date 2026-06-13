@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Option I — Filter header explorations</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="shared.css" />
+  <style>
+    .toolbar { flex-direction: column; align-items: stretch; gap: 0; }
+
+    /* ---- V1: tabs ---- */
+    .tabs { display: flex; gap: 26px; border-bottom: 1px solid var(--border); }
+    .tab {
+      background: none; border: none; color: var(--muted-foreground);
+      font: inherit; font-size: 14px; padding: 6px 2px 11px; cursor: pointer; position: relative;
+    }
+    .tab:hover { color: var(--foreground); }
+    .tab .n { font-size: 12px; opacity: .65; margin-left: 5px; font-variant-numeric: tabular-nums; }
+    .tab.active { color: var(--foreground); font-weight: 600; }
+    .tab.active::after {
+      content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+      background: var(--primary); border-radius: 2px 2px 0 0;
+    }
+    .toolbar.v-tabs { border-bottom: none; padding-bottom: 8px; }
+    .toolbar.v-tabs .pills { padding-top: 12px; }
+
+    /* ---- V2: one row, divider ---- */
+    .frow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .pill.scope { background: var(--secondary); }
+    .pill.scope.active {
+      background: var(--primary); color: var(--primary-foreground);
+      border-color: transparent; font-weight: 600;
+    }
+    .pill.scope.active .n { opacity: .75; }
+    .vdiv { width: 1px; height: 22px; background: var(--border); margin: 0 6px; flex: none; }
+
+    /* ---- shared chip look (quieter than scope controls) ---- */
+    .pills .pill { background: transparent; }
+    .pills .pill.active,
+    .frow .pill:not(.scope).active {
+      background: color-mix(in oklab, var(--primary) 16%, transparent);
+      border-color: var(--primary);
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    /* ---- V3: scope integrated into the page header ---- */
+    .appheader { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 18px 0 4px; }
+    .appheader h2 { font-size: 20px; font-weight: 600; margin: 0; }
+    .appheader .subline { color: var(--muted-foreground); font-size: 13px; margin: 3px 0 0; }
+    .seg button .n { font-size: 12px; opacity: .65; margin-left: 5px; font-variant-numeric: tabular-nums; }
+
+    .empty {
+      color: var(--muted-foreground); font-size: 13px; text-align: center;
+      padding: 48px 20px; border: 1px dashed var(--border); border-radius: var(--radius);
+    }
+
+    /* ---- variant switcher ---- */
+    .switcher {
+      position: fixed; right: 18px; bottom: 18px; z-index: 60;
+      display: flex; align-items: center; gap: 6px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 999px;
+      padding: 6px 8px 6px 14px; box-shadow: 0 10px 34px rgba(0, 0, 0, .55);
+      font-size: 12px; color: var(--muted-foreground);
+    }
+    .switcher button {
+      border: 1px solid var(--border); background: var(--secondary); color: var(--muted-foreground);
+      font: inherit; font-size: 12px; padding: 5px 11px; border-radius: 999px; cursor: pointer;
+    }
+    .switcher button.active { background: var(--primary); color: var(--primary-foreground); border-color: transparent; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="back" href="index.html">&larr; All options</a>
+      <h1>Option I — Filter header explorations</h1>
+      <p class="sub">
+        Same gallery and behavior as the candidate (poster engine, instant ticks, detail modal) —
+        three treatments of the All/Selected + styles header. Flip between them with the switcher
+        in the corner.
+      </p>
+    </header>
+
+    <div id="headerHost"></div>
+
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" hidden>No pieces match — clear a style filter or tick more pieces.</div>
+  </div>
+
+  <div class="switcher">
+    <span>Header</span>
+    <button data-v="tabs">1 · Tabs</button>
+    <button data-v="row">2 · One row</button>
+    <button data-v="integrated">3 · In header</button>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    const KEY = 'lart-proto-i'
+    const VKEY = 'lart-proto-i-variant'
+    const headerHost = document.getElementById('headerHost')
+    const grid = document.getElementById('grid')
+
+    let items = []
+    const cards = new Map()
+    let selected = new Set()
+    let scope = 'all'
+    let scopeIds = null
+    let activeStyles = new Set()
+    let variant = loadState(VKEY, 'tabs')
+    let styleNames = []
+
+    init()
+
+    async function init() {
+      items = await loadGallery()
+      selected = new Set(loadState(KEY, null) ?? defaultIds(items))
+      styleNames = STYLE_ORDER.filter((s) => items.some((it) => it.style === s))
+
+      for (const item of items) {
+        const card = document.createElement('div')
+        card.className = 'card'
+        card.dataset.id = item.id
+        const poster = makePosterCanvas(item)
+        attachHoverPreview(card, item)
+        const title = document.createElement('div')
+        title.className = 'title'
+        title.textContent = item.title
+        const check = document.createElement('button')
+        check.className = 'check'
+        check.innerHTML = ICONS.check
+        check.title = 'Play in screensaver'
+        check.addEventListener('click', (e) => {
+          e.stopPropagation()
+          toggle(item.id)
+        })
+        card.append(poster, title, check)
+        card.addEventListener('click', () =>
+          openArtModal(item, {
+            isSelected: () => selected.has(item.id),
+            onToggle: () => toggle(item.id),
+          }),
+        )
+        grid.appendChild(card)
+        cards.set(item.id, card)
+      }
+
+      for (const btn of document.querySelectorAll('.switcher button')) {
+        btn.addEventListener('click', () => {
+          variant = btn.dataset.v
+          saveState(VKEY, variant)
+          renderHeader()
+          update()
+        })
+      }
+
+      setScope('all')
+    }
+
+    /* ---------- state ---------- */
+    function setScope(next) {
+      scope = next
+      scopeIds = scope === 'selected' ? new Set(selected) : new Set(items.map((it) => it.id))
+      renderHeader()
+      update()
+    }
+
+    function toggleStyle(s) {
+      activeStyles.has(s) ? activeStyles.delete(s) : activeStyles.add(s)
+      renderHeader()
+      update()
+    }
+
+    function toggle(id) {
+      selected.has(id) ? selected.delete(id) : selected.add(id)
+      saveState(KEY, [...selected])
+      renderHeader()
+      update()
+    }
+
+    /* ---------- header variants ---------- */
+    function scopeLabel(s) {
+      return s === 'all' ? `All<span class="n">${items.length}</span>` : `Selected<span class="n">${selected.size}</span>`
+    }
+
+    function makeChips() {
+      const pills = document.createElement('div')
+      pills.className = 'pills'
+      for (const s of styleNames) {
+        const pill = document.createElement('button')
+        pill.className = 'pill' + (activeStyles.has(s) ? ' active' : '')
+        const n = items.filter((it) => it.style === s).length
+        pill.innerHTML = `${s}<span class="n">${n}</span>`
+        pill.addEventListener('click', () => toggleStyle(s))
+        pills.appendChild(pill)
+      }
+      if (activeStyles.size > 0) {
+        const clear = document.createElement('button')
+        clear.className = 'btn ghost'
+        clear.textContent = 'Clear'
+        clear.addEventListener('click', () => {
+          activeStyles.clear()
+          renderHeader()
+          update()
+        })
+        pills.appendChild(clear)
+      }
+      return pills
+    }
+
+    function renderHeader() {
+      headerHost.innerHTML = ''
+
+      if (variant === 'tabs') {
+        const toolbar = document.createElement('div')
+        toolbar.className = 'toolbar v-tabs'
+        const tabs = document.createElement('div')
+        tabs.className = 'tabs'
+        for (const s of ['all', 'selected']) {
+          const tab = document.createElement('button')
+          tab.className = 'tab' + (scope === s ? ' active' : '')
+          tab.innerHTML = scopeLabel(s)
+          tab.addEventListener('click', () => setScope(s))
+          tabs.appendChild(tab)
+        }
+        toolbar.append(tabs, makeChips())
+        headerHost.appendChild(toolbar)
+      }
+
+      if (variant === 'row') {
+        const toolbar = document.createElement('div')
+        toolbar.className = 'toolbar'
+        const frow = document.createElement('div')
+        frow.className = 'frow'
+        for (const s of ['all', 'selected']) {
+          const pill = document.createElement('button')
+          pill.className = 'pill scope' + (scope === s ? ' active' : '')
+          pill.innerHTML = scopeLabel(s)
+          pill.addEventListener('click', () => setScope(s))
+          frow.appendChild(pill)
+        }
+        const vdiv = document.createElement('span')
+        vdiv.className = 'vdiv'
+        frow.appendChild(vdiv)
+        const chips = makeChips()
+        chips.style.display = 'contents'
+        frow.appendChild(chips)
+        toolbar.appendChild(frow)
+        headerHost.appendChild(toolbar)
+      }
+
+      if (variant === 'integrated') {
+        const appheader = document.createElement('div')
+        appheader.className = 'appheader'
+        const left = document.createElement('div')
+        left.innerHTML = `<h2>Gallery</h2><p class="subline">Tick the pieces your screensaver plays.</p>`
+        const seg = document.createElement('div')
+        seg.className = 'seg'
+        for (const s of ['all', 'selected']) {
+          const btn = document.createElement('button')
+          btn.className = scope === s ? 'active' : ''
+          btn.innerHTML = scopeLabel(s)
+          btn.addEventListener('click', () => setScope(s))
+          seg.appendChild(btn)
+        }
+        appheader.append(left, seg)
+        const toolbar = document.createElement('div')
+        toolbar.className = 'toolbar'
+        toolbar.appendChild(makeChips())
+        headerHost.append(appheader, toolbar)
+      }
+    }
+
+    /* ---------- grid ---------- */
+    function update() {
+      let visible = 0
+      for (const item of items) {
+        const card = cards.get(item.id)
+        const show =
+          scopeIds.has(item.id) && (activeStyles.size === 0 || activeStyles.has(item.style))
+        card.style.display = show ? '' : 'none'
+        if (show) visible++
+        const on = selected.has(item.id)
+        card.classList.toggle('on', on)
+        card.classList.toggle('off', !on)
+      }
+      document.getElementById('empty').hidden = visible > 0
+      for (const btn of document.querySelectorAll('.switcher button')) {
+        btn.classList.toggle('active', btn.dataset.v === variant)
+      }
+    }
+  </script>
+</body>
+</html>

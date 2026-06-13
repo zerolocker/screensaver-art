@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Option C — Playlist builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="shared.css" />
+  <style>
+    html, body { height: 100%; }
+    body { display: flex; flex-direction: column; overflow: hidden; }
+
+    .apphead { padding: 18px 24px 14px; border-bottom: 1px solid var(--border); }
+    .apphead h1 { margin: 8px 0 2px; }
+    .apphead .sub { margin-bottom: 0; }
+
+    .panes { flex: 1; display: flex; min-height: 0; }
+    .pane { overflow-y: auto; padding: 0 20px 100px; }
+    .library { flex: 1.5; border-right: 1px solid var(--border); }
+    .playlist { flex: 1; min-width: 380px; }
+
+    .panehead {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 14px 0 10px;
+      background: color-mix(in oklab, var(--background) 92%, transparent);
+      backdrop-filter: blur(8px);
+    }
+    .panehead h2 { font-size: 14px; font-weight: 600; margin: 0; }
+    .hint { color: var(--muted-foreground); font-size: 12px; margin: 0 0 10px; }
+
+    /* "already added" treatment in the library */
+    .library .card.on { opacity: .45; }
+    .library .card.on:hover { opacity: .75; }
+    .library .card:not(.on) .check { opacity: 0; }
+    .library .card:not(.on):hover .check { opacity: 1; }
+
+    /* playlist rows */
+    .row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 5px 8px; border-radius: 8px;
+    }
+    .row:hover { background: var(--secondary); }
+    .row.dragging { opacity: .35; }
+    .row .grip { color: var(--muted-foreground); cursor: grab; display: flex; flex: none; }
+    .row .grip svg { width: 14px; height: 14px; }
+    .row .ord {
+      width: 26px; text-align: right; color: var(--muted-foreground);
+      font-size: 12px; font-variant-numeric: tabular-nums; flex: none;
+    }
+    .row video {
+      width: 78px; aspect-ratio: 16 / 9; object-fit: cover;
+      border-radius: 6px; background: var(--secondary); flex: none;
+    }
+    .row .rtitle {
+      flex: 1; font-size: 13px; min-width: 0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .row .rm { opacity: 0; flex: none; width: 24px; height: 24px; }
+    .row .rm svg { width: 12px; height: 12px; }
+    .row:hover .rm { opacity: 1; }
+
+    .empty {
+      color: var(--muted-foreground); font-size: 13px; text-align: center;
+      padding: 40px 20px; border: 1px dashed var(--border); border-radius: var(--radius);
+    }
+  </style>
+</head>
+<body>
+  <div class="apphead">
+    <a class="back" href="index.html">&larr; All options</a>
+    <h1>Option C — Playlist builder</h1>
+    <p class="sub">
+      Build the playlist like a music app: add pieces from the library on the left, reorder them on
+      the right. The screensaver plays top to bottom.
+    </p>
+  </div>
+
+  <div class="panes">
+    <section class="pane library">
+      <div class="panehead">
+        <h2>Library</h2>
+        <input type="search" id="search" placeholder="Search artworks…" />
+        <span class="muted">Click a piece to add or remove it</span>
+      </div>
+      <div class="grid small" id="libgrid"></div>
+    </section>
+
+    <aside class="pane playlist">
+      <div class="panehead">
+        <h2>Your playlist</h2>
+        <span class="chip" id="plcount"></span>
+        <span class="spacer"></span>
+        <button class="btn ghost" id="reset">Reset to default</button>
+        <button class="btn ghost" id="clear">Clear</button>
+      </div>
+      <p class="hint">Drag rows to change the play order.</p>
+      <div id="rows"></div>
+      <div class="empty" id="empty" hidden>
+        Your playlist is empty — click pieces in the library to add them.
+      </div>
+    </aside>
+  </div>
+
+  <div class="savebar" id="savebar">
+    <span class="msg" id="savemsg"></span>
+    <button class="btn" id="discard">Discard</button>
+    <button class="btn primary" id="save">Save</button>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    const KEY = 'lart-proto-c'
+    const libgrid = document.getElementById('libgrid')
+    const rowsEl = document.getElementById('rows')
+    const emptyEl = document.getElementById('empty')
+    const plcount = document.getElementById('plcount')
+    const savebar = document.getElementById('savebar')
+    const savemsg = document.getElementById('savemsg')
+    const saveBtn = document.getElementById('save')
+
+    let items = []
+    let playlist = [] // ordered ids
+    let savedSnapshot = '[]'
+    const libCards = new Map()
+    const rowEls = new Map()
+    let dragId = null
+
+    init()
+
+    async function init() {
+      items = await loadGallery()
+      playlist = loadState(KEY, null) ?? defaultIds(items)
+      savedSnapshot = JSON.stringify(playlist)
+
+      for (const item of items) {
+        const card = document.createElement('div')
+        card.className = 'card'
+        card.dataset.id = item.id
+        const video = makeVideo(item)
+        hoverPlay(card, video)
+        const title = document.createElement('div')
+        title.className = 'title'
+        title.textContent = item.title
+        const check = document.createElement('div')
+        check.className = 'check'
+        check.innerHTML = ICONS.check
+        card.append(video, title, check)
+        card.addEventListener('click', () => toggleInPlaylist(item.id))
+        libgrid.appendChild(card)
+        libCards.set(item.id, card)
+      }
+
+      document.getElementById('search').addEventListener('input', (e) => {
+        const needle = e.target.value.trim().toLowerCase()
+        for (const item of items) {
+          const match = !needle || item.title.toLowerCase().includes(needle)
+          libCards.get(item.id).style.display = match ? '' : 'none'
+        }
+      })
+      document.getElementById('reset').addEventListener('click', () => {
+        playlist = defaultIds(items)
+        update()
+      })
+      document.getElementById('clear').addEventListener('click', () => {
+        playlist = []
+        update()
+      })
+      document.getElementById('discard').addEventListener('click', () => {
+        playlist = JSON.parse(savedSnapshot)
+        update()
+      })
+      saveBtn.addEventListener('click', () => {
+        savedSnapshot = JSON.stringify(playlist)
+        saveState(KEY, playlist)
+        update()
+        toast(`Saved — your screensaver will play ${playlist.length} pieces in this order`)
+      })
+
+      // drag-to-reorder: the dragged row follows the cursor live, then the
+      // playlist array is read back from the DOM order
+      rowsEl.addEventListener('dragover', (e) => {
+        if (dragId === null) return
+        e.preventDefault()
+        const dragEl = rowEls.get(dragId)
+        const after = [...rowsEl.querySelectorAll('.row:not(.dragging)')].find((r) => {
+          const rect = r.getBoundingClientRect()
+          return e.clientY < rect.top + rect.height / 2
+        })
+        if (after) rowsEl.insertBefore(dragEl, after)
+        else rowsEl.appendChild(dragEl)
+      })
+      rowsEl.addEventListener('drop', (e) => e.preventDefault())
+
+      update()
+    }
+
+    function toggleInPlaylist(id) {
+      const i = playlist.indexOf(id)
+      i === -1 ? playlist.push(id) : playlist.splice(i, 1)
+      update()
+    }
+
+    function rowFor(id) {
+      if (rowEls.has(id)) return rowEls.get(id)
+      const item = items[id]
+      const row = document.createElement('div')
+      row.className = 'row'
+      row.draggable = true
+      row.dataset.id = id
+      const grip = document.createElement('span')
+      grip.className = 'grip'
+      grip.innerHTML = ICONS.grip
+      const ord = document.createElement('span')
+      ord.className = 'ord'
+      const video = makeVideo(item)
+      hoverPlay(row, video)
+      const title = document.createElement('span')
+      title.className = 'rtitle'
+      title.textContent = item.title
+      const rm = document.createElement('button')
+      rm.className = 'iconbtn rm'
+      rm.innerHTML = ICONS.x
+      rm.title = 'Remove from playlist'
+      rm.addEventListener('click', () => toggleInPlaylist(id))
+      row.append(grip, ord, video, title, rm)
+      row.addEventListener('dragstart', (e) => {
+        dragId = id
+        row.classList.add('dragging')
+        e.dataTransfer.effectAllowed = 'move'
+      })
+      row.addEventListener('dragend', () => {
+        row.classList.remove('dragging')
+        dragId = null
+        playlist = [...rowsEl.children].map((r) => Number(r.dataset.id))
+        update()
+      })
+      rowEls.set(id, row)
+      return row
+    }
+
+    function update() {
+      // re-append rows in playlist order (appendChild moves existing nodes,
+      // so videos keep their loaded state)
+      const inList = new Set(playlist)
+      for (const [id, row] of rowEls) if (!inList.has(id)) row.remove()
+      playlist.forEach((id, i) => {
+        const row = rowFor(id)
+        rowsEl.appendChild(row)
+        row.querySelector('.ord').textContent = i + 1
+      })
+      emptyEl.hidden = playlist.length > 0
+
+      for (const item of items) libCards.get(item.id).classList.toggle('on', inList.has(item.id))
+
+      plcount.innerHTML = `<b>${playlist.length}</b> pieces · ${estSize(playlist.length)}`
+      const dirty = JSON.stringify(playlist) !== savedSnapshot
+      savebar.classList.toggle('show', dirty)
+      saveBtn.disabled = playlist.length === 0
+      savemsg.textContent = playlist.length === 0 ? 'Add at least one piece' : 'Unsaved changes'
+    }
+  </script>
+</body>
+</html>

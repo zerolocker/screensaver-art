@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Option D — Tune as you browse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="shared.css" />
+  <style>
+    .card { cursor: default; }
+    .statusline { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .notice { color: var(--muted-foreground); font-size: 12px; }
+
+    details.hiddenSection { margin-top: 28px; }
+    details.hiddenSection summary {
+      cursor: pointer; color: var(--muted-foreground); font-size: 13px; font-weight: 500;
+      padding: 10px 0; border-top: 1px solid var(--border);
+    }
+    details.hiddenSection summary:hover { color: var(--foreground); }
+    .hiddenGrid { margin-top: 12px; }
+    .hiddenGrid .card { filter: grayscale(.8); opacity: .55; }
+    .hiddenGrid .card:hover { opacity: .85; }
+    .hiddenGrid .card .heart { display: none; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="back" href="index.html">&larr; All options</a>
+      <h1>Option D — Tune as you browse</h1>
+      <p class="sub">
+        No upfront curation: a sensible set plays by default. While browsing, hide pieces you never
+        want to see and heart the ones you love — then switch to favorites-only whenever you're
+        ready. Changes apply immediately. Dimmed pieces aren't playing in the current mode.
+      </p>
+    </header>
+
+    <div class="toolbar">
+      <div class="seg" id="seg">
+        <button data-mode="featured">Featured 100</button>
+        <button data-mode="all">Everything</button>
+        <button data-mode="favorites">Favorites</button>
+      </div>
+      <span class="chip" id="count"></span>
+      <span class="notice" id="notice"></span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <details class="hiddenSection" id="hiddenSection" hidden>
+      <summary id="hiddenSummary"></summary>
+      <div class="grid hiddenGrid" id="hiddenGrid"></div>
+    </details>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    const KEY = 'lart-proto-d'
+    const grid = document.getElementById('grid')
+    const hiddenGrid = document.getElementById('hiddenGrid')
+    const hiddenSection = document.getElementById('hiddenSection')
+    const hiddenSummary = document.getElementById('hiddenSummary')
+    const seg = document.getElementById('seg')
+    const countEl = document.getElementById('count')
+    const noticeEl = document.getElementById('notice')
+
+    let items = []
+    const cards = new Map()
+    let state = { mode: 'featured', favs: [], hidden: [] }
+
+    init()
+
+    async function init() {
+      items = await loadGallery()
+      state = loadState(KEY, null) ?? state
+
+      for (const btn of seg.querySelectorAll('button')) {
+        btn.addEventListener('click', () => {
+          state.mode = btn.dataset.mode
+          update()
+        })
+      }
+
+      for (const item of items) {
+        const card = document.createElement('div')
+        card.className = 'card'
+        card.dataset.id = item.id
+        const video = makeVideo(item)
+        hoverPlay(card, video)
+        const title = document.createElement('div')
+        title.className = 'title'
+        title.textContent = item.title
+
+        const actions = document.createElement('div')
+        actions.className = 'actions'
+        const heart = document.createElement('button')
+        heart.className = 'iconbtn heart'
+        heart.title = 'Favorite'
+        heart.addEventListener('click', () => {
+          const i = state.favs.indexOf(item.id)
+          i === -1 ? state.favs.push(item.id) : state.favs.splice(i, 1)
+          update()
+        })
+        const hide = document.createElement('button')
+        hide.className = 'iconbtn hide'
+        hide.innerHTML = ICONS.eyeOff
+        hide.addEventListener('click', () => {
+          const i = state.hidden.indexOf(item.id)
+          i === -1 ? state.hidden.push(item.id) : state.hidden.splice(i, 1)
+          update()
+        })
+        actions.append(heart, hide)
+        card.append(video, title, actions)
+        cards.set(item.id, card)
+        grid.appendChild(card)
+      }
+
+      update()
+    }
+
+    function playSet() {
+      const hidden = new Set(state.hidden)
+      let base
+      if (state.mode === 'featured') base = defaultIds(items)
+      else if (state.mode === 'all') base = items.map((it) => it.id)
+      else base = state.favs.slice()
+      return new Set(base.filter((id) => !hidden.has(id)))
+    }
+
+    function update() {
+      const playing = playSet()
+      const hidden = new Set(state.hidden)
+      const favs = new Set(state.favs)
+
+      for (const item of items) {
+        const card = cards.get(item.id)
+        const isHidden = hidden.has(item.id)
+        // hidden cards live in the collapsed section; appendChild moves the node
+        if (isHidden && card.parentElement !== hiddenGrid) hiddenGrid.appendChild(card)
+        if (!isHidden && card.parentElement !== grid) grid.appendChild(card)
+
+        card.classList.toggle('off', !isHidden && !playing.has(item.id))
+        const heart = card.querySelector('.heart')
+        heart.classList.toggle('active', favs.has(item.id))
+        heart.innerHTML = favs.has(item.id) ? ICONS.heartFill : ICONS.heart
+        heart.title = favs.has(item.id) ? 'Remove from favorites' : 'Favorite'
+        const hide = card.querySelector('.hide')
+        hide.classList.toggle('active', isHidden)
+        hide.title = isHidden ? 'Restore' : "Hide — don't play this piece"
+      }
+
+      // keep the moved cards in gallery order within each container
+      ;[grid, hiddenGrid].forEach((container) => {
+        const sorted = [...container.children].sort((a, b) => a.dataset.id - b.dataset.id)
+        sorted.forEach((c) => container.appendChild(c))
+      })
+
+      for (const btn of seg.querySelectorAll('button')) {
+        const mode = btn.dataset.mode
+        btn.classList.toggle('active', state.mode === mode)
+        if (mode === 'favorites') btn.textContent = `Favorites${state.favs.length ? ` (${state.favs.length})` : ''}`
+        if (mode === 'all') btn.textContent = `Everything (${items.length})`
+      }
+
+      countEl.innerHTML = `Playing <b>${playing.size}</b> of ${items.length} pieces · ${estSize(playing.size)}`
+      noticeEl.textContent =
+        state.mode === 'favorites' && state.favs.length === 0
+          ? 'No favorites yet — hover a piece and tap the heart.'
+          : ''
+
+      hiddenSection.hidden = state.hidden.length === 0
+      hiddenSummary.textContent = `Hidden (${state.hidden.length}) — never play these`
+
+      saveState(KEY, state)
+    }
+  </script>
+</body>
+</html>

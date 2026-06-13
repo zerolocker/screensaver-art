@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Option G — Style rows + bulk select</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="shared.css" />
+  <style>
+    .toolbar { row-gap: 8px; }
+    .section { margin-bottom: 26px; }
+    .sectionhead { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+    .sectionhead h2 { font-size: 15px; font-weight: 600; margin: 0; scroll-margin-top: 90px; }
+    .sectionhead .scount { color: var(--muted-foreground); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+    .sectionhead .btn { padding: 4px 10px; font-size: 12px; }
+    .strip {
+      display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent; user-select: none;
+    }
+    .strip::-webkit-scrollbar { height: 8px; }
+    .strip::-webkit-scrollbar-track { background: transparent; }
+    .strip::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .strip .card { flex: 0 0 224px; height: 126px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="back" href="index.html">&larr; All options</a>
+      <h1>Option G — Style rows + bulk select</h1>
+      <p class="sub">
+        The gallery is organized into one row per art style. Each row can be added or removed in
+        one click — "give me all the Impressionism" — and individual ticks fine-tune from there.
+        Pills jump to a style; the Selected view shows only what plays. Instant apply, click a
+        card for the larger preview.
+      </p>
+    </header>
+
+    <div class="toolbar">
+      <div class="seg" id="seg">
+        <button data-scope="all">All</button>
+        <button data-scope="selected">Selected</button>
+      </div>
+      <div class="pills" id="pills"></div>
+      <span class="spacer"></span>
+      <span class="chip" id="count"></span>
+    </div>
+
+    <div id="sections"></div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    const KEY = 'lart-proto-g'
+    const sectionsEl = document.getElementById('sections')
+    const pillsEl = document.getElementById('pills')
+    const countEl = document.getElementById('count')
+    const seg = document.getElementById('seg')
+
+    let items = []
+    let selected = new Set()
+    let scope = 'all'
+    const cards = new Map()
+    const sections = new Map() // style -> { el, items, scount, allBtn, noneBtn }
+
+    init()
+
+    async function init() {
+      items = await loadGallery()
+      selected = new Set(loadState(KEY, null) ?? defaultIds(items))
+
+      for (const btn of seg.querySelectorAll('button')) {
+        btn.addEventListener('click', () => {
+          scope = btn.dataset.scope
+          update()
+        })
+      }
+
+      const styles = STYLE_ORDER.filter((s) => items.some((it) => it.style === s))
+      for (const style of styles) {
+        const styleItems = items.filter((it) => it.style === style)
+
+        // jump pill
+        const pill = document.createElement('button')
+        pill.className = 'pill'
+        pill.innerHTML = `${style}<span class="n">${styleItems.length}</span>`
+        pill.addEventListener('click', () =>
+          sections.get(style).el.querySelector('h2').scrollIntoView({ behavior: 'smooth' }),
+        )
+        pillsEl.appendChild(pill)
+
+        // section
+        const section = document.createElement('section')
+        section.className = 'section'
+        const head = document.createElement('div')
+        head.className = 'sectionhead'
+        const h2 = document.createElement('h2')
+        h2.textContent = style
+        const scount = document.createElement('span')
+        scount.className = 'scount'
+        const spacer = document.createElement('span')
+        spacer.className = 'spacer'
+        const allBtn = document.createElement('button')
+        allBtn.className = 'btn'
+        allBtn.textContent = 'Add all'
+        allBtn.addEventListener('click', () => bulk(styleItems, true))
+        const noneBtn = document.createElement('button')
+        noneBtn.className = 'btn ghost'
+        noneBtn.textContent = 'Remove all'
+        noneBtn.addEventListener('click', () => bulk(styleItems, false))
+        head.append(h2, scount, spacer, allBtn, noneBtn)
+
+        const strip = document.createElement('div')
+        strip.className = 'strip'
+        for (const item of styleItems) {
+          const card = document.createElement('div')
+          card.className = 'card'
+          const poster = makePosterCanvas(item)
+          attachHoverPreview(card, item)
+          const title = document.createElement('div')
+          title.className = 'title'
+          title.textContent = item.title
+          const check = document.createElement('button')
+          check.className = 'check'
+          check.innerHTML = ICONS.check
+          check.title = 'Play in screensaver'
+          check.addEventListener('click', (e) => {
+            e.stopPropagation()
+            toggle(item.id)
+          })
+          card.append(poster, title, check)
+          card.addEventListener('click', () =>
+            openArtModal(item, {
+              isSelected: () => selected.has(item.id),
+              onToggle: () => toggle(item.id),
+            }),
+          )
+          strip.appendChild(card)
+          cards.set(item.id, card)
+        }
+
+        section.append(head, strip)
+        sectionsEl.appendChild(section)
+        sections.set(style, { el: section, items: styleItems, scount, allBtn, noneBtn })
+      }
+
+      update()
+    }
+
+    function toggle(id) {
+      selected.has(id) ? selected.delete(id) : selected.add(id)
+      persist()
+      update()
+    }
+
+    function bulk(styleItems, on) {
+      for (const it of styleItems) on ? selected.add(it.id) : selected.delete(it.id)
+      persist()
+      update()
+    }
+
+    function persist() {
+      saveState(KEY, [...selected])
+    }
+
+    function update() {
+      const selectedOnly = scope === 'selected'
+      for (const item of items) {
+        const card = cards.get(item.id)
+        const on = selected.has(item.id)
+        card.classList.toggle('on', on)
+        card.classList.toggle('off', !on)
+        card.style.display = selectedOnly && !on ? 'none' : ''
+      }
+      for (const [, s] of sections) {
+        const n = s.items.filter((it) => selected.has(it.id)).length
+        s.scount.textContent = `${n} of ${s.items.length} selected`
+        s.allBtn.disabled = n === s.items.length
+        s.noneBtn.disabled = n === 0
+        s.el.style.display = selectedOnly && n === 0 ? 'none' : ''
+      }
+      for (const btn of seg.querySelectorAll('button')) {
+        btn.classList.toggle('active', btn.dataset.scope === scope)
+        if (btn.dataset.scope === 'selected') btn.textContent = `Selected (${selected.size})`
+      }
+      countEl.innerHTML = `Playing <b>${selected.size}</b> of ${items.length} pieces`
+    }
+  </script>
+</body>
+</html>

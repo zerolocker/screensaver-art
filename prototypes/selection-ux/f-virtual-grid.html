@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Option F — Virtualized grid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="shared.css" />
+  <style>
+    .toolbar { row-gap: 8px; }
+    #vgrid { position: relative; }
+    #vgrid .card { position: absolute; }
+    .statschip { font-size: 12px; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+    .empty {
+      color: var(--muted-foreground); font-size: 13px; text-align: center;
+      padding: 48px 20px; border: 1px dashed var(--border); border-radius: var(--radius);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="back" href="index.html">&larr; All options</a>
+      <h1>Option F — Virtualized grid</h1>
+      <p class="sub">
+        Keeps the live hover-to-play video cards, but only the cards near the viewport exist in the
+        DOM — everything else is unmounted and its video torn down, so even a 10,000-piece gallery
+        scrolls smoothly. Style pills combine (pick several); the All/Selected switch scopes the
+        view. Ticks apply instantly; click a card for the larger preview.
+      </p>
+    </header>
+
+    <div class="toolbar">
+      <div class="seg" id="seg">
+        <button data-scope="all">All</button>
+        <button data-scope="selected">Selected</button>
+      </div>
+      <div class="pills" id="pills"></div>
+      <span class="spacer"></span>
+      <span class="statschip" id="stats"></span>
+      <span class="chip" id="count"></span>
+    </div>
+
+    <div id="vgrid"></div>
+    <div class="empty" id="empty" hidden>Nothing here — tick some pieces first.</div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    const KEY = 'lart-proto-f'
+    const GAP = 14
+    const MIN_W = 230
+    const vgrid = document.getElementById('vgrid')
+    const statsEl = document.getElementById('stats')
+    const countEl = document.getElementById('count')
+    const pillsEl = document.getElementById('pills')
+    const seg = document.getElementById('seg')
+
+    let items = []
+    let selected = new Set()
+    let scope = 'all'
+    let activeStyles = new Set() // empty = all styles
+    let list = [] // items currently shown, in order
+    const mounted = new Map() // list index -> card element
+    let cols = 1, cardW = 0, cardH = 0, rows = 0
+
+    init()
+
+    async function init() {
+      items = await loadGallery()
+      selected = new Set(loadState(KEY, null) ?? defaultIds(items))
+
+      for (const btn of seg.querySelectorAll('button')) {
+        btn.addEventListener('click', () => {
+          scope = btn.dataset.scope
+          refilter()
+        })
+      }
+      for (const s of STYLE_ORDER.filter((s) => items.some((it) => it.style === s))) {
+        const pill = document.createElement('button')
+        pill.className = 'pill'
+        pill.dataset.style = s
+        const n = items.filter((it) => it.style === s).length
+        pill.innerHTML = `${s}<span class="n">${n}</span>`
+        pill.addEventListener('click', () => {
+          activeStyles.has(s) ? activeStyles.delete(s) : activeStyles.add(s)
+          refilter()
+        })
+        pillsEl.appendChild(pill)
+      }
+
+      window.addEventListener('resize', layout)
+      // updateWindow is cheap (set math over the list), so run it on every scroll
+      // event — scroll events are already frame-rate-limited by the browser
+      window.addEventListener('scroll', updateWindow, { passive: true })
+      // fallback for environments that swallow scroll events
+      let lastY = -1
+      setInterval(() => {
+        if (window.scrollY !== lastY) {
+          lastY = window.scrollY
+          updateWindow()
+        }
+      }, 250)
+
+      refilter()
+    }
+
+    function refilter() {
+      list = items.filter(
+        (it) =>
+          (scope !== 'selected' || selected.has(it.id)) &&
+          (activeStyles.size === 0 || activeStyles.has(it.style)),
+      )
+      for (const [, el] of mounted) destroyCard(el)
+      mounted.clear()
+      layout()
+      updateChrome()
+    }
+
+    function layout() {
+      const w = vgrid.clientWidth
+      cols = Math.max(2, Math.floor((w + GAP) / (MIN_W + GAP)))
+      cardW = (w - GAP * (cols - 1)) / cols
+      cardH = (cardW * 9) / 16
+      rows = Math.ceil(list.length / cols)
+      vgrid.style.height = `${Math.max(0, rows * (cardH + GAP) - GAP)}px`
+      document.getElementById('empty').hidden = list.length > 0
+      updateWindow()
+    }
+
+    function updateWindow() {
+      const rect = vgrid.getBoundingClientRect()
+      const rowH = cardH + GAP
+      const viewTop = -rect.top
+      const viewBot = viewTop + window.innerHeight
+      const r0 = Math.max(0, Math.floor(viewTop / rowH) - 2)
+      const r1 = Math.min(rows - 1, Math.ceil(viewBot / rowH) + 2)
+
+      const need = new Set()
+      for (let r = r0; r <= r1; r++) {
+        for (let c = 0; c < cols; c++) {
+          const i = r * cols + c
+          if (i < list.length) need.add(i)
+        }
+      }
+      for (const [i, el] of mounted) {
+        if (!need.has(i)) {
+          destroyCard(el)
+          mounted.delete(i)
+        }
+      }
+      for (const i of need) if (!mounted.has(i)) mounted.set(i, mountCard(i))
+      statsEl.textContent = `rendering ${mounted.size} of ${list.length} cards`
+    }
+
+    function mountCard(i) {
+      const item = list[i]
+      const card = document.createElement('div')
+      card.className = 'card'
+      card.style.left = `${(i % cols) * (cardW + GAP)}px`
+      card.style.top = `${Math.floor(i / cols) * (cardH + GAP)}px`
+      card.style.width = `${cardW}px`
+      card.style.height = `${cardH}px`
+
+      const video = document.createElement('video')
+      video.muted = true
+      video.loop = true
+      video.playsInline = true
+      video.preload = 'metadata'
+      video.src = item.src // mounted = near the viewport, load right away
+      hoverPlay(card, video)
+
+      const title = document.createElement('div')
+      title.className = 'title'
+      title.textContent = item.title
+      const check = document.createElement('button')
+      check.className = 'check'
+      check.innerHTML = ICONS.check
+      check.title = 'Play in screensaver'
+      check.addEventListener('click', (e) => {
+        e.stopPropagation()
+        toggle(item.id)
+      })
+      card.append(video, title, check)
+      card.addEventListener('click', () =>
+        openArtModal(item, {
+          isSelected: () => selected.has(item.id),
+          onToggle: () => toggle(item.id),
+        }),
+      )
+      paintCard(card, item.id)
+      vgrid.appendChild(card)
+      return card
+    }
+
+    function destroyCard(el) {
+      const v = el.querySelector('video')
+      if (v) {
+        v.removeAttribute('src') // release the media pipeline
+        v.load()
+      }
+      el.remove()
+    }
+
+    function paintCard(card, id) {
+      const on = selected.has(id)
+      card.classList.toggle('on', on)
+      card.classList.toggle('off', !on)
+    }
+
+    function toggle(id) {
+      selected.has(id) ? selected.delete(id) : selected.add(id)
+      saveState(KEY, [...selected])
+      for (const [i, el] of mounted) if (list[i].id === id) paintCard(el, id)
+      updateChrome()
+    }
+
+    function updateChrome() {
+      for (const btn of seg.querySelectorAll('button')) {
+        btn.classList.toggle('active', btn.dataset.scope === scope)
+        if (btn.dataset.scope === 'selected') btn.textContent = `Selected (${selected.size})`
+      }
+      for (const pill of pillsEl.children) {
+        pill.classList.toggle('active', activeStyles.has(pill.dataset.style))
+      }
+      countEl.innerHTML = `Playing <b>${selected.size}</b> of ${items.length} pieces`
+    }
+  </script>
+</body>
+</html>

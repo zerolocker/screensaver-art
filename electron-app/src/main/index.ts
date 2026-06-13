@@ -4,6 +4,7 @@ import { stat, readdir } from 'fs/promises'
 import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { getStatus, ensureRegistered, activate } from './installer'
 import { syncGallery, cancelSync, isSyncing, clearCache, PATHS, type CachedManifest } from './cache-sync'
+import { readSelection, writeSelection } from './selection'
 import { initUpdater, getUpdateState, checkForUpdates, quitAndInstall } from './updater'
 import { log, installGlobalHandlers, recordRendererLog, getLogFilePath } from './logger'
 import { sendReport, sendFeedback, type SendReportInput, type SendFeedbackInput } from './report'
@@ -32,10 +33,12 @@ let mainWindow: BrowserWindow | null = null
 // ---------------------------------------------------------------------------
 function createWindow(): void {
   mainWindow = new BrowserWindow({
-    width: 1000,
-    height: 700,
-    minWidth: 800,
-    minHeight: 600,
+    // Roomy default so the gallery shows several columns at once (the selection
+    // grid is the main surface users browse).
+    width: 1280,
+    height: 880,
+    minWidth: 960,
+    minHeight: 680,
     show: false,
     titleBarStyle: 'hiddenInset',
     backgroundColor: '#141414',
@@ -125,7 +128,15 @@ ipcMain.handle(
   'cache:sync',
   async (_evt, payload: { apiUrl: string; accessToken: string | null }): Promise<{ ok: true; manifest: CachedManifest } | { ok: false; error: string }> => {
     try {
-      const manifest = await syncGallery(payload.apiUrl, payload.accessToken, mainWindow)
+      // The selection lives in the main process (cache-sync needs it, and the
+      // renderer persists it via selection:set before triggering a sync). A null
+      // selection means "use the default first FREE_COUNT".
+      const manifest = await syncGallery(
+        payload.apiUrl,
+        payload.accessToken,
+        mainWindow,
+        readSelection(),
+      )
       return { ok: true, manifest }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
@@ -134,6 +145,21 @@ ipcMain.handle(
     }
   },
 )
+
+// Selection: which gallery pieces the user has chosen to play. The renderer reads
+// it to paint ticks (null → it applies the default first FREE_COUNT itself) and
+// writes the full explicit list on every change.
+ipcMain.handle('selection:get', () => ({ selected: readSelection() }))
+ipcMain.handle('selection:set', (_evt, selected: string[]) => {
+  try {
+    writeSelection(Array.isArray(selected) ? selected : [])
+    return { ok: true }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    log.error('selection', 'could not write selection', { error: message })
+    return { ok: false, error: message }
+  }
+})
 
 ipcMain.handle('installer:status', () => getStatus())
 

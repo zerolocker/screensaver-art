@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Option H — Candidate (E engine + F filters)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="shared.css" />
+  <style>
+    /* Two filter rows with distinct visual languages:
+       - "Show" = view scope: a joined segmented control (exclusive, tab-like)
+       - "Styles" = content facets: loose outlined chips (additive, combinable) */
+    .toolbar { flex-direction: column; align-items: stretch; gap: 10px; }
+    .frow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .flabel {
+      width: 46px; flex: none;
+      font-size: 10.5px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase;
+      color: var(--muted-foreground);
+    }
+    /* style chips: quieter at rest than the scope control, additive when active */
+    .frow .pill { background: transparent; }
+    .frow .pill.active {
+      background: color-mix(in oklab, var(--primary) 16%, transparent);
+      border-color: var(--primary);
+      color: var(--primary);
+      font-weight: 500;
+    }
+    .frow .pill.active .n { opacity: .8; }
+    .empty {
+      color: var(--muted-foreground); font-size: 13px; text-align: center;
+      padding: 48px 20px; border: 1px dashed var(--border); border-radius: var(--radius);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="back" href="index.html">&larr; All options</a>
+      <h1>Option H — Candidate</h1>
+      <p class="sub">
+        E's poster-frame engine (smooth scrolling, zero live videos at rest) with F's two-row
+        filters: <b>Show</b> switches between the whole gallery and your selection;
+        <b>Styles</b> are combinable facets. Ticks apply instantly; click a card for the larger
+        preview; hover briefly for motion.
+      </p>
+    </header>
+
+    <div class="toolbar">
+      <div class="frow">
+        <span class="flabel">Show</span>
+        <div class="seg" id="seg">
+          <button data-scope="all">All</button>
+          <button data-scope="selected">Selected</button>
+        </div>
+        <span class="spacer"></span>
+        <span class="chip" id="count"></span>
+      </div>
+      <div class="frow">
+        <span class="flabel">Styles</span>
+        <div class="pills" id="pills"></div>
+        <button class="btn ghost" id="clearStyles" hidden>Clear</button>
+      </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" hidden>No pieces match — clear a style filter or tick more pieces.</div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    const KEY = 'lart-proto-h'
+    const grid = document.getElementById('grid')
+    const pillsEl = document.getElementById('pills')
+    const countEl = document.getElementById('count')
+    const seg = document.getElementById('seg')
+    const clearBtn = document.getElementById('clearStyles')
+
+    let items = []
+    const cards = new Map()
+    let selected = new Set()
+    let scope = 'all'
+    let scopeIds = null // frozen when the scope is entered (see setScope)
+    let activeStyles = new Set() // empty = all styles
+
+    init()
+
+    async function init() {
+      items = await loadGallery()
+      selected = new Set(loadState(KEY, null) ?? defaultIds(items))
+
+      for (const btn of seg.querySelectorAll('button')) {
+        btn.addEventListener('click', () => setScope(btn.dataset.scope))
+      }
+      for (const s of STYLE_ORDER.filter((s) => items.some((it) => it.style === s))) {
+        const pill = document.createElement('button')
+        pill.className = 'pill'
+        pill.dataset.style = s
+        const n = items.filter((it) => it.style === s).length
+        pill.innerHTML = `${s}<span class="n">${n}</span>`
+        pill.addEventListener('click', () => {
+          activeStyles.has(s) ? activeStyles.delete(s) : activeStyles.add(s)
+          update()
+        })
+        pillsEl.appendChild(pill)
+      }
+      clearBtn.addEventListener('click', () => {
+        activeStyles.clear()
+        update()
+      })
+
+      for (const item of items) {
+        const card = document.createElement('div')
+        card.className = 'card'
+        card.dataset.id = item.id
+        const poster = makePosterCanvas(item)
+        attachHoverPreview(card, item)
+        const title = document.createElement('div')
+        title.className = 'title'
+        title.textContent = item.title
+        const check = document.createElement('button')
+        check.className = 'check'
+        check.innerHTML = ICONS.check
+        check.title = 'Play in screensaver'
+        check.addEventListener('click', (e) => {
+          e.stopPropagation()
+          toggle(item.id)
+        })
+        card.append(poster, title, check)
+        card.addEventListener('click', () =>
+          openArtModal(item, {
+            isSelected: () => selected.has(item.id),
+            onToggle: () => toggle(item.id),
+          }),
+        )
+        grid.appendChild(card)
+        cards.set(item.id, card)
+      }
+
+      setScope('all')
+    }
+
+    function setScope(next) {
+      scope = next
+      // Freeze the scope set on entry: unticking inside "Selected" dims the card
+      // instead of yanking it from the grid, so the change is easy to undo.
+      scopeIds = scope === 'selected' ? new Set(selected) : new Set(items.map((it) => it.id))
+      update()
+    }
+
+    function toggle(id) {
+      selected.has(id) ? selected.delete(id) : selected.add(id)
+      saveState(KEY, [...selected])
+      update()
+    }
+
+    function update() {
+      let visible = 0
+      for (const item of items) {
+        const card = cards.get(item.id)
+        const show =
+          scopeIds.has(item.id) && (activeStyles.size === 0 || activeStyles.has(item.style))
+        card.style.display = show ? '' : 'none'
+        if (show) visible++
+        const on = selected.has(item.id)
+        card.classList.toggle('on', on)
+        card.classList.toggle('off', !on)
+      }
+      document.getElementById('empty').hidden = visible > 0
+
+      for (const btn of seg.querySelectorAll('button')) {
+        btn.classList.toggle('active', btn.dataset.scope === scope)
+        if (btn.dataset.scope === 'selected') btn.textContent = `Selected (${selected.size})`
+      }
+      for (const pill of pillsEl.children) {
+        pill.classList.toggle('active', activeStyles.has(pill.dataset.style))
+      }
+      clearBtn.hidden = activeStyles.size === 0
+      countEl.innerHTML = `Playing <b>${selected.size}</b> of ${items.length} pieces`
+    }
+  </script>
+</body>
+</html>

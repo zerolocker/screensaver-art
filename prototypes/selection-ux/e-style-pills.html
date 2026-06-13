@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Option E — Style pills + instant ticks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="shared.css" />
+  <style>
+    .toolbar { row-gap: 8px; }
+    .pill.selectedPill.active { background: var(--primary); }
+    .pill.selectedPill .n { font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="back" href="index.html">&larr; All options</a>
+      <h1>Option E — Style pills + instant ticks</h1>
+      <p class="sub">
+        Pills filter the gallery by art style (plus a "Selected" pill to review what plays).
+        The tick toggles a piece instantly — no save step. Clicking the artwork opens a larger
+        preview with its details. Thumbnails are captured first frames, so scrolling stays light;
+        hover briefly to see a piece in motion.
+      </p>
+    </header>
+
+    <div class="toolbar">
+      <div class="pills" id="pills"></div>
+      <span class="spacer"></span>
+      <span class="chip" id="count"></span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    const KEY = 'lart-proto-e'
+    const grid = document.getElementById('grid')
+    const pillsEl = document.getElementById('pills')
+    const countEl = document.getElementById('count')
+
+    let items = []
+    const cards = new Map()
+    let selected = new Set()
+    let scope = 'all' // 'all' | 'selected' | a style name
+    let scopeIds = null // ids visible in the current scope (frozen at scope-switch time)
+
+    init()
+
+    async function init() {
+      items = await loadGallery()
+      selected = new Set(loadState(KEY, null) ?? defaultIds(items))
+
+      buildPills()
+
+      for (const item of items) {
+        const card = document.createElement('div')
+        card.className = 'card'
+        card.dataset.id = item.id
+        const poster = makePosterCanvas(item)
+        attachHoverPreview(card, item)
+        const title = document.createElement('div')
+        title.className = 'title'
+        title.textContent = item.title
+        const check = document.createElement('button')
+        check.className = 'check'
+        check.innerHTML = ICONS.check
+        check.title = 'Play in screensaver'
+        check.addEventListener('click', (e) => {
+          e.stopPropagation()
+          toggle(item.id)
+        })
+        card.append(poster, title, check)
+        card.addEventListener('click', () =>
+          openArtModal(item, {
+            isSelected: () => selected.has(item.id),
+            onToggle: () => toggle(item.id),
+          }),
+        )
+        grid.appendChild(card)
+        cards.set(item.id, card)
+      }
+
+      setScope('all')
+    }
+
+    function buildPills() {
+      const styles = STYLE_ORDER.filter((s) => items.some((it) => it.style === s))
+      const defs = [
+        { id: 'all', label: 'All', count: () => items.length },
+        { id: 'selected', label: 'Selected', count: () => selected.size, cls: 'selectedPill' },
+        ...styles.map((s) => ({
+          id: s,
+          label: s,
+          count: () => items.filter((it) => it.style === s).length,
+        })),
+      ]
+      for (const def of defs) {
+        const pill = document.createElement('button')
+        pill.className = `pill ${def.cls ?? ''}`
+        pill.dataset.scope = def.id
+        pill.innerHTML = `${def.label}<span class="n"></span>`
+        pill.addEventListener('click', () => setScope(def.id))
+        pill._count = def.count
+        pillsEl.appendChild(pill)
+      }
+    }
+
+    function setScope(next) {
+      scope = next
+      // Freeze the visible set when entering a scope: unticking a piece inside
+      // "Selected" dims it instead of yanking it out of the grid, so it's easy to undo.
+      if (scope === 'all') scopeIds = new Set(items.map((it) => it.id))
+      else if (scope === 'selected') scopeIds = new Set(selected)
+      else scopeIds = new Set(items.filter((it) => it.style === scope).map((it) => it.id))
+      update()
+    }
+
+    function toggle(id) {
+      selected.has(id) ? selected.delete(id) : selected.add(id)
+      saveState(KEY, [...selected])
+      update()
+    }
+
+    function update() {
+      for (const item of items) {
+        const card = cards.get(item.id)
+        card.style.display = scopeIds.has(item.id) ? '' : 'none'
+        const on = selected.has(item.id)
+        card.classList.toggle('on', on)
+        card.classList.toggle('off', !on)
+      }
+      for (const pill of pillsEl.children) {
+        pill.classList.toggle('active', pill.dataset.scope === scope)
+        pill.querySelector('.n').textContent = pill._count()
+      }
+      countEl.innerHTML = `Playing <b>${selected.size}</b> of ${items.length} pieces`
+    }
+  </script>
+</body>
+</html>

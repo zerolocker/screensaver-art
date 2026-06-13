@@ -12,49 +12,26 @@ The goal: stop the nightly bot from regenerating the same kinds of failures.
 
 ---
 
-## Brand & taste — what belongs in this gallery
+## Brand & taste
 
-**Living Art Screensaver brings the canon of art history to life** — the movements
-and traditions you'd meet in a great museum or an art-history survey. The feel is
-timeless, high-end, and painterly. Every piece should read as a **museum-grade
-artwork**, not a trendy digital render.
+This gallery is **art history brought to life** — the full breadth you'd find
+walking the wings of a great encyclopedic museum, from prehistoric cave paintings
+and bronze-age artifacts through Ukiyo-e, Persian miniatures, Renaissance frescoes
+and Impressionism to the modern masters. Aim for **museum-grade** work: pieces with
+real cultural and historical pedigree, beautiful enough to hang on a gallery wall.
 
-Calibrate taste against the marketing site
-(`living-art-screensaver-web/components/art-styles-section.tsx`), which conveys the
-brand well:
-- The style ladder it advertises: Classical → Medieval → Renaissance → Baroque →
-  Rococo → Neoclassicism → Romanticism → Impressionism → Post-Impressionism →
-  Modern → Contemporary.
-- Its four hero exemplars: **Van Gogh "Starry Coast"** (Post-Impressionism), a
-  **Romanticism stormy sea**, a **Neoclassicism Roman Forum**, and **Surrealism
-  melting clocks** — recognizable, painterly, evocative scenes with real pedigree.
+**Range widely and be creative** — every culture and era is fair game, and variety
+is good. `ART_STYLES_FOR_INSPIRATION.md` is a starting menu, not a cage; the Gallery
+"wings" (see *Gallery tags* below) are a good map of the territory worth exploring.
 
-**Fits the brand — pick from these:**
-- Recognized art-history movements, through the canonical 20th-century modern
-  masters (Impressionism, Symbolism, Art Nouveau, Expressionism, Cubism,
-  Surrealism, Bauhaus, Art Deco, Pop Art…).
-- The world's great historical & ancient traditions: Ukiyo-e, Chinese ink / Song
-  landscape, Mughal miniature, Persian & Islamic art, Egyptian wall painting,
-  Greek/Roman/Byzantine mosaic & fresco, illuminated manuscripts, and ancient
-  metalwork / pottery / sculpture from across cultures.
-- **`ART_STYLES_FOR_INSPIRATION.md` is the curated menu** — pick from it, and only
-  append new styles that fit this same museum-canon spirit.
+The one thing to avoid: **internet / gaming / digital-subculture aesthetics**
+(cyberpunk, vaporwave, synthwave, pixel/voxel/low-poly, glitch, Y2K, "-core" looks,
+AI/fractal/generative art) and loud graphic-design trends — they read as AI slop and
+were deliberately cut from the menu.
 
-**Off-brand — never generate (reads as AI slop, cheapens the brand):**
-- Internet / gaming / digital-subculture aesthetics: cyberpunk, steampunk,
-  vaporwave, synthwave, retro/solar/diesel/bio-punk, low-poly, voxel, pixel art,
-  glitch art, Y2K, liminal spaces, dreamcore / weirdcore and other "-core" looks,
-  neo-Tokyo.
-- Screen-native / process art: digital art, AI art, generative art, fractal art.
-- Loud graphic-design trends: Memphis design, Frutiger Aero, acid graphics.
-
-These were **removed from `ART_STYLES_FOR_INSPIRATION.md`** for exactly this
-reason — don't reintroduce them.
-
-**The taste test:** *Would this hang in a serious art museum, or appear as a
-recognizable plate in an art-history book?* If instead it feels like a video-game
-asset, a stock vector, a synthwave album cover, or an ArtStation/AI-art trend,
-it's off-brand — pick something else.
+**Taste test:** would this look at home in a serious museum, or as a plate in an
+art-history book? If it instead feels like a video-game asset, a stock vector, or an
+album cover, pick something else.
 
 ---
 

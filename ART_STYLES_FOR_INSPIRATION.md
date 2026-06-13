@@ -117,7 +117,7 @@ When you add a new style, append it under the section it best fits.
 - Brutalism
 - Ghibli-esque
 
-## World & regional traditions (Asian, Islamic, indigenous, folk)
+## World & regional traditions (Asian, Islamic, African, Oceanic, indigenous, folk)
 
 - Chinese ink painting
 - Sumi-e Ink Wash
@@ -133,13 +133,40 @@ When you add a new style, append it under the section it best fits.
 - Edo period Netsuke carving
 - Joseon Dynasty Minhwa
 - Goryeo Buddhist Painting
+- Rinpa School
+- Yamato-e
+- Korean Celadon
+- Chinese Blue-and-White Porcelain
 - Mughal miniature
+- Rajput Painting
+- Pahari Miniature
 - Gond painting
 - Gandharan Buddhist sculpture
 - Gupta Empire Mathura Sculpture
 - Chola Dynasty Bronze Sculpture
+- Pala Dynasty Bronze
+- Tibetan Thangka
+- Khmer Angkor Stone Sculpture
+- Javanese Borobudur Relief
+- Thai Sukhothai Buddha
 - Islamic geometric art
 - Fatimid Rock Crystal Carving
+- Persian Safavid Miniature
+- Ottoman Iznik Ceramics
+- Timurid Manuscript Illumination
+- Mamluk Metalwork
+- Nasrid (Alhambra) Ornament
+- Arabic Calligraphy
+- Yoruba Sculpture
+- Benin Bronzes
+- Ife Sculpture
+- Asante Goldwork
+- Dogon Sculpture
+- Ethiopian Illuminated Manuscript
+- Māori Whakairo Carving
+- Aboriginal Australian Bark Painting
+- Sepik River Carving
+- Rapa Nui (Easter Island) Moai
 - Celtic Knotwork
 - Indigenous art traditions
 - Folk art
@@ -192,3 +219,10 @@ When you add a new style, append it under the section it best fits.
 - Mississippian Copper Plates
 - Anasazi Black-on-White Pottery
 - Mogollon Pottery Art
+- Babylonian Glazed-Brick Relief
+- Hittite Relief
+- Phoenician Ivory Carving
+- Luristan Bronzes
+- Nubian (Kushite) Art
+- Nok Terracotta
+- San Rock Art

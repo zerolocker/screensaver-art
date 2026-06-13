@@ -22,7 +22,8 @@ vi.mock('@/lib/auth/verify-native-auth', () => ({
   verifyNativeAuth: authMock,
 }))
 
-import { GET, FREE_ITEM_COUNT } from '../route'
+import { GET } from '../route'
+import { FREE_ITEM_COUNT } from '@screensaver-art/constants'
 
 // Sample fixture — mixes collections so we can verify filtering
 const FAKE_GALLERY = [

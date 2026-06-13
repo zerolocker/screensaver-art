@@ -8,6 +8,9 @@ importers:
 
   electron-app:
     dependencies:
+      '@screensaver-art/constants':
+        specifier: workspace:*
+        version: link:../packages/constants
       '@screensaver-art/ui':
         specifier: workspace:*
         version: link:../packages/ui
@@ -159,6 +162,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: 1.2.8
         version: 1.2.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@screensaver-art/constants':
+        specifier: workspace:*
+        version: link:../packages/constants
       '@screensaver-art/ui':
         specifier: workspace:*
         version: link:../packages/ui
@@ -266,6 +272,12 @@ importers:
         specifier: ^4.1.5
         version: 4.1.5(@types/node@22.19.15)(jsdom@25.0.1)(vite@6.4.2(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.32.0))
 
+  packages/constants:
+    devDependencies:
+      vitest:
+        specifier: ^4.1.5
+        version: 4.1.5(@types/node@22.19.15)(jsdom@25.0.1)(vite@6.4.2(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.32.0))
+
   packages/ui:
     dependencies:
       '@radix-ui/react-label':
@@ -274,6 +286,9 @@ importers:
       '@radix-ui/react-slot':
         specifier: ^1.2.3
         version: 1.2.4(@types/react@19.2.14)(react@19.2.4)
+      '@screensaver-art/constants':
+        specifier: workspace:*
+        version: link:../constants
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1

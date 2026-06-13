@@ -1,5 +1,6 @@
 import { Sparkles } from 'lucide-react'
-import { Button, PRICING } from '@screensaver-art/ui'
+import { Button } from '@screensaver-art/ui'
+import { PRICING } from '@screensaver-art/constants'
 
 interface UpsellBannerProps {
   onSubscribe: () => void

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { X, Check } from 'lucide-react'
-import { type ArtItem, tagsOf } from '../lib/gallery-types'
+import { type ArtItem, tagsOf } from '@screensaver-art/constants'
 
 interface ArtModalProps {
   item: ArtItem

@@ -12,19 +12,12 @@ import type { ReadableStream as NodeWebReadableStream } from 'stream/web'
 import type { BrowserWindow } from 'electron'
 import { obfuscateChunk, filenameForUrl, MAGIC } from './obfuscation'
 import { log } from './logger'
+import { FREE_ITEM_COUNT, type ArtItem, type GalleryApiResponse } from '@screensaver-art/constants'
 
-export type ApiItem = {
-  src: string
-  title: string
-  type: string
-  collection?: string
-}
-
-export type ApiResponse = {
-  items: ApiItem[]
-  isSubscribed: boolean
-  totalCount: number
-}
+// The /api/gallery item + response shape lives in @screensaver-art/constants so
+// the website (producer) and this client (consumer) share one definition.
+export type ApiItem = ArtItem
+export type ApiResponse = GalleryApiResponse
 
 export type CachedItem = {
   filename: string
@@ -52,9 +45,9 @@ const DOWNLOAD_RETRIES = 2
 const RETRY_BACKOFF_MS = 400
 
 // Default number of pieces to cache when the user has never customized their
-// selection (a null selection). Matches the website's free-tier slice, so a
-// fresh install plays a sensible set before the user ever opens the gallery.
-export const FREE_COUNT = 100
+// selection (a null selection) = the shared FREE_ITEM_COUNT, which is also the
+// website's free-tier slice, so a fresh install plays a sensible set before the
+// user ever opens the gallery.
 
 export function getCacheDir(): string {
   // Test-only override (the test suite points this at a tmp dir so it never
@@ -209,8 +202,9 @@ let inFlight: Promise<CachedManifest> | null = null
 let inFlightAbort: AbortController | null = null
 
 // `selectedSrcs` is the user's chosen subset (a list of item `src` URLs). A null
-// selection (the user has never customized it) defaults to the first FREE_COUNT
-// items. Only selected items are cached; deselected ones are pruned as orphans.
+// selection (the user has never customized it) defaults to the first
+// FREE_ITEM_COUNT items. Only selected items are cached; deselected ones are
+// pruned as orphans.
 export function syncGallery(
   apiUrl: string,
   accessToken: string | null,
@@ -265,11 +259,11 @@ async function runSync(
   log.info('cache-sync', 'gallery fetched', { count: api.items.length, isSubscribed: api.isSubscribed, totalCount: api.totalCount })
 
   // Narrow to the user's selection. A null selection (never customized) defaults
-  // to the first FREE_COUNT items. We preserve the API order so the manifest and
-  // the download loop iterate in the same order the gallery is presented in.
+  // to the first FREE_ITEM_COUNT items. We preserve the API order so the manifest
+  // and the download loop iterate in the same order the gallery is presented in.
   const selectedSet =
     selectedSrcs === null
-      ? new Set(api.items.slice(0, FREE_COUNT).map((it) => it.src))
+      ? new Set(api.items.slice(0, FREE_ITEM_COUNT).map((it) => it.src))
       : new Set(selectedSrcs)
   const chosen = api.items.filter((item) => selectedSet.has(item.src))
   log.info('cache-sync', 'selection applied', {

@@ -11,8 +11,8 @@ import {
   tagsOf,
   orderTags,
   UNDATED_FALLBACK,
-  DEFAULT_SELECTION_COUNT,
-} from '../lib/gallery-types'
+  FREE_ITEM_COUNT,
+} from '@screensaver-art/constants'
 import type { Session } from '@supabase/supabase-js'
 
 interface GalleryResponse {
@@ -70,7 +70,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
       // API order — same default cache-sync applies for a null selection).
       const stored = await window.electronAPI.selection.get()
       const initial =
-        stored.selected ?? data.items.slice(0, DEFAULT_SELECTION_COUNT).map((i) => i.src)
+        stored.selected ?? data.items.slice(0, FREE_ITEM_COUNT).map((i) => i.src)
       setSelected(new Set(initial))
       setSelectionReady(true)
     } catch (err) {

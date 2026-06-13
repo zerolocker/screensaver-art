@@ -502,8 +502,8 @@ describe('cache-sync', () => {
       expect(remaining).toEqual([filenameForUrl(all[1].src)])
     })
 
-    it('defaults a null selection to the first FREE_COUNT items', async () => {
-      // FREE_COUNT is 100; with 2 items a null selection caches everything,
+    it('defaults a null selection to the first FREE_ITEM_COUNT items', async () => {
+      // FREE_ITEM_COUNT is 100; with 2 items a null selection caches everything,
       // matching the pre-selection behavior. (The >100 slice is covered by the
       // selectedSrcs path; here we just prove null === "first 100".)
       const items = [

@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import Stripe from 'stripe'
-// Import the shared display pricing directly from source (not the package
-// barrel, which pulls in React components that don't load in a node test env).
-import { PRICING } from '../../../packages/ui/src/pricing'
+// The shared display pricing lives in the pure-data @screensaver-art/constants
+// package (no React, safe to import in a node test env).
+import { PRICING } from '@screensaver-art/constants'
 
 // Drift guard: the price we *display* (PRICING, compiled into the website and
 // the Electron app) must equal the price Stripe actually *charges* (the catalog

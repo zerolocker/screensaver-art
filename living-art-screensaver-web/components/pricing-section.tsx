@@ -52,7 +52,7 @@ export function PricingSection() {
             Simple, Affordable Pricing
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
-            {PRICING.freeItemCount} artworks, free forever. Want more? Unlock the full gallery, plus daily new art.
+            {PRICING.freeItemCount} artworks, free forever. Want more? Subscribe to unlock the full gallery, plus daily new art.
           </p>
         </div>
 

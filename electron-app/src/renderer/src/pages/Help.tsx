@@ -22,7 +22,9 @@ export function HelpPage() {
   }, [])
 
   return (
-    <div className="p-6">
+    // No top padding: content starts flush under the app shell's titlebar strip
+    // so it lines up with the sidebar title (matches the Gallery tab).
+    <div className="px-6 pb-6">
       <div className="space-y-6">
         <Card className="bg-card border-border">
           <CardHeader>

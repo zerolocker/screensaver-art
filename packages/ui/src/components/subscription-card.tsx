@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Loader2, CheckCircle, XCircle, AlertCircle, Clock } from 'lucide-react'
 import { Button } from './button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card'
-import { PRICING } from '../pricing'
+import { PRICING } from '@screensaver-art/constants'
 
 export interface Subscription {
   id: string

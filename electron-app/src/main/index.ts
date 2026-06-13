@@ -130,7 +130,7 @@ ipcMain.handle(
     try {
       // The selection lives in the main process (cache-sync needs it, and the
       // renderer persists it via selection:set before triggering a sync). A null
-      // selection means "use the default first FREE_COUNT".
+      // selection means "use the default first FREE_ITEM_COUNT".
       const manifest = await syncGallery(
         payload.apiUrl,
         payload.accessToken,
@@ -147,7 +147,7 @@ ipcMain.handle(
 )
 
 // Selection: which gallery pieces the user has chosen to play. The renderer reads
-// it to paint ticks (null → it applies the default first FREE_COUNT itself) and
+// it to paint ticks (null → it applies the default first FREE_ITEM_COUNT itself) and
 // writes the full explicit list on every change.
 ipcMain.handle('selection:get', () => ({ selected: readSelection() }))
 ipcMain.handle('selection:set', (_evt, selected: string[]) => {

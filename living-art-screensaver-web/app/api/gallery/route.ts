@@ -1,17 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyNativeAuth } from '@/lib/auth/verify-native-auth'
+import { FREE_ITEM_COUNT, type ArtItem, type GalleryApiResponse } from '@screensaver-art/constants'
 
 const GALLERY_URL = 'https://zerolocker.github.io/screensaver-art/gallery.json'
-export const FREE_ITEM_COUNT = 100
-
-interface GalleryItem {
-  src: string
-  title: string
-  type: string
-  date?: string
-  image_prompt?: string
-  video_prompt?: string
-}
 
 /**
  * GET /api/gallery
@@ -24,12 +15,12 @@ interface GalleryItem {
  *   - No token / invalid → first FREE_ITEM_COUNT items only (never 401, so the
  *                          screensaver always has something to show)
  *
- * Response:
- *   { items: GalleryItem[], isSubscribed: boolean, totalCount: number }
+ * Response: GalleryApiResponse
+ *   { items: ArtItem[], isSubscribed: boolean, totalCount: number }
  */
 export async function GET(request: NextRequest) {
   // ── Fetch gallery ───────────────────────────────────────────────────────────
-  let allItems: GalleryItem[] = []
+  let allItems: ArtItem[] = []
   try {
     const res = await fetch(GALLERY_URL, { next: { revalidate: 300 } })
     if (!res.ok) throw new Error(`Gallery fetch failed: ${res.status}`)
@@ -45,9 +36,10 @@ export async function GET(request: NextRequest) {
   // ── Return appropriate slice ────────────────────────────────────────────────
   const items = isSubscribed ? allItems : allItems.slice(0, FREE_ITEM_COUNT)
 
-  return NextResponse.json({
+  const body: GalleryApiResponse = {
     items,
     isSubscribed,
     totalCount: allItems.length,   // lets the client show "X of Y" in upsell
-  })
+  }
+  return NextResponse.json(body)
 }

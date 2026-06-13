@@ -6,7 +6,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  transpilePackages: ['@screensaver-art/ui'],
+  transpilePackages: ['@screensaver-art/ui', '@screensaver-art/constants'],
 }
 
 export default nextConfig

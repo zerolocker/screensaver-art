@@ -8,8 +8,8 @@ export interface Product {
 // Registry of purchasable products. NOTE: the *charged price* is NOT here — it
 // lives in Stripe as a catalog Price (referenced via the STRIPE_PRICE_ID env
 // var, different ID per test/live). The *displayed price* is in
-// `@screensaver-art/ui`'s `PRICING`. Keep this file to display metadata only so
-// there is no third copy of the price to drift out of sync.
+// `@screensaver-art/constants`' `PRICING`. Keep this file to display metadata
+// only so there is no third copy of the price to drift out of sync.
 export const PRODUCTS: Product[] = [
   {
     id: 'living-art-monthly',

@@ -469,6 +469,68 @@ describe('cache-sync', () => {
       expect(m2.totalCount).toBe(3)
     })
 
+    it('caches only the selected items and prunes deselected ones', async () => {
+      const all = [
+        { src: 'https://r2.example/a.mp4', title: 'A', type: 'video' },
+        { src: 'https://r2.example/b.mp4', title: 'B', type: 'video' },
+        { src: 'https://r2.example/c.mp4', title: 'C', type: 'video' },
+      ]
+
+      // Sync 1: select A and C only — B is never downloaded.
+      fetchMock
+        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(all, { totalCount: 3 })))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('A')))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('C')))
+      const m1 = await syncGallery('https://api/gallery', null, null, [all[0].src, all[2].src])
+
+      expect(m1.items.map((i) => i.title).sort()).toEqual(['A', 'C'])
+      expect(m1.totalCount).toBe(3) // full collection size is preserved
+      expect(existsSync(join(PATHS.VIDEOS_DIR, filenameForUrl(all[0].src)))).toBe(true)
+      expect(existsSync(join(PATHS.VIDEOS_DIR, filenameForUrl(all[1].src)))).toBe(false)
+      expect(existsSync(join(PATHS.VIDEOS_DIR, filenameForUrl(all[2].src)))).toBe(true)
+      // Only the two selected videos were fetched (1 gallery + 2 assets).
+      expect(fetchMock).toHaveBeenCalledTimes(3)
+
+      // Sync 2: change selection to just B. A and C become orphans and are pruned.
+      fetchMock.mockReset()
+      fetchMock
+        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(all, { totalCount: 3 })))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('B')))
+      await syncGallery('https://api/gallery', null, null, [all[1].src])
+
+      const remaining = readdirSync(PATHS.VIDEOS_DIR)
+      expect(remaining).toEqual([filenameForUrl(all[1].src)])
+    })
+
+    it('defaults a null selection to the first FREE_COUNT items', async () => {
+      // FREE_COUNT is 100; with 2 items a null selection caches everything,
+      // matching the pre-selection behavior. (The >100 slice is covered by the
+      // selectedSrcs path; here we just prove null === "first 100".)
+      const items = [
+        { src: 'https://r2.example/a.mp4', title: 'A', type: 'video' },
+        { src: 'https://r2.example/b.mp4', title: 'B', type: 'video' },
+      ]
+      fetchMock
+        .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items, { totalCount: 2 })))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('a')))
+        .mockResolvedValueOnce(makeStreamResponse(Buffer.from('b')))
+
+      const m = await syncGallery('https://api/gallery', null, null, null)
+      expect(m.items).toHaveLength(2)
+    })
+
+    it('caches nothing when the selection is empty', async () => {
+      const items = [{ src: 'https://r2.example/a.mp4', title: 'A', type: 'video' }]
+      fetchMock.mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items, { totalCount: 1 })))
+
+      const m = await syncGallery('https://api/gallery', null, null, [])
+
+      expect(m.items).toHaveLength(0)
+      expect(readdirSync(PATHS.VIDEOS_DIR)).toHaveLength(0)
+      // Gallery fetched, but no asset downloads attempted.
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+    })
+
     it('emits progress events on the BrowserWindow', async () => {
       const items = [
         { src: 'https://r2.example/a.mp4', title: 'A', type: 'video' },

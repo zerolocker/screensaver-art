@@ -51,6 +51,11 @@ const STALL_TIMEOUT_MS = 30_000
 const DOWNLOAD_RETRIES = 2
 const RETRY_BACKOFF_MS = 400
 
+// Default number of pieces to cache when the user has never customized their
+// selection (a null selection). Matches the website's free-tier slice, so a
+// fresh install plays a sensible set before the user ever opens the gallery.
+export const FREE_COUNT = 100
+
 export function getCacheDir(): string {
   // Test-only override (the test suite points this at a tmp dir so it never
   // touches the real /Users/Shared). NOT a user-facing setting: the Swift
@@ -203,10 +208,14 @@ async function sweepTempFiles(): Promise<void> {
 let inFlight: Promise<CachedManifest> | null = null
 let inFlightAbort: AbortController | null = null
 
+// `selectedSrcs` is the user's chosen subset (a list of item `src` URLs). A null
+// selection (the user has never customized it) defaults to the first FREE_COUNT
+// items. Only selected items are cached; deselected ones are pruned as orphans.
 export function syncGallery(
   apiUrl: string,
   accessToken: string | null,
   window: BrowserWindow | null,
+  selectedSrcs: string[] | null = null,
 ): Promise<CachedManifest> {
   if (inFlight) {
     log.info('cache-sync', 'sync already in progress — joining existing run')
@@ -214,7 +223,7 @@ export function syncGallery(
   }
   const abort = new AbortController()
   inFlightAbort = abort
-  inFlight = runSync(apiUrl, accessToken, window, abort.signal).finally(() => {
+  inFlight = runSync(apiUrl, accessToken, window, selectedSrcs, abort.signal).finally(() => {
     inFlight = null
     inFlightAbort = null
   })
@@ -236,6 +245,7 @@ async function runSync(
   apiUrl: string,
   accessToken: string | null,
   window: BrowserWindow | null,
+  selectedSrcs: string[] | null,
   signal: AbortSignal,
 ): Promise<CachedManifest> {
   await mkdir(VIDEOS_DIR, { recursive: true })
@@ -254,7 +264,21 @@ async function runSync(
   const api: ApiResponse = await res.json()
   log.info('cache-sync', 'gallery fetched', { count: api.items.length, isSubscribed: api.isSubscribed, totalCount: api.totalCount })
 
-  const cached: CachedItem[] = api.items.map((item) => ({
+  // Narrow to the user's selection. A null selection (never customized) defaults
+  // to the first FREE_COUNT items. We preserve the API order so the manifest and
+  // the download loop iterate in the same order the gallery is presented in.
+  const selectedSet =
+    selectedSrcs === null
+      ? new Set(api.items.slice(0, FREE_COUNT).map((it) => it.src))
+      : new Set(selectedSrcs)
+  const chosen = api.items.filter((item) => selectedSet.has(item.src))
+  log.info('cache-sync', 'selection applied', {
+    selected: chosen.length,
+    of: api.items.length,
+    customized: selectedSrcs !== null,
+  })
+
+  const cached: CachedItem[] = chosen.map((item) => ({
     filename: filenameForUrl(item.src),
     title: item.title,
     type: item.type,
@@ -275,18 +299,19 @@ async function runSync(
   await writeManifestAtomic(manifest)
 
   // Download anything missing. Serial — we're talking dozens of items, and
-  // parallel fetches were saturating my home network in testing.
+  // parallel fetches were saturating my home network in testing. Only the
+  // selected items are downloaded; the rest are pruned as orphans below.
   let i = 0
-  for (const item of api.items) {
+  for (const item of chosen) {
     i++
     if (signal.aborted) break
     const dest = join(VIDEOS_DIR, filenameForUrl(item.src))
     if (existsSync(dest)) {
-      emit(window, 'cache:progress', { phase: 'cached', index: i, total: api.items.length, title: item.title })
+      emit(window, 'cache:progress', { phase: 'cached', index: i, total: chosen.length, title: item.title })
       continue
     }
     if (item.type !== 'video') continue
-    emit(window, 'cache:progress', { phase: 'downloading', index: i, total: api.items.length, title: item.title })
+    emit(window, 'cache:progress', { phase: 'downloading', index: i, total: chosen.length, title: item.title })
     try {
       await downloadWithRetry(item, dest, signal)
     } catch (err) {
@@ -299,7 +324,7 @@ async function runSync(
       emit(window, 'cache:progress', {
         phase: 'error',
         index: i,
-        total: api.items.length,
+        total: chosen.length,
         title: item.title,
         error: err instanceof Error ? err.message : String(err),
       })
@@ -310,7 +335,7 @@ async function runSync(
   // prune orphans (we may not have finished downloading the new set) and don't
   // emit `done`. The manifest is already on disk; the next sync resumes.
   if (signal.aborted) {
-    log.info('cache-sync', 'sync cancelled', { processed: i, total: api.items.length })
+    log.info('cache-sync', 'sync cancelled', { processed: i, total: chosen.length })
     return manifest
   }
 
@@ -325,8 +350,8 @@ async function runSync(
     }
   }
 
-  log.info('cache-sync', 'sync done', { total: api.items.length })
-  emit(window, 'cache:progress', { phase: 'done', total: api.items.length })
+  log.info('cache-sync', 'sync done', { total: chosen.length })
+  emit(window, 'cache:progress', { phase: 'done', total: chosen.length })
   return manifest
 }
 

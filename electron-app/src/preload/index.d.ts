@@ -75,6 +75,10 @@ export interface ElectronAPI {
     ) => Promise<{ ok: true; manifest: CachedManifest } | { ok: false; error: string }>
     onProgress: (cb: (p: CacheProgress) => void) => () => void
   }
+  selection: {
+    get: () => Promise<{ selected: string[] | null }>
+    set: (selected: string[]) => Promise<{ ok: boolean; error?: string }>
+  }
   installer: {
     status: () => Promise<InstallerStatus>
     ensureRegistered: () => Promise<{ ok: boolean; error?: string; registered: boolean }>

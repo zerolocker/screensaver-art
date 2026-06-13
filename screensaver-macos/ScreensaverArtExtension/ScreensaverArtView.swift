@@ -98,7 +98,9 @@ class ScreensaverArtView: ScreenSaverView {
         lastManifestMtime = manifestMtime()
         hideUpsell()
         if newItems.isEmpty {
-            showEmptyState()
+            // Distinguish "never synced" (no manifest yet) from "synced but nothing
+            // selected" (manifest present, empty list) so the prompt is accurate.
+            showEmptyState(synced: manifest != nil)
         } else {
             hideEmptyState()
             showCurrent()
@@ -217,25 +219,31 @@ class ScreensaverArtView: ScreenSaverView {
 
     // MARK: Empty state
 
-    private func showEmptyState() {
+    private func showEmptyState(synced: Bool) {
         guard !isPreview else { return }
         pillContainer?.isHidden = true
-        if emptyState == nil {
-            let lbl = NSTextField(labelWithString:
-                "Open the Living Art Screensaver app to sync your gallery.")
-            lbl.translatesAutoresizingMaskIntoConstraints = false
-            lbl.textColor = NSColor(white: 0.7, alpha: 1)
-            lbl.font      = NSFont.systemFont(ofSize: 16, weight: .regular)
-            lbl.alignment = .center
-            lbl.drawsBackground = false
-            lbl.isBezeled       = false
-            addSubview(lbl)
-            NSLayoutConstraint.activate([
-                lbl.centerXAnchor.constraint(equalTo: centerXAnchor),
-                lbl.centerYAnchor.constraint(equalTo: centerYAnchor),
-            ])
-            emptyState = lbl
+        // When synced but empty, the user has deselected everything; otherwise the
+        // gallery just hasn't been synced yet.
+        let message = synced
+            ? "No artwork selected. Open the Living Art Screensaver app to choose what plays."
+            : "Open the Living Art Screensaver app to sync your gallery."
+        if let existing = emptyState {
+            existing.stringValue = message
+            return
         }
+        let lbl = NSTextField(labelWithString: message)
+        lbl.translatesAutoresizingMaskIntoConstraints = false
+        lbl.textColor = NSColor(white: 0.7, alpha: 1)
+        lbl.font      = NSFont.systemFont(ofSize: 16, weight: .regular)
+        lbl.alignment = .center
+        lbl.drawsBackground = false
+        lbl.isBezeled       = false
+        addSubview(lbl)
+        NSLayoutConstraint.activate([
+            lbl.centerXAnchor.constraint(equalTo: centerXAnchor),
+            lbl.centerYAnchor.constraint(equalTo: centerYAnchor),
+        ])
+        emptyState = lbl
     }
 
     private func hideEmptyState() {

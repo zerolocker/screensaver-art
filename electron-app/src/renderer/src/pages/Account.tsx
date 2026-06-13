@@ -127,11 +127,7 @@ export function AccountPage({ session }: AccountPageProps) {
   }
 
   return (
-    <div className="p-6 max-w-2xl">
-      <div className="titlebar-drag mb-6">
-        <h2 className="text-xl font-semibold text-foreground titlebar-no-drag">Account & Setup</h2>
-      </div>
-
+    <div className="p-6">
       <AppBanners showUpsell={!subLoading && !isActiveSubscription(subscription)} />
 
       <div className="space-y-6">

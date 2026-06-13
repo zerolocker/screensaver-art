@@ -1,17 +1,18 @@
-import { useEffect, useState, useRef, useCallback } from 'react'
-import { Loader2, Lock, Play, ChevronLeft, ChevronRight, X, WifiOff } from 'lucide-react'
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
+import { Loader2, WifiOff, ArrowDownUp } from 'lucide-react'
 import { GALLERY_ENDPOINT } from '../lib/api'
 import { AppBanners } from '../components/AppBanners'
+import { PosterCard } from '../components/PosterCard'
+import { ArtModal } from '../components/ArtModal'
+import { useGallerySync } from '../lib/SyncProvider'
+import { log } from '../lib/log'
+import {
+  type ArtItem,
+  tagsOf,
+  UNDATED_FALLBACK,
+  DEFAULT_SELECTION_COUNT,
+} from '../lib/gallery-types'
 import type { Session } from '@supabase/supabase-js'
-
-const ITEMS_PER_PAGE = 12
-
-interface ArtItem {
-  src: string
-  title: string
-  type: string
-  collection?: string
-}
 
 interface GalleryResponse {
   items: ArtItem[]
@@ -23,14 +24,34 @@ interface GalleryPageProps {
   session: Session
 }
 
+type Tab = 'all' | 'selected'
+type SortOrder = 'oldest' | 'newest'
+
+const SORT_KEY = 'lart-gallery-sort'
+// After the last tick, wait this long before re-syncing the cache, so rapid
+// toggling triggers one sync, not one per click.
+const SYNC_DEBOUNCE_MS = 1500
+
 export function GalleryPage({ session }: GalleryPageProps) {
   const [gallery, setGallery] = useState<GalleryResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isOnline, setIsOnline] = useState(() => navigator.onLine)
-  const [previewItem, setPreviewItem] = useState<ArtItem | null>(null)
-  const [currentPage, setCurrentPage] = useState(1)
-  const scrollRef = useRef<HTMLDivElement>(null)
+
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [selectionReady, setSelectionReady] = useState(false)
+  const [tab, setTab] = useState<Tab>('all')
+  const [sort, setSort] = useState<SortOrder>(
+    () => (localStorage.getItem(SORT_KEY) as SortOrder) || 'oldest',
+  )
+  const [activeTags, setActiveTags] = useState<Set<string>>(new Set())
+  // Frozen snapshot of the selection when the "Selected" tab was entered, so
+  // unticking a piece there dims it in place instead of making it vanish.
+  const [selectedScope, setSelectedScope] = useState<Set<string>>(new Set())
+  const [modalItem, setModalItem] = useState<ArtItem | null>(null)
+
+  const { syncNow } = useGallerySync()
+  const syncTimer = useRef<number | undefined>(undefined)
 
   const fetchGallery = useCallback(async () => {
     setLoading(true)
@@ -43,7 +64,14 @@ export function GalleryPage({ session }: GalleryPageProps) {
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data: GalleryResponse = await res.json()
       setGallery(data)
-      setCurrentPage(1)
+
+      // Resolve the selection: stored explicit list, or the default first N (in
+      // API order — same default cache-sync applies for a null selection).
+      const stored = await window.electronAPI.selection.get()
+      const initial =
+        stored.selected ?? data.items.slice(0, DEFAULT_SELECTION_COUNT).map((i) => i.src)
+      setSelected(new Set(initial))
+      setSelectionReady(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch gallery')
     } finally {
@@ -55,10 +83,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
     fetchGallery()
   }, [fetchGallery])
 
-  // Track connectivity. The gallery list comes from the server, so a refetch
-  // (e.g. after returning to this tab or waking the machine) fails when offline.
-  // Rather than flash a scary "Failed to fetch" + "Try again", we show a calm
-  // offline notice and re-fetch automatically once the connection is back.
+  // Connectivity: a refetch fails offline. Show a calm notice and auto-recover.
   useEffect(() => {
     const handleOnline = (): void => {
       setIsOnline(true)
@@ -73,24 +98,105 @@ export function GalleryPage({ session }: GalleryPageProps) {
     }
   }, [fetchGallery])
 
-  // Escape key closes preview modal
   useEffect(() => {
-    if (!previewItem) return
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setPreviewItem(null)
-    }
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
-  }, [previewItem])
-
-  const goToPage = useCallback((page: number) => {
-    setCurrentPage(page)
-    // Scroll the parent <main> container to top
-    scrollRef.current?.closest('main')?.scrollTo({ top: 0, behavior: 'smooth' })
+    return () => window.clearTimeout(syncTimer.current)
   }, [])
 
-  // Only block the whole view while we have nothing to show yet. A refetch over
-  // already-loaded data keeps the gallery on screen instead of flashing a spinner.
+  const persistAndSync = useCallback(
+    (next: Set<string>) => {
+      // Persist immediately so a toggle is never lost, but debounce the cache
+      // re-sync (download newly-selected, prune newly-deselected).
+      window.electronAPI.selection.set([...next]).catch((err) => {
+        log.warn('selection', 'failed to persist selection', { error: String(err) })
+      })
+      window.clearTimeout(syncTimer.current)
+      syncTimer.current = window.setTimeout(() => {
+        void syncNow({ trigger: 'auto' })
+      }, SYNC_DEBOUNCE_MS)
+    },
+    [syncNow],
+  )
+
+  const toggle = useCallback(
+    (src: string) => {
+      setSelected((prev) => {
+        const next = new Set(prev)
+        if (next.has(src)) next.delete(src)
+        else next.add(src)
+        persistAndSync(next)
+        return next
+      })
+    },
+    [persistAndSync],
+  )
+
+  const switchTab = useCallback(
+    (next: Tab) => {
+      if (next === 'selected') setSelectedScope(new Set(selected))
+      setTab(next)
+    },
+    [selected],
+  )
+
+  const toggleSort = useCallback(() => {
+    setSort((prev) => {
+      const next = prev === 'oldest' ? 'newest' : 'oldest'
+      localStorage.setItem(SORT_KEY, next)
+      return next
+    })
+  }, [])
+
+  const toggleTag = useCallback((t: string) => {
+    setActiveTags((prev) => {
+      const next = new Set(prev)
+      if (next.has(t)) next.delete(t)
+      else next.add(t)
+      return next
+    })
+  }, [])
+
+  const items = useMemo(() => gallery?.items ?? [], [gallery])
+
+  // Distinct tags across the gallery, in first-seen order (Misc fallback baked in).
+  const allTags = useMemo(() => {
+    const seen: string[] = []
+    const set = new Set<string>()
+    for (const item of items) {
+      for (const t of tagsOf(item)) {
+        if (!set.has(t)) {
+          set.add(t)
+          seen.push(t)
+        }
+      }
+    }
+    return seen
+  }, [items])
+
+  // Display order: by date added (undated pieces fall back to launch date).
+  const sortedItems = useMemo(() => {
+    const dir = sort === 'oldest' ? 1 : -1
+    return [...items].sort((a, b) => {
+      const da = a.date ?? UNDATED_FALLBACK
+      const db = b.date ?? UNDATED_FALLBACK
+      return da === db ? 0 : da < db ? -dir : dir
+    })
+  }, [items, sort])
+
+  const isVisible = useCallback(
+    (item: ArtItem): boolean => {
+      if (tab === 'selected' && !selectedScope.has(item.src)) return false
+      if (activeTags.size > 0 && !tagsOf(item).some((t) => activeTags.has(t))) return false
+      return true
+    },
+    [tab, selectedScope, activeTags],
+  )
+
+  const visibleCount = useMemo(
+    () => sortedItems.filter(isVisible).length,
+    [sortedItems, isVisible],
+  )
+
+  // Block the whole view only while we have nothing yet; a refetch keeps the grid.
   if (loading && !gallery) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -100,9 +206,6 @@ export function GalleryPage({ session }: GalleryPageProps) {
   }
 
   if (error && !gallery) {
-    // Offline is the usual reason a fresh load fails. Show a calm, on-brand notice
-    // (the screensaver keeps playing from the cache) and recover automatically —
-    // the online/offline effect refetches when the connection returns.
     if (!isOnline) {
       return (
         <div className="flex flex-col items-center justify-center h-full gap-3 px-6 text-center">
@@ -110,8 +213,8 @@ export function GalleryPage({ session }: GalleryPageProps) {
           <div className="space-y-1">
             <p className="font-medium text-foreground">You’re offline</p>
             <p className="text-sm text-muted-foreground max-w-xs">
-              Your screensaver keeps playing from the cache. Reconnect to browse the
-              gallery — it’ll refresh automatically.
+              Your screensaver keeps playing from the cache. Reconnect to browse the gallery — it’ll
+              refresh automatically.
             </p>
           </div>
         </div>
@@ -127,141 +230,121 @@ export function GalleryPage({ session }: GalleryPageProps) {
     )
   }
 
-  const items = gallery?.items ?? []
-  const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE)
-  const startIdx = (currentPage - 1) * ITEMS_PER_PAGE
-  const paginatedItems = items.slice(startIdx, startIdx + ITEMS_PER_PAGE)
-  const isLastPage = currentPage === totalPages
-
   return (
-    <div ref={scrollRef} className="p-6">
-      {/* Header */}
-      <div className="titlebar-drag mb-6">
-        <div className="titlebar-no-drag">
-          <h2 className="text-xl font-semibold text-foreground">Gallery</h2>
-          <p className="text-sm text-muted-foreground">
-            {gallery?.isSubscribed
-              ? `${items.length} art pieces`
-              : `${items.length} of ${gallery?.totalCount} art pieces (subscribe for full access)`}
-          </p>
-        </div>
-      </div>
-
-      <AppBanners showUpsell={!!gallery && !gallery.isSubscribed} />
-
-      {/* Video preview modal */}
-      {previewItem && (
-        <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center animate-[fadeIn_150ms_ease-out]"
-          onClick={() => setPreviewItem(null)}
-        >
-          <div
-            className="relative max-w-4xl w-full mx-6 animate-[scaleIn_150ms_ease-out]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="relative rounded-xl overflow-hidden shadow-2xl">
-              <video
-                src={previewItem.src}
-                autoPlay
-                loop
-                muted
-                className="w-full"
-              />
-              {/* Title overlay */}
-              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-5">
-                <p className="text-white font-medium text-lg">{previewItem.title}</p>
-              </div>
-            </div>
-            {/* Close button */}
-            <button
-              onClick={() => setPreviewItem(null)}
-              className="absolute -top-3 -right-3 bg-secondary/80 hover:bg-secondary border border-border rounded-full p-1.5 transition-colors"
-            >
-              <X className="w-4 h-4 text-foreground" />
-            </button>
+    <div className="px-6 pb-8">
+      {/* Sticky filter header (sits below the 40px draggable titlebar strip
+          rendered by the app shell, hence top-10). */}
+      <div className="sticky top-10 z-20 -mx-6 px-6 pt-3 pb-3 bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="flex items-center gap-5">
+          <div className="flex items-center gap-5">
+            <TabButton active={tab === 'all'} onClick={() => switchTab('all')}>
+              All <span className="text-xs opacity-65 tabular-nums">{items.length}</span>
+            </TabButton>
+            <TabButton active={tab === 'selected'} onClick={() => switchTab('selected')}>
+              Selected <span className="text-xs opacity-65 tabular-nums">{selected.size}</span>
+            </TabButton>
           </div>
+          <div className="flex-1" />
+          <button
+            onClick={toggleSort}
+            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            title="Toggle sort order"
+          >
+            <ArrowDownUp className="w-3.5 h-3.5" />
+            {sort === 'oldest' ? 'Oldest first' : 'Newest first'}
+          </button>
         </div>
-      )}
 
-      {/* Art grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        {paginatedItems.map((item) => (
-          <ArtCard key={item.src} item={item} onPreview={() => setPreviewItem(item)} />
-        ))}
-
-        {/* Locked items placeholder (last page only) */}
-        {isLastPage && !gallery?.isSubscribed && gallery && gallery.totalCount > items.length && (
-          Array.from({ length: Math.min(3, gallery.totalCount - items.length) }).map((_, i) => (
-            <div
-              key={`locked-${i}`}
-              className="aspect-video rounded-lg bg-secondary/50 border border-border flex flex-col items-center justify-center gap-2"
-            >
-              <Lock className="w-6 h-6 text-muted-foreground" />
-              <p className="text-xs text-muted-foreground">Subscribe to unlock</p>
-            </div>
-          ))
+        {/* Tag pills */}
+        {allTags.length > 1 && (
+          <div className="flex flex-wrap gap-2 mt-3">
+            {allTags.map((t) => {
+              const on = activeTags.has(t)
+              return (
+                <button
+                  key={t}
+                  onClick={() => toggleTag(t)}
+                  className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                    on
+                      ? 'border-primary bg-primary/15 text-primary font-medium'
+                      : 'border-border bg-transparent text-muted-foreground hover:text-foreground hover:border-primary/40'
+                  }`}
+                >
+                  {t}
+                </button>
+              )
+            })}
+          </div>
         )}
       </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-4 mt-8 pb-4">
-          <button
-            onClick={() => goToPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="p-2 rounded-lg border border-border hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronLeft className="w-4 h-4 text-foreground" />
-          </button>
-          <span className="text-sm text-muted-foreground tabular-nums">
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => goToPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="p-2 rounded-lg border border-border hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronRight className="w-4 h-4 text-foreground" />
-          </button>
+      <div className="pt-4">
+        <AppBanners showUpsell={!!gallery && !gallery.isSubscribed} />
+      </div>
+
+      {/* Empty states for the Selected tab */}
+      {selectionReady && tab === 'selected' && selected.size === 0 && (
+        <div className="text-center text-sm text-muted-foreground border border-dashed border-border rounded-lg py-12 px-6 mt-2">
+          Nothing selected yet. Switch to <b className="text-foreground">All</b> and tick the pieces
+          you want your screensaver to play.
         </div>
+      )}
+      {tab === 'selected' && selected.size > 0 && visibleCount === 0 && (
+        <div className="text-center text-sm text-muted-foreground border border-dashed border-border rounded-lg py-12 px-6 mt-2">
+          No selected pieces match these filters.
+        </div>
+      )}
+
+      {/* Art grid — all cards stay mounted; visibility is toggled so filtering
+          and sorting never re-capture posters. */}
+      <div
+        className="grid gap-4 mt-2"
+        style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}
+      >
+        {sortedItems.map((item) => (
+          <PosterCard
+            key={item.src}
+            item={item}
+            selected={selected.has(item.src)}
+            hidden={!isVisible(item)}
+            onToggle={() => toggle(item.src)}
+            onOpen={() => setModalItem(item)}
+          />
+        ))}
+      </div>
+
+      {modalItem && (
+        <ArtModal
+          item={modalItem}
+          selected={selected.has(modalItem.src)}
+          onToggle={() => toggle(modalItem.src)}
+          onClose={() => setModalItem(null)}
+        />
       )}
     </div>
   )
 }
 
-function ArtCard({ item, onPreview }: { item: ArtItem; onPreview: () => void }) {
-  const videoRef = useRef<HTMLVideoElement>(null)
-
+function TabButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  children: React.ReactNode
+}) {
   return (
     <button
-      onClick={onPreview}
-      className="group relative aspect-video rounded-lg overflow-hidden border border-border bg-secondary hover:border-primary/50 transition-colors text-left"
+      onClick={onClick}
+      className={`relative pb-2.5 pt-1.5 text-sm transition-colors ${
+        active ? 'text-foreground font-semibold' : 'text-muted-foreground hover:text-foreground'
+      }`}
     >
-      <video
-        ref={videoRef}
-        src={item.src}
-        muted
-        loop
-        preload="metadata"
-        className="w-full h-full object-cover"
-        onMouseEnter={() => videoRef.current?.play()}
-        onMouseLeave={() => {
-          if (videoRef.current) {
-            videoRef.current.pause()
-            videoRef.current.currentTime = 0
-          }
-        }}
-      />
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-        <p className="text-white text-sm font-medium">{item.title}</p>
-      </div>
-      {/* Play icon */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-        <div className="bg-black/50 rounded-full p-2">
-          <Play className="w-5 h-5 text-white fill-white" />
-        </div>
-      </div>
+      {children}
+      {active && (
+        <span className="absolute inset-x-0 -bottom-px h-0.5 bg-primary rounded-t" />
+      )}
     </button>
   )
 }

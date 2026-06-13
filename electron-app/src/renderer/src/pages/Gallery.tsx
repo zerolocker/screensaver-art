@@ -298,8 +298,8 @@ export function GalleryPage({ session }: GalleryPageProps) {
       {/* Art grid — all cards stay mounted; visibility is toggled so filtering
           and sorting never re-capture posters. */}
       <div
-        className="grid gap-3 mt-2"
-        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}
+        className="grid gap-4 mt-2"
+        style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}
       >
         {sortedItems.map((item) => (
           <PosterCard

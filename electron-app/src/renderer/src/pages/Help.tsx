@@ -22,7 +22,7 @@ export function HelpPage() {
   }, [])
 
   return (
-    <div className="p-6 max-w-2xl">
+    <div className="p-6">
       <div className="space-y-6">
         <Card className="bg-card border-border">
           <CardHeader>

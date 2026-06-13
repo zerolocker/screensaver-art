@@ -41,8 +41,10 @@ export function PosterCard({ item, selected, hidden, onToggle, onOpen }: PosterC
         preview = spawnPreview(item.src, () => {
           if (preview) preview.video.style.opacity = '1'
         })
+        // z-0 keeps the live preview above the canvas but below the always-on
+        // title and selection tick (both z-10).
         preview.video.className =
-          'absolute inset-0 w-full h-full object-cover pointer-events-none'
+          'absolute inset-0 w-full h-full object-cover pointer-events-none z-0'
         preview.video.style.opacity = '0'
         preview.video.style.transition = 'opacity 150ms'
         card.appendChild(preview.video)
@@ -68,31 +70,29 @@ export function PosterCard({ item, selected, hidden, onToggle, onOpen }: PosterC
       ref={cardRef}
       onClick={onOpen}
       style={hidden ? { display: 'none' } : undefined}
-      className={`group relative aspect-video rounded-lg overflow-hidden border bg-secondary cursor-pointer transition-all hover:border-primary/50 ${
-        selected ? 'border-border' : 'border-border opacity-40 saturate-50 hover:opacity-70'
-      }`}
+      className="group relative isolate aspect-video rounded-lg overflow-hidden border border-border bg-secondary cursor-pointer transition-colors hover:border-primary/50"
     >
       <canvas ref={canvasRef} width={480} height={270} className="w-full h-full object-cover block" />
 
-      {/* Title overlay (on hover) */}
-      <div className="absolute inset-x-0 bottom-0 p-2 pt-6 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+      {/* Title — always visible (z-10 keeps it above the hover-preview video). */}
+      <div className="absolute inset-x-0 bottom-0 p-2 pt-6 bg-gradient-to-t from-black/75 to-transparent pointer-events-none z-10">
         <p className="text-white text-xs font-medium truncate">{item.title}</p>
       </div>
 
-      {/* Selection tick */}
+      {/* Selection tick — always visible and above the hover-preview video. */}
       <button
         onClick={(e) => {
           e.stopPropagation()
           onToggle()
         }}
         title={selected ? 'Playing — click to remove' : 'Add to your screensaver'}
-        className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all hover:scale-110 ${
+        className={`absolute top-2 right-2 z-10 w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all hover:scale-110 ${
           selected
             ? 'bg-primary border-primary text-primary-foreground'
-            : 'bg-black/40 border-white/70 text-transparent hover:border-white'
+            : 'bg-black/50 border-white/80 text-transparent hover:border-white hover:bg-black/70'
         }`}
       >
-        <Check className="w-3 h-3" strokeWidth={3.5} />
+        <Check className="w-3.5 h-3.5" strokeWidth={3} />
       </button>
     </div>
   )

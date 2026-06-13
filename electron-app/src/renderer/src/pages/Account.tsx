@@ -127,7 +127,7 @@ export function AccountPage({ session }: AccountPageProps) {
   }
 
   return (
-    <div className="p-6 max-w-2xl">
+    <div className="p-6">
       <AppBanners showUpsell={!subLoading && !isActiveSubscription(subscription)} />
 
       <div className="space-y-6">

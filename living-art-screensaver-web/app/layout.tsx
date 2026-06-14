@@ -19,11 +19,10 @@ export const metadata: Metadata = {
   // set no title fall back to `default` (used as-is, untemplated) — e.g. the
   // homepage. This keeps the brand keyword in every tab/SERP title.
   title: {
-    default: 'Living Art Screensaver — AI-Animated Art Gallery for Mac',
+    default: 'Living Art Screensaver',
     template: '%s — Living Art Screensaver',
   },
   description: 'A screensaver that turns your idle display into a living art gallery, showcasing AI-animated artworks across every style, with new pieces added regularly.',
-  generator: 'v0.app',
   icons: {
     icon: { url: '/icon.svg', type: 'image/svg+xml' },
     apple: '/apple-icon.png',

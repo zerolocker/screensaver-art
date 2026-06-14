@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Loader2, CheckCircle, XCircle, AlertCircle, Clock } from 'lucide-react'
 import { Button } from './button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './card'
+import { Card, CardContent, CardHeader, CardTitle } from './card'
 import { PRICING } from '@screensaver-art/constants'
 
 export interface Subscription {
@@ -88,7 +88,6 @@ export function SubscriptionCard({ subscription, onSubscribe, onManage }: Subscr
     <Card className="bg-card border-border">
       <CardHeader>
         <CardTitle className="text-foreground">Subscription</CardTitle>
-        <CardDescription>Manage your Living Art Screensaver subscription</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center gap-3">

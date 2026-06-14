@@ -56,8 +56,7 @@ export function FeedbackCard() {
       <CardHeader>
         <CardTitle className="text-foreground">Send Feedback</CardTitle>
         <CardDescription>
-          Got feedback? Something not working? Tell us below. You can attach a screenshot — we
-          include basic browser info to help us follow up.
+          Got feedback? Something not working? Tell us below.
         </CardDescription>
       </CardHeader>
       <CardContent>

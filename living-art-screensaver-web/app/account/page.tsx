@@ -44,7 +44,6 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         <div className="space-y-8">
           <div>
             <h1 className="font-serif text-3xl font-bold text-foreground">Your Account</h1>
-            <p className="text-muted-foreground mt-2">Manage your subscription and account settings</p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">

@@ -1,7 +1,5 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { CheckCircle, XCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
 export const metadata: Metadata = {
   title: 'Checkout',
@@ -51,12 +49,6 @@ export default async function CheckoutCompletePage({ searchParams }: CheckoutCom
             </div>
           </>
         )}
-
-        <div className="pt-2 flex gap-3 justify-center">
-          <Button asChild variant="outline">
-            <Link href="/account">Manage account</Link>
-          </Button>
-        </div>
       </div>
     </div>
   )

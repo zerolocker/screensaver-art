@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { Loader2, WifiOff, Search, X, CheckCheck, SlidersHorizontal, Check } from 'lucide-react'
 import { GALLERY_ENDPOINT } from '../lib/api'
+import { startCheckout } from '../lib/checkout'
 import { AppBanners } from '../components/AppBanners'
 import { PosterCard } from '../components/PosterCard'
 import { ArtModal } from '../components/ArtModal'
@@ -37,8 +38,6 @@ type PreviewMode = 'fullscreen' | 'in-app'
 
 const SORT_KEY = 'lart-gallery-sort'
 const PREVIEW_MODE_KEY = 'lart-gallery-preview-mode'
-// Where the subscribe CTA points (the website's billing portal deep-link).
-const SUBSCRIBE_URL = 'https://living-art-screensaver.com/account'
 // After the last tick, wait this long before re-syncing the cache, so rapid
 // toggling triggers one sync, not one per click.
 const SYNC_DEBOUNCE_MS = 1500
@@ -138,7 +137,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
   }, [])
 
   const onSubscribe = useCallback(() => {
-    window.electronAPI.shell.openExternal(SUBSCRIBE_URL)
+    void startCheckout()
   }, [])
 
   const persistAndSync = useCallback(

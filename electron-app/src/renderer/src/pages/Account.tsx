@@ -10,6 +10,7 @@ import {
 } from '@screensaver-art/ui'
 import type { Subscription } from '@screensaver-art/ui'
 import { SUBSCRIPTION_VERIFY_ENDPOINT } from '../lib/api'
+import { startCheckout } from '../lib/checkout'
 import { log } from '../lib/log'
 import { getAccessToken } from '../lib/supabase'
 import { Loader2, Trash2, HardDrive, FolderOpen, RefreshCw } from 'lucide-react'
@@ -146,7 +147,9 @@ export function AccountPage({ session }: AccountPageProps) {
           <SubscriptionCard
             subscription={subscription}
             onSubscribe={async () => {
-              window.electronAPI.shell.openExternal('https://living-art-screensaver.com/account')
+              // Skip the website re-login + extra click: create a Stripe checkout
+              // from the app's session and open it directly.
+              await startCheckout()
               return {}
             }}
             onManage={async () => {

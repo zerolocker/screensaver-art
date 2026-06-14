@@ -22,12 +22,10 @@ function LoginInner() {
   const next = searchParams.get('redirect') ?? '/account'
 
   const [mode, setMode] = useState<'choose' | 'otp'>('choose')
-  const [pending, setPending] = useState<OAuthProvider | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   async function startOAuth(provider: OAuthProvider) {
     setError(null)
-    setPending(provider)
     const supabase = createClient()
     const { scopes, queryParams } = OAUTH_PROVIDER_OPTIONS[provider]
     // @supabase/ssr uses the PKCE flow: the provider redirects back to
@@ -37,10 +35,7 @@ function LoginInner() {
       provider,
       options: { redirectTo, scopes, queryParams },
     })
-    if (error) {
-      setError(error.message)
-      setPending(null)
-    }
+    if (error) setError(error.message)
     // On success the browser navigates to the provider — nothing more to do here.
   }
 
@@ -78,13 +73,12 @@ function LoginInner() {
         <p className="text-muted-foreground">No password needed.</p>
       </div>
 
-      <OAuthButtons pending={pending} onSelect={startOAuth} />
+      <OAuthButtons onSelect={startOAuth} />
 
       <Button
         type="button"
         variant="outline"
         className="w-full"
-        disabled={pending !== null}
         onClick={() => setMode('otp')}
       >
         Continue with email

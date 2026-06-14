@@ -1,8 +1,6 @@
 import { Button, OAuthButtons, type OAuthProvider } from '@screensaver-art/ui'
 
 interface PasswordlessOptionsProps {
-  /** Provider whose sign-in is mid-flight (shows a spinner), or null. */
-  pending: OAuthProvider | null
   /** Error from a failed OAuth attempt, shown inline. */
   error: string | null
   onStart: (provider: OAuthProvider) => void
@@ -18,7 +16,6 @@ interface PasswordlessOptionsProps {
  * use, so this single block serves as both sign-in and sign-up.
  */
 export function PasswordlessOptions({
-  pending,
   error,
   onStart,
   onEmailCode,
@@ -26,14 +23,8 @@ export function PasswordlessOptions({
 }: PasswordlessOptionsProps) {
   return (
     <div className="space-y-3">
-      <OAuthButtons pending={pending} onSelect={onStart} />
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full"
-        disabled={pending !== null}
-        onClick={onEmailCode}
-      >
+      <OAuthButtons onSelect={onStart} />
+      <Button type="button" variant="outline" className="w-full" onClick={onEmailCode}>
         {emailCodeLabel}
       </Button>
       {error && (

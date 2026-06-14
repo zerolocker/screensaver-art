@@ -143,10 +143,18 @@ Auth is **passwordless** — there is no email/password sign-in or sign-up. The 
 single screen serves both (a first-time email/provider just creates the account):
 - **Email one-time code** (`signInWithOtp` + `verifyOtp`, `shouldCreateUser: true`)
 - **Social sign-in** — Apple / Google / Microsoft via `signInWithOAuth` using the
-  **PKCE** flow. The app opens the system browser and the provider returns via the
-  `livingart://auth-callback?code=…` deep link, which `exchangeCodeForSession`
-  swaps for a session. The website uses the identical PKCE flow (`/auth/callback`);
-  provider config (labels, scopes/query params) is shared in `@screensaver-art/ui`.
+  **PKCE** flow. The app opens the **system browser** (never an embedded webview —
+  Google blocks those). The provider's `redirect_to` is a web page we control,
+  **`/auth/desktop-callback`**, not the deep link directly: pointing the browser
+  straight at `livingart://` left it spinning on a half-finished custom-scheme
+  navigation even after the app signed in. The hand-off page forwards the PKCE
+  `code` to the `livingart://auth-callback?code=…` deep link (which the main
+  process receives) and shows a "you can close this window" message;
+  `exchangeCodeForSession` then swaps the code for a session. The web URL must be
+  in Supabase Auth → Redirect URLs. The website uses the identical PKCE flow
+  (`/auth/callback`); provider config (labels, scopes/query params) is shared in
+  `@screensaver-art/ui`. The social buttons never disable/spin on click — sign-in
+  continues elsewhere, so disabling them only ever stranded users on a spinner.
 
 1. User opens the Electron app
 2. Signs in passwordlessly (email code or a social provider); `@supabase/supabase-js`

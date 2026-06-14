@@ -3,7 +3,6 @@ import { PasswordlessOptions } from '../components/PasswordlessOptions'
 import type { OAuthProvider } from '../lib/oauth'
 
 interface LoginPageProps {
-  oauthPending: OAuthProvider | null
   oauthError: string | null
   onStartOAuth: (provider: OAuthProvider) => void
 }
@@ -11,7 +10,7 @@ interface LoginPageProps {
 // Single passwordless auth screen — no email/password. Social sign-in and the
 // email one-time code both create the account on first use, so there's no
 // separate sign-up step.
-export function LoginPage({ oauthPending, oauthError, onStartOAuth }: LoginPageProps) {
+export function LoginPage({ oauthError, onStartOAuth }: LoginPageProps) {
   const navigate = useNavigate()
 
   return (
@@ -24,7 +23,6 @@ export function LoginPage({ oauthPending, oauthError, onStartOAuth }: LoginPageP
       </div>
 
       <PasswordlessOptions
-        pending={oauthPending}
         error={oauthError}
         onStart={onStartOAuth}
         onEmailCode={() => navigate('/otp')}

@@ -44,7 +44,7 @@ export function Header() {
                 <path d="M2 12l10 5 10-5" />
               </svg>
             </div>
-            <span className="font-semibold text-lg text-foreground">Living Art</span>
+            <span className="font-semibold text-lg text-foreground">Living Art Screensaver</span>
           </Link>
 
           {/* Desktop Navigation */}

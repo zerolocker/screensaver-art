@@ -47,7 +47,7 @@ function LoginInner() {
   if (mode === 'otp') {
     return (
       <OtpForm
-        title="Living Art"
+        title="Living Art Screensaver"
         onBack={() => setMode('choose')}
         onRequestCode={async (email) => {
           const supabase = createClient()
@@ -73,7 +73,7 @@ function LoginInner() {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
-        <h1 className="font-serif text-2xl font-bold text-foreground">Living Art</h1>
+        <h1 className="font-serif text-2xl font-bold text-foreground">Living Art Screensaver</h1>
         <h2 className="text-xl font-semibold text-foreground">Sign in or create an account</h2>
         <p className="text-muted-foreground">No password needed.</p>
       </div>

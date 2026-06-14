@@ -88,7 +88,7 @@ export function SubscriptionCard({ subscription, onSubscribe, onManage }: Subscr
     <Card className="bg-card border-border">
       <CardHeader>
         <CardTitle className="text-foreground">Subscription</CardTitle>
-        <CardDescription>Manage your Living Art subscription</CardDescription>
+        <CardDescription>Manage your Living Art Screensaver subscription</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center gap-3">

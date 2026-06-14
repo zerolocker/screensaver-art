@@ -14,7 +14,7 @@ export default function TermsOfServicePage() {
     <LegalPage title="Terms of Service" lastUpdated="June 7, 2026">
       <p>
         These Terms of Service (&ldquo;Terms&rdquo;) govern your use of Living Art Screensaver
-        (&ldquo;Living Art,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;),
+        (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;),
         including our website at{" "}
         <a href="https://living-art-screensaver.com">living-art-screensaver.com</a>, our desktop
         application, and our screensaver (together, the &ldquo;Service&rdquo;). By creating an
@@ -24,7 +24,7 @@ export default function TermsOfServicePage() {
 
       <h2>The Service</h2>
       <p>
-        Living Art is a screensaver that plays a curated gallery of AI-animated artworks on your
+        Living Art Screensaver is a screensaver that plays a curated gallery of AI-animated artworks on your
         computer. The desktop app downloads and caches artwork to your device and installs the
         screensaver. New artworks are added to the gallery from time to time.
       </p>
@@ -114,7 +114,7 @@ export default function TermsOfServicePage() {
 
       <h2>Limitation of Liability</h2>
       <p>
-        To the maximum extent permitted by law, Living Art will not be liable for any indirect,
+        To the maximum extent permitted by law, Living Art Screensaver will not be liable for any indirect,
         incidental, special, consequential, or punitive damages, or any loss of data, profits, or
         goodwill, arising from your use of the Service. Our total liability for any claim relating to
         the Service will not exceed the greater of the amount you paid us in the 12 months before the

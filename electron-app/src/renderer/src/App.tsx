@@ -23,7 +23,6 @@ const INITIAL_SESSION_TIMEOUT_MS = 2000
 export function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
-  const [oauthPending, setOauthPending] = useState<OAuthProvider | null>(null)
   const [oauthError, setOauthError] = useState<string | null>(null)
   const navigate = useNavigate()
 
@@ -34,18 +33,13 @@ export function App() {
     return window.electronAPI.auth.onCallback(async (url) => {
       const { error } = await completeOAuthFromUrl(url)
       if (error) setOauthError(error)
-      setOauthPending(null)
     })
   }, [])
 
   async function handleStartOAuth(provider: OAuthProvider): Promise<void> {
     setOauthError(null)
-    setOauthPending(provider)
     const { error } = await startOAuth(provider)
-    if (error) {
-      setOauthError(error)
-      setOauthPending(null)
-    }
+    if (error) setOauthError(error)
   }
 
   useEffect(() => {
@@ -143,11 +137,7 @@ export function App() {
             <Route
               path="/login"
               element={
-                <LoginPage
-                  oauthPending={oauthPending}
-                  oauthError={oauthError}
-                  onStartOAuth={handleStartOAuth}
-                />
+                <LoginPage oauthError={oauthError} onStartOAuth={handleStartOAuth} />
               }
             />
             <Route path="/otp" element={<OtpPage />} />

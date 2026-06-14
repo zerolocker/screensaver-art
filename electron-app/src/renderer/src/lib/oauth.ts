@@ -3,8 +3,14 @@ import { OAUTH_PROVIDER_OPTIONS, type OAuthProvider } from '@screensaver-art/ui'
 import { supabase } from './supabase'
 import { log } from './log'
 
-// Must exactly match an entry in Supabase Auth → URL Configuration → Redirect URLs.
-const REDIRECT_URL = 'livingart://auth-callback'
+// OAuth happens in the system browser. We deliberately do NOT redirect straight
+// to the livingart:// deep link — the browser would be left spinning on a
+// half-finished navigation to a custom scheme even after the app signed in.
+// Instead the provider redirects to a web page we control, which forwards the
+// PKCE code to the deep link and shows a "you can close this tab" message. That
+// page (livingart://auth-callback) is what the main process actually receives.
+// This web URL must be listed in Supabase Auth → URL Configuration → Redirect URLs.
+const REDIRECT_URL = 'https://living-art-screensaver.com/auth/desktop-callback'
 
 // Provider list, labels, and per-provider scopes/queryParams are shared with the
 // website in @screensaver-art/ui (see packages/ui/src/oauth.ts).

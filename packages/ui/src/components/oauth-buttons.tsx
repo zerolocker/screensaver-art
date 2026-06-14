@@ -1,18 +1,17 @@
 'use client'
 
-import { Loader2 } from 'lucide-react'
 import { Button } from './button'
 import { OAUTH_PROVIDERS, OAUTH_PROVIDER_LABELS, type OAuthProvider } from '../oauth'
 
 export interface OAuthButtonsProps {
-  /** Provider whose sign-in is mid-flight (shows a spinner), or null. */
-  pending: OAuthProvider | null
   /** Start sign-in with the chosen provider. */
   onSelect: (provider: OAuthProvider) => void
 }
 
-export function OAuthButtons({ pending, onSelect }: OAuthButtonsProps) {
-  const busy = pending !== null
+// No spinner / disabled state: sign-in continues in the system browser (or its
+// own window), so the buttons stay live. Disabling them on click only ever
+// stranded the user on a spinner when they came back without finishing.
+export function OAuthButtons({ onSelect }: OAuthButtonsProps) {
   return (
     <div className="space-y-2">
       {OAUTH_PROVIDERS.map((provider) => (
@@ -21,14 +20,9 @@ export function OAuthButtons({ pending, onSelect }: OAuthButtonsProps) {
           type="button"
           variant="outline"
           className="w-full justify-center gap-2"
-          disabled={busy}
           onClick={() => onSelect(provider)}
         >
-          {pending === provider ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <ProviderIcon provider={provider} />
-          )}
+          <ProviderIcon provider={provider} />
           Continue with {OAUTH_PROVIDER_LABELS[provider]}
         </Button>
       ))}

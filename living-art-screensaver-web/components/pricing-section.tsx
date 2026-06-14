@@ -26,12 +26,15 @@ export function PricingSection() {
 
   async function handleWebSubscribe() {
     if (!user) {
-      router.push('/auth/login?redirect=/pricing')
+      // Land back on the pricing section after login (there's no /pricing route,
+      // only this #pricing anchor on the home page).
+      router.push('/auth/login?redirect=/%23pricing')
       return
     }
 
     setLoading(true)
-    const result = await createCheckoutSession('living-art-monthly', window.location.origin)
+    // Back out of Stripe → return here to the pricing section, not a dead /pricing.
+    const result = await createCheckoutSession('living-art-monthly', window.location.origin, '/#pricing')
 
     if (result.error) {
       alert(result.error)

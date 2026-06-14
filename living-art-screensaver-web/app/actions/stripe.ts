@@ -2,21 +2,23 @@
 
 import { stripe } from '@/lib/stripe'
 import { getProduct } from '@/lib/products'
+import { createSubscriptionCheckoutSession } from '@/lib/checkout'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 
-export async function createCheckoutSession(productId: string, origin: string) {
+/**
+ * Web (cookie-authed) checkout. `cancelPath` is where Stripe sends the user if
+ * they back out — it must be a real route (the user is signed in here, so
+ * `/account` is the safe default; the home pricing section passes `/#pricing`).
+ */
+export async function createCheckoutSession(
+  productId: string,
+  origin: string,
+  cancelPath = '/account',
+) {
   const product = getProduct(productId)
   if (!product) {
     return { error: 'Product not found' }
-  }
-
-  // The charged amount is the Stripe catalog Price (test vs live differ by ID),
-  // set per-environment in Vercel. See docs/stripe-webhooks.md.
-  const priceId = process.env.STRIPE_PRICE_ID
-  if (!priceId) {
-    console.error('STRIPE_PRICE_ID is not configured')
-    return { error: 'Pricing is not configured. Please contact support.' }
   }
 
   const supabase = await createClient()
@@ -38,47 +40,13 @@ export async function createCheckoutSession(productId: string, origin: string) {
     return { error: 'You already have an active subscription' }
   }
 
-  // Use existing Stripe customer ID if available
-  let customerId = subscription?.stripe_customer_id
-
-  if (!customerId) {
-    // Create a new Stripe customer
-    const customer = await stripe.customers.create({
-      email: user.email,
-      metadata: {
-        supabase_user_id: user.id,
-      },
-    })
-    customerId = customer.id
-  }
-
-  const session = await stripe.checkout.sessions.create({
-    customer: customerId,
-    mode: 'subscription',
-    payment_method_types: ['card'],
-    // Lets users enter a Stripe promotion code at checkout. Doubles as the
-    // zero-cost way to smoke-test the *live* flow: a 100%-off live coupon runs
-    // the full checkout → webhook → Supabase path without a real charge.
-    allow_promotion_codes: true,
-    line_items: [
-      {
-        price: priceId,
-        quantity: 1,
-      },
-    ],
-    success_url: `${origin}/account?success=true&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin}/pricing?canceled=true`,
-    subscription_data: {
-      metadata: {
-        supabase_user_id: user.id,
-      },
-    },
-    metadata: {
-      supabase_user_id: user.id,
-    },
+  return createSubscriptionCheckoutSession({
+    userId: user.id,
+    userEmail: user.email,
+    existingCustomerId: subscription?.stripe_customer_id,
+    successUrl: `${origin}/account?success=true&session_id={CHECKOUT_SESSION_ID}`,
+    cancelUrl: `${origin}${cancelPath}`,
   })
-
-  return { url: session.url }
 }
 
 export async function syncSubscriptionFromSession(sessionId: string) {

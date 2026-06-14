@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { startCheckout } from '../lib/checkout'
 import { UpsellBanner } from './UpsellBanner'
 import { ScreensaverSetBanner } from './ScreensaverSetBanner'
 import { ScreensaverErrorBanner } from './ScreensaverErrorBanner'
@@ -59,13 +60,7 @@ export function AppBanners({ showUpsell }: AppBannersProps) {
           error={installer?.registered ? error : null}
         />
       )}
-      {showUpsell && (
-        <UpsellBanner
-          onSubscribe={() =>
-            window.electronAPI.shell.openExternal('https://living-art-screensaver.com/account')
-          }
-        />
-      )}
+      {showUpsell && <UpsellBanner onSubscribe={() => void startCheckout()} />}
     </>
   )
 }

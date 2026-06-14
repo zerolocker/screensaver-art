@@ -1,17 +1,18 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { NextRequest } from 'next/server'
 
-// /api/gallery is the load-bearing security boundary: it's where the
-// "subscriber → full gallery / non-subscriber → first FREE_ITEM_COUNT items"
-// gating happens. These tests mock both verifyNativeAuth (the auth check) and
-// the upstream GitHub Pages fetch (the playlist source). They cover:
-//   - non-subscribers are capped at FREE_ITEM_COUNT items
-//   - non-subscribers below the cap get the whole (short) collection
-//   - subscribers get the full collection-filtered list
-//   - collection filtering with `?collection=` query param
-//   - items without a `collection` field default to "classic"
+// /api/gallery returns the FULL gallery to everyone now — gating moved to the
+// client (it locks pieces beyond `freeCount` for non-subscribers and never
+// caches them). So this route's job is narrow: fetch the playlist, resolve the
+// subscription, and hand back { items, isSubscribed, freeCount }. These tests
+// mock both verifyNativeAuth (the auth check) and the upstream GitHub Pages
+// fetch (the playlist source). They cover:
+//   - subscribers and non-subscribers both get the whole list (no slice)
+//   - isSubscribed reflects the auth result
+//   - freeCount is always the server's FREE_ITEM_COUNT
+//   - a missing Authorization header never 401s (returns the list as a guest)
 //   - upstream fetch failure surfaces as 502
-//   - the totalCount field reflects the unsliced collection size
+//   - the response shape is exactly { freeCount, isSubscribed, items }
 
 // Hoisted state lets the vi.mock factory share refs with the test scope.
 const { authMock } = vi.hoisted(() => ({
@@ -25,15 +26,12 @@ vi.mock('@/lib/auth/verify-native-auth', () => ({
 import { GET } from '../route'
 import { FREE_ITEM_COUNT } from '@screensaver-art/constants'
 
-// Sample fixture — mixes collections so we can verify filtering
 const FAKE_GALLERY = [
-  { src: 'https://r2/a.mp4', title: 'A', type: 'video', collection: 'classic' },
-  { src: 'https://r2/b.mp4', title: 'B', type: 'video', collection: 'classic' },
-  { src: 'https://r2/c.mp4', title: 'C', type: 'video', collection: 'classic' },
-  { src: 'https://r2/d.mp4', title: 'D', type: 'video', collection: 'classic' },
-  { src: 'https://r2/e.mp4', title: 'E', type: 'video', collection: 'modern' },
-  // No collection field — should fall through to "classic"
-  { src: 'https://r2/legacy.mp4', title: 'Legacy', type: 'video' },
+  { src: 'https://r2/a.mp4', title: 'A', type: 'video' },
+  { src: 'https://r2/b.mp4', title: 'B', type: 'video' },
+  { src: 'https://r2/c.mp4', title: 'C', type: 'video' },
+  { src: 'https://r2/d.mp4', title: 'D', type: 'video' },
+  { src: 'https://r2/e.mp4', title: 'E', type: 'video' },
 ]
 
 function makeFetchOk(body: unknown): Response {
@@ -61,97 +59,55 @@ describe('GET /api/gallery', () => {
     authMock.mockReset()
   })
 
-  describe('subscription gating', () => {
-    it('non-subscriber below the cap gets the whole (short) collection', async () => {
-      authMock.mockResolvedValue({ user: null, isSubscribed: false, subscription: null })
-      const res = await GET(makeReq('?collection=classic'))
-      const body = await res.json()
-      expect(res.status).toBe(200)
-      expect(body.isSubscribed).toBe(false)
-      // The fixture has only 5 classic items — fewer than FREE_ITEM_COUNT — so a
-      // non-subscriber sees them all (the cap only bites once the collection is
-      // bigger than FREE_ITEM_COUNT, covered by the next test).
-      expect(body.items).toHaveLength(5)
-      expect(body.items.map((i: { title: string }) => i.title)).toEqual(['A', 'B', 'C', 'D', 'Legacy'])
-      // totalCount reflects the FULL collection so the client can show "X of Y" upsell copy
-      expect(body.totalCount).toBe(5) // 4 explicit "classic" + 1 unlabeled (defaults to classic)
-    })
-
-    it('non-subscriber is capped at FREE_ITEM_COUNT items', async () => {
-      // Build a collection larger than the cap to prove the slice still bites.
+  describe('full gallery (no server-side gating)', () => {
+    it('non-subscriber gets the whole gallery (gating is client-side now)', async () => {
+      // Build a collection larger than the free count to prove there is NO slice:
+      // every item comes back regardless of subscription.
       const bigGallery = Array.from({ length: FREE_ITEM_COUNT + 50 }, (_, n) => ({
         src: `https://r2/big-${n}.mp4`,
         title: `Big ${n}`,
         type: 'video',
-        collection: 'classic',
       }))
       fetchSpy.mockResolvedValue(makeFetchOk(bigGallery))
       authMock.mockResolvedValue({ user: null, isSubscribed: false, subscription: null })
-      const res = await GET(makeReq('?collection=classic'))
+
+      const res = await GET(makeReq())
       const body = await res.json()
+
       expect(res.status).toBe(200)
       expect(body.isSubscribed).toBe(false)
-      expect(body.items).toHaveLength(FREE_ITEM_COUNT)
-      expect(body.totalCount).toBe(FREE_ITEM_COUNT + 50)
+      expect(body.items).toHaveLength(FREE_ITEM_COUNT + 50)
+      expect(body.freeCount).toBe(FREE_ITEM_COUNT)
     })
 
-    it('subscriber gets the full collection-filtered list', async () => {
+    it('subscriber also gets the whole gallery', async () => {
       authMock.mockResolvedValue({
         user: { id: 'u1' },
         isSubscribed: true,
         subscription: { status: 'active' },
       })
-      const res = await GET(makeReq('?collection=classic'))
+
+      const res = await GET(makeReq())
       const body = await res.json()
+
       expect(res.status).toBe(200)
       expect(body.isSubscribed).toBe(true)
-      expect(body.items).toHaveLength(5)
-      expect(body.totalCount).toBe(5)
+      expect(body.items).toHaveLength(FAKE_GALLERY.length)
+      expect(body.freeCount).toBe(FREE_ITEM_COUNT)
     })
 
     it('treats requests with no Authorization header as non-subscribers (never 401s)', async () => {
-      // verifyNativeAuth returns the unauthenticated default
+      // verifyNativeAuth returns the unauthenticated default.
       authMock.mockResolvedValue({ user: null, isSubscribed: false, subscription: null })
+
       const res = await GET(makeReq())
-      // Critical: must NOT return 401, otherwise the screensaver/Electron
-      // app would have nothing to play during onboarding
+
+      // Critical: must NOT return 401, otherwise the screensaver/Electron app
+      // would have nothing to play during onboarding.
       expect(res.status).toBe(200)
       const body = await res.json()
-      // No collection filter → all 6 fixture items, which is under the cap.
+      expect(body.isSubscribed).toBe(false)
       expect(body.items).toHaveLength(FAKE_GALLERY.length)
-    })
-  })
-
-  describe('collection filtering', () => {
-    it('filters by collection when ?collection is present', async () => {
-      authMock.mockResolvedValue({ user: { id: 'u' }, isSubscribed: true, subscription: null })
-      const res = await GET(makeReq('?collection=modern'))
-      const body = await res.json()
-      expect(body.items.map((i: { title: string }) => i.title)).toEqual(['E'])
-      expect(body.totalCount).toBe(1)
-    })
-
-    it('items without a `collection` field default to "classic"', async () => {
-      authMock.mockResolvedValue({ user: { id: 'u' }, isSubscribed: true, subscription: null })
-      const res = await GET(makeReq('?collection=classic'))
-      const body = await res.json()
-      const titles = body.items.map((i: { title: string }) => i.title)
-      expect(titles).toContain('Legacy')
-    })
-
-    it('returns ALL items when no ?collection is provided', async () => {
-      authMock.mockResolvedValue({ user: { id: 'u' }, isSubscribed: true, subscription: null })
-      const res = await GET(makeReq())
-      const body = await res.json()
-      expect(body.items).toHaveLength(FAKE_GALLERY.length)
-    })
-
-    it('returns an empty list for an unknown collection', async () => {
-      authMock.mockResolvedValue({ user: { id: 'u' }, isSubscribed: true, subscription: null })
-      const res = await GET(makeReq('?collection=does-not-exist'))
-      const body = await res.json()
-      expect(body.items).toHaveLength(0)
-      expect(body.totalCount).toBe(0)
     })
   })
 
@@ -174,10 +130,10 @@ describe('GET /api/gallery', () => {
   })
 
   describe('response shape', () => {
-    it('always includes items, isSubscribed, and totalCount', async () => {
+    it('always includes items, isSubscribed, and freeCount', async () => {
       authMock.mockResolvedValue({ user: null, isSubscribed: false, subscription: null })
-      const body = await (await GET(makeReq('?collection=classic'))).json()
-      expect(Object.keys(body).sort()).toEqual(['isSubscribed', 'items', 'totalCount'].sort())
+      const body = await (await GET(makeReq())).json()
+      expect(Object.keys(body).sort()).toEqual(['freeCount', 'isSubscribed', 'items'].sort())
     })
   })
 })

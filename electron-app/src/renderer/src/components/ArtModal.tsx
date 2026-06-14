@@ -1,11 +1,15 @@
 import { useEffect, useRef } from 'react'
-import { X, Check } from 'lucide-react'
+import { X, Check, Lock } from 'lucide-react'
 import { type ArtItem, tagsOf } from '@screensaver-art/constants'
 
 interface ArtModalProps {
   item: ArtItem
   selected: boolean
+  // Locked = a non-subscriber's piece beyond the free count: the add action
+  // becomes "Subscribe to unlock".
+  locked: boolean
   onToggle: () => void
+  onSubscribe: () => void
   onClose: () => void
   // When true, also push the app window into native macOS fullscreen while the
   // preview is open, so the piece fills the whole display (the "Fullscreen"
@@ -23,10 +27,18 @@ function formatDate(date?: string): string | null {
 // Full-screen preview of a single piece so the art reads the way it will as a
 // screensaver. The video fills the viewport with object-cover (mirroring the
 // screensaver's AVLayerVideoGravity.resizeAspectFill); the title/tags/date and
-// the add/remove action float over a bottom gradient scrim. Clicking anywhere
-// (except the add/remove button), Escape, or the close button dismisses — so
-// it's a quick tap back to the gallery.
-export function ArtModal({ item, selected, onToggle, onClose, osFullscreen }: ArtModalProps) {
+// the add/remove (or "Subscribe to unlock") action float over a bottom gradient
+// scrim. Clicking anywhere (except that action button), Escape, or the close
+// button dismisses — so it's a quick tap back to the gallery.
+export function ArtModal({
+  item,
+  selected,
+  locked,
+  onToggle,
+  onSubscribe,
+  onClose,
+  osFullscreen,
+}: ArtModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
@@ -99,26 +111,39 @@ export function ArtModal({ item, selected, onToggle, onClose, osFullscreen }: Ar
           <h3 className="text-lg font-semibold text-white truncate">{item.title}</h3>
           {meta && <p className="text-sm text-white/70 mt-1">{meta}</p>}
         </div>
-        <button
-          onClick={(e) => {
-            // The only element that toggles instead of dismissing.
-            e.stopPropagation()
-            onToggle()
-          }}
-          className={`shrink-0 inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
-            selected
-              ? 'bg-white/10 text-white border border-white/25 backdrop-blur-sm hover:bg-white/20'
-              : 'bg-primary text-primary-foreground hover:brightness-105'
-          }`}
-        >
-          {selected ? (
-            <>
-              <Check className="w-4 h-4" /> In your screensaver
-            </>
-          ) : (
-            'Add to screensaver'
-          )}
-        </button>
+        {locked ? (
+          <button
+            onClick={(e) => {
+              // The only element that doesn't dismiss the preview.
+              e.stopPropagation()
+              onSubscribe()
+            }}
+            className="shrink-0 inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-medium bg-primary text-primary-foreground transition-colors hover:brightness-105"
+          >
+            <Lock className="w-4 h-4" /> Subscribe to unlock
+          </button>
+        ) : (
+          <button
+            onClick={(e) => {
+              // The only element that toggles instead of dismissing.
+              e.stopPropagation()
+              onToggle()
+            }}
+            className={`shrink-0 inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors ${
+              selected
+                ? 'bg-white/10 text-white border border-white/25 backdrop-blur-sm hover:bg-white/20'
+                : 'bg-primary text-primary-foreground hover:brightness-105'
+            }`}
+          >
+            {selected ? (
+              <>
+                <Check className="w-4 h-4" /> In your screensaver
+              </>
+            ) : (
+              'Add to screensaver'
+            )}
+          </button>
+        )}
       </div>
     </div>
   )

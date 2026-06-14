@@ -13,6 +13,7 @@ export {
   TAG_ORDER,
   tagsOf,
   orderTags,
+  matchesQuery,
 } from './gallery'
 
 // Pricing — the displayed price/cadence/promo framing (not what Stripe charges).

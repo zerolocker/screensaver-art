@@ -126,16 +126,19 @@ ipcMain.handle('cache:getSyncState', () => ({ syncing: isSyncing() }))
 
 ipcMain.handle(
   'cache:sync',
-  async (_evt, payload: { apiUrl: string; accessToken: string | null }): Promise<{ ok: true; manifest: CachedManifest } | { ok: false; error: string }> => {
+  async (_evt, payload: { apiUrl: string; accessToken: string | null; pruneDeselected?: boolean }): Promise<{ ok: true; manifest: CachedManifest } | { ok: false; error: string }> => {
     try {
       // The selection lives in the main process (cache-sync needs it, and the
       // renderer persists it via selection:set before triggering a sync). A null
-      // selection means "use the default first FREE_ITEM_COUNT".
+      // selection means "use the default first FREE_ITEM_COUNT". `pruneDeselected`
+      // is set on a manual "Sync Now" so it tidies deselected files off disk; an
+      // auto sync leaves them cached for instant re-add.
       const manifest = await syncGallery(
         payload.apiUrl,
         payload.accessToken,
         mainWindow,
         readSelection(),
+        payload.pruneDeselected ?? false,
       )
       return { ok: true, manifest }
     } catch (err) {

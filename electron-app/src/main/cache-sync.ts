@@ -16,6 +16,7 @@ import { FREE_ITEM_COUNT, type ArtItem, type GalleryApiResponse } from '@screens
 
 // The /api/gallery item + response shape lives in @screensaver-art/constants so
 // the website (producer) and this client (consumer) share one definition.
+// `ApiResponse.freeCount` is the lock threshold a non-subscriber gates on.
 export type ApiItem = ArtItem
 export type ApiResponse = GalleryApiResponse
 
@@ -28,7 +29,6 @@ export type CachedItem = {
 export type CachedManifest = {
   items: CachedItem[]
   isSubscribed: boolean
-  totalCount: number
   syncedAt: string
 }
 
@@ -44,10 +44,10 @@ const STALL_TIMEOUT_MS = 30_000
 const DOWNLOAD_RETRIES = 2
 const RETRY_BACKOFF_MS = 400
 
-// Default number of pieces to cache when the user has never customized their
-// selection (a null selection) = the shared FREE_ITEM_COUNT, which is also the
-// website's free-tier slice, so a fresh install plays a sensible set before the
-// user ever opens the gallery.
+// The free-tier threshold (`FREE_ITEM_COUNT`, shared) is the fallback when the
+// API response omits `freeCount`, and the default selection size for a
+// never-customized (null) selection — so a fresh install plays a sensible set
+// before the user ever opens the gallery.
 
 export function getCacheDir(): string {
   // Test-only override (the test suite points this at a tmp dir so it never
@@ -203,13 +203,17 @@ let inFlightAbort: AbortController | null = null
 
 // `selectedSrcs` is the user's chosen subset (a list of item `src` URLs). A null
 // selection (the user has never customized it) defaults to the first
-// FREE_ITEM_COUNT items. Only selected items are cached; deselected ones are
-// pruned as orphans.
+// FREE_ITEM_COUNT items. Locked items (a non-subscriber's pieces beyond
+// freeCount) are never downloaded. By default a deselected-but-unlocked item is
+// KEPT on disk so re-adding it is instant ("cache" is decoupled from "what
+// plays"); set `pruneDeselected` (a manual "Sync Now") to also evict those,
+// tidying the cache down to exactly the play set.
 export function syncGallery(
   apiUrl: string,
   accessToken: string | null,
   window: BrowserWindow | null,
   selectedSrcs: string[] | null = null,
+  pruneDeselected = false,
 ): Promise<CachedManifest> {
   if (inFlight) {
     log.info('cache-sync', 'sync already in progress — joining existing run')
@@ -217,10 +221,12 @@ export function syncGallery(
   }
   const abort = new AbortController()
   inFlightAbort = abort
-  inFlight = runSync(apiUrl, accessToken, window, selectedSrcs, abort.signal).finally(() => {
-    inFlight = null
-    inFlightAbort = null
-  })
+  inFlight = runSync(apiUrl, accessToken, window, selectedSrcs, pruneDeselected, abort.signal).finally(
+    () => {
+      inFlight = null
+      inFlightAbort = null
+    },
+  )
   return inFlight
 }
 
@@ -240,6 +246,7 @@ async function runSync(
   accessToken: string | null,
   window: BrowserWindow | null,
   selectedSrcs: string[] | null,
+  pruneDeselected: boolean,
   signal: AbortSignal,
 ): Promise<CachedManifest> {
   await mkdir(VIDEOS_DIR, { recursive: true })
@@ -256,20 +263,36 @@ async function runSync(
     throw new Error(`Gallery API returned HTTP ${res.status}`)
   }
   const api: ApiResponse = await res.json()
-  log.info('cache-sync', 'gallery fetched', { count: api.items.length, isSubscribed: api.isSubscribed, totalCount: api.totalCount })
+  const freeCount = api.freeCount ?? FREE_ITEM_COUNT
+  log.info('cache-sync', 'gallery fetched', {
+    count: api.items.length,
+    isSubscribed: api.isSubscribed,
+    freeCount,
+  })
 
-  // Narrow to the user's selection. A null selection (never customized) defaults
-  // to the first FREE_ITEM_COUNT items. We preserve the API order so the manifest
-  // and the download loop iterate in the same order the gallery is presented in.
+  // Unlocked = what this user is allowed to play/cache: everything for a
+  // subscriber, the first `freeCount` items otherwise. Locked items are never
+  // downloaded and never kept on disk (so an expired subscription evicts them).
+  const unlockedItems = api.isSubscribed ? api.items : api.items.slice(0, freeCount)
+  const unlockedSrcs = new Set(unlockedItems.map((it) => it.src))
+
+  // Narrow to the user's selection ∩ unlocked. A null selection (never
+  // customized) defaults to the first `freeCount` items (all unlocked). We
+  // preserve the API order so the manifest and the download loop iterate in the
+  // same order the gallery is presented in.
   const selectedSet =
     selectedSrcs === null
-      ? new Set(api.items.slice(0, FREE_ITEM_COUNT).map((it) => it.src))
+      ? new Set(api.items.slice(0, freeCount).map((it) => it.src))
       : new Set(selectedSrcs)
-  const chosen = api.items.filter((item) => selectedSet.has(item.src))
+  const chosen = api.items.filter(
+    (item) => selectedSet.has(item.src) && unlockedSrcs.has(item.src),
+  )
   log.info('cache-sync', 'selection applied', {
     selected: chosen.length,
+    unlocked: unlockedItems.length,
     of: api.items.length,
     customized: selectedSrcs !== null,
+    pruneDeselected,
   })
 
   const cached: CachedItem[] = chosen.map((item) => ({
@@ -279,6 +302,14 @@ async function runSync(
   }))
   const wantedFilenames = new Set(cached.map((i) => i.filename))
 
+  // What to KEEP on disk after this sync. On a manual sync (`pruneDeselected`)
+  // we tidy down to exactly the play set; otherwise we keep every unlocked item
+  // already cached, so deselecting a piece doesn't delete its `.bin` (re-adding
+  // is then instant). Either way, locked + removed-from-gallery files are pruned.
+  const keepFilenames = pruneDeselected
+    ? wantedFilenames
+    : new Set(unlockedItems.map((it) => filenameForUrl(it.src)))
+
   // Write the manifest BEFORE doing any file I/O so the screensaver sees the
   // new list immediately. As `.bin` files appear during the download loop, the
   // screensaver picks them up live; items whose `.bin` isn't there yet are
@@ -287,14 +318,13 @@ async function runSync(
   const manifest: CachedManifest = {
     items: cached,
     isSubscribed: api.isSubscribed,
-    totalCount: api.totalCount,
     syncedAt: new Date().toISOString(),
   }
   await writeManifestAtomic(manifest)
 
   // Download anything missing. Serial — we're talking dozens of items, and
   // parallel fetches were saturating my home network in testing. Only the
-  // selected items are downloaded; the rest are pruned as orphans below.
+  // selected ∩ unlocked items are downloaded; locked pieces are never fetched.
   let i = 0
   for (const item of chosen) {
     i++
@@ -333,13 +363,13 @@ async function runSync(
     return manifest
   }
 
-  // Delete orphans (files no longer in the new gallery — e.g. subscription
-  // expired and the API returned a shorter list). We do this LAST, after
+  // Delete what we're no longer keeping (locked pieces, items removed from the
+  // gallery, and — on a manual sync — deselected ones). We do this LAST, after
   // downloads succeed, so the cache size only grows mid-sync. An interrupted
   // sync leaves the existing playlist intact rather than half-pruned.
   const existing = existsSync(VIDEOS_DIR) ? await readdir(VIDEOS_DIR) : []
   for (const name of existing) {
-    if (!wantedFilenames.has(name)) {
+    if (!keepFilenames.has(name)) {
       await unlink(join(VIDEOS_DIR, name)).catch(() => {})
     }
   }

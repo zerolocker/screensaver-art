@@ -21,7 +21,6 @@ export type CacheProgress =
 export interface CachedManifest {
   items: { filename: string; title: string; type: string }[]
   isSubscribed: boolean
-  totalCount: number
   syncedAt: string
 }
 
@@ -72,6 +71,7 @@ export interface ElectronAPI {
     sync: (
       apiUrl: string,
       accessToken: string | null,
+      pruneDeselected?: boolean,
     ) => Promise<{ ok: true; manifest: CachedManifest } | { ok: false; error: string }>
     onProgress: (cb: (p: CacheProgress) => void) => () => void
   }

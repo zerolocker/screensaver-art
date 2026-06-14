@@ -24,13 +24,16 @@ export interface ArtItem {
 export interface GalleryApiResponse {
   items: ArtItem[]
   isSubscribed: boolean
-  // Total gallery size (so the client can show "X of Y" in the upsell).
-  totalCount: number
+  // Free-tier threshold (= FREE_ITEM_COUNT). The route returns the FULL list to
+  // everyone and the client gates locally: pieces past `freeCount` are "locked"
+  // for non-subscribers. Published here so the server stays the source of truth
+  // for the threshold even though gating is rendered client-side.
+  freeCount: number
 }
 
 // How many artworks free (un-subscribed) users get — the single source of truth
 // for the free tier across every surface:
-//   - the backend's /api/gallery slice for non-subscribers
+//   - the lock threshold the client gates on (echoed by /api/gallery's freeCount)
 //   - the Electron app's default cache size + default selection on first run
 //   - the number we advertise on the marketing site (via PRICING.freeItemCount)
 export const FREE_ITEM_COUNT = 100
@@ -44,6 +47,15 @@ export const MISC_TAG = 'Misc'
 
 export function tagsOf(item: ArtItem): string[] {
   return item.tags && item.tags.length > 0 ? item.tags : [MISC_TAG]
+}
+
+// Free-text match over an item's title + tags (case-insensitive). An empty/blank
+// query matches everything, so the search box is a pure narrowing filter.
+export function matchesQuery(item: ArtItem, query: string): boolean {
+  const q = query.trim().toLowerCase()
+  if (!q) return true
+  if (item.title.toLowerCase().includes(q)) return true
+  return tagsOf(item).some((t) => t.toLowerCase().includes(q))
 }
 
 // Canonical pill order (the closed tag vocabulary — museum "wings": world cultures

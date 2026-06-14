@@ -17,6 +17,5 @@ struct CachedItem: Decodable {
 struct CachedManifest: Decodable {
     let items:        [CachedItem]
     let isSubscribed: Bool
-    let totalCount:   Int
     let syncedAt:     String?
 }

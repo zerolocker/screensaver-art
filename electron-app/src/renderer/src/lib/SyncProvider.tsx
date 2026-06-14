@@ -76,7 +76,10 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       try {
         const url = `${GALLERY_ENDPOINT}?collection=classic`
         const accessToken = await getAccessToken()
-        const result = await window.electronAPI.cache.sync(url, accessToken)
+        // A manual "Sync Now" also tidies deselected files off disk; an auto
+        // sync (on open / after toggling / on focus) keeps them cached so
+        // re-adding a piece is instant.
+        const result = await window.electronAPI.cache.sync(url, accessToken, trigger === 'manual')
         if (result.ok) {
           setLastSyncedAt(result.manifest.syncedAt)
           lastSyncedMsRef.current = Date.now()

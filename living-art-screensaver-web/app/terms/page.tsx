@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { LegalPage } from "@/components/legal-page"
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Living Art Screensaver",
+  title: "Terms of Service",
   description:
     "The terms and conditions governing your use of the Living Art Screensaver website, desktop app, and screensaver.",
 }

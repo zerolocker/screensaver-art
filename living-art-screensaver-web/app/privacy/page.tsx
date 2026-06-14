@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { LegalPage } from "@/components/legal-page"
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Living Art Screensaver",
+  title: "Privacy Policy",
   description:
     "How Living Art Screensaver collects, uses, and protects your personal information, including data received when you sign in with Google.",
 }

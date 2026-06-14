@@ -14,7 +14,14 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'Living Art Screensaver',
+  metadataBase: new URL('https://living-art-screensaver.com'),
+  // Per-page titles compose as "<Page> — Living Art Screensaver"; pages that
+  // set no title fall back to `default` (used as-is, untemplated) — e.g. the
+  // homepage. This keeps the brand keyword in every tab/SERP title.
+  title: {
+    default: 'Living Art Screensaver — AI-Animated Art Gallery for Mac',
+    template: '%s — Living Art Screensaver',
+  },
   description: 'A screensaver that turns your idle display into a living art gallery, showcasing AI-animated artworks across every style, with new pieces added regularly.',
   generator: 'v0.app',
   icons: {

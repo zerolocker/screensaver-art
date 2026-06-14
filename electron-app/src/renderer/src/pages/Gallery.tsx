@@ -461,7 +461,7 @@ function TabButton({
   return (
     <button
       onClick={onClick}
-      className={`relative pb-2.5 pt-1.5 text-sm transition-colors ${
+      className={`relative py-2 text-sm transition-colors ${
         active ? 'text-foreground font-semibold' : 'text-muted-foreground hover:text-foreground'
       }`}
     >

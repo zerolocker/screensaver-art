@@ -92,9 +92,11 @@ export function PosterCard({
         <p className="text-white text-xs font-medium truncate">{item.title}</p>
       </div>
 
-      {/* Selection tick — or a lock for non-subscribers. Always visible and above
-          the hover-preview video. */}
-      {locked ? (
+      {/* Selection tick — or a lock for non-subscribers. A locked piece that is
+          still selected (chosen while subscribed, now lapsed) shows the tick so
+          it stays de-selectable; only a locked + unselected piece shows the lock.
+          Always visible and above the hover-preview video. */}
+      {locked && !selected ? (
         <button
           onClick={(e) => {
             e.stopPropagation()
@@ -112,7 +114,13 @@ export function PosterCard({
             e.stopPropagation()
             onToggle()
           }}
-          title={selected ? 'Playing — click to remove' : 'Add to your screensaver'}
+          title={
+            selected
+              ? locked
+                ? 'Locked — click to remove (subscribe to play)'
+                : 'Playing — click to remove'
+              : 'Add to your screensaver'
+          }
           className={`absolute top-2 right-2 z-10 w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all hover:scale-110 ${
             selected
               ? 'bg-primary border-primary text-primary-foreground'

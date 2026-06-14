@@ -84,9 +84,29 @@ export function GalleryPage({ session }: GalleryPageProps) {
       // API order — same default cache-sync applies for a null selection).
       const freeCount = data.freeCount ?? FREE_ITEM_COUNT
       const stored = await window.electronAPI.selection.get()
-      const initial = stored.selected ?? data.items.slice(0, freeCount).map((i) => i.src)
-      setSelected(new Set(initial))
+      const resolved = stored.selected ?? data.items.slice(0, freeCount).map((i) => i.src)
+
+      // Drop "orphans" — selected pieces no longer in the gallery (e.g. curated
+      // out of gallery.json). They render no card, so they'd otherwise inflate
+      // the "Selected" count and leave "Deselect all" unable to reach zero.
+      // Locked-but-present pieces are intentionally KEPT (shown with a tick) so a
+      // lapsed subscriber can still de-select them.
+      const gallerySrcs = new Set(data.items.map((i) => i.src))
+      const cleaned = resolved.filter((src) => gallerySrcs.has(src))
+      setSelected(new Set(cleaned))
       setSelectionReady(true)
+
+      // Self-heal the persisted file when we dropped orphans from an explicit
+      // selection. A null/default selection stays null (don't materialize it).
+      if (stored.selected && data.items.length > 0 && cleaned.length !== stored.selected.length) {
+        log.info('selection', 'pruned orphaned selections', {
+          before: stored.selected.length,
+          after: cleaned.length,
+        })
+        window.electronAPI.selection.set(cleaned).catch((err) => {
+          log.warn('selection', 'failed to persist cleaned selection', { error: String(err) })
+        })
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch gallery')
     } finally {
@@ -149,8 +169,11 @@ export function GalleryPage({ session }: GalleryPageProps) {
 
   const toggle = useCallback(
     (src: string) => {
-      if (lockedSrcs.has(src)) return // locked pieces aren't toggleable
       setSelected((prev) => {
+        // A locked piece can be de-selected (it was selected while subscribed,
+        // and is now locked after the subscription lapsed) but never newly
+        // selected — that path prompts to subscribe instead.
+        if (!prev.has(src) && lockedSrcs.has(src)) return prev
         const next = new Set(prev)
         if (next.has(src)) next.delete(src)
         else next.add(src)
@@ -226,29 +249,38 @@ export function GalleryPage({ session }: GalleryPageProps) {
   const visibleItems = useMemo(() => sortedItems.filter(isVisible), [sortedItems, isVisible])
   const visibleCount = visibleItems.length
 
-  // Select All operates on the currently-shown, unlockable pieces. It toggles:
-  // if every shown unlocked piece is already selected, it deselects them;
-  // otherwise it selects them all.
+  // Select All operates on the currently-shown pieces. While any unlocked shown
+  // piece is still off it reads "Select all" and turns them all on; once they're
+  // all on it flips to "Deselect all", which clears every selected shown piece —
+  // including locked-but-selected ones, so a lapsed subscriber can clear them in
+  // one click. (Select never turns a locked piece on — that needs a sub.)
   const visibleUnlockedSrcs = useMemo(
     () => visibleItems.filter((it) => !lockedSrcs.has(it.src)).map((it) => it.src),
     [visibleItems, lockedSrcs],
   )
-  const allVisibleSelected =
-    visibleUnlockedSrcs.length > 0 && visibleUnlockedSrcs.every((s) => selected.has(s))
+  const visibleSelectedSrcs = useMemo(
+    () => visibleItems.filter((it) => selected.has(it.src)).map((it) => it.src),
+    [visibleItems, selected],
+  )
+  const canSelectMore = useMemo(
+    () => visibleUnlockedSrcs.some((s) => !selected.has(s)),
+    [visibleUnlockedSrcs, selected],
+  )
+  const selectAllDisabled = visibleUnlockedSrcs.length === 0 && visibleSelectedSrcs.length === 0
 
   const toggleSelectAll = useCallback(() => {
-    if (visibleUnlockedSrcs.length === 0) return
+    if (selectAllDisabled) return
     setSelected((prev) => {
       const next = new Set(prev)
-      if (visibleUnlockedSrcs.every((s) => next.has(s))) {
-        for (const s of visibleUnlockedSrcs) next.delete(s)
-      } else {
+      if (visibleUnlockedSrcs.some((s) => !next.has(s))) {
         for (const s of visibleUnlockedSrcs) next.add(s)
+      } else {
+        for (const it of visibleItems) if (next.has(it.src)) next.delete(it.src)
       }
       persistAndSync(next)
       return next
     })
-  }, [visibleUnlockedSrcs, persistAndSync])
+  }, [selectAllDisabled, visibleUnlockedSrcs, visibleItems, persistAndSync])
 
   // Block the whole view only while we have nothing yet; a refetch keeps the grid.
   if (loading && !gallery) {
@@ -303,16 +335,14 @@ export function GalleryPage({ session }: GalleryPageProps) {
 
           <button
             onClick={toggleSelectAll}
-            disabled={visibleUnlockedSrcs.length === 0}
+            disabled={selectAllDisabled}
             className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             title={
-              allVisibleSelected
-                ? 'Deselect all the pieces shown'
-                : 'Select all the pieces shown'
+              canSelectMore ? 'Select all the pieces shown' : 'Deselect all the pieces shown'
             }
           >
             <CheckCheck className="w-3.5 h-3.5" />
-            {allVisibleSelected ? 'Deselect all' : 'Select all'}
+            {canSelectMore ? 'Select all' : 'Deselect all'}
           </button>
 
           <div className="flex-1" />

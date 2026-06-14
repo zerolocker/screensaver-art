@@ -111,7 +111,7 @@ export function ArtModal({
           <h3 className="text-lg font-semibold text-white truncate">{item.title}</h3>
           {meta && <p className="text-sm text-white/70 mt-1">{meta}</p>}
         </div>
-        {locked ? (
+        {locked && !selected ? (
           <button
             onClick={(e) => {
               // The only element that doesn't dismiss the preview.
@@ -136,9 +136,17 @@ export function ArtModal({
             }`}
           >
             {selected ? (
-              <>
-                <Check className="w-4 h-4" /> In your screensaver
-              </>
+              // A locked-but-selected piece (subscription lapsed) won't play until
+              // they re-subscribe; the action just lets them remove it.
+              locked ? (
+                <>
+                  <Lock className="w-4 h-4" /> Locked — remove
+                </>
+              ) : (
+                <>
+                  <Check className="w-4 h-4" /> In your screensaver
+                </>
+              )
             ) : (
               'Add to screensaver'
             )}

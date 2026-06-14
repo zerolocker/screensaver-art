@@ -88,6 +88,10 @@ export interface ElectronAPI {
     openExternal: (url: string) => Promise<void>
     openPath: (path: string) => Promise<string>
   }
+  // Drives the gallery's "Fullscreen" preview mode (native macOS fullscreen).
+  window: {
+    setFullScreen: (value: boolean) => Promise<void>
+  }
   log: {
     record: (entry: RendererLogEntry) => Promise<void>
     getFilePath: () => Promise<string | null>

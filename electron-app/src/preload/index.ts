@@ -97,6 +97,11 @@ const electronAPI = {
     openExternal: (url: string): Promise<void> => ipcRenderer.invoke('shell:openExternal', url),
     openPath: (path: string): Promise<string> => ipcRenderer.invoke('shell:openPath', path),
   },
+  // Drives the gallery's "Fullscreen" preview mode (native macOS fullscreen).
+  window: {
+    setFullScreen: (value: boolean): Promise<void> =>
+      ipcRenderer.invoke('window:setFullScreen', value),
+  },
   log: {
     record: (entry: RendererLogEntry): Promise<void> => ipcRenderer.invoke('log:record', entry),
     getFilePath: (): Promise<string | null> => ipcRenderer.invoke('log:getFilePath'),

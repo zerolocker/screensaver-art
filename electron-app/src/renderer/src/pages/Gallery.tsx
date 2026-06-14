@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
-import { Loader2, WifiOff, ArrowDownUp, Search, X, CheckCheck } from 'lucide-react'
+import { Loader2, WifiOff, Search, X, CheckCheck, SlidersHorizontal, Check } from 'lucide-react'
 import { GALLERY_ENDPOINT } from '../lib/api'
 import { AppBanners } from '../components/AppBanners'
 import { PosterCard } from '../components/PosterCard'
@@ -12,8 +12,8 @@ import {
   orderTags,
   matchesQuery,
   UNDATED_FALLBACK,
-  DEFAULT_SELECTION_COUNT,
-} from '../lib/gallery-types'
+  FREE_ITEM_COUNT,
+} from '@screensaver-art/constants'
 import type { Session } from '@supabase/supabase-js'
 
 interface GalleryResponse {
@@ -30,8 +30,13 @@ interface GalleryPageProps {
 
 type Tab = 'all' | 'selected'
 type SortOrder = 'oldest' | 'newest'
+// How a clicked piece previews: 'fullscreen' fills the whole display (native
+// macOS fullscreen, with its brief Space animation); 'in-app' fills just the
+// app window instantly. Default is 'fullscreen' — the more impressive preview.
+type PreviewMode = 'fullscreen' | 'in-app'
 
 const SORT_KEY = 'lart-gallery-sort'
+const PREVIEW_MODE_KEY = 'lart-gallery-preview-mode'
 // Where the subscribe CTA points (the website's billing portal deep-link).
 const SUBSCRIBE_URL = 'https://living-art-screensaver.com/account'
 // After the last tick, wait this long before re-syncing the cache, so rapid
@@ -56,6 +61,9 @@ export function GalleryPage({ session }: GalleryPageProps) {
   // unticking a piece there dims it in place instead of making it vanish.
   const [selectedScope, setSelectedScope] = useState<Set<string>>(new Set())
   const [modalItem, setModalItem] = useState<ArtItem | null>(null)
+  const [previewMode, setPreviewMode] = useState<PreviewMode>(
+    () => (localStorage.getItem(PREVIEW_MODE_KEY) as PreviewMode) || 'fullscreen',
+  )
 
   const { syncNow } = useGallerySync()
   const syncTimer = useRef<number | undefined>(undefined)
@@ -74,7 +82,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
 
       // Resolve the selection: stored explicit list, or the default first N (in
       // API order — same default cache-sync applies for a null selection).
-      const freeCount = data.freeCount ?? DEFAULT_SELECTION_COUNT
+      const freeCount = data.freeCount ?? FREE_ITEM_COUNT
       const stored = await window.electronAPI.selection.get()
       const initial = stored.selected ?? data.items.slice(0, freeCount).map((i) => i.src)
       setSelected(new Set(initial))
@@ -130,7 +138,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
   )
 
   const items = useMemo(() => gallery?.items ?? [], [gallery])
-  const freeCount = gallery?.freeCount ?? DEFAULT_SELECTION_COUNT
+  const freeCount = gallery?.freeCount ?? FREE_ITEM_COUNT
 
   // Locked = a non-subscriber's pieces beyond the free count (in API order).
   // These can't be ticked or cached — the tick becomes a "Subscribe to unlock".
@@ -161,12 +169,14 @@ export function GalleryPage({ session }: GalleryPageProps) {
     [selected],
   )
 
-  const toggleSort = useCallback(() => {
-    setSort((prev) => {
-      const next = prev === 'oldest' ? 'newest' : 'oldest'
-      localStorage.setItem(SORT_KEY, next)
-      return next
-    })
+  const selectSort = useCallback((next: SortOrder) => {
+    setSort(next)
+    localStorage.setItem(SORT_KEY, next)
+  }, [])
+
+  const selectPreviewMode = useCallback((next: PreviewMode) => {
+    setPreviewMode(next)
+    localStorage.setItem(PREVIEW_MODE_KEY, next)
   }, [])
 
   const toggleTag = useCallback((t: string) => {
@@ -329,14 +339,12 @@ export function GalleryPage({ session }: GalleryPageProps) {
             )}
           </div>
 
-          <button
-            onClick={toggleSort}
-            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            title="Toggle sort order"
-          >
-            <ArrowDownUp className="w-3.5 h-3.5" />
-            {sort === 'oldest' ? 'Oldest first' : 'Newest first'}
-          </button>
+          <SettingsMenu
+            sort={sort}
+            onSort={selectSort}
+            previewMode={previewMode}
+            onPreviewMode={selectPreviewMode}
+          />
         </div>
 
         {/* Tag pills */}
@@ -405,6 +413,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
           onToggle={() => toggle(modalItem.src)}
           onSubscribe={onSubscribe}
           onClose={() => setModalItem(null)}
+          osFullscreen={previewMode === 'fullscreen'}
         />
       )}
     </div>
@@ -431,6 +440,111 @@ function TabButton({
       {active && (
         <span className="absolute inset-x-0 -bottom-px h-0.5 bg-primary rounded-t" />
       )}
+    </button>
+  )
+}
+
+// Gear menu for view options: sort order + how a clicked piece previews. Closes
+// on outside click or Escape; stays open while toggling so several settings can
+// be changed at once.
+function SettingsMenu({
+  sort,
+  onSort,
+  previewMode,
+  onPreviewMode,
+}: {
+  sort: SortOrder
+  onSort: (s: SortOrder) => void
+  previewMode: PreviewMode
+  onPreviewMode: (m: PreviewMode) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: MouseEvent): void => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        title="View options"
+        className={`flex items-center gap-1.5 text-sm transition-colors ${
+          open ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+        }`}
+      >
+        <SlidersHorizontal className="w-3.5 h-3.5" />
+        Options
+      </button>
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 top-full mt-2 w-60 rounded-xl border border-border bg-card shadow-lg p-1.5 z-30 animate-[fadeIn_120ms_ease-out]"
+        >
+          <MenuLabel>Sort order</MenuLabel>
+          <MenuRadio active={sort === 'oldest'} onClick={() => onSort('oldest')}>
+            Oldest first
+          </MenuRadio>
+          <MenuRadio active={sort === 'newest'} onClick={() => onSort('newest')}>
+            Newest first
+          </MenuRadio>
+
+          <div className="my-1.5 h-px bg-border" />
+
+          <MenuLabel>Preview a piece in</MenuLabel>
+          <MenuRadio active={previewMode === 'fullscreen'} onClick={() => onPreviewMode('fullscreen')}>
+            Fullscreen
+          </MenuRadio>
+          <MenuRadio active={previewMode === 'in-app'} onClick={() => onPreviewMode('in-app')}>
+            In-app window
+          </MenuRadio>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function MenuLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="px-2.5 pt-1 pb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground/70">
+      {children}
+    </div>
+  )
+}
+
+function MenuRadio({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      role="menuitemradio"
+      aria-checked={active}
+      onClick={onClick}
+      className="w-full flex items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-sm text-foreground hover:bg-secondary transition-colors"
+    >
+      <span>{children}</span>
+      {active && <Check className="w-4 h-4 text-primary" />}
     </button>
   )
 }

@@ -42,10 +42,10 @@ import {
   isSyncing,
   clearCache,
   PATHS,
-  FREE_COUNT,
   type ApiResponse,
 } from './cache-sync'
 import { MAGIC, KEY, filenameForUrl } from './obfuscation'
+import { FREE_ITEM_COUNT } from '@screensaver-art/constants'
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -112,7 +112,7 @@ function fakeApiResponse(
     isSubscribed: opts.isSubscribed ?? true,
     // Default well above the tiny test galleries, so nothing is "locked" unless a
     // test opts into a small freeCount to exercise the non-subscriber lock path.
-    freeCount: opts.freeCount ?? FREE_COUNT,
+    freeCount: opts.freeCount ?? FREE_ITEM_COUNT,
   }
 }
 
@@ -569,8 +569,8 @@ describe('cache-sync', () => {
       )
     })
 
-    it('defaults a null selection to the first FREE_COUNT items', async () => {
-      // FREE_COUNT is 100; with 2 items a null selection caches everything,
+    it('defaults a null selection to the first FREE_ITEM_COUNT items', async () => {
+      // FREE_ITEM_COUNT is 100; with 2 items a null selection caches everything,
       // matching the pre-selection behavior. (The >100 slice is covered by the
       // selectedSrcs path; here we just prove null === "first 100".)
       const items = [

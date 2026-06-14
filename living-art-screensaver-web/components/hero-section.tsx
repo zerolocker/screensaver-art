@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Download, ArrowRight } from "lucide-react"
-import { PRICING } from "@screensaver-art/ui"
+import { PRICING } from "@screensaver-art/constants"
 
 export function HeroSection() {
   return (

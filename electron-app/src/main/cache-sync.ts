@@ -12,22 +12,13 @@ import type { ReadableStream as NodeWebReadableStream } from 'stream/web'
 import type { BrowserWindow } from 'electron'
 import { obfuscateChunk, filenameForUrl, MAGIC } from './obfuscation'
 import { log } from './logger'
+import { FREE_ITEM_COUNT, type ArtItem, type GalleryApiResponse } from '@screensaver-art/constants'
 
-export type ApiItem = {
-  src: string
-  title: string
-  type: string
-  collection?: string
-}
-
-export type ApiResponse = {
-  items: ApiItem[]
-  isSubscribed: boolean
-  // The free-tier threshold the server defines: a non-subscriber may only play
-  // (and cache) the first `freeCount` items; everything past it is "locked".
-  // Optional for resilience against an older API — we fall back to FREE_COUNT.
-  freeCount?: number
-}
+// The /api/gallery item + response shape lives in @screensaver-art/constants so
+// the website (producer) and this client (consumer) share one definition.
+// `ApiResponse.freeCount` is the lock threshold a non-subscriber gates on.
+export type ApiItem = ArtItem
+export type ApiResponse = GalleryApiResponse
 
 export type CachedItem = {
   filename: string
@@ -53,10 +44,10 @@ const STALL_TIMEOUT_MS = 30_000
 const DOWNLOAD_RETRIES = 2
 const RETRY_BACKOFF_MS = 400
 
-// Fallback free-tier threshold, used when the API response omits `freeCount`
-// (older server). Doubles as the default selection size for a never-customized
-// (null) selection. Matches the website's FREE_ITEM_COUNT / PRICING.freeItemCount.
-export const FREE_COUNT = 100
+// The free-tier threshold (`FREE_ITEM_COUNT`, shared) is the fallback when the
+// API response omits `freeCount`, and the default selection size for a
+// never-customized (null) selection — so a fresh install plays a sensible set
+// before the user ever opens the gallery.
 
 export function getCacheDir(): string {
   // Test-only override (the test suite points this at a tmp dir so it never
@@ -211,12 +202,12 @@ let inFlight: Promise<CachedManifest> | null = null
 let inFlightAbort: AbortController | null = null
 
 // `selectedSrcs` is the user's chosen subset (a list of item `src` URLs). A null
-// selection (the user has never customized it) defaults to the first FREE_COUNT
-// items. Locked items (a non-subscriber's pieces beyond freeCount) are never
-// downloaded. By default a deselected-but-unlocked item is KEPT on disk so
-// re-adding it is instant ("cache" is decoupled from "what plays"); set
-// `pruneDeselected` (a manual "Sync Now") to also evict those, tidying the cache
-// down to exactly the play set.
+// selection (the user has never customized it) defaults to the first
+// FREE_ITEM_COUNT items. Locked items (a non-subscriber's pieces beyond
+// freeCount) are never downloaded. By default a deselected-but-unlocked item is
+// KEPT on disk so re-adding it is instant ("cache" is decoupled from "what
+// plays"); set `pruneDeselected` (a manual "Sync Now") to also evict those,
+// tidying the cache down to exactly the play set.
 export function syncGallery(
   apiUrl: string,
   accessToken: string | null,
@@ -272,7 +263,7 @@ async function runSync(
     throw new Error(`Gallery API returned HTTP ${res.status}`)
   }
   const api: ApiResponse = await res.json()
-  const freeCount = api.freeCount ?? FREE_COUNT
+  const freeCount = api.freeCount ?? FREE_ITEM_COUNT
   log.info('cache-sync', 'gallery fetched', {
     count: api.items.length,
     isSubscribed: api.isSubscribed,

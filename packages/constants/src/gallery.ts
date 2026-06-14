@@ -1,5 +1,11 @@
-// Shape of a gallery item as returned by /api/gallery (the route passes through
-// the raw gallery.json entry, so `date` and `tags` ride along when present).
+// Gallery data — the shape of a gallery item plus the tag vocabulary and
+// helpers that drive sorting and the filter pills. Pure data + pure functions,
+// shared by the website, the Electron app (main + renderer), and the backend.
+
+// Shape of a gallery item as served by /api/gallery (the route passes through
+// the raw gallery.json entry, so `date`, `tags`, and `collection` ride along
+// when present). Curation-only fields like image_prompt/video_prompt are
+// intentionally omitted — clients never read them.
 export interface ArtItem {
   src: string
   title: string
@@ -12,14 +18,30 @@ export interface ArtItem {
   collection?: string
 }
 
+// The /api/gallery response contract — produced by the website's route handler
+// and consumed by the Electron app's cache-sync. Centralised here so both sides
+// share one definition instead of re-declaring the shape.
+export interface GalleryApiResponse {
+  items: ArtItem[]
+  isSubscribed: boolean
+  // Free-tier threshold (= FREE_ITEM_COUNT). The route returns the FULL list to
+  // everyone and the client gates locally: pieces past `freeCount` are "locked"
+  // for non-subscribers. Published here so the server stays the source of truth
+  // for the threshold even though gating is rendered client-side.
+  freeCount: number
+}
+
+// How many artworks free (un-subscribed) users get — the single source of truth
+// for the free tier across every surface:
+//   - the lock threshold the client gates on (echoed by /api/gallery's freeCount)
+//   - the Electron app's default cache size + default selection on first run
+//   - the number we advertise on the marketing site (via PRICING.freeItemCount)
+export const FREE_ITEM_COUNT = 100
+
 // Items with no date are the earliest pieces; treat them as the launch date so
 // they sort before everything dated. Must read as a YYYY-MM-DD string so plain
 // string comparison orders correctly.
 export const UNDATED_FALLBACK = '2026-01-01'
-
-// Default number of pieces selected on first run — mirrors FREE_COUNT in
-// electron-app/src/main/cache-sync.ts (keep in sync).
-export const DEFAULT_SELECTION_COUNT = 100
 
 export const MISC_TAG = 'Misc'
 

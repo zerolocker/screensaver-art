@@ -33,8 +33,5 @@ export type { FeedbackFormProps } from './components/feedback-form'
 export { resizeImageToWebp } from './image-resize'
 export type { ResizedImage, ResizeOptions } from './image-resize'
 
-// Pricing
-export { PRICING } from './pricing'
-
 // Utilities
 export { cn } from './utils'

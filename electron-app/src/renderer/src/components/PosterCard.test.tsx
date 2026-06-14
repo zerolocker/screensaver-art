@@ -9,7 +9,7 @@ vi.mock('../lib/poster-engine', () => ({
 }))
 
 import { PosterCard } from './PosterCard'
-import type { ArtItem } from '../lib/gallery-types'
+import type { ArtItem } from '@screensaver-art/constants'
 
 const item: ArtItem = { src: 'https://r2/a.mp4', title: 'Aurora', type: 'video' }
 

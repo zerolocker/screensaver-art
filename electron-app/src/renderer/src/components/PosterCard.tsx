@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Check, Lock } from 'lucide-react'
 import { observePoster, spawnPreview } from '../lib/poster-engine'
-import type { ArtItem } from '../lib/gallery-types'
+import type { ArtItem } from '@screensaver-art/constants'
 
 // Wait this long on hover before spawning a live preview, so a quick mouse
 // sweep across the grid doesn't fire up dozens of videos.

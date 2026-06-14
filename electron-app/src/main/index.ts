@@ -130,8 +130,8 @@ ipcMain.handle(
     try {
       // The selection lives in the main process (cache-sync needs it, and the
       // renderer persists it via selection:set before triggering a sync). A null
-      // selection means "use the default first FREE_COUNT". `pruneDeselected` is
-      // set on a manual "Sync Now" so it tidies deselected files off disk; an
+      // selection means "use the default first FREE_ITEM_COUNT". `pruneDeselected`
+      // is set on a manual "Sync Now" so it tidies deselected files off disk; an
       // auto sync leaves them cached for instant re-add.
       const manifest = await syncGallery(
         payload.apiUrl,
@@ -150,7 +150,7 @@ ipcMain.handle(
 )
 
 // Selection: which gallery pieces the user has chosen to play. The renderer reads
-// it to paint ticks (null → it applies the default first FREE_COUNT itself) and
+// it to paint ticks (null → it applies the default first FREE_ITEM_COUNT itself) and
 // writes the full explicit list on every change.
 ipcMain.handle('selection:get', () => ({ selected: readSelection() }))
 ipcMain.handle('selection:set', (_evt, selected: string[]) => {
@@ -208,6 +208,14 @@ ipcMain.handle('update:quitAndInstall', () => quitAndInstall())
 
 ipcMain.handle('shell:openExternal', (_evt, url: string) => shell.openExternal(url))
 ipcMain.handle('shell:openPath', (_evt, path: string) => shell.openPath(path))
+
+// Lets the gallery's "Fullscreen" preview mode push the app window into native
+// macOS fullscreen so a piece fills the whole display. (Native fullscreen has
+// an unavoidable ~0.5s Space animation; users who dislike it can switch the
+// preview to "In-app" in the gallery options menu, which never calls this.)
+ipcMain.handle('window:setFullScreen', (_evt, value: boolean) => {
+  mainWindow?.setFullScreen(Boolean(value))
+})
 
 // App info — version comes from the bundled package.json (release.sh bumps it).
 ipcMain.handle('app:getVersion', () => app.getVersion())

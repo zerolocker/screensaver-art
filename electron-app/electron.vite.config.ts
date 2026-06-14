@@ -5,7 +5,10 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()],
+    // @screensaver-art/constants ships raw TS (no build step), so it can't be
+    // externalized like a normal node dep — bundle its source into the main
+    // process instead. (It's pure data, no native bits.)
+    plugins: [externalizeDepsPlugin({ exclude: ['@screensaver-art/constants'] })],
   },
   preload: {
     plugins: [externalizeDepsPlugin()],

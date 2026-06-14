@@ -1,3 +1,5 @@
+import { FREE_ITEM_COUNT } from './gallery'
+
 /**
  * Promotional pricing shown across the marketing site + Electron app.
  *
@@ -41,11 +43,10 @@ export const PRICING = {
   billingNote: 'Billed quarterly',
   /**
    * How many artworks free (un-subscribed) users get — the headline of the free
-   * tier, shown across the site + app. Must match the server's `FREE_ITEM_COUNT`
-   * in living-art-screensaver-web/app/api/gallery/route.ts (kept in sync by hand;
-   * they're separate concerns — backend behavior vs. the number we advertise).
+   * tier, shown across the site + app. Sourced from `FREE_ITEM_COUNT` so the
+   * advertised number can never drift from the backend's actual free-tier slice.
    */
-  freeItemCount: 100,
+  freeItemCount: FREE_ITEM_COUNT,
   /** Human-readable last day the promo price is valid. */
   promoThrough: '2026/12/31',
 } as const

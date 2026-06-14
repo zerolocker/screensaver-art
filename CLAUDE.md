@@ -2,6 +2,7 @@
 
 ## What this project is
 A **pnpm workspace** monorepo containing:
+- **Shared constants** (`packages/constants/`) — **pure-data** package (no React, no Node, no deps): the single source of truth for cross-app constants/configs/types — `FREE_ITEM_COUNT`, `PRICING`, the gallery item shape (`ArtItem`), the `/api/gallery` response contract (`GalleryApiResponse`), and the tag vocabulary + helpers. Imported by the website (client + server routes), the Electron app (main + renderer), and tests.
 - **Shared UI library** (`packages/ui/`) — React components shared between the website and Electron app
 - **Electron desktop app** (`electron-app/`) — **the only thing end users install**. Handles auth, subscription, gallery sync, video obfuscation, and installs + activates the platform-native screensaver.
 - **macOS screensaver** (`screensaver-macos/`) — native Swift **`.appex` ExtensionKit screensaver** (Sonoma+), built with Xcode (via xcodegen). **Pure player.** Reads videos from a shared local cache populated by the Electron app. No auth, no network. Embedded into the Electron app and registered with `pluginkit`.
@@ -14,6 +15,7 @@ A **pnpm workspace** monorepo containing:
 | Path | Purpose |
 |---|---|
 | `pnpm-workspace.yaml` | Workspace config — ties all packages together |
+| `packages/constants/` | **Pure-data shared package** (`@screensaver-art/constants`) — `FREE_ITEM_COUNT` (the free-tier size = default selection = advertised count), `PRICING`, `ArtItem`/`GalleryApiResponse` types, tag vocabulary (`TAG_ORDER`, `tagsOf`, `orderTags`). No build step; consumers compile the TS source. The Electron **main** process bundles it via `externalizeDepsPlugin({ exclude: [...] })`; the website lists it in `transpilePackages`. |
 | `packages/ui/` | **Shared UI** — React components (LoginForm, SignUpForm, SubscriptionCard, base UI) |
 | `electron-app/` | **The user-facing installer** — see below |
 | `electron-app/src/main/installer.ts` | Auto-registers the `.appex` on launch (`ensureRegistered` — **version-aware**: re-registers only when it's not registered or the app was updated, so an update can't keep running stale appex code), queries registration status, and sets the active screensaver — all delegated to the PaperSaver helper (`register`/`find`/`status`/`activate`). No manual install/uninstall UI; no direct `pluginkit` calls or output parsing. |

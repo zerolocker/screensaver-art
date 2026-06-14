@@ -1,6 +1,11 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { AlertCircle } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Authentication Error',
+}
 
 export default function AuthErrorPage() {
   return (

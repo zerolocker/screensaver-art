@@ -44,7 +44,7 @@ export function Header() {
                 <path d="M2 12l10 5 10-5" />
               </svg>
             </div>
-            <span className="font-semibold text-lg text-foreground">Living Art</span>
+            <span className="font-semibold text-lg text-foreground">Living Art Screensaver</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -70,14 +70,9 @@ export function Header() {
                 </Link>
               </Button>
             ) : (
-              <>
-                <Button asChild variant="ghost" className="text-muted-foreground">
-                  <Link href="/auth/login">Sign in</Link>
-                </Button>
-                <Button asChild variant="default" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6">
-                  <Link href="/auth/login">Get Started</Link>
-                </Button>
-              </>
+              <Button asChild variant="ghost" className="text-muted-foreground">
+                <Link href="/auth/login">Sign in</Link>
+              </Button>
             )}
           </div>
 
@@ -126,9 +121,6 @@ export function Header() {
                 <div className="flex flex-col gap-2 mt-2">
                   <Button asChild variant="outline" className="rounded-full w-full">
                     <Link href="/auth/login" onClick={() => setIsMenuOpen(false)}>Sign in</Link>
-                  </Button>
-                  <Button asChild variant="default" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full w-full">
-                    <Link href="/auth/login" onClick={() => setIsMenuOpen(false)}>Get Started</Link>
                   </Button>
                 </div>
               )}

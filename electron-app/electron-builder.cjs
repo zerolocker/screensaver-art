@@ -32,7 +32,7 @@ const signed = Boolean(identity) && identity !== '-'
 module.exports = {
   appId: 'com.livingart.screensaver.app',
   productName: 'Living Art Screensaver',
-  copyright: 'Copyright © 2026 Living Art',
+  copyright: 'Copyright © 2026 Living Art Screensaver',
 
   // Auto-update feed (electron-updater). A `generic` provider pointed at the
   // website's /updates route, which proxies the latest GitHub release through the

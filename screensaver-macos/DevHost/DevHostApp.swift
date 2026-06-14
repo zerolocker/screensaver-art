@@ -16,7 +16,7 @@ struct DevHostApp: App {
                 Image(systemName: "tv")
                     .font(.system(size: 48))
                     .foregroundColor(.accentColor)
-                Text("Living Art — Dev Host")
+                Text("Living Art Screensaver — Dev Host")
                     .font(.title2).fontWeight(.semibold)
                 Text("Build/test scaffold for ScreensaverArtExtension.appex.\nThe real host is the Electron app.")
                     .font(.callout)

@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { LegalPage } from "@/components/legal-page"
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Living Art Screensaver",
+  title: "Privacy Policy",
   description:
     "How Living Art Screensaver collects, uses, and protects your personal information, including data received when you sign in with Google.",
 }
@@ -13,8 +13,8 @@ export default function PrivacyPolicyPage() {
   return (
     <LegalPage title="Privacy Policy" lastUpdated="June 7, 2026">
       <p>
-        This Privacy Policy explains how Living Art Screensaver (&ldquo;Living Art,&rdquo;
-        &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) collects, uses, and shares
+        This Privacy Policy explains how Living Art Screensaver
+        (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) collects, uses, and shares
         information when you visit{" "}
         <a href="https://living-art-screensaver.com">living-art-screensaver.com</a>, create an
         account, or use our desktop application and screensaver (together, the
@@ -81,7 +81,7 @@ export default function PrivacyPolicyPage() {
         account and to identify you within the Service.
       </p>
       <p>
-        Living Art&rsquo;s use and transfer of information received from Google APIs adheres to the{" "}
+        Living Art Screensaver&rsquo;s use and transfer of information received from Google APIs adheres to the{" "}
         <a
           href="https://developers.google.com/terms/api-services-user-data-policy"
           target="_blank"

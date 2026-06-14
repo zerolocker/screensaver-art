@@ -21,7 +21,7 @@ export function Footer() {
                   <path d="M2 12l10 5 10-5" />
                 </svg>
               </div>
-              <span className="font-semibold text-lg text-foreground">Living Art</span>
+              <span className="font-semibold text-lg text-foreground">Living Art Screensaver</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
               Turn your idle display into a living art gallery.

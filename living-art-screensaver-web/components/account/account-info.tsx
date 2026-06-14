@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { User } from '@supabase/supabase-js'
 import { Mail, Calendar } from 'lucide-react'
 
@@ -11,7 +11,6 @@ export function AccountInfo({ user }: AccountInfoProps) {
     <Card className="bg-card border-border">
       <CardHeader>
         <CardTitle className="text-foreground">Account Details</CardTitle>
-        <CardDescription>Your account information</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-3">

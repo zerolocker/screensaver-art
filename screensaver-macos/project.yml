@@ -62,7 +62,7 @@ targets:
         # parent — exactly as it will be inside the shipped Electron .app.
         PRODUCT_BUNDLE_IDENTIFIER: com.livingart.screensaver.app
         GENERATE_INFOPLIST_FILE: "YES"
-        INFOPLIST_KEY_NSHumanReadableCopyright: "Living Art"
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Living Art Screensaver"
         CODE_SIGN_ENTITLEMENTS: DevHost/DevHost.entitlements
     postBuildScripts:
       # Auto-register the embedded appex for the local DEV loop only. Release

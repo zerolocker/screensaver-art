@@ -20,7 +20,7 @@ export interface OtpFormProps {
   title?: string
 }
 
-export function OtpForm({ onRequestCode, onVerify, onBack, title = 'Living Art' }: OtpFormProps) {
+export function OtpForm({ onRequestCode, onVerify, onBack, title = 'Living Art Screensaver' }: OtpFormProps) {
   const [stage, setStage] = useState<'email' | 'code'>('email')
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')

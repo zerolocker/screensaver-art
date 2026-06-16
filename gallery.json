@@ -1229,5 +1229,38 @@
     ],
     "image_prompt": "A beautiful medieval scene with knights and castles, in the style of Carolingian Minuscule Calligraphy illuminated manuscript",
     "video_prompt": "Subtle animation, bringing the classical scene to life, gentle motion"
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/egyptian_tomb_procession_animated.mp4",
+    "title": "Tomb Procession - Ancient Egyptian Wall Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-06-15",
+    "tags": [
+      "Egyptian"
+    ],
+    "image_prompt": "An Ancient Egyptian tomb wall painting filling the entire frame, edge to edge, painted directly on plastered limestone in the New Kingdom Theban style. A procession of figures in profile: a noble in a pleated white linen kilt offering lotus flowers, a slender priestess in a sheer gown, servants carrying baskets of figs and pomegranates, and a sacred ibis. Registers separated by horizontal bands, vertical columns of crisp hieroglyphs between figures. Earthy mineral pigments — ochre red and yellow, malachite green, Egyptian blue, carbon black outlines on a warm cream ground. Subtle craquelure and a few worn patches in the ancient plaster, raking torchlight grazing across the painted surface. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame",
+    "video_prompt": "Warm orange torchlight flickers slowly across the painted plaster surface, the glow brightening and dimming as if from a flame just out of frame, casting soft shifting highlights over the raised texture of the ancient pigment. A few faint dust motes drift through the torch glow. The painted figures and hieroglyphs hold perfectly still — only the light moves. Calm, reverent, candlelit tomb atmosphere."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/romantic_shipwreck_storm_animated.mp4",
+    "title": "Tempest at Sea - Romanticism (AI Animated)",
+    "type": "video",
+    "date": "2026-06-15",
+    "tags": [
+      "19th Century"
+    ],
+    "image_prompt": "A dramatic 19th-century Romanticism marine oil painting on canvas, in the sublime tradition of J.M.W. Turner and Ivan Aivazovsky, filling the entire frame. A three-masted wooden sailing ship pitched on the crest of a towering green-black wave, its tattered sails straining and one mast splintering, tiny figures clinging to the rigging. Mountainous storm waves capped with windblown foam surge across the foreground; a single shaft of pale gold sunlight breaks through churning slate-grey storm clouds and ignites the spray to luminous amber and white. Rich impasto brushwork, glazed translucent water, dramatic chiaroscuro, the awesome power of nature. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no frame, the painting fills the frame edge to edge",
+    "video_prompt": "The stormy sea heaves and surges — towering waves roll and crash, their foam-capped crests breaking into windblown spray that drifts across the surface. Dark storm clouds churn and drift overhead while the shaft of golden sunlight slowly shifts and shimmers through the gap, glinting on the wet swells. Sea spray bursts upward where the waves break. The sailing ship pitches and rolls heavily with the swell, sails luffing in the wind, but keeps its solid form. Dramatic, powerful, cinematic storm — wind and water in motion, the vessel intact."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/song_dynasty_misty_mountains_animated.mp4",
+    "title": "Misty Mountains - Song Dynasty Landscape Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-06-15",
+    "tags": [
+      "Chinese & Korean"
+    ],
+    "image_prompt": "A monumental Northern Song Dynasty landscape painting, ink and pale washes on aged silk, in the style of Fan Kuan and Guo Xi, filling the entire frame. Towering misty mountain peaks rise through drifting bands of cloud and fog; a thin silver waterfall plunges down a sheer cliff into a quiet river gorge. Wind-bent pine trees cling to rocky ledges, and far below a tiny temple pavilion and a lone traveler with a walking staff cross a wooden footbridge — dwarfed by the immense scale of nature. Atmospheric perspective fading the distant ranges to pale grey, delicate texture strokes (cun) on the rock faces, warm amber-toned silk ground with subtle age, empty sky negative space. Subtle ink tonal gradation, monochrome with faint sepia warmth. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no scroll rollers, the painting fills the frame edge to edge",
+    "video_prompt": "Soft bands of mist and cloud drift slowly between the mountain peaks, curling and thinning to reveal and veil the distant ranges. The thin silver waterfall flows steadily down the cliff, its base dissolving into a faint haze of spray above the calm river. The wind-bent pines sway ever so gently. The river surface shimmers faintly. The mountains, rocks, temple, and silk hold perfectly still — only the mist, water, and a whisper of breeze move. Serene, contemplative, timeless atmosphere."
   }
 ]

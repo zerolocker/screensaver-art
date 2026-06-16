@@ -22,8 +22,12 @@ path on the **last stdout line**.
 bash curation/with-secrets.sh GEMINI_API_KEY -- \
   python .claude/skills/nano-banana-pro/scripts/generate.py \
     --prompt "A Baroque oil still life, dramatic chiaroscuro, oil on canvas" \
-    --out gallery/baroque.png --aspect 16:9 --size 2K
+    --out gallery/baroque.png --aspect 16:9 --size 4K
 ```
+Output defaults to **WebP** (≈1/8 the size of PNG at q90, negligible loss), so the
+example writes `gallery/baroque.webp` — the `--out` extension is swapped to match
+`--format`. The script prints the real path on its last line. Use `--format png`
+for a lossless PNG.
 
 **Edit / compose from reference image(s)** — pass one or more `--input-image`
 (repeatable). The prompt describes the edit or how to blend them:
@@ -37,7 +41,9 @@ bash curation/with-secrets.sh GEMINI_API_KEY -- \
 ## Flags
 - `--prompt` (required) — image or edit prompt. For new stills, write it per
   `curation/PROMPT_GUIDANCE.md` (concrete medium/material/era/lighting; one subject).
-- `--out` (required) — output PNG path.
+- `--out` (required) — output path; its extension is replaced to match `--format`.
+- `--format` (default `webp`) — `webp` | `png`. WebP is ~1/8 the size; `png` is lossless.
+- `--quality` (default `90`) — WebP quality 1–100.
 - `--input-image PATH` — reference/edit image; repeatable. Omit for pure text-to-image.
 - `--aspect` (default `16:9`) — keep 16:9 for gallery stills (the screensaver is
   full-screen 16:9, so a 16:9 still animates without letterboxing).

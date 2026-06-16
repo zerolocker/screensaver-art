@@ -32,9 +32,11 @@ import json
 import os
 import sys
 import time
+from io import BytesIO
 
 from google import genai
 from google.genai import errors, types
+from PIL import Image
 
 
 def with_retry(fn, attempts=4, base=15):
@@ -54,10 +56,14 @@ def with_retry(fn, attempts=4, base=15):
 def load_image(path):
     if not os.path.exists(path):
         sys.exit(f"image not found: {path}")
-    ext = os.path.splitext(path)[1].lower()
-    mime = "image/jpeg" if ext in (".jpg", ".jpeg") else "image/png"
-    with open(path, "rb") as f:
-        return types.Image(image_bytes=f.read(), mime_type=mime)
+    # Re-encode to PNG via PIL so any input format (incl. webp) is accepted, and cap
+    # the seed-frame size — Veo outputs <=1080p, so a 4K still just bloats the request.
+    img = Image.open(path).convert("RGB")
+    if max(img.size) > 2048:
+        img.thumbnail((2048, 2048), Image.LANCZOS)
+    buf = BytesIO()
+    img.save(buf, "PNG")
+    return types.Image(image_bytes=buf.getvalue(), mime_type="image/png")
 
 
 def main() -> int:

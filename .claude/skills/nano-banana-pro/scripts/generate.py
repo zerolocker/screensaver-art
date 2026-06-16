@@ -49,7 +49,10 @@ def with_retry(fn, attempts=4, base=15):
 def main() -> int:
     ap = argparse.ArgumentParser(description="One Nano Banana Pro call: text-to-image or image edit/compose.")
     ap.add_argument("--prompt", required=True, help="image / edit prompt")
-    ap.add_argument("--out", required=True, help="output PNG path")
+    ap.add_argument("--out", required=True, help="output path (its extension is replaced to match --format)")
+    ap.add_argument("--format", default="webp", choices=["webp", "png"],
+                    help="output format (default webp — ~1/8 the size of png at q90; use png for lossless)")
+    ap.add_argument("--quality", type=int, default=90, help="webp quality 1-100 (default 90)")
     ap.add_argument("--input-image", dest="input_images", action="append", default=[],
                     help="optional reference/edit image (repeatable)")
     ap.add_argument("--aspect", default="16:9", help="aspect ratio (default 16:9)")
@@ -91,13 +94,21 @@ def main() -> int:
         print(f"No image returned. prompt_feedback={getattr(response, 'prompt_feedback', None)}", file=sys.stderr)
         return 1
 
-    out = os.path.abspath(args.out)
+    # --format decides the real container (default webp); the --out extension is
+    # replaced to match, so an existing `--out foo.png` keeps working and only the
+    # format changes. webp at q90 is ~1/8 the size of png with negligible loss.
+    base, _ = os.path.splitext(os.path.abspath(args.out))
+    out = f"{base}.{args.format}"
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
-    # Re-encode so a .png is really a PNG (the API often hands back JPEG bytes).
-    Image.open(BytesIO(image_part.inline_data.data)).save(out)
+    img = Image.open(BytesIO(image_part.inline_data.data))
+    if args.format == "webp":
+        img.save(out, "WEBP", quality=args.quality, method=6)
+    else:
+        img.save(out, "PNG")
 
-    print(f"Wrote {out} (aspect {args.aspect}, size {args.size}, "
-          f"{len(args.input_images)} input image(s), model {args.model}).", file=sys.stderr)
+    detail = f"q{args.quality}" if args.format == "webp" else "lossless"
+    print(f"Wrote {out} (aspect {args.aspect}, size {args.size}, {args.format} {detail}, "
+          f"{len(args.input_images)} input image(s)).", file=sys.stderr)
     print(out)
     return 0
 

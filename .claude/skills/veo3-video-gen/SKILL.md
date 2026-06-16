@@ -54,6 +54,8 @@ referenced by the sidecar from the earlier run — not an arbitrary local file:
 - `--prompt` — motion/scene prompt. Per `curation/PROMPT_GUIDANCE.md`, match motion
   to the scene and keep it physically plausible.
 - `--first-frame PATH` — starting frame (image-to-video / interpolation start).
+  Any image format works (incl. WebP) — it's re-encoded to PNG and downscaled to
+  ≤2048px before sending.
 - `--last-frame PATH` — target final frame (interpolation; `== --first-frame` ⇒ loop).
 - `--from-video PATH` — sidecar `.json` (or the `.mp4` beside it) to extend.
 - `--resolution` `720p`|`1080p` (default `720p`); `--aspect` (default `16:9`, ignored when extending);

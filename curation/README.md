@@ -3,7 +3,7 @@
 A small human-in-the-loop tool for cleaning up `gallery.json` and improving the
 nightly auto-curation bot over time.
 
-**The problem it solves:** the nightly bot (see [`../AUTOMATED_CURATION.md`](../AUTOMATED_CURATION.md))
+**The problem it solves:** the nightly bot (see [`AUTOMATED_CURATION.md`](AUTOMATED_CURATION.md))
 adds 3 new AI-animated pieces every night, and some come out **corrupted**
 (glitchy / single-color / broken) or **undesirable** (off-theme / low-quality).
 This workflow lets you sweep
@@ -71,7 +71,7 @@ Claude then:
 
 ### 3. The bot improves itself
 
-[`AUTOMATED_CURATION.md`](../AUTOMATED_CURATION.md) instructs the nightly bot to
+[`AUTOMATED_CURATION.md`](AUTOMATED_CURATION.md) instructs the nightly bot to
 **read `curation/PROMPT_GUIDANCE.md` before generating prompts**. So every
 curation round tightens the guidance, and the bot produces fewer bad pieces.
 

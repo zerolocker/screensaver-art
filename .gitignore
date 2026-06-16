@@ -22,3 +22,7 @@ node_modules
 /curation/.backups/
 /curation/.analysis/
 
+
+# Python bytecode caches (skills run via python)
+__pycache__/
+*.pyc

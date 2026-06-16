@@ -2,7 +2,7 @@
 
 Menu of styles for the nightly curation bot. **Pick one style per piece**, favouring
 the high-end, museum-canon spirit described in
-[`curation/PROMPT_GUIDANCE.md`](curation/PROMPT_GUIDANCE.md) (the "Brand & taste"
+[`PROMPT_GUIDANCE.md`](PROMPT_GUIDANCE.md) (the "Brand & taste"
 section). The `##` headings are categories, **not** styles — never pick a heading.
 When you add a new style, append it under the section it best fits.
 

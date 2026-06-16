@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button"
 import { Download, ArrowRight } from "lucide-react"
-import { PRICING } from "@screensaver-art/constants"
 
 export function HeroSection() {
   return (
@@ -60,13 +59,6 @@ export function HeroSection() {
             </a>
           </Button>
         </div>
-
-        <p className="mt-6 text-sm text-foreground">
-          <span className="font-semibold">Free forever</span> — {PRICING.freeItemCount} artworks to enjoy.
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Want more? The full gallery plus daily new art is {PRICING.promoPrice}{PRICING.interval}.
-        </p>
       </div>
     </section>
   )

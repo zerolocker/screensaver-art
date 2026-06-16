@@ -2,17 +2,16 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { NextRequest } from 'next/server'
 
 // /api/gallery returns the FULL gallery to everyone now — gating moved to the
-// client (it locks pieces beyond `freeCount` for non-subscribers and never
-// caches them). So this route's job is narrow: fetch the playlist, resolve the
-// subscription, and hand back { items, isSubscribed, freeCount }. These tests
-// mock both verifyNativeAuth (the auth check) and the upstream GitHub Pages
-// fetch (the playlist source). They cover:
+// client (it locks non-free pieces for non-subscribers and never caches them).
+// Free-ness is per-item (each item's `free` flag), so this route's job is
+// narrow: fetch the playlist, resolve the subscription, and hand back
+// { items, isSubscribed }. These tests mock both verifyNativeAuth (the auth
+// check) and the upstream GitHub Pages fetch (the playlist source). They cover:
 //   - subscribers and non-subscribers both get the whole list (no slice)
 //   - isSubscribed reflects the auth result
-//   - freeCount is always the server's FREE_ITEM_COUNT
 //   - a missing Authorization header never 401s (returns the list as a guest)
 //   - upstream fetch failure surfaces as 502
-//   - the response shape is exactly { freeCount, isSubscribed, items }
+//   - the response shape is exactly { isSubscribed, items }
 
 // Hoisted state lets the vi.mock factory share refs with the test scope.
 const { authMock } = vi.hoisted(() => ({
@@ -77,7 +76,6 @@ describe('GET /api/gallery', () => {
       expect(res.status).toBe(200)
       expect(body.isSubscribed).toBe(false)
       expect(body.items).toHaveLength(FREE_ITEM_COUNT + 50)
-      expect(body.freeCount).toBe(FREE_ITEM_COUNT)
     })
 
     it('subscriber also gets the whole gallery', async () => {
@@ -93,7 +91,6 @@ describe('GET /api/gallery', () => {
       expect(res.status).toBe(200)
       expect(body.isSubscribed).toBe(true)
       expect(body.items).toHaveLength(FAKE_GALLERY.length)
-      expect(body.freeCount).toBe(FREE_ITEM_COUNT)
     })
 
     it('treats requests with no Authorization header as non-subscribers (never 401s)', async () => {
@@ -130,10 +127,10 @@ describe('GET /api/gallery', () => {
   })
 
   describe('response shape', () => {
-    it('always includes items, isSubscribed, and freeCount', async () => {
+    it('always includes exactly items and isSubscribed', async () => {
       authMock.mockResolvedValue({ user: null, isSubscribed: false, subscription: null })
       const body = await (await GET(makeReq())).json()
-      expect(Object.keys(body).sort()).toEqual(['freeCount', 'isSubscribed', 'items'].sort())
+      expect(Object.keys(body).sort()).toEqual(['isSubscribed', 'items'].sort())
     })
   })
 })

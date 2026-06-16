@@ -3,9 +3,9 @@
 // Persisted in userData (survives app updates) as an explicit list of selected
 // item `src` URLs, or absent when the user has never customized it. cache-sync
 // reads this to decide what to download; a null/absent selection defaults to the
-// first FREE_ITEM_COUNT items (see cache-sync.ts). New art added to the gallery later
-// simply isn't in the stored list, so it joins the gallery unselected — exactly
-// the desired "auto-join at the bottom, off by default" behavior.
+// free pieces (see cache-sync.ts). New art added to the gallery later is locked
+// by default and isn't in the stored list, so it joins the gallery unselected —
+// exactly the desired "auto-join at the bottom, off by default" behavior.
 
 import { app } from 'electron'
 import { existsSync, readFileSync, writeFileSync, renameSync, unlinkSync } from 'fs'
@@ -38,7 +38,7 @@ export function readSelection(): string[] | null {
 // Persists the explicit selection (temp + rename so a crash mid-write can't leave
 // a half-written file). Writing an empty array is meaningful: "nothing selected"
 // (the screensaver then shows its empty-state prompt), distinct from a null/absent
-// selection which means "use the default first FREE_ITEM_COUNT".
+// selection which means "use the default (the free pieces)".
 export function writeSelection(selected: string[]): void {
   const file = selectionFile()
   const tmp = file + '.tmp'
@@ -46,7 +46,7 @@ export function writeSelection(selected: string[]): void {
   renameSync(tmp, file)
 }
 
-// Resets to the default (first FREE_ITEM_COUNT) by removing the stored selection.
+// Resets to the default (the free pieces) by removing the stored selection.
 // Not currently wired to UI, but kept symmetric with read/write for tests/tools.
 export function clearSelection(): void {
   const file = selectionFile()

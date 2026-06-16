@@ -4,16 +4,23 @@ import { PRICING } from '@screensaver-art/constants'
 
 interface UpsellBannerProps {
   onSubscribe: () => void
+  /** Number of locked pieces. When > 0 the copy quantifies the wall ("Unlock N
+      more artworks") — concrete scarcity converts better than "the full gallery". */
+  lockedCount?: number
 }
 
-export function UpsellBanner({ onSubscribe }: UpsellBannerProps) {
+export function UpsellBanner({ onSubscribe, lockedCount }: UpsellBannerProps) {
+  const headline =
+    lockedCount && lockedCount > 0
+      ? `Unlock ${lockedCount} more artworks`
+      : 'Unlock the full gallery'
   return (
     <div className="rounded-xl border border-primary/40 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent p-5 mb-6 flex items-center gap-4">
       <div className="p-2 rounded-full bg-primary/15 text-primary shrink-0">
         <Sparkles className="w-5 h-5" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-foreground">Unlock the full gallery</p>
+        <p className="font-semibold text-foreground">{headline}</p>
         <p className="text-sm text-muted-foreground">
           You're on the free plan — {PRICING.freeItemCount} artworks. Unlock the full gallery plus
           new pieces every day for {PRICING.promoPrice}

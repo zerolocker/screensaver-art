@@ -16,27 +16,33 @@ export interface ArtItem {
   // item without it falls back to a single "Misc" tag.
   tags?: string[]
   collection?: string
+  // Free-tier flag. `true` → unlocked for everyone (counts toward the advertised
+  // free tier); absent/false → subscriber-only ("locked" for non-subscribers).
+  // Source of truth is gallery.json. New pieces default to locked (no flag) so
+  // freshly-added art is a subscriber perk, and the free items are *interleaved*
+  // through the catalog (not the first N) — so a free user keeps bumping into
+  // locked pieces while browsing, which is the core upsell surface. See
+  // `isItemLocked` for the gating rule.
+  free?: boolean
 }
 
 // The /api/gallery response contract — produced by the website's route handler
 // and consumed by the Electron app's cache-sync. Centralised here so both sides
-// share one definition instead of re-declaring the shape.
+// share one definition instead of re-declaring the shape. The route returns the
+// FULL list to everyone (a free user can browse + preview everything); gating is
+// per-item and client-side — see `isItemLocked` / each item's `free` flag.
 export interface GalleryApiResponse {
   items: ArtItem[]
   isSubscribed: boolean
-  // Free-tier threshold (= FREE_ITEM_COUNT). The route returns the FULL list to
-  // everyone and the client gates locally: pieces past `freeCount` are "locked"
-  // for non-subscribers. Published here so the server stays the source of truth
-  // for the threshold even though gating is rendered client-side.
-  freeCount: number
 }
 
-// How many artworks free (un-subscribed) users get — the single source of truth
-// for the free tier across every surface:
-//   - the lock threshold the client gates on (echoed by /api/gallery's freeCount)
-//   - the Electron app's default cache size + default selection on first run
-//   - the number we advertise on the marketing site (via PRICING.freeItemCount)
-export const FREE_ITEM_COUNT = 100
+// How many artworks free (un-subscribed) users get — the headline of the free
+// tier we advertise across the marketing site + app (via PRICING.freeItemCount).
+// This is the *count of items flagged `free: true` in gallery.json*; the
+// `free-tier invariant` test keeps the advertised number from drifting from the
+// actual data. (Free-ness is per-item now — see `ArtItem.free` — not a positional
+// threshold, so free pieces can be interleaved among locked ones.)
+export const FREE_ITEM_COUNT = 50
 
 // Items with no date are the earliest pieces; treat them as the launch date so
 // they sort before everything dated. Must read as a YYYY-MM-DD string so plain
@@ -44,6 +50,19 @@ export const FREE_ITEM_COUNT = 100
 export const UNDATED_FALLBACK = '2026-01-01'
 
 export const MISC_TAG = 'Misc'
+
+// Whether a piece is free-tier (open to everyone). Absent/false → subscriber-only.
+export function isItemFree(item: ArtItem): boolean {
+  return item.free === true
+}
+
+// The single gating rule, shared by the Electron Gallery (lock badges + which
+// pieces are selectable) and cache-sync (which pieces are downloaded/kept): a
+// piece is "locked" only when the viewer isn't subscribed AND it isn't a free
+// piece. Subscribers unlock everything; free pieces are open to all.
+export function isItemLocked(item: ArtItem, isSubscribed: boolean): boolean {
+  return !isSubscribed && !isItemFree(item)
+}
 
 export function tagsOf(item: ArtItem): string[] {
   return item.tags && item.tags.length > 0 ? item.tags : [MISC_TAG]

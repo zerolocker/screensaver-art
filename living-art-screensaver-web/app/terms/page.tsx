@@ -39,7 +39,7 @@ export default function TermsOfServicePage() {
 
       <h2>Subscriptions, Billing, and Refunds</h2>
       <p>
-        The Service offers a <strong>free tier</strong> that includes the first 100 artworks. A paid
+        The Service offers a <strong>free tier</strong> that includes 50 artworks. A paid
         <strong> subscription</strong> unlocks the full gallery and ongoing new additions.
       </p>
       <ul>

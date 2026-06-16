@@ -1,27 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyNativeAuth } from '@/lib/auth/verify-native-auth'
-import { FREE_ITEM_COUNT, type ArtItem, type GalleryApiResponse } from '@screensaver-art/constants'
+import { type ArtItem, type GalleryApiResponse } from '@screensaver-art/constants'
 
 const GALLERY_URL = 'https://zerolocker.github.io/screensaver-art/gallery.json'
 
 /**
  * GET /api/gallery
  *
- * Returns the FULL gallery playlist for the macOS screensaver app, the caller's
- * subscription state, and the free-tier threshold.
+ * Returns the FULL gallery playlist for the macOS screensaver app plus the
+ * caller's subscription state.
  *
  * Gating happens on the client now, not here: every user gets the whole list so
- * a free user can browse + preview everything; the app locks pieces beyond
- * `freeCount` for non-subscribers and never caches them. (See the Electron app's
- * Gallery + cache-sync.) `freeCount` is the shared `FREE_ITEM_COUNT` — published
- * here so the client gates at exactly the threshold the server defines.
+ * a free user can browse + preview everything. Free-ness is per-item — each
+ * gallery.json entry carries a `free` flag (interleaved through the catalog) —
+ * and the app locks non-free pieces for non-subscribers and never caches them
+ * (see the Electron app's Gallery + cache-sync, and `isItemLocked`).
  *
  * Auth: Bearer <supabase_access_token> in Authorization header.
  *   - Missing / invalid token → treated as a non-subscriber (never 401, so the
  *     screensaver/app always has something to show during onboarding).
  *
  * Response: GalleryApiResponse
- *   { items: ArtItem[], isSubscribed: boolean, freeCount: number }
+ *   { items: ArtItem[], isSubscribed: boolean }
  */
 export async function GET(request: NextRequest) {
   // ── Fetch gallery ───────────────────────────────────────────────────────────
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
   // ── Resolve subscription ────────────────────────────────────────────────────
   const { isSubscribed } = await verifyNativeAuth(request)
 
-  // ── Return the full list + the gating threshold ─────────────────────────────
-  const body: GalleryApiResponse = { items, isSubscribed, freeCount: FREE_ITEM_COUNT }
+  // ── Return the full list (per-item `free` flag rides along for client gating) ─
+  const body: GalleryApiResponse = { items, isSubscribed }
   return NextResponse.json(body)
 }

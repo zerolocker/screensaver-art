@@ -15,6 +15,13 @@ export interface InstallerStatus {
   registeredPath: string | null
 }
 
+export interface ScreensaverTiming {
+  // Idle seconds before the screensaver starts (0 = never; null = unknown).
+  screensaverStartSec: number | null
+  // Idle minutes before the display turns off (0 = never; null = unknown).
+  displayOffMin: number | null
+}
+
 export type CacheProgress =
   | { phase: 'fetching-gallery' }
   | { phase: 'cached' | 'downloading' | 'error'; index: number; total: number; title: string; error?: string }
@@ -92,6 +99,10 @@ const electronAPI = {
     ensureRegistered: (): Promise<{ ok: boolean; error?: string; registered: boolean }> =>
       ipcRenderer.invoke('installer:ensureRegistered'),
     activate: (): Promise<{ ok: boolean; error?: string }> => ipcRenderer.invoke('installer:activate'),
+  },
+  screensaver: {
+    timing: (): Promise<ScreensaverTiming> => ipcRenderer.invoke('screensaver:timing'),
+    preview: (): Promise<{ ok: boolean; error?: string }> => ipcRenderer.invoke('screensaver:preview'),
   },
   shell: {
     openExternal: (url: string): Promise<void> => ipcRenderer.invoke('shell:openExternal', url),

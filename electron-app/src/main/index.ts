@@ -3,6 +3,7 @@ import { join } from 'path'
 import { stat, readdir } from 'fs/promises'
 import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { getStatus, ensureRegistered, activate } from './installer'
+import { getScreensaverTiming, startScreensaverPreview } from './screensaver-timing'
 import { syncGallery, cancelSync, isSyncing, clearCache, PATHS, type CachedManifest } from './cache-sync'
 import { readSelection, writeSelection } from './selection'
 import { initUpdater, getUpdateState, checkForUpdates, quitAndInstall } from './updater'
@@ -198,6 +199,12 @@ ipcMain.handle('installer:ensureRegistered', async () => {
 })
 
 ipcMain.handle('installer:activate', () => activate())
+
+// Reads the macOS idle thresholds the "Screensaver is set" banner explains, and
+// starts the screensaver on demand for an instant preview. macOS-only; both
+// degrade to null / a not-supported error elsewhere.
+ipcMain.handle('screensaver:timing', () => getScreensaverTiming())
+ipcMain.handle('screensaver:preview', () => startScreensaverPreview())
 
 // ---------------------------------------------------------------------------
 // Auto-update (electron-updater). No-op in dev / unpackaged builds.

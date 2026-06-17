@@ -27,7 +27,7 @@ interface GalleryPageProps {
   session: Session
 }
 
-type Tab = 'all' | 'selected'
+type Tab = 'all' | 'free' | 'paid' | 'selected'
 type SortOrder = 'oldest' | 'newest'
 // How a clicked piece previews: 'fullscreen' fills the whole display (native
 // macOS fullscreen, with its brief Space animation); 'in-app' fills just the
@@ -232,9 +232,16 @@ export function GalleryPage({ session }: GalleryPageProps) {
     })
   }, [items, sort])
 
+  // Free / Paid are per-item (the `free` flag), independent of subscription — the
+  // "Paid" pieces are the subscriber-only ones (locked for non-subscribers).
+  const freeCount = useMemo(() => items.filter(isItemFree).length, [items])
+  const paidCount = items.length - freeCount
+
   const isVisible = useCallback(
     (item: ArtItem): boolean => {
       if (tab === 'selected' && !selectedScope.has(item.src)) return false
+      if (tab === 'free' && !isItemFree(item)) return false
+      if (tab === 'paid' && isItemFree(item)) return false
       if (activeTags.size > 0 && !tagsOf(item).some((t) => activeTags.has(t))) return false
       if (!matchesQuery(item, query)) return false
       return true
@@ -315,14 +322,20 @@ export function GalleryPage({ session }: GalleryPageProps) {
   return (
     <div className="px-6 pb-8">
       <AppBanners showUpsell={!!gallery && !gallery.isSubscribed} lockedCount={lockedSrcs.size} />
-      <p className="text-sm text-muted-foreground mb-4">
-        Pick the art you want your screensaver to play.
+      <p className="text-sm text-muted-foreground">
+        Pick the art you want your screensaver to play below.
       </p>
       <div className="sticky top-3 z-20 -mx-6 px-6 pt-3 pb-3 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-5">
             <TabButton active={tab === 'all'} onClick={() => switchTab('all')}>
               All <span className="text-xs opacity-65 tabular-nums">{items.length}</span>
+            </TabButton>
+            <TabButton active={tab === 'free'} onClick={() => switchTab('free')}>
+              Free <span className="text-xs opacity-65 tabular-nums">{freeCount}</span>
+            </TabButton>
+            <TabButton active={tab === 'paid'} onClick={() => switchTab('paid')}>
+              Paid <span className="text-xs opacity-65 tabular-nums">{paidCount}</span>
             </TabButton>
             <TabButton active={tab === 'selected'} onClick={() => switchTab('selected')}>
               Selected <span className="text-xs opacity-65 tabular-nums">{selected.size}</span>

@@ -33,7 +33,7 @@ export function HeroSection() {
         </h1>
 
         <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed text-pretty">
-          Turn your idle display into an evolving gallery. AI-animated artworks across every style, with new pieces added regularly.
+          AI-animated artworks in every style. New work added daily.
         </p>
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">

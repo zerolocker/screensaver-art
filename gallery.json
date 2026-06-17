@@ -1362,5 +1362,57 @@
     "looping": true,
     "image_prompt": "The medieval rock-hewn Church of Saint George (Bete Giyorgis) at Lalibela, Ethiopia, 12th-13th century, carved as a single monolithic Greek cross sunk down into the living red volcanic tuff rock, photographed in-situ at golden hour so the carved bedrock fills the entire frame edge to edge. An elevated three-quarter view looking down into the deep rectangular trench surrounding the cruciform church; the cross-shaped roof carved with concentric crosses in relief, tall narrow windows cut into the warm reddish-brown stone walls, weathered hand-chiselled texture. Warm low golden sunlight rakes across one side of the carved rock, casting deep soft shadows into the surrounding pit; a clear pale sky above, a few green shrubs at the rim. Earthy ochre, terracotta and gold palette, ancient sacred atmosphere. no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, the carved rock church fills the entire frame edge to edge.",
     "video_prompt": "A gentle seamless cycle that ends exactly where it began. Warm golden sunlight slowly shifts and breathes across the carved red rock, the soft shadows in the surrounding trench deepening and easing back. A faint haze of dust and a few high clouds drift slowly across the pale sky. The green shrubs at the rim sway softly in a light breeze, and a single bird glides across the distance and away. The monolithic rock church and the bedrock hold perfectly still and solid — only the light, the drifting haze and the swaying shrubs move, settling back to the opening frame. Serene, ancient, sacred."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/minoan_spring_fresco_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/minoan_spring_fresco_4k.webp",
+    "title": "Spring Fresco - Minoan Wall Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-06-17",
+    "tags": [
+      "Greek & Roman"
+    ],
+    "looping": false,
+    "image_prompt": "A Minoan Bronze Age wall fresco painted in lime plaster with mineral pigments (Egyptian blue, red ochre, black, white), c. 1600 BC, in the style of the Akrotiri Spring Fresco from Thera. The composition fills the entire frame edge to edge: undulating volcanic rocky hills rendered in flowing bands of deep red, ochre and blue, clusters of stylized red lilies on slender curving green stems springing from the rocks, and pairs of dark swallows wheeling through the open pale sky between them. Flat confident Aegean color fields, bold black contour lines, the matte chalky texture and fine craquelure of genuine ancient plaster, warm even Mediterranean daylight. The fresco fills the frame; no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background.",
+    "video_prompt": "The painted dark swallows flit and dart across the pale sky in short swooping flights between the lily clusters, wings beating; the slender red lilies sway gently on their stems in a light Aegean breeze. Soft even Mediterranean daylight warms the chalky plaster surface. Only the birds and the flowers move within the painting — the undulating rocky hills and the matte plaster wall stay completely still and hold their painted form. Physically plausible, no morphing, no melting."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/maya_bonampak_procession_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/maya_bonampak_procession_4k.webp",
+    "title": "Courtly Procession - Maya Bonampak Mural (AI Animated)",
+    "type": "video",
+    "date": "2026-06-17",
+    "tags": [
+      "Arts of the Americas"
+    ],
+    "looping": false,
+    "image_prompt": "An ancient Maya wall mural painted in lime fresco with mineral pigments, in the style of the Bonampak murals, Late Classic period c. 790 AD, Chiapas. The painting fills the entire frame edge to edge: a courtly procession of Maya nobles and musicians moving in profile across a deep Maya-blue background, wearing towering quetzal-feather headdresses in brilliant green and red, jade ornaments and white cloth, carrying tall feathered standards and conch trumpets. Flat saturated color fields outlined in confident black, elegant stylized profile figures, the matte chalky texture and fine craquelure of ancient lime plaster, warm torch-lit interior glow. The mural fills the frame; no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background.",
+    "video_prompt": "The wall torch on the left burns and flickers, its flame guttering and leaning, casting warm restless firelight that dances across the painted mural and the rough stone wall; thin wisps of smoke drift upward from the flame. The shadows shift gently with the flame. The painted Maya figures and the plaster mural itself stay completely still and hold their form — only the fire, its light, and the smoke move. Physically plausible, no morphing, no melting."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/paleolithic_cave_herd_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/paleolithic_cave_herd_4k.webp",
+    "title": "Hall of Beasts - Paleolithic Cave Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-06-17",
+    "tags": [
+      "Prehistoric"
+    ],
+    "looping": true,
+    "image_prompt": "A Paleolithic cave painting on a rough natural limestone cave wall, in the style of Lascaux and Chauvet, c. 17,000 BC. The painting fills the entire frame edge to edge: a flowing herd of wild horses, aurochs and red deer rendered in red ochre, charcoal black and yellow earth pigment, overlapping in dynamic profile across the undulating rock, their manes and horns drawn with confident sweeping strokes that follow the natural contours and bulges of the stone. The bumpy mineral-streaked cave surface, ochre dust, and ancient pigment soaked into the rock. Warm flickering torchlight raking low across the wall, deep shadow in the recesses. The painted rock fills the frame; no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no modern lighting, no museum label, no plain studio background.",
+    "video_prompt": "The handheld torch flame on the right flickers and sways, casting warm restless firelight that ripples and dances low across the painted aurochs and horses and the bumpy limestone wall, shadows breathing gently in the recesses; faint smoke drifts up from the flame. The flame settles back exactly to where it began. The painted animals and the rock itself stay completely still and hold their form — only the fire, its raking light, and the smoke move. Physically plausible, seamless and continuous, no morphing, no melting."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/nasrid_alhambra_court_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/nasrid_alhambra_court_4k.webp",
+    "title": "Court of the Myrtles - Nasrid Alhambra (AI Animated)",
+    "type": "video",
+    "date": "2026-06-17",
+    "tags": [
+      "Islamic"
+    ],
+    "looping": true,
+    "image_prompt": "The interior of a Nasrid palace courtyard at the Alhambra, Granada, 14th century, in the Islamic Andalusian architectural style. The view fills the entire frame edge to edge: a long still reflecting pool runs down the center of a marble-paved court, flanked by slender white marble columns with finely carved capitals supporting horseshoe arches; the walls above are covered in intricate carved stucco arabesques, sebka lattice, and bands of blue-and-white geometric zellij tilework, with Kufic Arabic calligraphy friezes. Honey-colored late-afternoon sunlight rakes across the carved plaster, the pool mirroring the arches. Warm, serene, perfectly symmetrical, richly detailed real architecture; no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background.",
+    "video_prompt": "Gentle ripples drift slowly across the still reflecting pool, making the mirrored arches and columns shimmer and waver softly on the water surface; the water settles back to glassy stillness exactly as it began. Warm late-afternoon sunlight rests steadily on the carved stucco. The marble architecture, columns, arches and tilework stay completely still and hold their form — only the water and its reflection move. Physically plausible, calm, seamless and continuous, no morphing, no melting."
   }
 ]

@@ -211,6 +211,7 @@ When you add a new style, append it under the section it best fits.
 - Kofun Period Haniwa
 - Dong Son Bronze Drum Engraving
 - Mayan Stela Relief
+- Maya Bonampak Mural
 - Aztec Codices Art
 - Inca Textile Pattern
 - Moche Ceramics

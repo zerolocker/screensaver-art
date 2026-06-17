@@ -12,11 +12,12 @@ import type { ReadableStream as NodeWebReadableStream } from 'stream/web'
 import type { BrowserWindow } from 'electron'
 import { obfuscateChunk, filenameForUrl, MAGIC } from './obfuscation'
 import { log } from './logger'
-import { FREE_ITEM_COUNT, type ArtItem, type GalleryApiResponse } from '@screensaver-art/constants'
+import { isItemFree, type ArtItem, type GalleryApiResponse } from '@screensaver-art/constants'
 
 // The /api/gallery item + response shape lives in @screensaver-art/constants so
 // the website (producer) and this client (consumer) share one definition.
-// `ApiResponse.freeCount` is the lock threshold a non-subscriber gates on.
+// Free-ness is per-item (`ArtItem.free`); a non-subscriber may only play/cache
+// the free pieces.
 export type ApiItem = ArtItem
 export type ApiResponse = GalleryApiResponse
 
@@ -44,10 +45,9 @@ const STALL_TIMEOUT_MS = 30_000
 const DOWNLOAD_RETRIES = 2
 const RETRY_BACKOFF_MS = 400
 
-// The free-tier threshold (`FREE_ITEM_COUNT`, shared) is the fallback when the
-// API response omits `freeCount`, and the default selection size for a
-// never-customized (null) selection — so a fresh install plays a sensible set
-// before the user ever opens the gallery.
+// The free pieces (those flagged `free` in the gallery) are the default play set
+// for a never-customized (null) selection — so a fresh install plays a sensible
+// set before the user ever opens the gallery.
 
 export function getCacheDir(): string {
   // Test-only override (the test suite points this at a tmp dir so it never
@@ -202,12 +202,12 @@ let inFlight: Promise<CachedManifest> | null = null
 let inFlightAbort: AbortController | null = null
 
 // `selectedSrcs` is the user's chosen subset (a list of item `src` URLs). A null
-// selection (the user has never customized it) defaults to the first
-// FREE_ITEM_COUNT items. Locked items (a non-subscriber's pieces beyond
-// freeCount) are never downloaded. By default a deselected-but-unlocked item is
-// KEPT on disk so re-adding it is instant ("cache" is decoupled from "what
-// plays"); set `pruneDeselected` (a manual "Sync Now") to also evict those,
-// tidying the cache down to exactly the play set.
+// selection (the user has never customized it) defaults to the free pieces.
+// Locked items (a non-subscriber's non-free pieces) are never downloaded. By
+// default a deselected-but-unlocked item is KEPT on disk so re-adding it is
+// instant ("cache" is decoupled from "what plays"); set `pruneDeselected` (a
+// manual "Sync Now") to also evict those, tidying the cache down to exactly the
+// play set.
 export function syncGallery(
   apiUrl: string,
   accessToken: string | null,
@@ -263,26 +263,28 @@ async function runSync(
     throw new Error(`Gallery API returned HTTP ${res.status}`)
   }
   const api: ApiResponse = await res.json()
-  const freeCount = api.freeCount ?? FREE_ITEM_COUNT
+  // Free pieces (per-item `free` flag) — the unlocked set for a non-subscriber
+  // and the default play set for a never-customized selection.
+  const freeItems = api.items.filter(isItemFree)
   log.info('cache-sync', 'gallery fetched', {
     count: api.items.length,
     isSubscribed: api.isSubscribed,
-    freeCount,
+    free: freeItems.length,
   })
 
   // Unlocked = what this user is allowed to play/cache: everything for a
-  // subscriber, the first `freeCount` items otherwise. Locked items are never
+  // subscriber, only the free pieces otherwise. Locked items are never
   // downloaded and never kept on disk (so an expired subscription evicts them).
-  const unlockedItems = api.isSubscribed ? api.items : api.items.slice(0, freeCount)
+  const unlockedItems = api.isSubscribed ? api.items : freeItems
   const unlockedSrcs = new Set(unlockedItems.map((it) => it.src))
 
   // Narrow to the user's selection ∩ unlocked. A null selection (never
-  // customized) defaults to the first `freeCount` items (all unlocked). We
-  // preserve the API order so the manifest and the download loop iterate in the
-  // same order the gallery is presented in.
+  // customized) defaults to the free pieces (all unlocked). We preserve the API
+  // order so the manifest and the download loop iterate in the same order the
+  // gallery is presented in.
   const selectedSet =
     selectedSrcs === null
-      ? new Set(api.items.slice(0, freeCount).map((it) => it.src))
+      ? new Set(freeItems.map((it) => it.src))
       : new Set(selectedSrcs)
   const chosen = api.items.filter(
     (item) => selectedSet.has(item.src) && unlockedSrcs.has(item.src),

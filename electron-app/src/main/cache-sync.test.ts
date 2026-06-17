@@ -45,7 +45,6 @@ import {
   type ApiResponse,
 } from './cache-sync'
 import { MAGIC, KEY, filenameForUrl } from './obfuscation'
-import { FREE_ITEM_COUNT } from '@screensaver-art/constants'
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -104,15 +103,15 @@ function makeHangingResponse(): Response {
 }
 
 function fakeApiResponse(
-  items: { src: string; title: string; type: string }[],
-  opts: Partial<Pick<ApiResponse, 'isSubscribed' | 'freeCount'>> = {},
+  items: { src: string; title: string; type: string; free?: boolean }[],
+  opts: Partial<Pick<ApiResponse, 'isSubscribed'>> = {},
 ): ApiResponse {
   return {
-    items,
+    // Default every item to free, so nothing is "locked" unless a test opts a
+    // specific item out with `free: false` to exercise the non-subscriber lock
+    // path. (Mirrors prod: the unlocked set is the free pieces for a non-sub.)
+    items: items.map((it) => ({ ...it, free: it.free ?? true })),
     isSubscribed: opts.isSubscribed ?? true,
-    // Default well above the tiny test galleries, so nothing is "locked" unless a
-    // test opts into a small freeCount to exercise the non-subscriber lock path.
-    freeCount: opts.freeCount ?? FREE_ITEM_COUNT,
   }
 }
 
@@ -445,14 +444,15 @@ describe('cache-sync', () => {
       expect(existsSync(join(PATHS.VIDEOS_DIR, filenameForUrl(newItems[0].src)))).toBe(true)
     })
 
-    it('evicts locked pieces when a subscription lapses (beyond freeCount)', async () => {
+    it('evicts locked pieces when a subscription lapses (non-free pieces)', async () => {
+      // A and B are free; C is subscriber-only (free: false).
       const all = [
-        { src: 'https://r2.example/a.mp4', title: 'A', type: 'video' },
-        { src: 'https://r2.example/b.mp4', title: 'B', type: 'video' },
-        { src: 'https://r2.example/c.mp4', title: 'C', type: 'video' },
+        { src: 'https://r2.example/a.mp4', title: 'A', type: 'video', free: true },
+        { src: 'https://r2.example/b.mp4', title: 'B', type: 'video', free: true },
+        { src: 'https://r2.example/c.mp4', title: 'C', type: 'video', free: false },
       ]
 
-      // Sync 1: subscribed → all three cached.
+      // Sync 1: subscribed → all three cached (a subscriber unlocks non-free too).
       fetchMock
         .mockResolvedValueOnce(
           makeJsonResponse(fakeApiResponse(all, { isSubscribed: true })),
@@ -464,12 +464,12 @@ describe('cache-sync', () => {
       expect(readdirSync(PATHS.VIDEOS_DIR)).toHaveLength(3)
 
       // Sync 2: subscription lapsed. The API still returns the FULL list, but
-      // isSubscribed=false + freeCount=2 makes the third piece "locked" — it must
-      // be evicted (re-enforcing gating) even though it's still selected, while
-      // the first two stay (already cached, still unlocked).
+      // isSubscribed=false makes the non-free piece C "locked" — it must be
+      // evicted (re-enforcing gating) even though it's still selected, while the
+      // two free pieces stay (already cached, still unlocked).
       fetchMock.mockReset()
       fetchMock.mockResolvedValueOnce(
-        makeJsonResponse(fakeApiResponse(all, { isSubscribed: false, freeCount: 2 })),
+        makeJsonResponse(fakeApiResponse(all, { isSubscribed: false })),
       )
       const m2 = await syncGallery('https://api/gallery', null, null, [
         all[0].src,
@@ -484,16 +484,17 @@ describe('cache-sync', () => {
     })
 
     it('never downloads a locked piece, even if it is in the selection', async () => {
+      // A is free, B is subscriber-only.
       const all = [
-        { src: 'https://r2.example/a.mp4', title: 'A', type: 'video' },
-        { src: 'https://r2.example/b.mp4', title: 'B', type: 'video' },
+        { src: 'https://r2.example/a.mp4', title: 'A', type: 'video', free: true },
+        { src: 'https://r2.example/b.mp4', title: 'B', type: 'video', free: false },
       ]
 
-      // Non-subscriber with freeCount=1 → only A is unlocked. B is selected but
+      // Non-subscriber → only the free piece A is unlocked. B is selected but
       // must never be fetched or cached.
       fetchMock
         .mockResolvedValueOnce(
-          makeJsonResponse(fakeApiResponse(all, { isSubscribed: false, freeCount: 1 })),
+          makeJsonResponse(fakeApiResponse(all, { isSubscribed: false })),
         )
         .mockResolvedValueOnce(makeStreamResponse(Buffer.from('A')))
       const m = await syncGallery('https://api/gallery', null, null, [all[0].src, all[1].src])
@@ -569,10 +570,10 @@ describe('cache-sync', () => {
       )
     })
 
-    it('defaults a null selection to the first FREE_ITEM_COUNT items', async () => {
-      // FREE_ITEM_COUNT is 100; with 2 items a null selection caches everything,
-      // matching the pre-selection behavior. (The >100 slice is covered by the
-      // selectedSrcs path; here we just prove null === "first 100".)
+    it('defaults a null selection to the free pieces', async () => {
+      // Both items are free (helper default), so a null selection caches both —
+      // a never-customized install plays the free set. (Locking is covered by the
+      // selectedSrcs path above; here we just prove null === "the free pieces".)
       const items = [
         { src: 'https://r2.example/a.mp4', title: 'A', type: 'video' },
         { src: 'https://r2.example/b.mp4', title: 'B', type: 'video' },

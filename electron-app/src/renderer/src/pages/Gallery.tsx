@@ -13,16 +13,14 @@ import {
   orderTags,
   matchesQuery,
   UNDATED_FALLBACK,
-  FREE_ITEM_COUNT,
+  isItemFree,
+  isItemLocked,
 } from '@screensaver-art/constants'
 import type { Session } from '@supabase/supabase-js'
 
 interface GalleryResponse {
   items: ArtItem[]
   isSubscribed: boolean
-  // Free-tier threshold from the server: a non-subscriber may play/cache only
-  // the first `freeCount` items; the rest are "locked".
-  freeCount: number
 }
 
 interface GalleryPageProps {
@@ -79,11 +77,10 @@ export function GalleryPage({ session }: GalleryPageProps) {
       const data: GalleryResponse = await res.json()
       setGallery(data)
 
-      // Resolve the selection: stored explicit list, or the default first N (in
-      // API order — same default cache-sync applies for a null selection).
-      const freeCount = data.freeCount ?? FREE_ITEM_COUNT
+      // Resolve the selection: stored explicit list, or the default free set
+      // (the same default cache-sync applies for a null selection).
       const stored = await window.electronAPI.selection.get()
-      const resolved = stored.selected ?? data.items.slice(0, freeCount).map((i) => i.src)
+      const resolved = stored.selected ?? data.items.filter(isItemFree).map((i) => i.src)
 
       // Drop "orphans" — selected pieces no longer in the gallery (e.g. curated
       // out of gallery.json). They render no card, so they'd otherwise inflate
@@ -157,14 +154,14 @@ export function GalleryPage({ session }: GalleryPageProps) {
   )
 
   const items = useMemo(() => gallery?.items ?? [], [gallery])
-  const freeCount = gallery?.freeCount ?? FREE_ITEM_COUNT
 
-  // Locked = a non-subscriber's pieces beyond the free count (in API order).
-  // These can't be ticked or cached — the tick becomes a "Subscribe to unlock".
+  // Locked = a non-subscriber's non-free pieces (the `free` flag is per-item, so
+  // these are interleaved through the grid, not clustered at the end). They can't
+  // be ticked or cached — the tick becomes a "Subscribe to unlock".
   const lockedSrcs = useMemo(() => {
     if (!gallery || gallery.isSubscribed) return new Set<string>()
-    return new Set(gallery.items.slice(freeCount).map((i) => i.src))
-  }, [gallery, freeCount])
+    return new Set(gallery.items.filter((i) => isItemLocked(i, gallery.isSubscribed)).map((i) => i.src))
+  }, [gallery])
 
   const toggle = useCallback(
     (src: string) => {
@@ -317,7 +314,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
 
   return (
     <div className="px-6 pb-8">
-      <AppBanners showUpsell={!!gallery && !gallery.isSubscribed} />
+      <AppBanners showUpsell={!!gallery && !gallery.isSubscribed} lockedCount={lockedSrcs.size} />
       <p className="text-sm text-muted-foreground mb-4">
         Pick the art you want your screensaver to play.
       </p>

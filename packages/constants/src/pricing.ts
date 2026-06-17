@@ -43,8 +43,9 @@ export const PRICING = {
   billingNote: 'Billed quarterly',
   /**
    * How many artworks free (un-subscribed) users get — the headline of the free
-   * tier, shown across the site + app. Sourced from `FREE_ITEM_COUNT` so the
-   * advertised number can never drift from the backend's actual free-tier slice.
+   * tier, shown across the site + app. Sourced from `FREE_ITEM_COUNT` (the count
+   * of `free: true` pieces in gallery.json) so the advertised number can never
+   * drift from the actual free-tier size.
    */
   freeItemCount: FREE_ITEM_COUNT,
   /** Human-readable last day the promo price is valid. */

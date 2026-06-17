@@ -1,5 +1,17 @@
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
 import { describe, it, expect } from 'vitest'
-import { tagsOf, orderTags, matchesQuery, MISC_TAG, FREE_ITEM_COUNT, type ArtItem } from './gallery'
+import {
+  tagsOf,
+  orderTags,
+  matchesQuery,
+  isItemFree,
+  isItemLocked,
+  MISC_TAG,
+  FREE_ITEM_COUNT,
+  type ArtItem,
+} from './gallery'
 import { PRICING } from './pricing'
 
 describe('tagsOf', () => {
@@ -61,8 +73,38 @@ describe('matchesQuery', () => {
   })
 })
 
+describe('isItemFree / isItemLocked', () => {
+  const free: ArtItem = { src: 'f', title: 'F', type: 'video', free: true }
+  const paid: ArtItem = { src: 'p', title: 'P', type: 'video' } // no flag → locked
+
+  it('isItemFree is true only when the flag is exactly true', () => {
+    expect(isItemFree(free)).toBe(true)
+    expect(isItemFree(paid)).toBe(false)
+    expect(isItemFree({ ...paid, free: false })).toBe(false)
+  })
+
+  it('subscribers never see a locked piece', () => {
+    expect(isItemLocked(free, true)).toBe(false)
+    expect(isItemLocked(paid, true)).toBe(false)
+  })
+
+  it('non-subscribers only unlock free pieces', () => {
+    expect(isItemLocked(free, false)).toBe(false)
+    expect(isItemLocked(paid, false)).toBe(true)
+  })
+})
+
 describe('free-tier invariant', () => {
   it('PRICING.freeItemCount is sourced from FREE_ITEM_COUNT', () => {
     expect(PRICING.freeItemCount).toBe(FREE_ITEM_COUNT)
+  })
+
+  it('gallery.json flags exactly FREE_ITEM_COUNT pieces as free', () => {
+    // The advertised free count must equal the real number of `free: true`
+    // pieces in the playlist, or the marketing copy lies. New pieces default to
+    // locked (no flag), so this stays at FREE_ITEM_COUNT as the catalog grows.
+    const galleryPath = join(dirname(fileURLToPath(import.meta.url)), '../../../gallery.json')
+    const items = JSON.parse(readFileSync(galleryPath, 'utf8')) as ArtItem[]
+    expect(items.filter(isItemFree)).toHaveLength(FREE_ITEM_COUNT)
   })
 })

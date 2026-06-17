@@ -14,6 +14,8 @@ export {
   tagsOf,
   orderTags,
   matchesQuery,
+  isItemFree,
+  isItemLocked,
 } from './gallery'
 
 // Pricing — the displayed price/cadence/promo framing (not what Stripe charges).

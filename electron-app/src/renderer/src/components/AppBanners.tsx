@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { startCheckout } from '../lib/checkout'
 import { UpsellBanner } from './UpsellBanner'
 import { ScreensaverSetBanner } from './ScreensaverSetBanner'
+import { ScreensaverStatusBanner, LOCK_SCREEN_SETTINGS_URL } from './ScreensaverStatusBanner'
 import { ScreensaverErrorBanner } from './ScreensaverErrorBanner'
 import { UpdateBanner } from './UpdateBanner'
 import { useInstaller } from '../lib/InstallerProvider'
@@ -23,11 +24,14 @@ interface AppBannersProps {
 //   1. app update ready ("Relaunch to update")
 //   2. screensaver setup error (registration failed) — needs a report
 //   3. "set your screensaver" prompt (registered but not active)
+//   3b. screensaver status (active) — when it'll show + "Preview now" (the
+//       active counterpart to the Set prompt; the two are mutually exclusive)
 //   4. unlock-the-gallery upsell
 // The screensaver/update banners read state from context; the upsell gate is
 // page-specific and passed in.
 export function AppBanners({ showUpsell, lockedCount }: AppBannersProps) {
-  const { installer, needsActivation, activating, activate, error } = useInstaller()
+  const { installer, needsActivation, activating, activate, error, timing, preview, previewing } =
+    useInstaller()
   const { state: update, updateReady, relaunch } = useUpdate()
   const { reporting, reportResult, sendReport } = useErrorReport()
 
@@ -62,6 +66,14 @@ export function AppBanners({ showUpsell, lockedCount }: AppBannersProps) {
           onSet={activate}
           setting={activating}
           error={installer?.registered ? error : null}
+        />
+      )}
+      {installer?.active && (
+        <ScreensaverStatusBanner
+          timing={timing}
+          onPreview={() => void preview()}
+          previewing={previewing}
+          onOpenSettings={() => void window.electronAPI.shell.openExternal(LOCK_SCREEN_SETTINGS_URL)}
         />
       )}
       {showUpsell && (

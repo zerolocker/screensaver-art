@@ -48,11 +48,25 @@ describe('<PosterCard />', () => {
 
   it('locked: shows a lock that prompts to subscribe and never toggles', () => {
     const { onToggle, onSubscribe } = setup({ locked: true })
-    fireEvent.click(screen.getByTitle('Subscribe to unlock'))
+    fireEvent.click(screen.getByLabelText('Subscribe to unlock this piece'))
     expect(onSubscribe).toHaveBeenCalledTimes(1)
     expect(onToggle).not.toHaveBeenCalled()
     // The add tick is gone — there's no way to add a locked piece.
     expect(screen.queryByTitle('Add to your screensaver')).not.toBeInTheDocument()
+  })
+
+  it('locked: hovering the lock shows the upsell tooltip instantly', () => {
+    setup({ locked: true })
+    const lock = screen.getByLabelText('Subscribe to unlock this piece')
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+    fireEvent.mouseEnter(lock)
+    const tip = screen.getByRole('tooltip')
+    expect(tip).toHaveTextContent(/click to subscribe/i)
+    expect(tip).toHaveTextContent(/unlock the full gallery plus new pieces every day/i)
+    expect(tip).toHaveTextContent(/\$0\.99\/month/)
+    expect(tip).toHaveTextContent(/billed quarterly/i)
+    fireEvent.mouseLeave(lock)
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
   })
 
   it('opens the detail modal when the card body is clicked', () => {

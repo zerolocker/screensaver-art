@@ -26,8 +26,6 @@ class ScreensaverArtView: ScreenSaverView {
     private var shuffledOrder: [Int]        = []
     private var orderPos:      Int          = 0
     private var isSubscribed:  Bool         = true
-    private var freeLoopCount: Int          = 0
-    private let upsellAfterLoops            = 1
 
     // mtime of the manifest at last load — used to detect mid-session syncs
     // by the Electron app and reload without waiting for stopAnimation.
@@ -51,14 +49,21 @@ class ScreensaverArtView: ScreenSaverView {
     private var pillContainer: NSView?
     private var titleLabel:    NSTextField?
     private var emptyState:    NSTextField?
-    private var upsellOverlay: UpsellOverlay?
-    private var upsellVisible  = false
+    private var upsellPill:    UpsellPill?
 
     // MARK: Timing
 
     private var advanceTimer:    Timer?
     private let displayDuration: TimeInterval = 7.8
     private let fadeDuration:    TimeInterval = 1.5
+
+    // Gentle subscribe nudge for free users: the pill is visible for
+    // `nudgeInterval`, then hidden for `nudgeInterval`, repeating — so the art
+    // gets equal time uninterrupted. A time-based cycle (not loop-based) keeps it
+    // predictable regardless of how many pieces are selected.
+    private var nudgeTimer:      Timer?
+    private let nudgeInterval:   TimeInterval = 16
+    private let nudgeFade:       TimeInterval = 1.0
 
     // MARK: Init
 
@@ -94,9 +99,8 @@ class ScreensaverArtView: ScreenSaverView {
         shuffledOrder = Array(0..<newItems.count).shuffled()
         orderPos      = 0
         isSubscribed  = manifest?.isSubscribed ?? true
-        freeLoopCount = 0
         lastManifestMtime = manifestMtime()
-        hideUpsell()
+        teardownUpsell()
         if newItems.isEmpty {
             // Distinguish "never synced" (no manifest yet) from "synced but nothing
             // selected" (manifest present, empty list) so the prompt is accurate.
@@ -109,6 +113,10 @@ class ScreensaverArtView: ScreenSaverView {
         // heartbeat so reloadIfManifestChanged() can pick up a sync in progress
         // and transition us out of the empty state.
         startTimer()
+        // Free users get the gentle nudge cycle; subscribers (and the System
+        // Settings preview, and the empty state) get nothing. Re-evaluated on
+        // every load, so subscribing mid-session (manifest rewrite) stops it.
+        startUpsellNudge()
     }
 
     /// If the Electron app has rewritten the manifest since we last loaded it
@@ -304,49 +312,57 @@ class ScreensaverArtView: ScreenSaverView {
         if reloadIfManifestChanged() { return }
 
         guard !items.isEmpty else { return }
-        let nextPos = (orderPos + 1) % shuffledOrder.count
-
-        if !isSubscribed && nextPos == 0 {
-            freeLoopCount += 1
-            if freeLoopCount >= upsellAfterLoops {
-                showUpsell()
-                return
-            }
-        }
-
-        orderPos = nextPos
+        // The subscribe nudge runs on its own cadence (see startUpsellNudge), so
+        // the art advances continuously and is never paused for an upsell.
+        orderPos = (orderPos + 1) % shuffledOrder.count
         showCurrent()
     }
 
-    // MARK: Upsell
+    // MARK: Upsell nudge
 
-    private func showUpsell() {
-        guard !upsellVisible, !isPreview else { return }
-        upsellVisible = true
-        advanceTimer?.invalidate()
-
-        let overlay = UpsellOverlay(frame: bounds)
-        overlay.autoresizingMask = [.width, .height]
-        overlay.alphaValue = 0
-        addSubview(overlay)
-        upsellOverlay = overlay
-
-        NSAnimationContext.runAnimationGroup { ctx in
-            ctx.duration = 1.0
-            overlay.animator().alphaValue = 1
-        }
-
-        Timer.scheduledTimer(withTimeInterval: 30, repeats: false) { [weak self] _ in
-            self?.hideUpsell()
-            self?.freeLoopCount = 0
-            self?.startTimer()
+    /// Begin the gentle fade cycle for free users. No-op when subscribed, in the
+    /// System Settings preview, or when nothing is playing. Idempotent — always
+    /// preceded by teardownUpsell() so a reload restarts cleanly.
+    private func startUpsellNudge() {
+        guard !isSubscribed, !isPreview, !items.isEmpty else { return }
+        ensureUpsellPill()
+        // Start hidden; the first tick (one interval in) fades the pill in, so the
+        // art is alone on screen first. Thereafter it alternates 16s on / 16s off.
+        nudgeTimer = Timer.scheduledTimer(withTimeInterval: nudgeInterval, repeats: true) {
+            [weak self] _ in self?.toggleUpsellNudge()
         }
     }
 
-    private func hideUpsell() {
-        upsellVisible = false
-        upsellOverlay?.removeFromSuperview()
-        upsellOverlay = nil
+    private func toggleUpsellNudge() {
+        guard let pill = upsellPill else { return }
+        let shouldShow = pill.alphaValue < 0.5
+        NSAnimationContext.runAnimationGroup { ctx in
+            ctx.duration = nudgeFade
+            pill.animator().alphaValue = shouldShow ? 1 : 0
+        }
+    }
+
+    private func ensureUpsellPill() {
+        guard upsellPill == nil, let title = pillContainer else { return }
+        let pill = UpsellPill(frame: .zero)
+        pill.translatesAutoresizingMaskIntoConstraints = false
+        pill.alphaValue = 0
+        addSubview(pill)
+        upsellPill = pill
+        NSLayoutConstraint.activate([
+            // Centered, just above the title pill — "near the title", never over art.
+            pill.centerXAnchor.constraint(equalTo: centerXAnchor),
+            pill.bottomAnchor.constraint(equalTo: title.topAnchor, constant: -14),
+            pill.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, multiplier: 0.85),
+        ])
+    }
+
+    /// Stop the cycle and remove the pill entirely (e.g. on reload or stop).
+    private func teardownUpsell() {
+        nudgeTimer?.invalidate()
+        nudgeTimer = nil
+        upsellPill?.removeFromSuperview()
+        upsellPill = nil
     }
 
     // MARK: Slot management
@@ -401,6 +417,7 @@ class ScreensaverArtView: ScreenSaverView {
 
     private func stopPlayback() {
         advanceTimer?.invalidate(); advanceTimer = nil
+        nudgeTimer?.invalidate(); nudgeTimer = nil
         playerA?.pause()
         playerB?.pause()
     }

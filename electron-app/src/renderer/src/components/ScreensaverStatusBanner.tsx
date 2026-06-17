@@ -193,7 +193,7 @@ function InfoContent(): ReactNode {
           &ldquo;Turn display off when inactive&rdquo;
         </li>
         <li>
-          Open &mdash; <span className="text-popover-foreground">Wallpaper</span> &rsaquo;
+          Open <span className="text-popover-foreground">Wallpaper</span> &rsaquo;
           &ldquo;Screen Saver&hellip;&rdquo; &rsaquo; &ldquo;Start Screen Saver&hellip;&rdquo;
         </li>
       </ul>

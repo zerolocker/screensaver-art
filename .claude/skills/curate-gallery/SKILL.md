@@ -13,32 +13,32 @@ auto-curation bot. Full docs: `curation/README.md`. Two modes:
 Start the local server in the background and tell the user to flag pieces:
 
 ```bash
-node curation/server.mjs
+node curation/cleanup-tool/server.mjs
 ```
 
 It opens <http://localhost:4321> in their browser. They flag pieces as
-**corrupted** or **undesirable**; flags autosave to `curation/selections.json`.
+**corrupted** or **undesirable**; flags autosave to `curation/cleanup-tool/selections.json`.
 Then stop and wait — they'll come back and ask you to process.
 
 ## Mode B — process the user's flags ("process curation selections")
 
 1. **Delete.** Run the deterministic deletion script:
    ```bash
-   node curation/apply.mjs
+   node curation/cleanup-tool/apply.mjs
    ```
-   It backs up `gallery.json` to `curation/.backups/`, removes every flagged
-   piece, and writes the removed items (with prompts + reason) to
-   `curation/last-removed.json`. If it reports "no flagged items", tell the user
-   to flag some first (Mode A).
+   It backs up `gallery.json` to `curation/cleanup-tool/.backups/`, removes every
+   flagged piece, and writes the removed items (with prompts + reason) to
+   `curation/cleanup-tool/last-removed.json`. If it reports "no flagged items",
+   tell the user to flag some first (Mode A).
 
 2. **Build contact sheets (see the frames).** Run:
    ```bash
-   node curation/contact-sheets.mjs
+   node curation/cleanup-tool/contact-sheets.mjs
    ```
    It extracts the first frame of every **undesirable** piece, tiles them into
-   labeled contact sheets under `curation/.analysis/sheets/`, and writes
-   `curation/.analysis/index.json` (tile number → src/title/prompts). Read the
-   sheet PNGs with vision — 56+ videos are too many to view one at a time, so
+   labeled contact sheets under `curation/cleanup-tool/.analysis/sheets/`, and writes
+   `curation/cleanup-tool/.analysis/index.json` (tile number → src/title/prompts). Read the
+   sheet PNGs with vision — dozens of videos are too many to view one at a time, so
    reading 4-5 tiled sheets is how you actually *see* the pattern.
 
 3. **Analyze prompt + frame together.** For the undesirable items (filter

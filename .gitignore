@@ -17,10 +17,10 @@ node_modules
 /screensaver-helper/.build/
 
 # Gallery curation tool — transient working files (the tool + guidance are committed).
-/curation/selections.json
-/curation/last-removed.json
-/curation/.backups/
-/curation/.analysis/
+/curation/cleanup-tool/selections.json
+/curation/cleanup-tool/last-removed.json
+/curation/cleanup-tool/.backups/
+/curation/cleanup-tool/.analysis/
 
 
 # Python bytecode caches (skills run via python)

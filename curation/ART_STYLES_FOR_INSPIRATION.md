@@ -163,6 +163,7 @@ When you add a new style, append it under the section it best fits.
 - Asante Goldwork
 - Dogon Sculpture
 - Ethiopian Illuminated Manuscript
+- Lalibela Rock-Hewn Church Architecture
 - Māori Whakairo Carving
 - Aboriginal Australian Bark Painting
 - Sepik River Carving

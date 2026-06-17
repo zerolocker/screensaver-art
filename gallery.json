@@ -1262,5 +1262,55 @@
     ],
     "image_prompt": "A monumental Northern Song Dynasty landscape painting, ink and pale washes on aged silk, in the style of Fan Kuan and Guo Xi, filling the entire frame. Towering misty mountain peaks rise through drifting bands of cloud and fog; a thin silver waterfall plunges down a sheer cliff into a quiet river gorge. Wind-bent pine trees cling to rocky ledges, and far below a tiny temple pavilion and a lone traveler with a walking staff cross a wooden footbridge — dwarfed by the immense scale of nature. Atmospheric perspective fading the distant ranges to pale grey, delicate texture strokes (cun) on the rock faces, warm amber-toned silk ground with subtle age, empty sky negative space. Subtle ink tonal gradation, monochrome with faint sepia warmth. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no scroll rollers, the painting fills the frame edge to edge",
     "video_prompt": "Soft bands of mist and cloud drift slowly between the mountain peaks, curling and thinning to reveal and veil the distant ranges. The thin silver waterfall flows steadily down the cliff, its base dissolving into a faint haze of spray above the calm river. The wind-bent pines sway ever so gently. The river surface shimmers faintly. The mountains, rocks, temple, and silk hold perfectly still — only the mist, water, and a whisper of breeze move. Serene, contemplative, timeless atmosphere."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/safavid_falconer_garden_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/safavid_falconer_garden_4k.webp",
+    "title": "Falconer's Garden - Safavid Persian Miniature (AI Animated)",
+    "type": "video",
+    "date": "2026-06-16",
+    "tags": [
+      "Islamic"
+    ],
+    "image_prompt": "A Safavid Persian miniature painting in the style of 16th-century Isfahan Shahnameh manuscripts, rendered as a wide horizontal landscape composition that completely fills the frame with NO paper border and NO cream margins: opaque watercolor with gold leaf and lapis-lazuli pigment, ultra-fine brushwork. A blossoming spring royal garden seen in flattened jewel-toned perspective — a young falconer prince in a jeweled turban and flowing floral-patterned robe stands at left beside an octagonal white-marble fountain with arcing jets of water; flowering almond trees and tall slender cypresses, a dense carpet of tiny multicolored wildflowers covering the whole ground, a meandering stream, courtiers and birds among the trees toward the right. Brilliant turquoise, crimson, emerald and gold palette, delicate gold-outlined clouds across a pale rose sky filling the top. The painted scene reaches all four edges. no paper margin, no border, no frame, no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label, no columns of text, the painting fills the entire frame edge to edge.",
+    "video_prompt": "The arcing jets of the marble fountain ripple and trickle, and the meandering stream flows gently, its surface shimmering and catching the light. A soft spring breeze stirs the blossoming almond branches, sending a scattering of pink petals drifting slowly down across the garden. The tall cypresses and flowers sway ever so slightly. The gold-outlined clouds drift slowly across the pale rose sky. The figures, fountain, pavilions and peacocks hold their painted form perfectly — only the water, drifting petals and a whisper of breeze move. Serene, jewel-like, timeless."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/assyrian_lamassu_duststorm_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/assyrian_lamassu_duststorm_4k.webp",
+    "title": "Lamassu Gateway - Neo-Assyrian Relief (AI Animated)",
+    "type": "video",
+    "date": "2026-06-16",
+    "tags": [
+      "Ancient Near East"
+    ],
+    "image_prompt": "A monumental Neo-Assyrian palace gateway carved from pale alabaster, 7th century BC Nineveh, photographed in-situ at dusk so the carved stone fills the entire frame edge to edge. Two colossal lamassu — human-headed winged bulls with braided beards, horned crowns and finely incised feathers — flank the dark arched portal; the surrounding walls are covered in deeply carved cuneiform inscriptions and low-relief friezes of lion hunts and royal processions. Warm orange torchlight from iron braziers rakes across the carved surface, throwing long shadows into the chisel marks; a deep indigo dusk sky and a haze of windblown desert dust behind. Dramatic raking light, rich earthy ochre and amber palette, weathered ancient stone texture. no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, the carved gateway fills the entire frame edge to edge.",
+    "video_prompt": "The torch flames in the iron braziers gutter and dance in the wind, their warm orange glow flickering and shifting across the carved alabaster surface and the deep chisel marks. Through the dark portal, a veil of windblown desert dust drifts and swirls across the courtyard beyond, glowing faintly in the dusk light. Fine dust and embers stream sideways on the wind. The colossal lamassu, the cuneiform walls and the architecture hold absolutely still and solid — only the fire, the blowing dust and the shifting torchlight move. Dramatic, ancient, atmospheric."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mughal_moonlit_palace_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mughal_moonlit_palace_4k.webp",
+    "title": "Moonlit River Palace - Mughal Miniature (AI Animated)",
+    "type": "video",
+    "date": "2026-06-16",
+    "tags": [
+      "South & Southeast Asian"
+    ],
+    "looping": true,
+    "image_prompt": "A Mughal miniature painting in the refined style of the 17th-century imperial atelier of Shah Jahan, opaque watercolor with gold and fine stippling on paper, rendered as a wide horizontal landscape that completely fills the frame with NO paper border or margins. A moonlit white-marble riverside palace terrace beside the broad calm Yamuna river: slender scalloped arches, pierced jali screens, domed pavilions and cypress-lined formal gardens reflected in the still water. A full silver moon and gold-outlined night clouds hang in a deep indigo sky scattered with stars; warm oil-lamp glow from the arched windows. Delicate jewel-toned palette of ivory, indigo, gold and rose, ultra-fine brushwork, flattened elegant perspective. no paper margin, no border, no frame, no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label, no columns of text, the painting fills the entire frame edge to edge.",
+    "video_prompt": "A gentle seamless cycle that ends exactly where it began. The still surface of the river shimmers softly, the silver moonlight and the palace reflections rippling faintly on the water. A few gold-outlined night clouds drift slowly across the moon and back. The warm oil-lamp glow in the arched windows pulses ever so gently. The cypresses sway almost imperceptibly. The white-marble palace, domes and arches hold perfectly still and solid — only the water's shimmer, the drifting clouds and the soft lamplight move, settling back to the opening frame. Calm, moonlit, timeless."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/lalibela_rock_church_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/lalibela_rock_church_4k.webp",
+    "title": "Rock-Hewn Church - Ethiopian Lalibela (AI Animated)",
+    "type": "video",
+    "date": "2026-06-16",
+    "tags": [
+      "Arts of Africa & Oceania"
+    ],
+    "looping": true,
+    "image_prompt": "The medieval rock-hewn Church of Saint George (Bete Giyorgis) at Lalibela, Ethiopia, 12th-13th century, carved as a single monolithic Greek cross sunk down into the living red volcanic tuff rock, photographed in-situ at golden hour so the carved bedrock fills the entire frame edge to edge. An elevated three-quarter view looking down into the deep rectangular trench surrounding the cruciform church; the cross-shaped roof carved with concentric crosses in relief, tall narrow windows cut into the warm reddish-brown stone walls, weathered hand-chiselled texture. Warm low golden sunlight rakes across one side of the carved rock, casting deep soft shadows into the surrounding pit; a clear pale sky above, a few green shrubs at the rim. Earthy ochre, terracotta and gold palette, ancient sacred atmosphere. no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, the carved rock church fills the entire frame edge to edge.",
+    "video_prompt": "A gentle seamless cycle that ends exactly where it began. Warm golden sunlight slowly shifts and breathes across the carved red rock, the soft shadows in the surrounding trench deepening and easing back. A faint haze of dust and a few high clouds drift slowly across the pale sky. The green shrubs at the rim sway softly in a light breeze, and a single bird glides across the distance and away. The monolithic rock church and the bedrock hold perfectly still and solid — only the light, the drifting haze and the swaying shrubs move, settling back to the opening frame. Serene, ancient, sacred."
   }
 ]

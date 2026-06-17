@@ -2,13 +2,13 @@
 //
 // Zero-dependency Node HTTP server. Serves a local web UI that lets you browse
 // every piece in gallery.json (video + prompts) and flag the ones that look
-// corrupted or ugly. Your flags are written to curation/selections.json, which
-// Claude then processes (delete from gallery.json + refine the nightly-curation
-// prompt guidance).
+// corrupted or ugly. Your flags are written to curation/cleanup-tool/selections.json,
+// which Claude then processes (delete from gallery.json + refine the
+// nightly-curation prompt guidance).
 //
-//   node curation/server.mjs           # serve + open browser
-//   PORT=5000 node curation/server.mjs # custom port
-//   NO_OPEN=1 node curation/server.mjs # don't auto-open the browser
+//   node curation/cleanup-tool/server.mjs           # serve + open browser
+//   PORT=5000 node curation/cleanup-tool/server.mjs # custom port
+//   NO_OPEN=1 node curation/cleanup-tool/server.mjs # don't auto-open the browser
 //
 // Videos stream directly from the public R2 bucket, so nothing is downloaded.
 
@@ -21,7 +21,7 @@ import { platform } from 'node:os';
 import { spawn } from 'node:child_process';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(HERE, '..');
+const ROOT = join(HERE, '..', '..');
 const GALLERY = join(ROOT, 'gallery.json');
 const SELECTIONS = join(HERE, 'selections.json');
 const INDEX = join(HERE, 'index.html');
@@ -90,7 +90,7 @@ server.listen(PORT, () => {
   const link = `http://localhost:${PORT}`;
   console.log(`\n  Gallery Curation Tool running at ${link}`);
   console.log('  Browse the gallery, flag corrupted/ugly pieces, then return to Claude.');
-  console.log('  Your flags autosave to curation/selections.json.\n');
+  console.log('  Your flags autosave to curation/cleanup-tool/selections.json.\n');
   console.log('  Press Ctrl+C to stop.\n');
   if (!process.env.NO_OPEN) openBrowser(link);
 });

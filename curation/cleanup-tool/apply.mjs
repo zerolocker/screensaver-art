@@ -1,16 +1,16 @@
 // Living Art Screensaver — apply curation flags to gallery.json
 //
-// Reads curation/selections.json (written by the curation tool), removes every
-// flagged piece from gallery.json, and records what was removed so Claude can
-// analyse the "undesirable" prompts afterwards. Safe + reversible: the previous
-// gallery.json is backed up under curation/.backups/ first.
+// Reads curation/cleanup-tool/selections.json (written by the curation tool),
+// removes every flagged piece from gallery.json, and records what was removed so
+// Claude can analyse the "undesirable" prompts afterwards. Safe + reversible: the
+// previous gallery.json is backed up under curation/cleanup-tool/.backups/ first.
 //
-//   node curation/apply.mjs
+//   node curation/cleanup-tool/apply.mjs
 //
 // Outputs:
-//   gallery.json                      -> rewritten without the flagged pieces
-//   curation/.backups/gallery.<ts>.json -> backup of the pre-edit gallery
-//   curation/last-removed.json        -> the removed items (with prompts + reason)
+//   gallery.json                                   -> rewritten without the flagged pieces
+//   curation/cleanup-tool/.backups/gallery.<ts>.json -> backup of the pre-edit gallery
+//   curation/cleanup-tool/last-removed.json        -> the removed items (with prompts + reason)
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -18,15 +18,15 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(HERE, '..');
+const ROOT = join(HERE, '..', '..');
 const GALLERY = join(ROOT, 'gallery.json');
 const SELECTIONS = join(HERE, 'selections.json');
 const BACKUPS = join(HERE, '.backups');
 const LAST_REMOVED = join(HERE, 'last-removed.json');
 
 if (!existsSync(SELECTIONS)) {
-  console.error('No curation/selections.json found. Run the tool and flag some pieces first:');
-  console.error('  node curation/server.mjs');
+  console.error('No curation/cleanup-tool/selections.json found. Run the tool and flag some pieces first:');
+  console.error('  node curation/cleanup-tool/server.mjs');
   process.exit(1);
 }
 
@@ -73,5 +73,5 @@ if (missing.length) {
   console.log(`\n  ${missing.length} flagged src not found in gallery.json (already removed?):`);
   for (const m of missing) console.log(`   - ${m.title || m.src}`);
 }
-console.log(`\nBackup:        curation/.backups/gallery.${ts}.json`);
-console.log(`Removed items: curation/last-removed.json  (Claude reads this to refine prompts)`);
+console.log(`\nBackup:        curation/cleanup-tool/.backups/gallery.${ts}.json`);
+console.log(`Removed items: curation/cleanup-tool/last-removed.json  (Claude reads this to refine prompts)`);

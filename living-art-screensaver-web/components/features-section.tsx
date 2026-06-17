@@ -11,7 +11,7 @@ const features = [
   {
     icon: Moon,
     title: "Nightly Curation",
-    description: "A background AI agent acts as your personal museum curator, commissioning new works and adding fresh pieces to your gallery every night.",
+    description: "An AI agent curates like a museum — adding pieces worth hanging to your gallery each night.",
   },
   {
     icon: Layers,

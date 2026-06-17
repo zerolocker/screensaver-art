@@ -20,6 +20,7 @@ This is a pnpm workspace monorepo containing:
 | `living-art-screensaver-web/` | Marketing site + account/billing portal (Next.js) |
 | `index.html` | Standalone web preview — no build step |
 | `gallery.json` | Master playlist — single source of truth for all artworks |
+| `curation/` | The **nightly AI curation agent** (`AUTOMATED_CURATION.md`) that commissions new art, plus the human-in-the-loop cleanup tool that keeps improving it |
 
 ---
 
@@ -37,10 +38,27 @@ The result: only one user-facing installer, and the screensaver process itself i
 
 ## How art gets made
 
-A background agent acts as a nightly museum curator, commissioning new works while you sleep so there's a fresh exhibition every morning. Each piece is generated with:
-- **Text-to-image** for composition and style
-- **Image-to-video** (Veo) to bring the composition to life as a looping MP4
-- Uploaded to Cloudflare R2 and added to `gallery.json`
+The gallery curates itself. A **nightly AI curation agent** — see
+[`curation/AUTOMATED_CURATION.md`](curation/AUTOMATED_CURATION.md) — commissions
+four new pieces every night, so there's a fresh exhibition each morning. For each
+piece it:
+
+1. Picks a theme/style from art history (pre-21st-century).
+2. Generates a 4K still with **text-to-image** (Nano Banana Pro / Gemini 3 Pro Image).
+3. Runs a **vision gate** — it looks at the still and re-rolls anything that reads
+   as a catalog photo, shows AI artifacts, or just wouldn't look good framed,
+   *before* spending a video generation on it.
+4. Animates the still with **image-to-video** (Google Veo 3.1) — some pieces loop
+   seamlessly (same first + last frame), others play once.
+5. Uploads the still + MP4 to **Cloudflare R2** and appends the entry (title, tags,
+   prompts) to `gallery.json`.
+
+The agent is **self-improving**: before writing prompts it reads
+`curation/PROMPT_GUIDANCE.md`, which accumulates quality rules distilled from a
+**human-in-the-loop cleanup pass** ([`curation/README.md`](curation/README.md))
+that flags and removes weak pieces. Every curation round tightens the guidance, so
+the bot produces fewer misses over time. New pieces are **subscriber-only by
+default** — fresh art is the recurring perk that justifies the subscription.
 
 ---
 
@@ -77,9 +95,9 @@ Cloudflare R2          GitHub Pages           Vercel
          └────────────────────────────────────────────┘
 ```
 
-- **Auth:** Supabase email/password, handled in the Electron app. Sessions persist in Chromium localStorage.
+- **Auth:** Passwordless Supabase auth — email one-time code or Apple / Google / Microsoft OAuth (PKCE flow) — handled in the Electron app. Sessions persist in Chromium localStorage.
 - **Billing:** Stripe — $0.99/month, billed quarterly ($2.97 every 3 months, to cut per-transaction fees). Webhooks sync subscription status to Supabase. The website hosts the Stripe portal; the Electron app deep-links to it.
-- **Gallery API:** `GET /api/gallery?collection=classic` — same gating endpoint as before. Free users get up to 100 items, subscribers get the full list. The Electron app downloads whatever the API returns.
+- **Gallery API:** `GET /api/gallery?collection=classic` returns the **full** gallery to everyone, each item carrying a per-item `free` flag — gating is client-side. Non-subscribers can browse every piece but only unlock the ones flagged `free` (currently 50); the Electron app refuses to download locked pieces and evicts any that later become locked. Subscribers unlock the whole gallery.
 - **Cache obfuscation:** every video is XOR'd byte-by-byte with a fixed 32-byte cycling key plus an 8-byte magic header (`LARTV001`), and stored on disk as `<hash>.bin`. The same key + algorithm lives in both `electron-app/src/main/obfuscation.ts` and `screensaver-macos/ScreensaverArtExtension/Constants.swift`. This is not cryptography — anyone willing to disassemble either binary can recover the key. The intent is to deter the casual "drag the MP4 out of the cache and post it" path. Anything stronger would be over-engineered for a $0.99 product.
 
 ---

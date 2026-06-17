@@ -1,13 +1,13 @@
 // Living Art Screensaver — build labeled contact sheets of "undesirable" pieces
 //
 // Extracts the first frame of every piece flagged "undesirable" in
-// curation/selections.json and tiles them into labeled contact sheets, so Claude
-// can review dozens of frames in a handful of images (vision can't take 56 stills
-// one at a time). Pure ffmpeg — no extra deps.
+// curation/cleanup-tool/selections.json and tiles them into labeled contact
+// sheets, so Claude can review dozens of frames in a handful of images (vision
+// can't take dozens of stills one at a time). Pure ffmpeg — no extra deps.
 //
-//   node curation/contact-sheets.mjs
+//   node curation/cleanup-tool/contact-sheets.mjs
 //
-// Outputs under curation/.analysis/:
+// Outputs under curation/cleanup-tool/.analysis/:
 //   frames/NNN.png         one labeled 16:9 frame per undesirable piece
 //   sheets/sheet_NN.png    frames tiled 4x4 (16 per sheet), index burned in
 //   index.json             tile number -> { src, title, image_prompt, video_prompt }
@@ -20,7 +20,7 @@ import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(HERE, '..');
+const ROOT = join(HERE, '..', '..');
 const GALLERY = join(ROOT, 'gallery.json');
 const SELECTIONS = join(HERE, 'selections.json');
 const OUT = join(HERE, '.analysis');
@@ -59,7 +59,7 @@ async function pool(items, n, fn) {
 }
 
 // --- gather undesirable pieces (join selections -> gallery for prompts) ---
-if (!existsSync(SELECTIONS)) { console.error('No curation/selections.json. Run the tool first.'); process.exit(1); }
+if (!existsSync(SELECTIONS)) { console.error('No curation/cleanup-tool/selections.json. Run the tool first.'); process.exit(1); }
 const sel = JSON.parse(await readFile(SELECTIONS, 'utf8'));
 const gallery = JSON.parse(await readFile(GALLERY, 'utf8'));
 const bySrc = new Map(gallery.map((g) => [g.src, g]));
@@ -123,5 +123,5 @@ for (const p of index) {
 }
 await writeFile(join(OUT, 'index.md'), md.join('\n'));
 
-console.log(`\nSheets:  curation/.analysis/sheets/`);
-console.log(`Index:   curation/.analysis/index.json  +  index.md`);
+console.log(`\nSheets:  curation/cleanup-tool/.analysis/sheets/`);
+console.log(`Index:   curation/cleanup-tool/.analysis/index.json  +  index.md`);

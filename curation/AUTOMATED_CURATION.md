@@ -39,7 +39,8 @@ You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't
           if bash curation/with-secrets.sh CLOUDFLARE_API_TOKEN -- npx --yes wrangler r2 object get "screensaver-assets/$key" --file=/dev/null --remote &> /dev/null; then
             echo "Key $key already exists — choose a different name and retry."; return 1
           fi
-          bash curation/with-secrets.sh CLOUDFLARE_API_TOKEN -- npx --yes wrangler r2 object put "screensaver-assets/$key" --file="$f" --remote ${ct:+--content-type "$ct"}
+          local ctflag=(); [ -n "$ct" ] && ctflag=(--content-type "$ct")
+          bash curation/with-secrets.sh CLOUDFLARE_API_TOKEN -- npx --yes wrangler r2 object put "screensaver-assets/$key" --file="$f" --remote "${ctflag[@]}"
         }
         upload "gallery/<descriptive_name>_4k.webp"      "gallery/<descriptive_name>_4k.webp"      "image/webp"
         upload "gallery/<descriptive_name>_animated.mp4" "gallery/<descriptive_name>_animated.mp4"   # use _looping.mp4 for a looping piece

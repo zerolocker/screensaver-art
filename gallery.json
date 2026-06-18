@@ -1414,5 +1414,57 @@
     "looping": true,
     "image_prompt": "The interior of a Nasrid palace courtyard at the Alhambra, Granada, 14th century, in the Islamic Andalusian architectural style. The view fills the entire frame edge to edge: a long still reflecting pool runs down the center of a marble-paved court, flanked by slender white marble columns with finely carved capitals supporting horseshoe arches; the walls above are covered in intricate carved stucco arabesques, sebka lattice, and bands of blue-and-white geometric zellij tilework, with Kufic Arabic calligraphy friezes. Honey-colored late-afternoon sunlight rakes across the carved plaster, the pool mirroring the arches. Warm, serene, perfectly symmetrical, richly detailed real architecture; no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background.",
     "video_prompt": "Gentle ripples drift slowly across the still reflecting pool, making the mirrored arches and columns shimmer and waver softly on the water surface; the water settles back to glassy stillness exactly as it began. Warm late-afternoon sunlight rests steadily on the carved stucco. The marble architecture, columns, arches and tilework stay completely still and hold their form — only the water and its reflection move. Physically plausible, calm, seamless and continuous, no morphing, no melting."
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyoe_storm_wave_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyoe_storm_wave_4k.webp",
+    "title": "Storm Wave - Ukiyo-e Woodblock Print (AI Animated)",
+    "type": "video",
+    "date": "2026-06-18",
+    "tags": [
+      "Japanese"
+    ],
+    "image_prompt": "Edo-period Japanese ukiyo-e woodblock print, ink and mineral pigments on washi paper, in the bold style of Hokusai and Hiroshige: a towering cresting wave with clawing fingers of white foam looms over two slender wooden fishing boats whose crews crouch low against the spray, beneath a pale Prussian-blue dawn sky with a small snow-capped Mount Fuji on the distant horizon; flat planes of deep indigo, beni red and cream, bold black keyblock outlines, visible woodgrain and baren-burnishing texture, subtle print registration. Dramatic, windswept, the great wave fills the frame. no museum, no display case, no glass vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "The great cresting wave surges and curls forward, its white foam fingers reaching and breaking into drifting sea spray; the slender boats pitch and rock on the heaving indigo swell while a stiff wind carries spray across the frame; the distant sky and snow-capped Mount Fuji hold perfectly still. Physically plausible ocean motion only — the woodblock outlines and flat color planes stay crisp and unchanged.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dutch_windmill_river_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dutch_windmill_river_4k.webp",
+    "title": "Windmill on the River - Dutch Golden Age (AI Animated)",
+    "type": "video",
+    "date": "2026-06-18",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "image_prompt": "Dutch Golden Age oil painting on canvas, 17th century, in the manner of Jacob van Ruisdael: a tall weathered brick windmill on a river embankment dominates the frame, its great wooden lattice sails catching warm low evening light; a vast dramatic sky of towering grey-white cumulus clouds fills the upper two-thirds, broken by shafts of golden sunlight; tufts of reed and a small moored rowing boat below, glassy reflective water, earthy ochre, umber and slate-grey palette, visible impasto brushwork and warm aged varnish glow, a very low horizon line. no museum, no display case, no glass vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "The windmill's great lattice sails turn slowly and steadily in the wind; the towering cumulus clouds drift across the sky and their shadows sweep over the land below; the reeds sway gently and the river surface ripples with shifting reflected golden light. Calm, weighty, physically plausible motion — the windmill's brick form, the moored boat, and the oil brushwork stay solid and unchanged.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gothic_rose_window_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gothic_rose_window_4k.webp",
+    "title": "Rose Window - Gothic Stained Glass (AI Animated)",
+    "type": "video",
+    "date": "2026-06-18",
+    "tags": [
+      "Medieval & Byzantine"
+    ],
+    "image_prompt": "A monumental Gothic cathedral rose window, 13th century in the style of Chartres and Sainte-Chapelle, seen straight-on from inside the dim stone nave so the circular stained-glass window fills the entire frame edge to edge: intricate radiating stone tracery divides hundreds of jewel-like glass panes — deep cobalt blue, ruby red, emerald green and amber gold — arranged in rosettes and lancets depicting haloed saints and medallions; brilliant exterior daylight pours through, casting saturated colored light; visible dark leaded cames, painted grisaille glass detail, the rich uneven glow and tiny bubbles of medieval pot-metal glass. no museum, no display case, no glass vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "Shafts of sunlight slowly brighten then dim across the stained glass as a cloud drifts past outside, making the jewel-toned cobalt, ruby and gold panes glow and fade while the pools of cast colored light shift gently across the stone floor, then settle back exactly to the opening light. Gentle, physically plausible change of light only — the leaded glass, tracery and stone hold their form.",
+    "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/artdeco_lacquer_fountain_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/artdeco_lacquer_fountain_4k.webp",
+    "title": "Gilded Fountain - Art Deco Lacquer (AI Animated)",
+    "type": "video",
+    "date": "2026-06-18",
+    "tags": [
+      "Modern"
+    ],
+    "image_prompt": "A 1920s Art Deco lacquered folding-screen panel, gold leaf and colored lacquer on wood in the manner of Jean Dunand and Jean Dupas: a stylized central fountain of cascading geometric water rising into radiating gilt sunburst rays, flanked by sleek symmetrical stylized leaping gazelles and fan-shaped stylized foliage; deep black lacquer ground, burnished gold leaf, jade-green and coral accents, crisp streamlined Deco geometry, subtle crushed-eggshell inlay texture and the soft sheen of polished urushi lacquer. Decorative, elegant, the design fills the frame. no museum, no display case, no glass vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "A soft highlight of warm light glides slowly across the burnished gold leaf, making the gilt sunburst rays and the stylized cascading fountain shimmer and catch the light, then drift back exactly to the start; the deep lacquer surface, the leaping gazelles and the fan foliage all hold their form perfectly still. Gentle, elegant motion in the play of light only — no shape changes.",
+    "looping": true
   }
 ]

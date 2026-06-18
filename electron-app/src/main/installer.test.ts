@@ -80,6 +80,7 @@ describe('installer', () => {
     runImpl = defaultRunImpl
     _testHooks.spawn = fakeSpawn as unknown as typeof realSpawn
     _testHooks.run = fakeRun as unknown as typeof realRun
+    _testHooks.confirmDelayMs = 0 // don't actually sleep through the confirm poll
     setPlatform('darwin')
     if (existsSync(APPEX())) rmSync(APPEX(), { recursive: true, force: true })
   })
@@ -223,7 +224,7 @@ describe('installer', () => {
       expect(runCalls.some((c) => c.cmd === HELPER() && c.args[0] === 'register')).toBe(false)
     })
 
-    it('re-registers when the bundled version changed (app updated)', async () => {
+    it('re-registers when the bundled version changed (app updated), forcing lsregister first', async () => {
       plantBundle(APPEX())
       withVersion('1.0.4', (cmd, args) =>
         cmd === HELPER() && (args[0] === 'find' || args[0] === 'register')
@@ -235,6 +236,42 @@ describe('installer', () => {
       expect(r.version).toBe('1.0.4')
       expect(spawnCalls.some((c) => c.cmd === 'sh')).toBe(true)
       expect(runCalls.some((c) => c.cmd === HELPER() && c.args[0] === 'register')).toBe(true)
+      // The post-update LaunchServices re-seed: lsregister -f <app> runs before register.
+      const ls = runCalls.find((c) => c.cmd.endsWith('/lsregister'))
+      expect(ls).toBeTruthy()
+      expect(ls!.args[0]).toBe('-f')
+      expect(typeof ls!.args[1]).toBe('string')
+      // lsregister must run BEFORE the helper register call.
+      const lsIdx = runCalls.findIndex((c) => c.cmd.endsWith('/lsregister'))
+      const regIdx = runCalls.findIndex((c) => c.cmd === HELPER() && c.args[0] === 'register')
+      expect(lsIdx).toBeGreaterThanOrEqual(0)
+      expect(lsIdx).toBeLessThan(regIdx)
+    })
+
+    // The real-world post-auto-update bug: `pluginkit -a` exits 0 but pkd only
+    // finishes registering ~1s later, so the helper's immediate find misses it.
+    // We must poll `find` and succeed once it lands, instead of erroring out.
+    it('confirms via find polling when pluginkit -a registers asynchronously', async () => {
+      plantBundle(APPEX())
+      let findCalls = 0
+      withVersion('1.0.5', (cmd, args) => {
+        if (cmd === HELPER() && args[0] === 'register') {
+          // The async miss: -a exited 0 but the immediate re-query saw nothing.
+          return { code: 0, stdout: '{"registered":false,"path":null}', stderr: '' }
+        }
+        if (cmd === HELPER() && args[0] === 'find') {
+          findCalls += 1
+          // Initial status check + first poll miss; pkd has it by the 3rd find.
+          return findCalls >= 3
+            ? { code: 0, stdout: foundJson(), stderr: '' }
+            : { code: 0, stdout: '{"registered":false,"path":null}', stderr: '' }
+        }
+        return null
+      })
+      const r = await ensureRegistered(null)
+      expect(r.ok).toBe(true)
+      expect(r.registered).toBe(true)
+      expect(r.didRegister).toBe(true)
     })
 
     it('reports failure when the helper does not register', async () => {

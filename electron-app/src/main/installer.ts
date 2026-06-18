@@ -37,10 +37,27 @@ function defaultRun(cmd: string, args: ReadonlyArray<string>): Promise<RunResult
 // propagate transitively into sibling modules under vitest, so an override
 // hook is the simplest reliable seam. `spawn` is fire-and-forget (killall,
 // open); `run` captures stdout/stderr/exit code (helper calls).
-export const _testHooks: { spawn: typeof spawn; run: typeof defaultRun } = {
+export const _testHooks: {
+  spawn: typeof spawn
+  run: typeof defaultRun
+  // `pluginkit -a` registers ASYNCHRONOUSLY — poll `find` this many times, this
+  // far apart, before declaring failure. Overridable so tests don't actually
+  // sleep through the poll.
+  confirmRetries: number
+  confirmDelayMs: number
+} = {
   spawn,
   run: defaultRun,
+  confirmRetries: 6,
+  confirmDelayMs: 800,
 }
+
+const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
+
+// Force LaunchServices to re-register a bundle (the lsregister tool lives deep in
+// CoreServices and has no PATH entry).
+const LSREGISTER =
+  '/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister'
 
 // All pluginkit work is delegated to the PaperSaver helper. This wraps the
 // canonical invocation so every call site (status/find/register/unregister/
@@ -190,10 +207,41 @@ async function bundledAppexVersion(): Promise<string | null> {
   }
 }
 
-// Register the appex via the PaperSaver helper. The helper runs pluginkit AND
-// re-queries to confirm the extension actually landed (pluginkit -a can report
-// odd exit states), reporting back `{ registered, path }`. Trust that verified
-// result rather than the raw exit code.
+// The appex lives at <App>.app/Contents/PlugIns/<name>.appex — strip the three
+// trailing path components to get the containing .app bundle.
+function appBundlePathFromAppex(appex: string): string {
+  return join(appex, '..', '..', '..')
+}
+
+// Force LaunchServices to re-register the app bundle. After a Squirrel.Mac
+// in-place auto-update, LaunchServices can keep the PRE-update bundle cached at
+// this path, so pkd never re-discovers the (new) embedded appex and `pluginkit
+// -a` silently no-ops (exit 0, nothing registered). That's the root cause of
+// "Failed to register the screensaver" seen ONLY after an update, never on a
+// fresh install (where launching the app already seeded LaunchServices). Best
+// effort — a failure here shouldn't block the register attempt.
+async function forceLaunchServicesRegister(appPath: string): Promise<void> {
+  try {
+    const { code, stderr } = await _testHooks.run(LSREGISTER, ['-f', appPath])
+    log.info('installer', 'lsregister -f app bundle', {
+      appPath,
+      code,
+      stderr: stderr.trim() || undefined,
+    })
+  } catch (err) {
+    log.warn('installer', 'lsregister failed (continuing)', {
+      error: err instanceof Error ? err.message : String(err),
+    })
+  }
+}
+
+// Register the appex via the PaperSaver helper, then CONFIRM it actually landed.
+// `pluginkit -a` is asynchronous: it exits 0 immediately, but pkd only finishes
+// creating the plugin record ~1s later (after LaunchServices re-seeds the bundle
+// — pronounced right after an in-place auto-update). The helper's own immediate
+// re-query therefore often misses it, so we poll `find` a few times before
+// giving up. This both fixes the real post-update failure AND a false-negative
+// banner where registration had in fact succeeded a beat later.
 async function registerAppex(appex: string): Promise<{ ok: boolean; error?: string }> {
   const { code, stdout, stderr } = await runHelper(['register', appex])
   let registered = false
@@ -202,14 +250,23 @@ async function registerAppex(appex: string): Promise<{ ok: boolean; error?: stri
   } catch {
     registered = false
   }
+  for (let i = 0; !registered && i < _testHooks.confirmRetries; i++) {
+    await delay(_testHooks.confirmDelayMs)
+    registered = (await queryRegistration()).registered
+  }
   if (!registered) {
-    // Surface the helper's actual report (not just "exit 0") — the most common
-    // cause is a broken appex code signature, which pluginkit refuses silently.
+    // Surface the helper's actual report (not just "exit 0") — other causes
+    // include a broken appex code signature, which pluginkit refuses silently.
     const detail = stderr.trim() || stdout.trim() || `helper exit ${code}`
-    log.error('installer', 'register: not confirmed', { code, stdout: stdout.trim(), stderr: stderr.trim() })
+    log.error('installer', 'register: not confirmed after polling', {
+      code,
+      stdout: stdout.trim(),
+      stderr: stderr.trim(),
+      retries: _testHooks.confirmRetries,
+    })
     return { ok: false, error: `Failed to register the screensaver (${detail}).` }
   }
-  log.info('installer', 'register: confirmed', { stdout: stdout.trim() })
+  log.info('installer', 'register: confirmed')
   return { ok: true }
 }
 
@@ -261,6 +318,10 @@ export async function ensureRegistered(lastRegisteredVersion: string | null): Pr
     appex, version, lastRegisteredVersion, wasRegistered: registered,
   })
   await killScreensaverProcesses()
+  // Make LaunchServices re-scan the (possibly just-updated) app bundle BEFORE we
+  // ask pluginkit to register the embedded appex — otherwise `pluginkit -a`
+  // no-ops on the post-auto-update launch (see forceLaunchServicesRegister).
+  await forceLaunchServicesRegister(appBundlePathFromAppex(appex))
   const result = await registerAppex(appex)
   if (!result.ok) {
     return { ok: false, error: result.error, registered: false, version, didRegister: false }

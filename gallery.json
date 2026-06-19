@@ -1466,5 +1466,57 @@
     "image_prompt": "A 1920s Art Deco lacquered folding-screen panel, gold leaf and colored lacquer on wood in the manner of Jean Dunand and Jean Dupas: a stylized central fountain of cascading geometric water rising into radiating gilt sunburst rays, flanked by sleek symmetrical stylized leaping gazelles and fan-shaped stylized foliage; deep black lacquer ground, burnished gold leaf, jade-green and coral accents, crisp streamlined Deco geometry, subtle crushed-eggshell inlay texture and the soft sheen of polished urushi lacquer. Decorative, elegant, the design fills the frame. no museum, no display case, no glass vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
     "video_prompt": "A soft highlight of warm light glides slowly across the burnished gold leaf, making the gilt sunburst rays and the stylized cascading fountain shimmer and catch the light, then drift back exactly to the start; the deep lacquer surface, the leaping gazelles and the fan foliage all hold their form perfectly still. Gentle, elegant motion in the play of light only — no shape changes.",
     "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/joseon_irworobongdo_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/joseon_irworobongdo_4k.webp",
+    "title": "Sun Moon and Five Peaks - Joseon Irworobongdo (AI Animated)",
+    "type": "video",
+    "date": "2026-06-19",
+    "tags": [
+      "Chinese & Korean"
+    ],
+    "image_prompt": "A Joseon dynasty Irworobongdo court folding screen painting, mineral pigments on silk, late 18th century Korea. A strictly symmetrical sacred landscape filling the whole composition: five red-and-green peaks rising across the full width, a white full moon on the left and a red sun on the right set in a deep ultramarine sky, two cascading white waterfalls tumbling down the central mountains into rolling blue-green waves below, flanked by two stylized pine trees with coral-red trunks and emerald foliage. Bold flat mineral colors — malachite green, azurite blue, cinnabar red — heavy confident black outlines, gold-flecked silk ground, formal hieratic court composition. The painting fills the entire frame edge to edge. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "The two central waterfalls flow steadily downward in fine white threads, the blue-green waves along the base roll and curl gently, a faint gold shimmer of light drifts softly across the silk; the peaks, sun, moon and pine trees hold perfectly still. Calm, stately, physically plausible water motion only — nothing morphs or melts.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/aboriginal_bark_barramundi_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/aboriginal_bark_barramundi_4k.webp",
+    "title": "Barramundi Dreaming - Aboriginal Bark Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-06-19",
+    "tags": [
+      "Arts of Africa & Oceania"
+    ],
+    "image_prompt": "An Arnhem Land Aboriginal bark painting, natural ochre and charcoal pigments on a sheet of stringybark, traditional x-ray style, northern Australia. A large barramundi fish at the centre rendered in fine cross-hatched rarrk linework with its skeleton and internal organs shown inside the body, surrounded by smaller fish, waterlilies, turtles and ancestral dotted patterning. Warm red and yellow ochre, white pipeclay and black pigment against a deep red-brown bark ground. Dense fine parallel cross-hatching fills every form, the slightly irregular bark surface and fiber texture visible throughout, hand-painted and earthy. The painting fills the entire frame edge to edge. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "Warm low firelight flickers gently across the ochre bark surface, making the white cross-hatching shimmer and the rough bark fiber catch the glow, soft shadows breathing slowly across the painting; the painted barramundi, turtles, fish and waterlilies all hold their form completely. Only firelight and subtle shadow move — nothing morphs or melts.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/khmer_apsara_relief_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/khmer_apsara_relief_4k.webp",
+    "title": "Apsara Dancers - Khmer Angkor Relief (AI Animated)",
+    "type": "video",
+    "date": "2026-06-19",
+    "tags": [
+      "South & Southeast Asian"
+    ],
+    "image_prompt": "A Khmer bas-relief carved in warm grey sandstone, an Angkor Wat gallery wall, early 12th century Cambodia. A row of celestial apsara dancers in elaborate pleated sampot skirts and tall tiered crowns, carved in shallow relief with deep crisp shadows, their hands raised in graceful mudras, framed above and below by friezes of lotus-bud and floral scrollwork. Weathered sandstone with patches of lichen, mineral staining and centuries of age, lit by warm raking torchlight from one side that grazes across the carving and deepens every chiselled groove. The carved stone wall fills the entire frame edge to edge. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "Warm torchlight flickers and wavers across the sandstone relief, the shadows in the carved grooves gently deepening and softening, faint dust motes drifting slowly through the warm light, then everything settles back exactly to the opening glow; the carved stone apsaras and floral friezes hold their form completely, unmoving stone. Only firelight and drifting dust move — nothing morphs or melts.",
+    "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/babylonian_ishtar_dragon_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/babylonian_ishtar_dragon_4k.webp",
+    "title": "Striding Dragon - Babylonian Ishtar Gate (AI Animated)",
+    "type": "video",
+    "date": "2026-06-19",
+    "tags": [
+      "Ancient Near East"
+    ],
+    "image_prompt": "A Neo-Babylonian glazed-brick relief from the Ishtar Gate, 6th century BC Babylon. A single striding mushhushshu dragon shown in profile in molded relief — slender scaled body, long serpent neck, horned head with forked tongue, lion forepaws and eagle-talon hind legs — rendered in golden-yellow and white glaze against a brilliant deep lapis-lazuli blue glazed-brick ground, bordered above and below by friezes of white-and-gold rosettes. The molded brick surface catches warm low raking sunlight, the colored glaze gleaming, the horizontal mortar lines crisp and regular, slight age and salt-bloom on a few bricks. The glazed brick wall fills the entire frame edge to edge. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "Warm low sunlight slowly brightens and glides across the glazed-brick wall, the golden-yellow glaze on the dragon and the rosettes gleaming and catching the light, a faint heat shimmer rising off the bricks, then the light eases back exactly to the opening glow; the molded brick dragon and rosette friezes hold their form completely, solid glazed brick. Only light and gentle shimmer move — nothing morphs or melts.",
+    "looping": true
   }
 ]

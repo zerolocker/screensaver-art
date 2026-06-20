@@ -1518,5 +1518,57 @@
     "image_prompt": "A Neo-Babylonian glazed-brick relief from the Ishtar Gate, 6th century BC Babylon. A single striding mushhushshu dragon shown in profile in molded relief — slender scaled body, long serpent neck, horned head with forked tongue, lion forepaws and eagle-talon hind legs — rendered in golden-yellow and white glaze against a brilliant deep lapis-lazuli blue glazed-brick ground, bordered above and below by friezes of white-and-gold rosettes. The molded brick surface catches warm low raking sunlight, the colored glaze gleaming, the horizontal mortar lines crisp and regular, slight age and salt-bloom on a few bricks. The glazed brick wall fills the entire frame edge to edge. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
     "video_prompt": "Warm low sunlight slowly brightens and glides across the glazed-brick wall, the golden-yellow glaze on the dragon and the rosettes gleaming and catching the light, a faint heat shimmer rising off the bricks, then the light eases back exactly to the opening glow; the molded brick dragon and rosette friezes hold their form completely, solid glazed brick. Only light and gentle shimmer move — nothing morphs or melts.",
     "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/roman_garden_fresco_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/roman_garden_fresco_4k.webp",
+    "title": "Painted Garden - Roman Villa Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-06-20",
+    "tags": [
+      "Greek & Roman"
+    ],
+    "image_prompt": "An ancient Roman garden fresco in the style of the painted garden room of the Villa of Livia at Prima Porta, 1st century BC, buon fresco on lime plaster. A lush enclosed garden seen edge to edge and filling the entire frame: fruit-laden quince and pomegranate trees, oleander and rose bushes, irises and ferns in the foreground, a low painted wicker lattice fence near the bottom, small songbirds perched among the green branches, against a luminous pale-blue sky. Soft naturalistic Roman wall-painting palette of deep greens, ochres and muted blues, gentle warm afternoon daylight, fine plaster texture with faint age craquelure. Immersive, atmospheric, painterly. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "A gentle warm breeze drifts through the painted garden: leaves and rose petals quiver softly, the tall purple irises sway, and one or two small songbirds flit between the branches and ruffle their feathers. Soft shifting afternoon sunlight dapples the foliage. The fresco surface itself stays perfectly still and flat — only the depicted plants, light and birds move, calm and natural.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/egyptian_marsh_fowling_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/egyptian_marsh_fowling_4k.webp",
+    "title": "Marsh Fowling - Ancient Egyptian Wall Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-06-20",
+    "tags": [
+      "Egyptian"
+    ],
+    "image_prompt": "An ancient Egyptian New Kingdom tomb wall painting of a fowling scene in the Nile marshes, in the style of the painted plaster fragments from the Tomb of Nebamun, c. 1350 BC. Tempera on lime-plaster, flat registered Egyptian style with bold outlines. The frame is filled edge to edge with a dense thicket of tall green papyrus reeds rising from rippling blue-green Nile water, painted ducks, geese and a heron taking flight among the reeds, lotus flowers and butterflies, with the characteristic Egyptian palette of ochre yellow, Egyptian blue, malachite green and terracotta red. Fine cracked plaster surface, warm even tomb lighting. Immersive, decorative, the painting fills the entire frame. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background.",
+    "video_prompt": "The painted marsh comes gently to life: the tall papyrus reeds sway softly in a river breeze, the heron beats its wings and glides slowly upward across the scene, the ducks ruffle their feathers and a couple of butterflies flutter, while the blue Nile water at the bottom ripples quietly. The cracked plaster wall stays perfectly flat and still — only the depicted reeds, birds and water move, calm and even.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/teotihuacan_tlalocan_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/teotihuacan_tlalocan_4k.webp",
+    "title": "Paradise of Tlaloc - Teotihuacan Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-06-20",
+    "tags": [
+      "Arts of the Americas"
+    ],
+    "image_prompt": "An ancient Teotihuacan mural fresco in the style of the Tepantitla 'Paradise of Tlaloc' wall paintings, central Mexico c. 500 AD. Mineral pigments on lime plaster, flat stylized Mesoamerican profile style with bold dark outlines. The frame is filled edge to edge with a great flowering sacred mountain-tree at the center, streams of blue-green water flowing down and branching into rivers across the lower scene, lush stylized vegetation, butterflies and small flowers and seeds scattered in the water. Characteristic Teotihuacan palette dominated by deep terracotta-red ground with jade green, ochre yellow and turquoise blue. Fine cracked plaster surface, warm even daylight. Decorative, immersive, the painting fills the entire frame. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background.",
+    "video_prompt": "A calm, seamless living-mural loop: the turquoise streams of water flow and ripple gently downward through the scene, small painted flowers and foliage sway softly, and a few butterflies drift and flutter between the blossoms. Warm steady daylight. The cracked plaster wall stays perfectly flat and still; only the depicted water, plants and butterflies move, gently and cyclically, settling back exactly to the opening so the motion loops seamlessly.",
+    "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ottoman_iznik_courtyard_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ottoman_iznik_courtyard_4k.webp",
+    "title": "Tiled Courtyard - Ottoman Iznik Fountain (AI Animated)",
+    "type": "video",
+    "date": "2026-06-20",
+    "tags": [
+      "Islamic"
+    ],
+    "image_prompt": "The serene tiled courtyard of a 16th-century Ottoman palace, in the style of classical Iznik ceramic decoration from the age of Suleiman the Magnificent. The frame is filled edge to edge with a tranquil interior court: walls sheathed in brilliant Iznik tile panels of cobalt-blue, turquoise, sage-green and bole-red tulips, carnations, hyacinths and slender cypress trees on a white ground, framed by a carved white marble arcade with pointed arches. At the center a low octagonal white marble fountain basin holds still water with a gentle central spout, the water surface mirroring the tilework. Soft warm daylight from above, fine glazed sheen on the tiles, subtle marble veining. Immersive architectural interior, the scene fills the entire frame. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background.",
+    "video_prompt": "A calm, seamless loop in the tiled courtyard: the central marble fountain trickles gently, sending soft concentric ripples across the still water of the basin, and the mirrored reflection of the Iznik tiles shimmers and sways on the moving surface. A faint shift of warm daylight glints on the glazed tiles. The marble arcade and tile walls stay perfectly still and solid; only the water and its reflection move, gently and cyclically, settling back exactly to the opening so the motion loops seamlessly.",
+    "looping": true
   }
 ]

@@ -193,6 +193,7 @@ When you add a new style, append it under the section it best fits.
 - Assyrian bas-relief
 - Achaemenid Persian metalwork
 - Sasanian Silverwork
+- Roman Garden Fresco
 - Hellenistic Mosaic
 - Macedonian Court Mosaic
 - Etruscan Tomb Painting

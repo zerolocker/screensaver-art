@@ -1570,5 +1570,57 @@
     "image_prompt": "The serene tiled courtyard of a 16th-century Ottoman palace, in the style of classical Iznik ceramic decoration from the age of Suleiman the Magnificent. The frame is filled edge to edge with a tranquil interior court: walls sheathed in brilliant Iznik tile panels of cobalt-blue, turquoise, sage-green and bole-red tulips, carnations, hyacinths and slender cypress trees on a white ground, framed by a carved white marble arcade with pointed arches. At the center a low octagonal white marble fountain basin holds still water with a gentle central spout, the water surface mirroring the tilework. Soft warm daylight from above, fine glazed sheen on the tiles, subtle marble veining. Immersive architectural interior, the scene fills the entire frame. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background.",
     "video_prompt": "A calm, seamless loop in the tiled courtyard: the central marble fountain trickles gently, sending soft concentric ripples across the still water of the basin, and the mirrored reflection of the Iznik tiles shimmers and sways on the moving surface. A faint shift of warm daylight glints on the glazed tiles. The marble arcade and tile walls stay perfectly still and solid; only the water and its reflection move, gently and cyclically, settling back exactly to the opening so the motion loops seamlessly.",
     "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dunhuang_apsaras_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dunhuang_apsaras_4k.webp",
+    "title": "Flying Apsaras - Dunhuang Mogao Cave Mural (AI Animated)",
+    "type": "video",
+    "date": "2026-06-21",
+    "tags": [
+      "Chinese & Korean"
+    ],
+    "image_prompt": "A Tang-dynasty Buddhist mural painted on the plaster wall of a Dunhuang Mogao grotto, filling the entire frame edge to edge. Graceful flying apsaras (feitian) soar across swirling cloud-bands, their long silk ribbons and scarves streaming behind them, scattered lotus blossoms and floral medallions around them. Painted in mineral pigments — deep azurite blue, malachite green, cinnabar red and warm ochre — with worn gold-leaf halos; the ancient lime-plaster surface is finely cracked and softly weathered. Lit by the warm, low flicker of butter-lamp light raking across the wall. Flat, reverent Buddhist cave-painting style, rich and luminous. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "The butter-lamp flame in the lower corner flickers gently, casting warm light that slowly breathes and shifts across the ancient painted cave wall; a thin wisp of incense smoke drifts upward and curls along the plaster. The mural itself stays completely still and solid — only the firelight, the soft glow, and the rising smoke move. Quiet, reverent, candle-lit atmosphere.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/kangra_monsoon_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/kangra_monsoon_4k.webp",
+    "title": "Monsoon Garden - Pahari Kangra Miniature (AI Animated)",
+    "type": "video",
+    "date": "2026-06-21",
+    "tags": [
+      "South & Southeast Asian"
+    ],
+    "image_prompt": "A late-18th-century Pahari miniature painting in the Kangra school style, opaque watercolour and gold on paper, filling the frame edge to edge within a fine floral-patterned border. A lush royal pleasure garden at the height of the monsoon: a white marble pavilion with scalloped cusped arches sits among flowering creepers, plantain and mango trees and a lotus pond, while iridescent blue peacocks perch on the terrace with fanned tails. Above, a band of dark indigo storm clouds rolls across the sky, threaded with a delicate forked gold lightning bolt and fine silver streaks of falling rain. Painted in luminous mineral pigments — emerald green, lapis blue, vermilion, saffron — with crisp fine outlines and delicate gold highlights, the flat jewel-like decorative idiom of Kangra court painting. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "A living monsoon scene: fine silver rain falls steadily across the garden, the dark indigo storm clouds drift slowly across the top of the sky, and the gold forked lightning flashes once or twice, briefly lighting the clouds. On the lotus pond below, gentle ripples spread and the lotus blossoms bob softly as raindrops strike the water. The marble pavilion, the peacocks and the trees stay solid and still, painted-flat; only the rain, the drifting clouds, the lightning flash and the water ripples move. Physically real weather, the jewel-like painting holds its form.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/rinpa_irises_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/rinpa_irises_4k.webp",
+    "title": "Irises on Gold - Rinpa Folding Screen (AI Animated)",
+    "type": "video",
+    "date": "2026-06-21",
+    "tags": [
+      "Japanese"
+    ],
+    "image_prompt": "An Edo-period Japanese Rinpa school folding screen (byōbu) in the manner of Ogata Kōrin, painted with mineral pigments and gold leaf, filling the frame edge to edge. Bold clusters of deep blue-violet irises (kakitsubata) in full bloom rise on tall vivid malachite-green blade leaves, arranged in a sweeping rhythmic procession across a continuous flat gold-leaf ground that shows faint horizontal leaf-seams and a soft metallic sheen. Flat, decorative, asymmetric composition with no horizon and no sky — pure gold and irises. Rich azurite-blue and malachite-green petals and leaves, crisp confident brushwork, the luxurious lacquer-and-gold aesthetic of Rinpa court screens. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "A soft seamless loop: a gentle breeze drifts through the irises, swaying the tall green blade-leaves and nodding the blue-violet blossoms ever so slightly, while a faint warm shimmer of light glides slowly across the gold-leaf ground. The motion is calm and rhythmic and settles back exactly to the opening pose so it loops perfectly. The flat decorative painting holds its form — only the gentle sway of the flowers and the soft gleam on the gold move.",
+    "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dutch_floral_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dutch_floral_4k.webp",
+    "title": "Flowers by Candlelight - Dutch Golden Age Still Life (AI Animated)",
+    "type": "video",
+    "date": "2026-06-21",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "image_prompt": "A 17th-century Dutch Golden Age flower still life in the manner of Jan Davidsz de Heem, oil on oak panel, a WIDE HORIZONTAL composition that completely fills a 16:9 frame edge to edge with a single continuous dark background reaching all four edges. A lavish low, spreading bouquet — striped tulips, blush cabbage roses, a white peony, blue irises, orange marigolds, carnations and trailing forget-me-nots — bursts sideways from a glass roemer set on a dark stone ledge that runs the full width of the frame, flowers and curling leaves reaching out to left and right and a few fallen petals, a snail, dewdrops and a single resting butterfly on the ledge. Deep continuous near-black background everywhere behind the flowers, dramatic warm chiaroscuro raking light from the upper left, jewel-like saturated colour, exquisitely fine Old Master brushwork and varnished glow. Single unified painting, no inner frame, no border, no duplicated or blurred background, the bouquet and dark ground fill the entire frame. no museum, no display case, no glass vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background.",
+    "video_prompt": "A quiet seamless loop in candlelit Old Master style: the warm raking light slowly breathes brighter and softer across the petals as if a distant candle flickers, gently revealing and shading the roses, tulips and peony, while one or two blossoms nod almost imperceptibly and a single small dewdrop glints. The motion is hushed and cyclic and settles back exactly to the opening so it loops perfectly. The bouquet and dark background hold their form — only the soft shifting light and the faint nod of the flowers move; nothing wilts, blooms, or grows.",
+    "looping": true
   }
 ]

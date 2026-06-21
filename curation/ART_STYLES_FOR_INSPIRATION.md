@@ -120,6 +120,7 @@ When you add a new style, append it under the section it best fits.
 ## World & regional traditions (Asian, Islamic, African, Oceanic, indigenous, folk)
 
 - Chinese ink painting
+- Dunhuang Mogao Cave Mural
 - Sumi-e Ink Wash
 - Song Dynasty Landscape Painting
 - Yuan Dynasty Landscape

@@ -1,0 +1,32 @@
+{
+  "shape": "package",
+  "pkg": "living-art-ui",
+  "globalName": "LivingArt",
+  "projectId": "b8825019-8e89-4c5f-8675-c12cd23d9910",
+  "readmeHeader": ".design-sync/conventions.md",
+  "entry": "living-art-screensaver-web/.lart-ds-synth/src/all.ts",
+  "tsconfig": "../tsconfig.json",
+  "cssEntry": "ds-styles.css",
+  "extraFonts": "../../.design-sync/fonts/brand-fonts.css",
+  "dtsPropsFor": {
+    "SubscriptionCard": "subscription: { id?: string; user_id?: string; status: \"active\" | \"trialing\" | \"inactive\" | \"cancelled\" | \"past_due\"; current_period_start: string | null; current_period_end: string | null } | null; /** Called when the user clicks \"Subscribe\"; host handles Stripe checkout. */ onSubscribe: () => Promise<{ error?: string }>; /** Called when the user clicks \"Manage Subscription\"; host opens the Stripe portal. */ onManage: () => Promise<{ error?: string }>",
+    "ChartContainer": "className?: string; id?: string; style?: React.CSSProperties; children?: React.ReactNode; /** Maps each data key to its label/icon/color (drives legend + tooltip + CSS color vars). */ config: Record<string, { label?: React.ReactNode; icon?: React.ComponentType; color?: string; theme?: Record<string, string> }>",
+    "Carousel": "className?: string; id?: string; style?: React.CSSProperties; children?: React.ReactNode; orientation?: \"horizontal\" | \"vertical\"; /** Embla options. */ opts?: Record<string, unknown>; /** Embla plugins. */ plugins?: unknown[]; /** Receives the Embla API once mounted. */ setApi?: (api: unknown) => void",
+    "OtpForm": "/** Request a one-time code for this email. */ onRequestCode: (email: string) => Promise<{ error?: string }>; /** Verify the emailed code. */ onVerify: (data: { email: string; code: string }) => Promise<{ error?: string }>; /** Back to the previous screen. */ onBack?: () => void; /** Brand title shown at the top. */ title?: string",
+    "OAuthButtons": "/** Start sign-in with the chosen provider (opens the system browser). */ onSelect: (provider: \"apple\" | \"google\" | \"azure\") => void",
+    "FeedbackForm": "/** Heading rendered above the form. */ title?: string; /** Sub-heading. */ description?: string; /** Textarea placeholder. */ placeholder?: string; /** Submit handler; receives the message and an optional resized image. */ onSubmit: (data: { message: string; image: unknown }) => Promise<{ error?: string; id?: string }>"
+  },
+  "overrides": {
+    "Dialog": { "cardMode": "single", "viewport": "600x460" },
+    "AlertDialog": { "cardMode": "single", "viewport": "600x440" },
+    "Drawer": { "cardMode": "single", "viewport": "560x460" },
+    "Sheet": { "cardMode": "single", "viewport": "660x460" },
+    "Popover": { "cardMode": "single", "viewport": "440x340" },
+    "HoverCard": { "cardMode": "single", "viewport": "460x300" },
+    "Tooltip": { "cardMode": "single", "viewport": "380x220" },
+    "DropdownMenu": { "cardMode": "single", "viewport": "440x380" },
+    "Menubar": { "cardMode": "single", "viewport": "540x340" },
+    "Select": { "cardMode": "single", "viewport": "440x380" },
+    "NavigationMenu": { "cardMode": "single", "viewport": "600x340" }
+  }
+}

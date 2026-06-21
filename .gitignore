@@ -26,3 +26,9 @@ node_modules
 # Python bytecode caches (skills run via python)
 __pycache__/
 *.pyc
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules
+living-art-screensaver-web/.lart-ds-synth/

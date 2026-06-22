@@ -154,6 +154,7 @@ When you add a new style, append it under the section it best fits.
 - Islamic geometric art
 - Fatimid Rock Crystal Carving
 - Persian Safavid Miniature
+- Safavid Muqarnas Dome (Tilework)
 - Ottoman Iznik Ceramics
 - Timurid Manuscript Illumination
 - Mamluk Metalwork
@@ -168,6 +169,7 @@ When you add a new style, append it under the section it best fits.
 - Lalibela Rock-Hewn Church Architecture
 - Māori Whakairo Carving
 - Aboriginal Australian Bark Painting
+- Aboriginal Rock Art (Kakadu / Arnhem Land)
 - Sepik River Carving
 - Rapa Nui (Easter Island) Moai
 - Celtic Knotwork
@@ -193,6 +195,7 @@ When you add a new style, append it under the section it best fits.
 - Mesopotamian Cylinder Seal Impression
 - Assyrian bas-relief
 - Achaemenid Persian metalwork
+- Achaemenid Persepolis Relief
 - Sasanian Silverwork
 - Roman Garden Fresco
 - Hellenistic Mosaic

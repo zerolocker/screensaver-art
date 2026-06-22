@@ -1622,5 +1622,57 @@
     "image_prompt": "A 17th-century Dutch Golden Age flower still life in the manner of Jan Davidsz de Heem, oil on oak panel, a WIDE HORIZONTAL composition that completely fills a 16:9 frame edge to edge with a single continuous dark background reaching all four edges. A lavish low, spreading bouquet — striped tulips, blush cabbage roses, a white peony, blue irises, orange marigolds, carnations and trailing forget-me-nots — bursts sideways from a glass roemer set on a dark stone ledge that runs the full width of the frame, flowers and curling leaves reaching out to left and right and a few fallen petals, a snail, dewdrops and a single resting butterfly on the ledge. Deep continuous near-black background everywhere behind the flowers, dramatic warm chiaroscuro raking light from the upper left, jewel-like saturated colour, exquisitely fine Old Master brushwork and varnished glow. Single unified painting, no inner frame, no border, no duplicated or blurred background, the bouquet and dark ground fill the entire frame. no museum, no display case, no glass vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background.",
     "video_prompt": "A quiet seamless loop in candlelit Old Master style: the warm raking light slowly breathes brighter and softer across the petals as if a distant candle flickers, gently revealing and shading the roses, tulips and peony, while one or two blossoms nod almost imperceptibly and a single small dewdrop glints. The motion is hushed and cyclic and settles back exactly to the opening so it loops perfectly. The bouquet and dark background hold their form — only the soft shifting light and the faint nod of the flowers move; nothing wilts, blooms, or grows.",
     "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/persepolis_apadana_relief_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/persepolis_apadana_relief_4k.webp",
+    "title": "Procession of Tribute-Bearers - Achaemenid Persepolis Relief (AI Animated)",
+    "type": "video",
+    "date": "2026-06-22",
+    "tags": [
+      "Ancient Near East"
+    ],
+    "image_prompt": "A monumental Achaemenid Persian limestone bas-relief carved into the great Apadana staircase at Persepolis, around 500 BCE: a stately procession of tribute-bearers and royal guards in long pleated robes and rounded caps, deeply incised low-relief carving in warm honey-coloured stone, weathered surface with fine chisel marks and faint traces of ancient pigment, low golden late-afternoon sunlight raking across the carved figures and throwing long crisp shadows along the wall. Photographed straight-on so the carved stone wall fills the entire frame edge to edge, an in-situ archaeological monument under open sky. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "The warm golden late-afternoon sunlight slowly sweeps across the carved limestone procession, the long shadows of the figures gradually lengthening and shifting along the wall while fine dust motes drift lazily through the raking light. The ancient stone holds its form completely and motionlessly — only the light, the shadows, and the floating dust move.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/borobudur_relief_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/borobudur_relief_4k.webp",
+    "title": "Temple Gallery at Dawn - Borobudur Stone Relief (AI Animated)",
+    "type": "video",
+    "date": "2026-06-22",
+    "tags": [
+      "South & Southeast Asian"
+    ],
+    "image_prompt": "A 9th-century Javanese Buddhist stone narrative relief on the walls of the Borobudur temple, central Java, carved in grey volcanic andesite: an elegant low-relief panel of serene celestial figures, a bodhisattva seated among attendants, lotus blossoms, parasols and stylised trees, the soft rounded modelling of classical Sailendra-dynasty sculpture, weathered stone with lichen and fine erosion. A long temple gallery corridor seen at an angle so the carved relief wall fills the frame, warm low dawn sunlight raking along the carvings from the side, thin curls of incense smoke drifting in the light. In-situ ancient temple, open tropical air. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "Soft warm dawn sunlight slowly grows and rakes further along the carved andesite temple wall, gently brightening the seated stone figures one by one, while a few thin delicate curls of incense smoke drift slowly upward and dissolve in the golden light. The ancient carved stone holds its form completely and motionlessly — only the warming light and the rising wisps of incense smoke move.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/safavid_muqarnas_dome_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/safavid_muqarnas_dome_4k.webp",
+    "title": "Dome of Light - Safavid Muqarnas Ceiling (AI Animated)",
+    "type": "video",
+    "date": "2026-06-22",
+    "tags": [
+      "Islamic"
+    ],
+    "image_prompt": "Looking straight up into the interior of a 17th-century Safavid Persian mosque dome in Isfahan: a breathtaking symmetrical muqarnas and tilework ceiling radiating from a central sunburst medallion, intricate Islamic geometric and arabesque patterns in turquoise, cobalt blue, gold and ivory glazed faience, concentric rings of pointed arches and honeycomb stalactite vaulting, a band of windows with coloured stained glass around the drum casting soft pools of jewel-toned light onto the tiled surface. Perfectly centred radial composition filling the entire 16:9 frame edge to edge, exquisite hand-painted ceramic detail, warm even daylight. no museum, no display case, no glass vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "A serene seamless loop gazing up into the mosque dome: soft jewel-toned daylight from the ring of stained-glass windows slowly drifts and brightens across the turquoise and gold tilework, the coloured pools of light gliding gently around the honeycomb vaulting and glinting on the glazed ceramic, then easing back exactly to the opening so the loop is perfect. The tiled architecture holds its form completely and motionlessly — only the soft shifting coloured light moves; nothing warps, rotates, or distorts.",
+    "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/kakadu_rock_art_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/kakadu_rock_art_4k.webp",
+    "title": "Barramundi and Hand Stencils - Kakadu Rock Art (AI Animated)",
+    "type": "video",
+    "date": "2026-06-22",
+    "tags": [
+      "Arts of Africa & Oceania"
+    ],
+    "image_prompt": "Ancient Aboriginal Australian rock art painted on a weathered red sandstone overhang at Kakadu, Arnhem Land: x-ray-style ochre figures of a long barramundi fish, a kangaroo, and a cluster of stencilled hands in red, white and yellow natural earth pigments, the fine cross-hatched rarrk linework of traditional Arnhem Land painting, layered over the rough rust-coloured rock surface with its natural cracks, mineral streaks and lichen. The painted rock face fills the entire 16:9 frame edge to edge, warm late-afternoon sunlight glancing across the stone, a cool shadowed recess to one side. In-situ sacred rock-art site in the open bush. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "A quiet seamless loop on the sunlit rock face: warm late-afternoon sunlight slowly glides across the red sandstone overhang, gently brightening the ochre barramundi, kangaroo and hand stencils and deepening the cool shadow in the recess, with a faint shimmer of warm air and a few tiny dust motes drifting in the light, then easing back exactly to the opening so the loop is perfect. The painted rock holds its form completely and motionlessly — only the warm shifting sunlight and faint drifting dust move; the figures never change shape.",
+    "looping": true
   }
 ]

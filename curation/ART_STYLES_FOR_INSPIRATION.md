@@ -188,6 +188,7 @@ When you add a new style, append it under the section it best fits.
 - Minoan Pottery
 - Mycenaean Fresco
 - Ancient Egyptian Wall Painting
+- Egyptian Temple Relief (Karnak Hypostyle Hall)
 - Amarna Period Art
 - Fayum Mummy Portraits
 - Coptic Textile Art
@@ -198,6 +199,7 @@ When you add a new style, append it under the section it best fits.
 - Achaemenid Persepolis Relief
 - Sasanian Silverwork
 - Roman Garden Fresco
+- Roman Still-Life Fresco (Xenia)
 - Hellenistic Mosaic
 - Macedonian Court Mosaic
 - Etruscan Tomb Painting

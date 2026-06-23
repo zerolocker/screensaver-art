@@ -1674,5 +1674,57 @@
     "image_prompt": "Ancient Aboriginal Australian rock art painted on a weathered red sandstone overhang at Kakadu, Arnhem Land: x-ray-style ochre figures of a long barramundi fish, a kangaroo, and a cluster of stencilled hands in red, white and yellow natural earth pigments, the fine cross-hatched rarrk linework of traditional Arnhem Land painting, layered over the rough rust-coloured rock surface with its natural cracks, mineral streaks and lichen. The painted rock face fills the entire 16:9 frame edge to edge, warm late-afternoon sunlight glancing across the stone, a cool shadowed recess to one side. In-situ sacred rock-art site in the open bush. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
     "video_prompt": "A quiet seamless loop on the sunlit rock face: warm late-afternoon sunlight slowly glides across the red sandstone overhang, gently brightening the ochre barramundi, kangaroo and hand stencils and deepening the cool shadow in the recess, with a faint shimmer of warm air and a few tiny dust motes drifting in the light, then easing back exactly to the opening so the loop is perfect. The painted rock holds its form completely and motionlessly — only the warm shifting sunlight and faint drifting dust move; the figures never change shape.",
     "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/aurora_borealis_hudson_river_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/aurora_borealis_hudson_river_4k.webp",
+    "title": "Aurora Borealis - Hudson River School (AI Animated)",
+    "type": "video",
+    "date": "2026-06-23",
+    "tags": [
+      "19th Century"
+    ],
+    "image_prompt": "A 19th-century Hudson River School oil painting of the Aurora Borealis over an Arctic wilderness at night, in the Luminist tradition of Frederic Edwin Church. Vast sweeping curtains of luminous green and rose aurora ripple across a deep indigo star-filled sky, their cold light mirrored on a frozen sea and a distant snow-clad mountain. A tiny ship locked in pack ice sits dwarfed below, a single warm lantern glowing. Romantic sublime grandeur, atmospheric depth, finely blended oil glazes on canvas, visible delicate brushwork, dramatic natural lighting, panoramic composition filling the entire frame edge to edge. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame",
+    "video_prompt": "The shimmering aurora borealis slowly undulates and drifts across the night sky, vertical curtains of green and rose light rippling and brightening then fading in a gentle celestial dance, faint stars twinkling. Its colored glow shifts softly across the frozen sea and ice floes below, the lantern on the ice-locked ship flickering warmly. Slow, serene, physically natural motion of light only — the mountains, ship, and ice hold perfectly still. Cinematic slow drift.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/karnak_hypostyle_hall_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/karnak_hypostyle_hall_4k.webp",
+    "title": "Hall of Columns - Karnak Temple (AI Animated)",
+    "type": "video",
+    "date": "2026-06-23",
+    "tags": [
+      "Egyptian"
+    ],
+    "image_prompt": "Interior of the Great Hypostyle Hall at Karnak Temple, ancient Egypt, New Kingdom 13th century BC. Towering colossal sandstone columns with bell-shaped papyrus capitals march into the depths, every surface densely carved with painted sunk-relief hieroglyphs and figures of gods and pharaohs in faded ochre, Egyptian blue and red pigment. Warm torchlight rakes across the carved stone from below, casting long dramatic shadows between the giant columns; a single shaft of golden daylight slants down from a high clerestory window into hovering dust and incense smoke. Awe-inspiring sacred atmosphere, deep perspective, the architecture filling the entire frame edge to edge, cinematic warm-and-shadow lighting. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame",
+    "video_prompt": "The torch flames held by the priests flicker and dance, their warm orange glow pulsing across the carved hieroglyphs on the colossal columns. The shaft of golden daylight from the high window softly brightens and dims as motes of dust and curls of incense smoke drift slowly upward through the beam. Gentle atmospheric flicker of firelight and slow rising dust — the massive stone columns, carved reliefs, and the standing figures all hold completely still. Warm, reverent, physically natural motion of flame, smoke and light only.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/galla_placidia_starry_vault_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/galla_placidia_starry_vault_4k.webp",
+    "title": "Starry Vault - Byzantine Mosaic (AI Animated)",
+    "type": "video",
+    "date": "2026-06-23",
+    "tags": [
+      "Medieval & Byzantine"
+    ],
+    "image_prompt": "The 5th-century Byzantine mosaic vault of the Mausoleum of Galla Placidia in Ravenna, seen looking straight up into the dome. A deep midnight-blue field of tiny glass tesserae is scattered with hundreds of concentric golden eight-pointed stars spiralling toward a radiant gold Latin cross at the very centre. Bands of gold, white and red mosaic ornament frame the curving pendentives. The countless glass and gold tiles catch warm candlelight, glinting unevenly with points of reflected fire against the velvety blue. Early Christian sacred splendour, intricate authentic tessellated mosaic texture, soft warm low candlelight, the mosaic ceiling filling the entire frame edge to edge, richly luminous. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame",
+    "video_prompt": "Warm candlelight flickers gently across the gold mosaic, making the thousands of tiny glass tesserae shimmer and glint — the golden stars and the central cross softly twinkle and catch the firelight in slow waves of reflected warmth that drift across the deep blue vault and then settle back exactly as they began. Only the subtle shimmer of candlelight on the gold tiles moves; the mosaic itself is utterly still and solid. Slow, hypnotic, seamless looping glimmer.",
+    "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/pompeian_xenia_still_life_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/pompeian_xenia_still_life_4k.webp",
+    "title": "Fruit and Songbird - Pompeian Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-06-23",
+    "tags": [
+      "Greek & Roman"
+    ],
+    "image_prompt": "An ancient Roman 'xenia' still-life wall fresco from a villa in Pompeii, 1st century AD, painted in fresco secco on plaster. On a stone ledge against a deep Pompeian-red painted background rest a glass bowl heaped with figs, pomegranates and purple grapes, a few scattered olives, and a small songbird perched at the edge. The colours are earthy ochre, terracotta red, muted green and gold; the brushwork is loose and confident, the plaster surface softly cracked and aged with patches of faded pigment. Warm soft daylight rakes gently from the left, modelling the fruit in subtle shadow. Authentic antique fresco texture, intimate and serene, the painted scene filling the entire frame edge to edge. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame",
+    "video_prompt": "Soft warm daylight drifts almost imperceptibly across the fresco, the gentle glow brightening and easing over the fruit and the red wall before settling back exactly as it began. The little songbird gives a single small ruffle of its feathers and a faint settle, and one cluster of grape leaves stirs very slightly as if in a barely-there breeze, then comes to rest. Extremely subtle, calm, seamless looping motion — the bowl, fruit and cracked plaster wall stay completely still and solid. Physically natural, tranquil.",
+    "looping": true
   }
 ]

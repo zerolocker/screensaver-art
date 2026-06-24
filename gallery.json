@@ -1726,5 +1726,57 @@
     "image_prompt": "An ancient Roman 'xenia' still-life wall fresco from a villa in Pompeii, 1st century AD, painted in fresco secco on plaster. On a stone ledge against a deep Pompeian-red painted background rest a glass bowl heaped with figs, pomegranates and purple grapes, a few scattered olives, and a small songbird perched at the edge. The colours are earthy ochre, terracotta red, muted green and gold; the brushwork is loose and confident, the plaster surface softly cracked and aged with patches of faded pigment. Warm soft daylight rakes gently from the left, modelling the fruit in subtle shadow. Authentic antique fresco texture, intimate and serene, the painted scene filling the entire frame edge to edge. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame",
     "video_prompt": "Soft warm daylight drifts almost imperceptibly across the fresco, the gentle glow brightening and easing over the fruit and the red wall before settling back exactly as it began. The little songbird gives a single small ruffle of its feathers and a faint settle, and one cluster of grape leaves stirs very slightly as if in a barely-there breeze, then comes to rest. Extremely subtle, calm, seamless looping motion — the bowl, fruit and cracked plaster wall stay completely still and solid. Physically natural, tranquil.",
     "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/song_dynasty_misty_peaks_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/song_dynasty_misty_peaks_4k.webp",
+    "title": "Misty Peaks and Waterfall - Song Dynasty Landscape (AI Animated)",
+    "type": "video",
+    "date": "2026-06-24",
+    "tags": [
+      "Chinese & Korean"
+    ],
+    "image_prompt": "A monumental Northern Song dynasty landscape painting (11th-century China), ink and light mineral colour on aged silk in the manner of Fan Kuan and Guo Xi, the artwork filling the entire frame edge to edge. A single towering mist-wrapped mountain peak rises through low drifting cloud; dense pine forest clings to its slopes; a thin silver waterfall threads down a deep ravine into a quiet river at the base, where tiny travellers cross a wooden bridge. Soft diffused dawn light, atmospheric perspective fading the far peaks to pale grey, fine brushwork, subtle silk weave texture and faint craquelure. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "Slow cinematic drift of low mist curling around the central mountain peak and seeping through the ravine; the thin waterfall falls steadily and the river surface shimmers faintly below; distant peaks fade in and out of the soft haze as gentle dawn light warms the silk. The painted mountains, pines and bridge hold their form completely — only mist, falling water and light move. Calm, meditative, physically natural.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dutch_storm_at_sea_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dutch_storm_at_sea_4k.webp",
+    "title": "Ship in a Storm - Dutch Golden Age Marine Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-06-24",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "image_prompt": "A dramatic Dutch Golden Age marine painting, a storm at sea, 17th-century oil on canvas in the manner of Willem van de Velde the Younger and Ludolf Bakhuizen, the painting filling the entire frame edge to edge. A heeling three-masted wooden merchant ship rides a towering green-grey swell, its torn sails strained and snapping in a gale, pennants streaming; smaller boats labour in the troughs around it. Foaming whitecaps and breaking spray crash against the hull. Above, a vast turbulent sky of dark slate storm clouds is split by a single shaft of pale sunlight breaking through onto the churning water. Cold silvery light, low horizon, masterful tonal modelling, visible oil brushwork and aged varnish craquelure. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "The sea heaves and churns: towering green-grey swells roll forward, whitecaps break and burst into foaming spray against the ship's hull. The great wooden ship pitches and rolls heavily on the swell as a single rigid body, its torn sails straining and the long pennants whipping in the gale; the smaller boats labour and bob in the troughs. Dark storm clouds roll across the sky and the shaft of pale sunlight shifts slowly over the churning water. Dramatic, powerful, physically realistic ocean and wind motion — the ship, masts and rigging keep their solid form and never bend or morph.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fauvist_harbor_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/fauvist_harbor_4k.webp",
+    "title": "Mediterranean Harbour - Fauvist Landscape (AI Animated)",
+    "type": "video",
+    "date": "2026-06-24",
+    "tags": [
+      "Modern"
+    ],
+    "image_prompt": "A vivid Fauvist harbour landscape, oil on canvas circa 1905 in the manner of Andre Derain and Henri Matisse at Collioure, the painting filling the entire frame edge to edge. A sunlit Mediterranean fishing harbour: brightly coloured sailing boats with red and orange hulls moored on turquoise and violet water, their reflections shimmering on the calm bay; whitewashed houses with pink and yellow walls climb a low hillside dotted with palm trees, under a warm pink-and-gold sky. Bold non-naturalistic colour — emerald, vermilion, cobalt and pink — applied in thick confident broken brushstrokes with patches of bare canvas showing through; flattened, joyful Fauvist colour and visible oil impasto. Brilliant midday Mediterranean sun. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "Gentle seamless loop: the turquoise and violet harbour water ripples and shimmers softly, the coloured reflections of the boats wavering on the surface; the moored boats rock almost imperceptibly as rigid forms and the tall palm fronds sway lightly in a warm sea breeze; bright midday light glimmers across the bay, then everything settles back exactly to where it began. Calm, sunny, physically natural — the boats, houses and hillside hold their solid painted form; only water, reflections, palm fronds and light move.",
+    "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/aztec_temple_precinct_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/aztec_temple_precinct_4k.webp",
+    "title": "Temple Precinct at Dusk - Aztec Mural (AI Animated)",
+    "type": "video",
+    "date": "2026-06-24",
+    "tags": [
+      "Arts of the Americas"
+    ],
+    "image_prompt": "A grand Aztec (Mexica) temple precinct at dusk, rendered as a vivid Mesoamerican mural painting in the flat bold-outlined style of pre-Columbian temple and codex art, the scene filling the entire frame edge to edge. A great twin-stairway stone pyramid rises in the centre, its terraced walls richly painted with turquoise, ochre and blood-red geometric bands and feathered-serpent motifs; carved stone serpent heads flank the steep central staircase. Stone braziers burn with orange flame on the platforms, and thick ropes of copal incense smoke drift upward into a deep indigo-and-orange twilight sky scattered with stars. Warm firelight glows against the carved stone. Flat bold Mesoamerican colour — jade green, turquoise and vermilion — heavy black outlines, authentic painted lime-plaster texture and faint age cracking. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "Gentle seamless loop: ropes of pale copal incense smoke rise and curl slowly upward from the braziers and drift sideways, the orange brazier flames flicker and dance, and their warm firelight glow pulses softly across the carved painted stone; the stylized stars twinkle faintly in the twilight sky. Everything eases back exactly to where it began. The pyramid, serpent carvings and standing attendants hold their solid painted form completely — only smoke, flame, firelight glow and starlight move. Calm, warm, hypnotic, physically natural.",
+    "looping": true
   }
 ]

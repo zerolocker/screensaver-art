@@ -221,6 +221,7 @@ When you add a new style, append it under the section it best fits.
 - Mayan Stela Relief
 - Maya Bonampak Mural
 - Aztec Codices Art
+- Aztec Temple Mural Painting
 - Inca Textile Pattern
 - Moche Ceramics
 - Nazca Lines

@@ -1778,5 +1778,57 @@
     "image_prompt": "A grand Aztec (Mexica) temple precinct at dusk, rendered as a vivid Mesoamerican mural painting in the flat bold-outlined style of pre-Columbian temple and codex art, the scene filling the entire frame edge to edge. A great twin-stairway stone pyramid rises in the centre, its terraced walls richly painted with turquoise, ochre and blood-red geometric bands and feathered-serpent motifs; carved stone serpent heads flank the steep central staircase. Stone braziers burn with orange flame on the platforms, and thick ropes of copal incense smoke drift upward into a deep indigo-and-orange twilight sky scattered with stars. Warm firelight glows against the carved stone. Flat bold Mesoamerican colour — jade green, turquoise and vermilion — heavy black outlines, authentic painted lime-plaster texture and faint age cracking. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
     "video_prompt": "Gentle seamless loop: ropes of pale copal incense smoke rise and curl slowly upward from the braziers and drift sideways, the orange brazier flames flicker and dance, and their warm firelight glow pulses softly across the carved painted stone; the stylized stars twinkle faintly in the twilight sky. Everything eases back exactly to where it began. The pyramid, serpent carvings and standing attendants hold their solid painted form completely — only smoke, flame, firelight glow and starlight move. Calm, warm, hypnotic, physically natural.",
     "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/paleolithic_cave_horses_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/paleolithic_cave_horses_4k.webp",
+    "title": "Charging Horses - Paleolithic Cave Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-06-25",
+    "tags": [
+      "Prehistoric"
+    ],
+    "image_prompt": "A Paleolithic cave painting on the natural rough limestone wall of a deep cave, in the style of Lascaux and Chauvet — a dynamic frieze of wild horses and a great black aurochs rendered in charcoal-black outline and earthy red-ochre, yellow ochre and manganese pigment, the animals overlapping in motion across the undulating rock surface, the bumps and hollows of the stone incorporated into the animals' bodies. Lit only by the warm flickering orange glow of a nearby fire, deep shadows pooling in the rock's crevices, prehistoric, c. 17000 BCE. Painterly mineral-pigment texture, the painted rock wall fills the entire frame edge to edge, intimate and immersive. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "The scene is lit only by an unseen flickering fire just off-frame: warm orange torchlight dances and pulses across the painted limestone, brightening and dimming so the ochre horses and the great black aurochs seem to surge in the unsteady glow, deep shadows swelling and contracting in the rock's hollows. A thin veil of pale smoke drifts slowly upward across the upper wall and the visible torch flame flickers. The painted animals and the rock itself hold their form completely — only firelight, shadow, the flame and smoke move. Warm, primal, hypnotic, physically natural.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/assyrian_lion_hunt_relief_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/assyrian_lion_hunt_relief_4k.webp",
+    "title": "Royal Lion Hunt - Assyrian Palace Relief (AI Animated)",
+    "type": "video",
+    "date": "2026-06-25",
+    "tags": [
+      "Ancient Near East"
+    ],
+    "image_prompt": "An Assyrian alabaster bas-relief carved in low relief on a gypsum palace wall, Neo-Assyrian, c. 645 BCE, in the style of the North Palace of Nineveh lion-hunt reliefs — the king in his chariot drawing a great bow, muscular lions lunging and falling, every figure rendered with crisp shallow carving, finely incised muscles, manes, fringed garments and bands of cuneiform inscription. Pale honey-cream gypsum stone with faint traces of ancient ochre pigment. Lit by warm raking torchlight from the left that grazes the carved surface, throwing the relief into sharp light and deep shadow, the incised lines pooling with dark. The carved stone wall fills the entire frame edge to edge, a tight in-situ view of the palace gallery wall. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "The wall torch at left burns and flickers, its warm orange light raking slowly across the carved alabaster: highlights travel along the polished ridges of the king, chariot, horse and lunging lions while the deep incised lines and cuneiform pulse with shifting shadow, giving the shallow carving a breathing, three-dimensional life. Fine motes of pale dust drift slowly through the warm torchlight. The carved stone relief holds its solid form completely — only the torch flame, its light, the shadows and drifting dust move. Ancient, solemn, warm, physically natural.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mughal_lotus_pond_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/mughal_lotus_pond_4k.webp",
+    "title": "Lotus Pond at Dawn - Mughal Miniature (AI Animated)",
+    "type": "video",
+    "date": "2026-06-25",
+    "tags": [
+      "South & Southeast Asian"
+    ],
+    "image_prompt": "A Mughal miniature painting, opaque watercolour, ink and gold on paper, Imperial Mughal school c. 1620, depicting a serene palace lotus pond at dawn — a still rectangular water tank crowded with pink and white lotus blossoms and broad green lily pads, slender reeds at the margins, a single white heron standing motionless among them, with a marble pavilion edge and flowering trees behind. Rendered in the flat jewel-toned high-horizon Persian-Mughal style with fine delicate brushwork, gold detailing and a decorative floral border. Soft pearly dawn light, calm and luminous. Exquisite miniature detail, the painting fills the entire frame edge to edge. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "Gentle seamless loop: a soft breath of air crosses the lotus pond — the still water shimmers with faint ripples that catch the pearly dawn light, the pink and white lotus blossoms and broad lily pads sway and bob ever so slightly, their reflections trembling on the water, and the marginal reeds nod gently, then everything eases back exactly to where it began. The white heron stands perfectly still, and the marble pavilion, trees and gold border hold their painted form completely — only the water, lotuses, reflections and reeds move. Calm, luminous, serene, physically natural.",
+    "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/safavid_night_garden_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/safavid_night_garden_4k.webp",
+    "title": "Moonlit Garden - Safavid Persian Miniature (AI Animated)",
+    "type": "video",
+    "date": "2026-06-25",
+    "tags": [
+      "Islamic"
+    ],
+    "image_prompt": "A Persian Safavid miniature painting, opaque watercolour, ink and gold on paper, Isfahan school c. 1620, depicting a moonlit royal palace garden at night — a central rectangular marble fountain pool, slender dark cypress trees and blossoming pink fruit trees, beds of flowering plants, and a tiled pavilion with an arched iwan, rendered in the flat jewel-toned high-horizon Persian style with fine gold detailing and a decorative floral border. Deep indigo night sky with a gold crescent moon and scattered gold stars, soft warm glow from hanging lanterns. Exquisite miniature detail, the painting fills the entire frame edge to edge. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "Gentle seamless loop: clear water trickles and ripples softly in the marble fountain pool, the reflected crescent moon and lantern light shimmering on its surface, while the slender cypress and the blossoming pink branches sway ever so slightly in a light night breeze and a few pink petals drift slowly down; the warm glow of the hanging lanterns and the gold crescent moon and stars pulse and twinkle gently against the deep indigo sky. Everything eases back exactly to where it began. The tiled pavilion, the figures, the gold border and the architecture hold their painted form completely — only the water, foliage, drifting petals and light move. Calm, jewel-like, nocturnal, physically natural.",
+    "looping": true
   }
 ]

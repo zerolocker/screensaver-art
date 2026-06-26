@@ -1830,5 +1830,57 @@
     "image_prompt": "A Persian Safavid miniature painting, opaque watercolour, ink and gold on paper, Isfahan school c. 1620, depicting a moonlit royal palace garden at night — a central rectangular marble fountain pool, slender dark cypress trees and blossoming pink fruit trees, beds of flowering plants, and a tiled pavilion with an arched iwan, rendered in the flat jewel-toned high-horizon Persian style with fine gold detailing and a decorative floral border. Deep indigo night sky with a gold crescent moon and scattered gold stars, soft warm glow from hanging lanterns. Exquisite miniature detail, the painting fills the entire frame edge to edge. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
     "video_prompt": "Gentle seamless loop: clear water trickles and ripples softly in the marble fountain pool, the reflected crescent moon and lantern light shimmering on its surface, while the slender cypress and the blossoming pink branches sway ever so slightly in a light night breeze and a few pink petals drift slowly down; the warm glow of the hanging lanterns and the gold crescent moon and stars pulse and twinkle gently against the deep indigo sky. Everything eases back exactly to where it began. The tiled pavilion, the figures, the gold border and the architecture hold their painted form completely — only the water, foliage, drifting petals and light move. Calm, jewel-like, nocturnal, physically natural.",
     "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gothic_rose_window_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/gothic_rose_chartres_window_4k.webp",
+    "title": "Rose Window - Gothic Stained Glass (AI Animated)",
+    "type": "video",
+    "date": "2026-06-26",
+    "tags": [
+      "Medieval & Byzantine"
+    ],
+    "image_prompt": "A monumental Gothic cathedral rose window seen from inside the nave, filling the entire frame edge to edge. Intricate medieval stained glass: deep cobalt blue, ruby red, emerald, and golden-yellow glass set in black lead cames and grey stone tracery, radiating petals around a central medallion of saints and angels. Brilliant afternoon sunlight pours through the colored glass, casting glowing pools of red and blue light onto the worn limestone floor and stone columns of the dim interior. Floating dust motes drift in the shafts of colored light. High Gothic period, 13th century, Chartres-style. Authentic aged glass with subtle imperfections and grisaille painted detail. Cinematic, reverent, luminous. no museum, no display case, no glass vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "The stone interior is still and the stained glass holds its form perfectly. Warm afternoon sunlight slowly strengthens through the colored glass, making the cobalt blues and ruby reds glow brighter and deeper. The glowing pools of red and blue light cast on the limestone floor and columns drift and creep almost imperceptibly as the sun moves. Fine dust motes float and swirl gently in the shafts of colored light. A serene, reverent, contemplative atmosphere. Camera perfectly still.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyoe_great_wave_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyoe_great_wave_4k.webp",
+    "title": "The Great Wave - Ukiyo-e Woodblock Print (AI Animated)",
+    "type": "video",
+    "date": "2026-06-26",
+    "tags": [
+      "Japanese"
+    ],
+    "image_prompt": "A dramatic Japanese ukiyo-e woodblock print filling the frame: a single towering wave cresting and curling, its foam breaking into clawing finger-like spray against a pale sky. A small open fishing boat with crouching boatmen is dwarfed in the trough below. Snow-capped Mount Fuji sits small and serene on the distant horizon. Authentic Edo-period style: bold confident outlines, flat layered planes of Prussian blue and indigo gradating to white, beige and soft grey paper tone, visible woodgrain texture and the slight registration imperfections of nishiki-e color printing. In the manner of Hokusai and Hiroshige, early 19th century. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "The great wave surges and curls powerfully, its crest of foam churning and the clawing spray droplets scattering forward, while the deep blue swells heave and roll. The small fishing boats pitch and rock steeply on the heaving sea. Distant Mount Fuji stays perfectly still and serene on the horizon. Soft grey clouds drift slowly across the pale sky. The whole scene keeps its flat ukiyo-e woodblock-print look — bold outlines, layered planes of indigo and white, visible paper texture — as if the printed water has come alive. Camera locked off.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/minoan_dolphin_fresco_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/minoan_dolphin_fresco_4k.webp",
+    "title": "Dolphins - Minoan Marine Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-06-26",
+    "tags": [
+      "Greek & Roman"
+    ],
+    "image_prompt": "An ancient Minoan marine fresco covering a palace wall, filling the frame edge to edge. Lively dolphins with curving blue-grey backs and pale bellies glide among schools of small yellow and silver fish, surrounded by sea urchins, coral and sponges. Painted in true Bronze Age buon-fresco technique on lime plaster: flat earthy palette of marine blue, ochre yellow, terracotta red, cream white and charcoal outline, with the soft chalky matte surface, fine craquelure, and weathered patches where the plaster has flaked. Bordered by a rhythmic banded wave-pattern frieze. In the style of the Knossos and Akrotiri frescoes, c. 1600 BC. Warm even daylight grazing the textured plaster. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "The painted plaster fresco holds completely still — the dolphins, fish, coral and the wave-pattern borders keep their exact form and position. Only the light changes: soft dappled underwater caustics, gentle rippling reflections of water, drift slowly and rhythmically across the chalky textured surface, brightening and dimming the ochre and marine-blue pigments in a calm undulating rhythm. A few faint dust motes float lazily. The shimmer of light eases gently back to exactly where it began, a seamless calm loop. Camera perfectly static.",
+    "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/artdeco_lacquer_gazelles_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/artdeco_lacquer_gazelles_4k.webp",
+    "title": "Leaping Gazelles - Art Deco Lacquer Screen (AI Animated)",
+    "type": "video",
+    "date": "2026-06-26",
+    "tags": [
+      "Modern"
+    ],
+    "image_prompt": "An opulent Art Deco lacquer folding screen filling the frame, in the manner of Jean Dunand and Armand-Albert Rateau, c. 1925. Stylized leaping gazelles in burnished gold and silver leaf bound across a deep black and dark-teal lacquer ground, among geometric sunburst rays, fan motifs and stylized fronds. Rich eggshell-inlay texture, incised crisp linework, the warm sheen of gold leaf and crushed-shell mother-of-pearl catching low light. Symmetrical, elegant, luxurious 1920s French decorative-arts composition. Even soft directional light raking across the glossy lacquer surface. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "The lacquer screen holds completely still — the gold gazelles, sunburst fans and geometric fronds keep their exact shape and position. Only the light moves: a warm soft highlight glides slowly across the burnished gold leaf and crushed mother-of-pearl inlay, making the metallic surfaces shimmer and glint and the deep black-teal lacquer glow, as if a gentle light source drifts past the glossy surface. The reflective sheen eases smoothly back to exactly where it began, a seamless calm loop. Camera perfectly static, elegant and luxurious.",
+    "looping": true
   }
 ]

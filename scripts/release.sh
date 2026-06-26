@@ -88,6 +88,22 @@ say "Releasing $TAG  (from branch $BRANCH)"
 if git rev-parse "$TAG" >/dev/null 2>&1; then die "Tag $TAG already exists locally."; fi
 if gh release view "$TAG" --repo "$GH_REPO" >/dev/null 2>&1; then die "Release $TAG already exists on GitHub."; fi
 
+# Roll back the (uncommitted) version bump if we exit non-zero before committing
+# it. Otherwise a failed build — e.g. notarization dies on an expired Apple
+# agreement — strands the bump in the working tree, which then trips the
+# dirty-tree guard above on the next run AND makes the retry skip a version (the
+# next version is computed *from* package.json). DRY_RUN exits 0, so its
+# intentionally-uncommitted bump is preserved.
+BUMPED=0
+rollback_bump() {
+  local code=$?
+  if [ "$code" -ne 0 ] && [ "$BUMPED" -eq 1 ]; then
+    printf '\n\033[1;33m↩ release failed before commit — rolling back the version bump in %s\033[0m\n' "$PKG" >&2
+    git checkout -- "$PKG" 2>/dev/null || true
+  fi
+}
+trap rollback_bump EXIT
+
 # ── Bump version ─────────────────────────────────────────────────────────────
 say "Bumping $PKG → $NEW_VERSION"
 node -e '
@@ -97,6 +113,7 @@ node -e '
   pkg.version = v;
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
 ' "$PKG" "$NEW_VERSION"
+BUMPED=1
 
 # ── Build the signed + notarized DMG ─────────────────────────────────────────
 DMG="$ELECTRON_DIR/dist/Living Art Screensaver-$NEW_VERSION.dmg"
@@ -105,7 +122,13 @@ if [ "${SKIP_BUILD:-0}" = "1" ]; then
   [ -f "$DMG" ] || die "Expected DMG not found: $DMG"
 else
   say "Building signed + notarized DMG (this takes several minutes, incl. notarization)…"
-  ( cd "$ELECTRON_DIR" && pnpm dist:mac:release )
+  if ! ( cd "$ELECTRON_DIR" && pnpm dist:mac:release ); then
+    die "Signed build / notarization failed (see the electron-builder output above).
+   If it ended in 'HTTP status code: 403 … A required agreement is missing or has expired',
+   the Account Holder must accept Apple's updated agreement at
+   https://appstoreconnect.apple.com (and/or https://developer.apple.com/account → Membership),
+   wait a few minutes, then just re-run — the version bump is rolled back automatically."
+  fi
   [ -f "$DMG" ] || die "Build finished but DMG not found: $DMG"
 fi
 
@@ -147,6 +170,7 @@ if git diff --cached --quiet; then
 else
   git commit -m "release: $TAG"
 fi
+BUMPED=0   # bump is committed (or was a no-op) — past the rollback window
 git tag -a "$TAG" -m "$TAG"
 git push origin "$BRANCH"
 git push origin "$TAG"

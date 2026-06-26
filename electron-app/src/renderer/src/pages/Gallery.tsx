@@ -134,7 +134,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
   }, [])
 
   const onSubscribe = useCallback(() => {
-    void startCheckout()
+    void startCheckout('gallery_lock')
   }, [])
 
   const persistAndSync = useCallback(

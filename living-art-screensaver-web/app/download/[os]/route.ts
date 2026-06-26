@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse, after } from 'next/server'
+import { randomUUID } from 'crypto'
 import { getLatestRelease, mintSignedAssetUrl } from '@/lib/github-release'
+import { getPostHogClient, flushPostHog } from '@/lib/posthog-server'
 
 /**
  * GET /download/:os   →  302 redirect to the latest installer for that platform.
@@ -35,8 +37,28 @@ const PLATFORMS: Record<string, { ext: string; label: string }> = {
   windows: { ext: '.exe', label: 'Windows' },
 }
 
+// The install funnel's truth source. The marketing buttons fire a client-side
+// `download_clicked`, but those are ad-blockable and miss direct hits to this
+// URL — so we capture the actual download server-side too. We reuse the
+// visitor's PostHog distinct_id from the `ph_<token>_posthog` cookie (set by
+// posthog-js on the marketing page) so the download stitches onto the same
+// person; absent a cookie (direct link, blocker) we mint an anonymous id.
+function downloadDistinctId(request: NextRequest): string {
+  const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
+  const raw = token ? request.cookies.get(`ph_${token}_posthog`)?.value : undefined
+  if (raw) {
+    try {
+      const id = JSON.parse(decodeURIComponent(raw))?.distinct_id
+      if (typeof id === 'string' && id) return id
+    } catch {
+      /* malformed cookie — fall through to an anonymous id */
+    }
+  }
+  return `anon-download-${randomUUID()}`
+}
+
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ os: string }> },
 ) {
   const { os } = await params
@@ -85,6 +107,14 @@ export async function GET(
   try {
     const signed = await mintSignedAssetUrl(asset.url, token)
     if (signed) {
+      // Capture the real download (server-side ⇒ ad-blocker-safe). `after()`
+      // runs post-response so it never delays the user's redirect.
+      getPostHogClient().capture({
+        distinctId: downloadDistinctId(request),
+        event: 'download_served',
+        properties: { platform: platform.label, asset: asset.name },
+      })
+      after(flushPostHog)
       return NextResponse.redirect(signed, {
         status: 302,
         headers: { 'Cache-Control': 'no-store' },

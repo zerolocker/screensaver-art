@@ -1,6 +1,7 @@
 import { CHECKOUT_ENDPOINT } from './api'
 import { getAccessToken } from './supabase'
 import { log } from './log'
+import { track } from './analytics'
 
 // Fallback target when we can't open a direct Stripe checkout (offline, already
 // subscribed, server error, no token): the website's account page, where the
@@ -19,8 +20,12 @@ const ACCOUNT_URL = 'https://living-art-screensaver.com/account'
  *
  * Any failure falls back to opening the website account page, so the button
  * always does *something* useful.
+ *
+ * `source` records which CTA the user clicked (gallery lock, upsell banner,
+ * account card) so PostHog can break the conversion funnel down by entry point.
  */
-export async function startCheckout(): Promise<void> {
+export async function startCheckout(source: string): Promise<void> {
+  track('subscribe_clicked', { source })
   try {
     const accessToken = await getAccessToken()
     if (accessToken) {

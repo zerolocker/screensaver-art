@@ -77,7 +77,7 @@ export function AppBanners({ showUpsell, lockedCount }: AppBannersProps) {
         />
       )}
       {showUpsell && (
-        <UpsellBanner onSubscribe={() => void startCheckout()} lockedCount={lockedCount} />
+        <UpsellBanner onSubscribe={() => void startCheckout('upsell_banner')} lockedCount={lockedCount} />
       )}
     </>
   )

@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getPostHogClient, flushPostHog } from '@/lib/posthog-server'
 
 /**
  * OAuth (PKCE) callback. The provider redirects the browser here with a `?code=`;
@@ -17,8 +18,17 @@ export async function GET(request: Request): Promise<Response> {
 
   if (code) {
     const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
+      // OAuth sign-in landed server-side (the client SDK never sees this hop),
+      // so identify + record the login here. `identify` stitches the prior
+      // anonymous browsing session to this user.
+      if (data.user) {
+        const posthog = getPostHogClient()
+        posthog.identify({ distinctId: data.user.id, properties: { email: data.user.email } })
+        posthog.capture({ distinctId: data.user.id, event: 'login_completed', properties: { method: 'oauth' } })
+        after(flushPostHog)
+      }
       // Behind Vercel's proxy the load balancer host is in x-forwarded-host;
       // prefer it in production so the redirect targets the public domain.
       const forwardedHost = request.headers.get('x-forwarded-host')

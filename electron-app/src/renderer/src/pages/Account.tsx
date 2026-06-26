@@ -149,7 +149,7 @@ export function AccountPage({ session }: AccountPageProps) {
             onSubscribe={async () => {
               // Skip the website re-login + extra click: create a Stripe checkout
               // from the app's session and open it directly.
-              await startCheckout()
+              await startCheckout('account_card')
               return {}
             }}
             onManage={async () => {

@@ -147,6 +147,12 @@ const electronAPI = {
       return () => ipcRenderer.removeListener('auth:callback', handler)
     },
   },
+  // Forwards a renderer UI event to the main process's PostHog client, so it's
+  // captured with the same device/user identity as main-process events.
+  analytics: {
+    capture: (event: string, properties?: Record<string, unknown>): Promise<void> =>
+      ipcRenderer.invoke('analytics:capture', event, properties),
+  },
 }
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI)

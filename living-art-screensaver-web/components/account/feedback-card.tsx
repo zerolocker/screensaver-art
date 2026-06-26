@@ -1,5 +1,6 @@
 'use client'
 
+import posthog from 'posthog-js'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { FeedbackForm } from '@screensaver-art/ui'
 import type { ResizedImage } from '@screensaver-art/ui'
@@ -45,6 +46,7 @@ export function FeedbackCard() {
       if (!res.ok) {
         return { error: data.error || `Couldn't send feedback (HTTP ${res.status})` }
       }
+      posthog.capture('feedback_submitted', { source: 'website', has_image: image !== null })
       return { id: data.id }
     } catch (err) {
       return { error: err instanceof Error ? err.message : 'Network error — please try again.' }

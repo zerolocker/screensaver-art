@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { CheckCircle, XCircle } from 'lucide-react'
+import { CheckoutTracker } from './checkout-tracker'
 
 export const metadata: Metadata = {
   title: 'Checkout',
@@ -21,6 +22,7 @@ export default async function CheckoutCompletePage({ searchParams }: CheckoutCom
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <CheckoutTracker status={status} />
       <div className="w-full max-w-md text-center space-y-6">
         {canceled ? (
           <>

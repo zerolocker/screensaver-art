@@ -126,6 +126,9 @@ export interface ElectronAPI {
   auth: {
     onCallback: (cb: (url: string) => void) => () => void
   }
+  analytics: {
+    capture: (event: string, properties?: Record<string, unknown>) => Promise<void>
+  }
 }
 
 declare global {

@@ -9,6 +9,7 @@ import {
 } from 'react'
 import type { InstallerStatus, ScreensaverTiming } from '../../../preload'
 import { log } from './log'
+import { track } from './analytics'
 
 interface InstallerContextValue {
   // Null until the first status read resolves.
@@ -69,6 +70,7 @@ export function InstallerProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const preview = useCallback(async () => {
+    track('screensaver_preview_clicked')
     setPreviewing(true)
     try {
       await window.electronAPI.screensaver.preview()

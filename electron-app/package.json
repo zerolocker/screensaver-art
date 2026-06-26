@@ -25,6 +25,7 @@
     "@supabase/supabase-js": "^2.99.1",
     "electron-updater": "^6.8.9",
     "lucide-react": "^0.564.0",
+    "posthog-node": "^5.38.2",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.6.1"

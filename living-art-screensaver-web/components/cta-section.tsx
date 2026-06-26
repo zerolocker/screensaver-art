@@ -1,5 +1,6 @@
 "use client"
 
+import posthog from "posthog-js"
 import { Button } from "@/components/ui/button"
 import { Download } from "lucide-react"
 
@@ -37,7 +38,7 @@ export function CTASection() {
             className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 py-6 text-lg font-medium gap-2"
             asChild
           >
-            <a href="/download/mac">
+            <a href="/download/mac" onClick={() => posthog.capture('download_clicked', { location: 'cta' })}>
               <Download className="w-5 h-5" />
               Download for Mac
             </a>

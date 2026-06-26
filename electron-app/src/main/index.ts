@@ -15,6 +15,13 @@ import {
   extractDeepLinkFromArgv,
   flushPendingDeepLink,
 } from './deeplink'
+import {
+  capture,
+  identifyUser,
+  userIdFromToken,
+  currentDistinctId,
+  shutdownPosthog,
+} from './posthog'
 
 const is = { dev: !app.isPackaged }
 
@@ -112,6 +119,7 @@ ipcMain.handle('cache:getStats', async () => {
 ipcMain.handle('cache:clear', async () => {
   try {
     await clearCache()
+    capture('cache_cleared')
     return { success: true }
   } catch {
     return { success: false }
@@ -128,6 +136,10 @@ ipcMain.handle('cache:getSyncState', () => ({ syncing: isSyncing() }))
 ipcMain.handle(
   'cache:sync',
   async (_evt, payload: { apiUrl: string; accessToken: string | null; pruneDeselected?: boolean }): Promise<{ ok: true; manifest: CachedManifest } | { ok: false; error: string }> => {
+    // A sync is the first authenticated action each launch, so it's where we
+    // link the device to the signed-in user for analytics.
+    const userId = userIdFromToken(payload.accessToken)
+    if (userId) identifyUser(userId)
     try {
       // The selection lives in the main process (cache-sync needs it, and the
       // renderer persists it via selection:set before triggering a sync). A null
@@ -141,10 +153,16 @@ ipcMain.handle(
         readSelection(),
         payload.pruneDeselected ?? false,
       )
+      capture('gallery_synced', {
+        item_count: manifest.items.length,
+        is_subscribed: manifest.isSubscribed,
+        pruned: payload.pruneDeselected ?? false,
+      })
       return { ok: true, manifest }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
       log.error('cache-sync', 'sync failed', { error: message })
+      capture('gallery_sync_failed', { error: message })
       return { ok: false, error: message }
     }
   },
@@ -194,11 +212,18 @@ function writeRegisteredVersion(version: string | null): void {
 // sign-in). Persists the version only when we actually (re)registered.
 ipcMain.handle('installer:ensureRegistered', async () => {
   const result = await ensureRegistered(readRegisteredVersion())
-  if (result.ok && result.didRegister) writeRegisteredVersion(result.version)
+  if (result.ok && result.didRegister) {
+    writeRegisteredVersion(result.version)
+    capture('screensaver_registered', { version: result.version })
+  }
   return { ok: result.ok, error: result.error, registered: result.registered }
 })
 
-ipcMain.handle('installer:activate', () => activate())
+ipcMain.handle('installer:activate', async () => {
+  const result = await activate()
+  if (result.ok) capture('screensaver_activated')
+  return result
+})
 
 // Reads the macOS idle thresholds the "Screensaver is set" banner explains, and
 // starts the screensaver on demand for an instant preview. macOS-only; both
@@ -248,7 +273,18 @@ ipcMain.handle('log:getFilePath', () => getLogFilePath())
 ipcMain.handle('report:send', (_evt, input: SendReportInput) => sendReport(input))
 
 // Upload user feedback (message + optional image) with the same diagnostics block.
-ipcMain.handle('feedback:send', (_evt, input: SendFeedbackInput) => sendFeedback(input))
+ipcMain.handle('feedback:send', async (_evt, input: SendFeedbackInput) => {
+  const result = await sendFeedback(input)
+  if (result.ok) capture('feedback_submitted', { source: 'app', has_image: Boolean(input.image) })
+  return result
+})
+
+// Renderer → main analytics bridge. The renderer has no PostHog SDK; it forwards
+// UI events here so they're captured with the same device/user identity as the
+// main-process events (one person in PostHog). Best-effort; never throws.
+ipcMain.handle('analytics:capture', (_evt, event: string, properties?: Record<string, unknown>) => {
+  if (typeof event === 'string' && event) capture(event, properties)
+})
 
 // ---------------------------------------------------------------------------
 // Lifecycle
@@ -291,6 +327,15 @@ if (!gotSingleInstanceLock) {
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
+    // Anonymous until a sync identifies the user (see cache:sync) — keyed off the
+    // stable device id, so first-launch funnels stay intact.
+    capture('app_launched', {
+      version: app.getVersion(),
+      platform: process.platform,
+      arch: process.arch,
+      electron: process.versions.electron,
+      packaged: app.isPackaged,
+    }, currentDistinctId())
   })
 
   app.on('window-all-closed', () => {
@@ -301,5 +346,9 @@ if (!gotSingleInstanceLock) {
   // each video is written via a temp file + atomic rename, so an interrupted sync
   // can't corrupt the cache — cancelSync just stops the in-flight fetch/stream
   // promptly so quit isn't delayed. The next launch auto-syncs and resumes.
-  app.on('before-quit', () => cancelSync())
+  app.on('before-quit', () => {
+    cancelSync()
+    // Best-effort flush of any queued analytics before the process exits.
+    void shutdownPosthog()
+  })
 }

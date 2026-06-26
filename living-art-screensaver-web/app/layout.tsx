@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, Playfair_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { PostHogAuthBridge } from '@/components/posthog-auth-bridge'
 import './globals.css'
 
 const inter = Inter({ 
@@ -37,6 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
+        <PostHogAuthBridge />
         {children}
         <Analytics />
       </body>

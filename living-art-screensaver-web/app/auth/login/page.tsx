@@ -10,6 +10,7 @@ import {
   type OAuthProvider,
 } from '@screensaver-art/ui'
 import { Loader2 } from 'lucide-react'
+import posthog from 'posthog-js'
 import { createClient } from '@/lib/supabase/client'
 
 // Single passwordless auth screen — no email/password. Social sign-in and the
@@ -26,6 +27,7 @@ function LoginInner() {
 
   async function startOAuth(provider: OAuthProvider) {
     setError(null)
+    posthog.capture('oauth_sign_in_clicked', { provider })
     const supabase = createClient()
     const { scopes, queryParams } = OAUTH_PROVIDER_OPTIONS[provider]
     // @supabase/ssr uses the PKCE flow: the provider redirects back to
@@ -51,12 +53,18 @@ function LoginInner() {
             // Default-true: the code flow doubles as sign-up.
             options: { shouldCreateUser: true },
           })
+          if (!error) posthog.capture('otp_code_requested')
           return error ? { error: error.message } : {}
         }}
         onVerify={async ({ email, code }) => {
           const supabase = createClient()
-          const { error } = await supabase.auth.verifyOtp({ email, token: code, type: 'email' })
+          const { data, error } = await supabase.auth.verifyOtp({ email, token: code, type: 'email' })
           if (error) return { error: error.message }
+          if (data.user) {
+            // Stitch the prior anonymous session to the user, then record login.
+            posthog.identify(data.user.id, { email: data.user.email })
+            posthog.capture('login_completed', { method: 'email_otp' })
+          }
           router.push(next)
           router.refresh()
           return {}

@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse, after } from 'next/server'
 import { verifyNativeAuth } from '@/lib/auth/verify-native-auth'
 import { createSubscriptionCheckoutSession } from '@/lib/checkout'
+import { getPostHogClient, flushPostHog } from '@/lib/posthog-server'
 
 /**
  * App-initiated checkout. The Electron app is already signed in, so instead of
@@ -42,6 +43,16 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     )
   }
+
+  // Conversion event for the in-app ("Subscribe" inside the Electron app) flow.
+  // The matching client intent (`subscribe_clicked`) is sent from the renderer;
+  // this server event is the ad-blocker-safe confirmation a session was created.
+  getPostHogClient().capture({
+    distinctId: user.id,
+    event: 'app_checkout_session_created',
+    properties: { source: 'electron_app', existing_customer: Boolean(subscription?.stripe_customer_id) },
+  })
+  after(flushPostHog)
 
   return NextResponse.json({ url: result.url })
 }

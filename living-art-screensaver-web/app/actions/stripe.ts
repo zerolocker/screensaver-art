@@ -1,10 +1,12 @@
 'use server'
 
+import { after } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { getProduct } from '@/lib/products'
 import { createSubscriptionCheckoutSession } from '@/lib/checkout'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { getPostHogClient, flushPostHog } from '@/lib/posthog-server'
 
 /**
  * Web (cookie-authed) checkout. `cancelPath` is where Stripe sends the user if
@@ -39,6 +41,15 @@ export async function createCheckoutSession(
   if (subscription?.status === 'active') {
     return { error: 'You already have an active subscription' }
   }
+
+  // Server-side conversion event: the user committed to checkout on the website.
+  // Captured here (not just client-side) so an ad blocker can't hide it.
+  getPostHogClient().capture({
+    distinctId: user.id,
+    event: 'checkout_started',
+    properties: { source: 'web', product_id: productId },
+  })
+  after(flushPostHog)
 
   return createSubscriptionCheckoutSession({
     userId: user.id,

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import posthog from "posthog-js"
 import { Button } from "@/components/ui/button"
 import { Check, Download, Loader2 } from "lucide-react"
 import { PRICING } from "@screensaver-art/constants"
@@ -25,6 +26,8 @@ export function PricingSection() {
   }, [])
 
   async function handleWebSubscribe() {
+    posthog.capture('subscribe_clicked', { location: 'pricing_section', is_logged_in: !!user })
+
     if (!user) {
       // Land back on the pricing section after login (there's no /pricing route,
       // only this #pricing anchor on the home page).
@@ -90,7 +93,7 @@ export function PricingSection() {
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-full py-6 text-lg font-medium gap-2"
                   asChild
                 >
-                  <a href="/download/mac">
+                  <a href="/download/mac" onClick={() => posthog.capture('download_clicked', { location: 'pricing_section' })}>
                     <Download className="w-5 h-5" />
                     Download for Mac
                   </a>

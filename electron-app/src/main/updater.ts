@@ -70,7 +70,7 @@ export function reduceUpdateState(prev: UpdateState, event: UpdaterEvent): Updat
 }
 
 const RECHECK_INTERVAL_MS = 6 * 60 * 60 * 1000 // re-check every 6 hours while running
-const INITIAL_CHECK_DELAY_MS = 10_000 // let the window settle before the first check
+const INITIAL_CHECK_DELAY_MS = 3_000 // let the window settle before the first check
 
 let currentState: UpdateState = { status: 'idle' }
 let getWindow: () => BrowserWindow | null = () => null

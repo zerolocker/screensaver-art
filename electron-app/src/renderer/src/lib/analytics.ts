@@ -9,3 +9,13 @@ export function track(event: string, properties?: Record<string, unknown>): void
     /* preload not ready / not in electron */
   }
 }
+
+// Tell main to drop the signed-in identity on sign-out, so the next account on
+// this machine starts from a fresh anonymous id. Best-effort; never throws.
+export function resetIdentity(): void {
+  try {
+    void window.electronAPI?.analytics?.reset?.()
+  } catch {
+    /* preload not ready / not in electron */
+  }
+}

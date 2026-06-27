@@ -19,6 +19,8 @@ import {
   capture,
   identifyUser,
   userIdFromToken,
+  emailFromToken,
+  resetIdentity,
   currentDistinctId,
   shutdownPosthog,
 } from './posthog'
@@ -139,7 +141,7 @@ ipcMain.handle(
     // A sync is the first authenticated action each launch, so it's where we
     // link the device to the signed-in user for analytics.
     const userId = userIdFromToken(payload.accessToken)
-    if (userId) identifyUser(userId)
+    if (userId) identifyUser(userId, emailFromToken(payload.accessToken))
     try {
       // The selection lives in the main process (cache-sync needs it, and the
       // renderer persists it via selection:set before triggering a sync). A null
@@ -284,6 +286,13 @@ ipcMain.handle('feedback:send', async (_evt, input: SendFeedbackInput) => {
 // main-process events (one person in PostHog). Best-effort; never throws.
 ipcMain.handle('analytics:capture', (_evt, event: string, properties?: Record<string, unknown>) => {
   if (typeof event === 'string' && event) capture(event, properties)
+})
+
+// The renderer signals sign-out here so we drop the current identity and mint a
+// fresh anonymous device id — keeping accounts separate when more than one signs
+// in on the same machine (see `resetIdentity`).
+ipcMain.handle('analytics:reset', () => {
+  resetIdentity()
 })
 
 // ---------------------------------------------------------------------------

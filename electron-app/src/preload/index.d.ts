@@ -128,6 +128,7 @@ export interface ElectronAPI {
   }
   analytics: {
     capture: (event: string, properties?: Record<string, unknown>) => Promise<void>
+    reset: () => Promise<void>
   }
 }
 

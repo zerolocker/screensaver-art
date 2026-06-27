@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { supabase, getStoredSession } from './lib/supabase'
 import type { Session } from '@supabase/supabase-js'
 import { startOAuth, completeOAuthFromUrl, type OAuthProvider } from './lib/oauth'
+import { resetIdentity } from './lib/analytics'
 import { log } from './lib/log'
 import { LoginPage } from './pages/Login'
 import { OtpPage } from './pages/Otp'
@@ -111,6 +112,9 @@ export function App() {
       if (event === 'SIGNED_IN') {
         navigate('/gallery')
       } else if (event === 'SIGNED_OUT') {
+        // Drop the PostHog identity + mint a fresh anon id so the next account
+        // on this machine doesn't inherit this user's aliased device id.
+        resetIdentity()
         navigate('/login')
       }
     })

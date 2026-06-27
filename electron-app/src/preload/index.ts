@@ -152,6 +152,7 @@ const electronAPI = {
   analytics: {
     capture: (event: string, properties?: Record<string, unknown>): Promise<void> =>
       ipcRenderer.invoke('analytics:capture', event, properties),
+    reset: (): Promise<void> => ipcRenderer.invoke('analytics:reset'),
   },
 }
 

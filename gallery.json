@@ -1882,5 +1882,57 @@
     "image_prompt": "An opulent Art Deco lacquer folding screen filling the frame, in the manner of Jean Dunand and Armand-Albert Rateau, c. 1925. Stylized leaping gazelles in burnished gold and silver leaf bound across a deep black and dark-teal lacquer ground, among geometric sunburst rays, fan motifs and stylized fronds. Rich eggshell-inlay texture, incised crisp linework, the warm sheen of gold leaf and crushed-shell mother-of-pearl catching low light. Symmetrical, elegant, luxurious 1920s French decorative-arts composition. Even soft directional light raking across the glossy lacquer surface. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
     "video_prompt": "The lacquer screen holds completely still — the gold gazelles, sunburst fans and geometric fronds keep their exact shape and position. Only the light moves: a warm soft highlight glides slowly across the burnished gold leaf and crushed mother-of-pearl inlay, making the metallic surfaces shimmer and glint and the deep black-teal lacquer glow, as if a gentle light source drifts past the glossy surface. The reflective sheen eases smoothly back to exactly where it began, a seamless calm loop. Camera perfectly static, elegant and luxurious.",
     "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/egyptian_nile_marsh_fowling_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/egyptian_nile_marsh_fowling_4k.webp",
+    "title": "Fowling in the Marshes - Egyptian Tomb Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-06-27",
+    "tags": [
+      "Egyptian"
+    ],
+    "image_prompt": "Ancient Egyptian tomb wall painting in the New Kingdom style, a nobleman fowling in the papyrus marshes of the Nile. Flat registered composition with bold flat fields of ochre, malachite green, Egyptian blue and earthen red on a cream plaster ground, crisp black outlines, profile figures, hieroglyphic columns. A dense thicket of tall green papyrus reeds fills the right side; a flock of ducks and herons bursting upward; rippling blue water with lotus and fish below; warm even daylight. Authentic faded fresco-secco plaster texture, fine cracks, edge-to-edge painting filling the entire frame, no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "The painted scene comes gently to life while the painting itself holds its flat ancient style. The flock of ducks and herons above the papyrus flaps their wings and drifts slowly upward and to the right across the sky. The tall papyrus reeds sway softly in a light Nile breeze. The blue water ripples gently and the painted fish glide slowly beneath the surface. The human figures and the boat stay perfectly still. Warm even daylight, no camera movement, the flat fresco-secco texture and cracks remain.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/romantic_vesuvius_eruption_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/romantic_vesuvius_eruption_4k.webp",
+    "title": "Vesuvius Erupting - Romantic Oil Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-06-27",
+    "tags": [
+      "19th Century"
+    ],
+    "image_prompt": "A Romantic-era oil painting in the sublime tradition of the early 19th century: Mount Vesuvius erupting at night above the Bay of Naples. A towering plume of glowing orange-red smoke and ash billows from the crater; rivers of molten lava streak down the dark mountainside; sparks and embers scatter into a smoke-choked sky. The fiery glow reflects in the black water of the bay below, where tiny silhouetted boats and a distant moonlit shore catch the light. Loose expressive oil brushwork, dramatic chiaroscuro, deep shadow against incandescent fire, visible canvas texture and craquelure, the painting filling the entire frame edge to edge. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "A dramatic volcanic eruption brought to life as a painting in motion. The massive column of smoke and ash billows and roils upward from the crater, glowing orange at its heart and churning into the dark red sky. Molten lava flows slowly down the mountainside, pulsing with heat. Glowing embers and sparks drift upward and fade. The fiery reflection shimmers and ripples on the dark water of the bay, and the small silhouetted boats rock gently on the swell. The mountain itself stays solid and still. Cinematic, no camera movement, the oil-paint texture and craquelure remain throughout.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dutch_vanitas_candlelight_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/dutch_vanitas_candlelight_4k.webp",
+    "title": "Vanitas by Candlelight - Dutch Golden Age Still Life (AI Animated)",
+    "type": "video",
+    "date": "2026-06-27",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "image_prompt": "A Dutch Golden Age vanitas still life, oil on oak panel in the 17th-century manner, dramatic tenebrism. On a dark draped table: a single lit beeswax candle with a small steady flame, a polished human skull, an open leather-bound book with curling pages, an hourglass, a tarnished pewter goblet tipped on its side, a few wilting tulips, and a string of pearls catching the light. Warm golden candlelight pools on the objects against a deep brown-black background; thin tendrils of smoke rise from the flame. Meticulous fine brushwork, glossy reflections, visible craquelure and canvas weave, the painting filling the entire frame edge to edge. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "An intimate candlelit still life gently brought to life, ending exactly where it began. The candle flame flickers and sways softly, casting a warm golden glow that subtly pulses and breathes across the skull, the open book and the pewter goblet. A thin tendril of smoke curls slowly upward from the flame. The deep shadows shift almost imperceptibly. Everything settles back to the opening state. All objects keep their solid form and position; no warping. Static camera, the oil-paint craquelure and brushwork remain throughout.",
+    "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/roman_garden_fresco_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/roman_villa_livia_garden_fresco_4k.webp",
+    "title": "Garden of Livia - Roman Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-06-27",
+    "tags": [
+      "Greek & Roman"
+    ],
+    "image_prompt": "An ancient Roman garden fresco in the style of the Villa of Livia at Prima Porta, painted directly on a plaster wall. A lush illusionistic garden seen through a low wickerwork fence: laurel, pomegranate, oleander and quince trees heavy with fruit and flowers, a carpet of acanthus, violets and white daisies below, set against a luminous pale blue-green sky. Songbirds — a goldfinch, a thrush, a dove — perch and flit among the branches. Soft naturalistic fresco palette of greens, terracotta and cream, gentle even Mediterranean daylight, authentic buon-fresco plaster texture with fine cracks and faded patches, the painting filling the entire frame edge to edge. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "A serene painted garden gently brought to life, ending exactly where it began. A soft Mediterranean breeze stirs the leaves and branches of the laurel and pomegranate trees, and the flowers and acanthus below sway lightly. The small songbirds flit and hop between the branches and one dove glides slowly across the pale sky. Warm even daylight drifts almost imperceptibly. The motion is gentle and settles back to the opening state. The fresco keeps its flat painted style and the plaster texture, cracks and faded patches remain throughout. Static camera, no zoom.",
+    "looping": true
   }
 ]

@@ -1,10 +1,11 @@
 // Living Art Screensaver — Gallery Curation Tool (local server)
 //
 // Zero-dependency Node HTTP server. Serves a local web UI that lets you browse
-// every piece in gallery.json (video + prompts) and flag the ones that look
-// corrupted or ugly. Your flags are written to curation/cleanup-tool/selections.json,
-// which Claude then processes (delete from gallery.json + refine the
-// nightly-curation prompt guidance).
+// every piece in gallery.json (video + prompts) and mark them "undesirable"
+// (remove) or "great" (want more), each with an optional note. Your flags are
+// written to curation/cleanup-tool/selections.json, which Claude then processes
+// (delete undesirable from gallery.json + refine the nightly-curation prompt
+// guidance from your notes — what to avoid and what to make more of).
 //
 //   node curation/cleanup-tool/server.mjs           # serve + open browser
 //   PORT=5000 node curation/cleanup-tool/server.mjs # custom port
@@ -89,7 +90,7 @@ const server = createServer(async (req, res) => {
 server.listen(PORT, () => {
   const link = `http://localhost:${PORT}`;
   console.log(`\n  Gallery Curation Tool running at ${link}`);
-  console.log('  Browse the gallery, flag corrupted/ugly pieces, then return to Claude.');
+  console.log('  Browse the gallery, mark pieces undesirable or great, then return to Claude.');
   console.log('  Your flags autosave to curation/cleanup-tool/selections.json.\n');
   console.log('  Press Ctrl+C to stop.\n');
   if (!process.env.NO_OPEN) openBrowser(link);

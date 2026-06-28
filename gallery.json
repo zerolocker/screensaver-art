@@ -1934,5 +1934,57 @@
     "image_prompt": "An ancient Roman garden fresco in the style of the Villa of Livia at Prima Porta, painted directly on a plaster wall. A lush illusionistic garden seen through a low wickerwork fence: laurel, pomegranate, oleander and quince trees heavy with fruit and flowers, a carpet of acanthus, violets and white daisies below, set against a luminous pale blue-green sky. Songbirds — a goldfinch, a thrush, a dove — perch and flit among the branches. Soft naturalistic fresco palette of greens, terracotta and cream, gentle even Mediterranean daylight, authentic buon-fresco plaster texture with fine cracks and faded patches, the painting filling the entire frame edge to edge. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
     "video_prompt": "A serene painted garden gently brought to life, ending exactly where it began. A soft Mediterranean breeze stirs the leaves and branches of the laurel and pomegranate trees, and the flowers and acanthus below sway lightly. The small songbirds flit and hop between the branches and one dove glides slowly across the pale sky. Warm even daylight drifts almost imperceptibly. The motion is gentle and settles back to the opening state. The fresco keeps its flat painted style and the plaster texture, cracks and faded patches remain throughout. Static camera, no zoom.",
     "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/kakadu_rock_art_20260628_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/kakadu_rock_art_20260628_4k.webp",
+    "title": "Rock Shelter Spirits - Aboriginal Kakadu X-ray Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-06-28",
+    "tags": [
+      "Arts of Africa & Oceania"
+    ],
+    "image_prompt": "An ancient Aboriginal rock art panel in the X-ray style of Arnhem Land and Kakadu, painted in red ochre, yellow ochre and white pipe-clay directly onto a weathered golden sandstone overhang that fills the entire frame edge to edge. A large barramundi fish and a long-necked freshwater turtle rendered with visible internal bones and organs, surrounded by faded hand stencils and a slender hunter figure holding a spear. The rough pitted sandstone surface is streaked with mineral and water stains, lit warmly from below by an unseen campfire so the matte earth pigments glow amber against the deep shadow inside the rock shelter. Authentic prehistoric rock painting, natural matte pigments, no canvas. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "Warm campfire light flickers across the sandstone overhang, the ochre figures glowing brighter then dimming as unseen flames dance below the frame. A thin veil of pale wood smoke drifts slowly upward across the rock face. The painted barramundi, turtle, hunter and hand stencils stay completely still and hold their form — only the firelight, the soft shifting shadows in the rock crevices, and the rising smoke move. Subtle heat shimmer near the base of the frame.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/song_landscape_20260628_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/song_landscape_20260628_4k.webp",
+    "title": "Misty Peaks and Waterfall - Song Dynasty Landscape (AI Animated)",
+    "type": "video",
+    "date": "2026-06-28",
+    "tags": [
+      "Chinese & Korean"
+    ],
+    "image_prompt": "A monumental Northern Song dynasty landscape painting in the style of Fan Kuan and Guo Xi, ink and pale mineral colour on aged silk, the painting filling the entire frame edge to edge. A towering central mountain peak rises through drifting mist, its face textured with fine 'raindrop' brush strokes; a tall thin silver waterfall plunges down the cliff into a misty gorge. Gnarled pine trees cling to the rocky ledges, and far below a tiny path winds past a temple roof half-hidden in the valley vapour. Monochrome ink wash with faint warm silk tone, soft diffused daylight, delicate atmospheric perspective, visible silk weave and age toning. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "The tall silver waterfall streams steadily down the cliff face into the gorge below, its base dissolving into rising spray. Banks of soft mist drift slowly through the valley and curl around the mountain peaks, thickening and thinning. The gnarled pines sway almost imperceptibly. The painting keeps its ink-on-silk character throughout — mountains, rocks, temple and trees hold their form and the silk weave and age toning remain. Only the falling water, drifting mist and faint pine sway move. Static camera, no zoom.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/safavid_dome_20260628_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/safavid_dome_20260628_4k.webp",
+    "title": "Dome of Light - Safavid Persian Tilework (AI Animated)",
+    "type": "video",
+    "date": "2026-06-28",
+    "tags": [
+      "Islamic"
+    ],
+    "image_prompt": "A worm's-eye view looking straight up into the interior of a Safavid Persian mosque dome, in the style of the Sheikh Lotfollah and Shah mosques of 17th-century Isfahan, the tilework filling the entire frame edge to edge. Concentric rings of glazed faience and muqarnas honeycomb vaulting spiral inward to a radiant sunburst medallion at the apex, rendered in turquoise, cobalt, lapis blue, cream and gold with arabesque vines, lotus palmettes and bands of white thuluth calligraphy. Sunlight slants through a ring of small lattice windows, casting warm pools across the glossy ceramic and deep shadow into the recesses of the vaulting. Authentic hand-glazed Iznik-style tile sheen, intricate Islamic geometric symmetry, no people. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "A meditative slow loop that ends exactly where it began. Warm sunlight slowly brightens then softens as it filters through the ring of lattice windows around the dome, the golden glow drifting gently across the glazed tilework and deepening the shadows in the muqarnas honeycomb vaulting. Faint dust motes float slowly through the shafts of light. The tilework, calligraphy and geometric patterns stay perfectly still and hold their form and symmetry; only the light and the drifting motes move, settling back to the opening state. Static camera, no zoom, no rotation.",
+    "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/teotihuacan_mural_20260628_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/teotihuacan_mural_20260628_4k.webp",
+    "title": "Great Goddess Mural - Teotihuacan Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-06-28",
+    "tags": [
+      "Arts of the Americas"
+    ],
+    "image_prompt": "An ancient Teotihuacan mural painting in the style of the Tepantitla compound, painted in mineral pigments directly onto a lime-plaster temple wall that fills the entire frame edge to edge. A frontal Great Goddess figure with an elaborate quetzal-feather headdress, hands outstretched scattering seeds and water droplets, flanked by symmetrical profile priests in feathered regalia and stylised flowering trees. Deep Teotihuacan red ochre ground with motifs in jade green, turquoise, ochre yellow, white and black, bold flat outlines, the characteristic geometric Mesoamerican framing border. Warm low torchlight grazes the rough fresco surface, raking light catching the plaster texture, faded and chipped patches revealing the plaster beneath. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
+    "video_prompt": "A quiet loop in a torch-lit temple that ends exactly where it began. The two flanking torch flames flicker and dance, their warm orange light grazing across the rough lime-plaster mural and making the red ochre ground and jade-green pigments glow and dim. Thin wisps of pale incense smoke drift slowly upward across the wall. The painted Great Goddess, the priests, the flowering trees and the geometric border stay completely still and hold their form — only the torch flames, the warm flickering light, the shifting shadows and the rising smoke move, settling back to the opening state. Static camera, no zoom.",
+    "looping": true
   }
 ]

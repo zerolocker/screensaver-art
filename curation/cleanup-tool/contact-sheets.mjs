@@ -1,17 +1,17 @@
-// Living Art Screensaver — build labeled contact sheets of "undesirable" pieces
+// Living Art Screensaver — build labeled contact sheets of flagged pieces
 //
-// Extracts the first frame of every piece flagged "undesirable" in
-// curation/cleanup-tool/selections.json and tiles them into labeled contact
-// sheets, so Claude can review dozens of frames in a handful of images (vision
-// can't take dozens of stills one at a time). Pure ffmpeg — no extra deps.
+// Extracts the first frame of every flagged piece — both "undesirable" (what to
+// avoid) and "great" / want-more (what to make more of) — and tiles them into
+// labeled contact sheets, so Claude can review dozens of frames in a handful of
+// images (vision can't take dozens of stills one at a time). Pure ffmpeg — no deps.
 //
 //   node curation/cleanup-tool/contact-sheets.mjs
 //
 // Outputs under curation/cleanup-tool/.analysis/:
-//   frames/NNN.png         one labeled 16:9 frame per undesirable piece
-//   sheets/sheet_NN.png    frames tiled 4x4 (16 per sheet), index burned in
-//   index.json             tile number -> { src, title, image_prompt, video_prompt }
-//   index.md               same mapping, human/Claude-readable
+//   frames/<reason>/NNN.png    one labeled 16:9 frame per flagged piece
+//   sheets/<reason>_NN.png     frames tiled 4x4 (16 per sheet), index burned in
+//   index.json                 { undesirable:[…], great:[…] } -> {n, sheet, src, title, note, prompts}
+//   index.md                   same mapping, human/Claude-readable, grouped by reason
 
 import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -37,6 +37,13 @@ const FONT = [
 
 const norm = (r) => (r === 'ugly' ? 'undesirable' : r);
 
+// The two flag kinds we build sheets for, with their markdown section headings.
+const REASONS = ['undesirable', 'great'];
+const SECTION = {
+  undesirable: '## ✕ Undesirable (what to avoid)',
+  great: '## ★ Great — want more (what to make more of)',
+};
+
 function run(cmd, args) {
   return new Promise((resolve, reject) => {
     const p = spawn(cmd, args, { stdio: ['ignore', 'ignore', 'pipe'] });
@@ -58,70 +65,86 @@ async function pool(items, n, fn) {
   return results;
 }
 
-// --- gather undesirable pieces (join selections -> gallery for prompts) ---
+// --- gather flagged pieces by reason (join selections -> gallery for prompts) ---
 if (!existsSync(SELECTIONS)) { console.error('No curation/cleanup-tool/selections.json. Run the tool first.'); process.exit(1); }
 const sel = JSON.parse(await readFile(SELECTIONS, 'utf8'));
 const gallery = JSON.parse(await readFile(GALLERY, 'utf8'));
 const bySrc = new Map(gallery.map((g) => [g.src, g]));
 
-const pieces = (sel.flagged || [])
-  .filter((f) => norm(f.reason) === 'undesirable')
-  .map((f) => {
-    const g = bySrc.get(f.src) || {};
-    return { src: f.src, title: g.title || f.title || '', image_prompt: g.image_prompt || '', video_prompt: g.video_prompt || '' };
-  });
+const buckets = {};
+for (const reason of REASONS) {
+  buckets[reason] = (sel.flagged || [])
+    .filter((f) => norm(f.reason) === reason)
+    .map((f) => {
+      const g = bySrc.get(f.src) || {};
+      return { src: f.src, title: g.title || f.title || '', note: f.note || '', image_prompt: g.image_prompt || '', video_prompt: g.video_prompt || '' };
+    });
+}
 
-if (!pieces.length) { console.log('No "undesirable" pieces flagged. Nothing to do.'); process.exit(0); }
-console.log(`Building contact sheets for ${pieces.length} undesirable piece(s)…`);
+const total = REASONS.reduce((n, r) => n + buckets[r].length, 0);
+if (!total) { console.log('No flagged pieces. Nothing to do.'); process.exit(0); }
 
 // --- fresh output dirs ---
 await rm(OUT, { recursive: true, force: true });
-await mkdir(FRAMES, { recursive: true });
 await mkdir(SHEETS, { recursive: true });
 
-// --- extract + label first frame of each ---
 const pad = (n) => String(n).padStart(3, '0');
 const drawtext = (label) => {
   const base = `text='${label}':x=8:y=6:fontsize=34:fontcolor=yellow:box=1:boxcolor=black@0.65:boxborderw=8`;
   return FONT ? `drawtext=fontfile='${FONT}':${base}` : `drawtext=${base}`;
 };
 
-const ok = await pool(pieces, CONCURRENCY, async (p, idx) => {
-  const vf = [
-    `scale=${TILE_W}:${TILE_H}:force_original_aspect_ratio=decrease`,
-    `pad=${TILE_W}:${TILE_H}:(ow-iw)/2:(oh-ih)/2:color=black`,
-    drawtext(idx),
-  ].join(',');
-  // -frames:v 1 from the start: ffmpeg reads only enough of the remote stream to
-  // decode the first frame, so this does not download the whole MP4.
-  await run('ffmpeg', ['-y', '-i', p.src, '-frames:v', '1', '-vf', vf, join(FRAMES, `${pad(idx)}.png`)]);
-});
-const good = ok.filter(Boolean).length;
-console.log(`Extracted ${good}/${pieces.length} frames.`);
+// Extract + label the first frame of each piece, tile into sheets prefixed by reason.
+async function buildBucket(reason, pieces) {
+  if (!pieces.length) return [];
+  console.log(`Building contact sheets for ${pieces.length} ${reason} piece(s)…`);
+  const framesDir = join(FRAMES, reason);
+  await mkdir(framesDir, { recursive: true });
 
-// --- tile frames into sheets (image2 sequence -> tile filter) ---
-// The tile filter packs consecutive input frames into a grid and emits one image
-// per full grid; trailing cells on the last sheet are filled with the pad color.
-await run('ffmpeg', [
-  '-y', '-framerate', '1', '-start_number', '0', '-i', join(FRAMES, '%03d.png'),
-  '-vf', `tile=${COLS}x${ROWS}:padding=10:margin=10:color=0x1d2029`,
-  join(SHEETS, 'sheet_%02d.png'),
-]);
+  const ok = await pool(pieces, CONCURRENCY, async (p, idx) => {
+    const vf = [
+      `scale=${TILE_W}:${TILE_H}:force_original_aspect_ratio=decrease`,
+      `pad=${TILE_W}:${TILE_H}:(ow-iw)/2:(oh-ih)/2:color=black`,
+      drawtext(idx),
+    ].join(',');
+    // -frames:v 1 from the start: ffmpeg reads only enough of the remote stream to
+    // decode the first frame, so this does not download the whole MP4.
+    await run('ffmpeg', ['-y', '-i', p.src, '-frames:v', '1', '-vf', vf, join(framesDir, `${pad(idx)}.png`)]);
+  });
+  console.log(`  ${reason}: extracted ${ok.filter(Boolean).length}/${pieces.length} frames.`);
+
+  // The tile filter packs consecutive input frames into a grid and emits one image
+  // per full grid; trailing cells on the last sheet are filled with the pad color.
+  // ffmpeg's image2 muxer numbers sheets from 01, so +1 below to match <reason>_NN.png.
+  await run('ffmpeg', [
+    '-y', '-framerate', '1', '-start_number', '0', '-i', join(framesDir, '%03d.png'),
+    '-vf', `tile=${COLS}x${ROWS}:padding=10:margin=10:color=0x1d2029`,
+    join(SHEETS, `${reason}_%02d.png`),
+  ]);
+
+  return pieces.map((p, n) => ({ n, sheet: Math.floor(n / (COLS * ROWS)) + 1, ...p }));
+}
+
+const index = {};
+for (const reason of REASONS) index[reason] = await buildBucket(reason, buckets[reason]);
 
 // --- mapping files ---
-// ffmpeg's image2 muxer numbers sheets from 01, so +1 to match sheet_NN.png.
-const index = pieces.map((p, n) => ({ n, sheet: Math.floor(n / (COLS * ROWS)) + 1, ...p }));
-await writeFile(join(OUT, 'index.json'), JSON.stringify({ generatedAt: new Date().toISOString(), tiling: `${COLS}x${ROWS}`, count: pieces.length, pieces: index }, null, 2) + '\n');
+await writeFile(join(OUT, 'index.json'), JSON.stringify({ generatedAt: new Date().toISOString(), tiling: `${COLS}x${ROWS}`, ...index }, null, 2) + '\n');
 
-const md = ['# Undesirable pieces — contact-sheet index', '',
-  `Tiles are numbered (burned into each frame). ${COLS}×${ROWS} per sheet.`, ''];
-for (const p of index) {
-  md.push(`### ${p.n} — ${p.title || '(untitled)'}  _(sheet ${p.sheet})_`);
-  md.push(`- image_prompt: ${p.image_prompt || '(none)'}`);
-  md.push(`- video_prompt: ${p.video_prompt || '(none)'}`);
-  md.push('');
+const md = ['# Flagged pieces — contact-sheet index', '',
+  `Tiles are numbered (burned into each frame). ${COLS}×${ROWS} per sheet. Sheet files are prefixed by reason (e.g. \`undesirable_01.png\`, \`great_01.png\`).`, ''];
+for (const reason of REASONS) {
+  if (!index[reason].length) continue;
+  md.push(SECTION[reason], '');
+  for (const p of index[reason]) {
+    md.push(`### ${p.n} — ${p.title || '(untitled)'}  _(${reason}_${String(p.sheet).padStart(2, '0')}.png)_`);
+    if (p.note) md.push(`- **reviewer note: ${p.note}**`);
+    md.push(`- image_prompt: ${p.image_prompt || '(none)'}`);
+    md.push(`- video_prompt: ${p.video_prompt || '(none)'}`);
+    md.push('');
+  }
 }
 await writeFile(join(OUT, 'index.md'), md.join('\n'));
 
-console.log(`\nSheets:  curation/cleanup-tool/.analysis/sheets/`);
+console.log(`\nSheets:  curation/cleanup-tool/.analysis/sheets/  (undesirable_*.png, great_*.png)`);
 console.log(`Index:   curation/cleanup-tool/.analysis/index.json  +  index.md`);

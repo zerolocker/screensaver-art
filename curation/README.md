@@ -58,13 +58,14 @@ A small human-in-the-loop tool for cleaning up `gallery.json` and improving the
 nightly agent over time.
 
 **The problem it solves:** the nightly agent already self-reviews each still, but
-some pieces still land **corrupted** (glitchy / single-color / broken) or
-**undesirable** (off-theme / low-quality). This tool lets you sweep the gallery,
-flag the bad ones, remove them, and feed the lessons back into `PROMPT_GUIDANCE.md`
-so the agent makes fewer of them next time.
+some pieces still land **undesirable** (off-theme / low-quality / glitchy). This
+tool lets you sweep the gallery and give two-way feedback: mark the misses
+**undesirable** (removed), and mark the standouts **great** ("want more" — a
+positive keep-signal). Both — with your optional notes — feed back into
+`PROMPT_GUIDANCE.md` so the agent makes fewer misses *and* more of what you love.
 
-It's a loop between **you** (judging what looks bad) and **Claude** (applying the
-deletions and distilling prompt patterns).
+It's a loop between **you** (judging what's good or bad) and **Claude** (applying
+the deletions and distilling the patterns to avoid + to emulate).
 
 ### Tech
 
@@ -85,10 +86,16 @@ node curation/cleanup-tool/server.mjs
 
 This serves the tool at <http://localhost:4321> and opens your browser. You'll see
 every piece in `gallery.json` as a card with its **video, title, date, and both
-prompts**. For anything that looks bad, click:
+prompts**. On each card, click:
 
-- **⚠ Corrupted** — glitchy, single-color, broken render
-- **✕ Undesirable** — renders fine but off-theme / low-quality / not wanted
+- **★ Great, want more** — a standout; tells the bot to make more like it (kept)
+- **✕ Undesirable** — off-theme / low-quality / glitchy / not wanted (removed)
+
+**Either** button reveals an optional free-form note box — jot down *why* (e.g.
+"muddy palette, broken hands" for undesirable; "love the dramatic motion and rich
+palette" for great). It's saved with the flag and surfaces in Claude's analysis,
+so the prompt-guidance round leans on your stated reasons instead of guessing from
+the frame alone.
 
 Click again to unflag. Use the **All / Flagged / Unflagged** filters to review.
 Your flags **autosave** to `curation/cleanup-tool/selections.json` as you go (no
@@ -104,16 +111,22 @@ Claude then:
 
 1. Runs `node curation/cleanup-tool/apply.mjs`, which:
    - backs up the current `gallery.json` to `curation/cleanup-tool/.backups/`,
-   - removes every flagged piece from `gallery.json`,
-   - writes the removed items (with their prompts + reason) to
-     `curation/cleanup-tool/last-removed.json`.
-2. Builds **labeled contact sheets** of the undesirable pieces' first frames
-   (`node curation/cleanup-tool/contact-sheets.mjs`) so it can *see* the pattern —
+   - **removes only the `undesirable` pieces** (the `great` ones stay — "great" is
+     a positive keep-signal),
+   - writes the removed items (with prompts + note) to
+     `curation/cleanup-tool/last-removed.json` and the kept-great items to
+     `curation/cleanup-tool/last-loved.json`.
+2. Builds **labeled contact sheets** of *both* kinds' first frames
+   (`node curation/cleanup-tool/contact-sheets.mjs`) so it can *see* the patterns —
    dozens of videos are too many to view one-by-one, so their frames are tiled
-   16-per-image.
-3. Cross-references each undesirable piece's **prompt + first frame**, summarizes
-   the common pattern, and appends a dated entry to
-   [`PROMPT_GUIDANCE.md`](PROMPT_GUIDANCE.md) with concrete new/reinforced rules.
+   16-per-image (sheets prefixed `undesirable_*` / `great_*`).
+3. Cross-references each piece's **prompt + first frame** (leading with your
+   free-form **note** when you left one) in *both* directions — the failure
+   patterns to **avoid** (undesirable) and the traits to **make more of** (great) —
+   summarizes them, and appends a dated entry to
+   [`PROMPT_GUIDANCE.md`](PROMPT_GUIDANCE.md) with concrete new/reinforced rules
+   (adding repeat-worthy styles to `ART_STYLES_FOR_INSPIRATION.md` when the great
+   notes point at one).
 
 > The deletion is mechanical and safe (it's just `apply.mjs`); Claude's real
 > value is the prompt + frame pattern analysis. You can also run
@@ -131,17 +144,18 @@ tightens the guidance, and the agent produces fewer bad pieces.
 |---|---|
 | `server.mjs` | Zero-dep local server. `node curation/cleanup-tool/server.mjs` to launch. |
 | `index.html` | The browse + flag UI. |
-| `apply.mjs` | Deletes flagged pieces from `gallery.json` (with backup). |
-| `contact-sheets.mjs` | Extracts undesirable pieces' first frames + tiles them into labeled contact sheets (ffmpeg) for Claude's vision analysis. |
-| `selections.json` | Your current flags (autosaved by the UI). *Gitignored.* |
-| `last-removed.json` | The most recent removed items, for Claude's analysis. *Gitignored.* |
+| `apply.mjs` | Removes `undesirable` pieces from `gallery.json` (with backup); records removed + kept-great. |
+| `contact-sheets.mjs` | Extracts both kinds' first frames + tiles them into labeled contact sheets (ffmpeg, `undesirable_*` / `great_*`) for Claude's vision analysis. |
+| `selections.json` | Your current flags (autosaved by the UI), each `{ src, title, reason, note? }` — `reason` is `undesirable` or `great`; `note` is the optional free-form reason on either. *Gitignored.* |
+| `last-removed.json` | The most recent removed (undesirable) items — what to avoid. *Gitignored.* |
+| `last-loved.json` | The most recent kept (great) items — what to make more of. *Gitignored.* |
 | `.analysis/` | Extracted frames, contact sheets + index from the last analysis. *Gitignored.* |
 | `.backups/` | Timestamped `gallery.json` backups from each `apply.mjs` run. *Gitignored.* |
 
 `PROMPT_GUIDANCE.md` (one level up, in `curation/`) is the durable output of this
 loop and is committed alongside the `gallery.json` change. The tool's working
-files (`selections.json`, `last-removed.json`, `.analysis/`, `.backups/`) are
-gitignored.
+files (`selections.json`, `last-removed.json`, `last-loved.json`, `.analysis/`,
+`.backups/`) are gitignored.
 
 ### Notes
 

@@ -19,6 +19,7 @@ node_modules
 # Gallery curation tool — transient working files (the tool + guidance are committed).
 /curation/cleanup-tool/selections.json
 /curation/cleanup-tool/last-removed.json
+/curation/cleanup-tool/last-loved.json
 /curation/cleanup-tool/.backups/
 /curation/cleanup-tool/.analysis/
 

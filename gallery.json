@@ -1727,5 +1727,57 @@
     "image_prompt": "An ancient Teotihuacan mural painting in the style of the Tepantitla compound, painted in mineral pigments directly onto a lime-plaster temple wall that fills the entire frame edge to edge. A frontal Great Goddess figure with an elaborate quetzal-feather headdress, hands outstretched scattering seeds and water droplets, flanked by symmetrical profile priests in feathered regalia and stylised flowering trees. Deep Teotihuacan red ochre ground with motifs in jade green, turquoise, ochre yellow, white and black, bold flat outlines, the characteristic geometric Mesoamerican framing border. Warm low torchlight grazes the rough fresco surface, raking light catching the plaster texture, faded and chipped patches revealing the plaster beneath. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
     "video_prompt": "A quiet loop in a torch-lit temple that ends exactly where it began. The two flanking torch flames flicker and dance, their warm orange light grazing across the rough lime-plaster mural and making the red ochre ground and jade-green pigments glow and dim. Thin wisps of pale incense smoke drift slowly upward across the wall. The painted Great Goddess, the priests, the flowering trees and the geometric border stay completely still and hold their form — only the torch flames, the warm flickering light, the shifting shadows and the rising smoke move, settling back to the opening state. Static camera, no zoom.",
     "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/khmer_angkor_apsara_relief_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/khmer_angkor_apsara_relief_4k.webp",
+    "title": "Apsara Dancers - Angkor Wat Bas-Relief (AI Animated)",
+    "type": "video",
+    "date": "2026-06-29",
+    "tags": [
+      "South & Southeast Asian"
+    ],
+    "image_prompt": "A weathered sandstone bas-relief carved into a temple gallery wall at Angkor Wat, 12th-century Khmer Empire, depicting a procession of graceful apsara celestial dancers and a row of devas, deeply incised in grey-gold sandstone with lichen and age-darkened crevices, low warm raking dawn light grazing the carved surface from the left so each figure casts a long crisp shadow, the relief fills the entire frame edge to edge as an immersive wall of stone, fine surface texture and chisel marks visible, museum-grade, beautiful. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall behind, no spotlight, no museum label, no plain studio background; the artwork fills the frame.",
+    "video_prompt": "The warm dawn sunlight slowly rakes lower across the carved sandstone relief, the long shadows of the apsara figures gently lengthening and shifting as the light shifts, faint dust motes drifting through the low golden light; the stone itself stays perfectly still and solid, only the light, shadow and dust move.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sumie_bamboo_grove_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sumie_bamboo_grove_4k.webp",
+    "title": "Bamboo in the Wind - Sumi-e Ink Wash (AI Animated)",
+    "type": "video",
+    "date": "2026-06-29",
+    "tags": [
+      "Japanese"
+    ],
+    "image_prompt": "A Japanese sumi-e ink-wash painting of a grove of slender bamboo, monochrome black ink with soft graded grey washes and a few sharp dark accent strokes on aged rice paper, Edo-period brushwork in the manner of a master ink painter, delicate tapering culms and pointed leaves bending slightly, faint mist drifting between the stalks, a pale warm paper ground with subtle tonal variation and a hint of a vermilion seal, the painting fills the frame edge to edge, museum-grade, beautiful. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background; the artwork fills the frame.",
+    "video_prompt": "A soft gust of wind moves through the bamboo grove — the slender ink-painted culms sway and the pointed leaves flutter and bend together, then ease back, a fine veil of grey mist drifting between the stalks; the rice-paper texture and ink tones hold their form, only the bamboo and the mist move gently in the breeze. Static camera, no zoom.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/babylon_lion_glazed_brick_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/babylon_lion_glazed_brick_4k.webp",
+    "title": "Striding Lion - Babylonian Glazed-Brick Relief (AI Animated)",
+    "type": "video",
+    "date": "2026-06-29",
+    "tags": [
+      "Ancient Near East"
+    ],
+    "image_prompt": "A striding lion rendered in molded, glazed polychrome brick relief from the Processional Way of ancient Babylon, c. 6th century BC reign of Nebuchadnezzar II, the lion's powerful body in golden-yellow and creamy white glaze with a flowing mane, set against a deep lapis-blue glazed brick background, framed above and below by rosette and palmette borders, the raised relief catching warm low raking sunlight from the right, the glazed surface crazed with fine age cracks and a few chipped bricks, the glazed brick wall fills the entire frame edge to edge, museum-grade, beautiful. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background; the artwork fills the frame.",
+    "video_prompt": "A seamless loop that ends exactly where it began. Warm low sunlight slowly sweeps across the glazed brick wall and then gently sweeps back to its starting position, the bright highlights gliding over the raised relief of the striding lion while the deep lapis-blue glaze darkens and brightens, a faint shimmer of warm air rising; the brick wall and the lion stay perfectly still and solid, only the light, the highlights and the soft shadows move and return to the opening. Static camera, no zoom.",
+    "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/maori_whakairo_poupou_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/maori_whakairo_poupou_4k.webp",
+    "title": "Ancestor Carving by Firelight - Maori Whakairo (AI Animated)",
+    "type": "video",
+    "date": "2026-06-29",
+    "tags": [
+      "Arts of Africa & Oceania"
+    ],
+    "image_prompt": "The carved interior wall of a Māori meeting house (wharenui), intricate traditional whakairo woodcarving in dark reddish-brown totara wood — a stylised ancestor figure (poupou) with bold flowing spiral and koru patterns covering the surface, a powerful face with a protruding tongue, three-fingered hands, and inlaid iridescent blue-green paua-shell eyes — lit by warm flickering firelight from below, the deeply carved wood with its spirals and notched ridges filling the frame edge to edge, glints of paua shell catching the firelight, 19th-century Aotearoa New Zealand, museum-grade, beautiful. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background; the artwork fills the frame.",
+    "video_prompt": "A seamless loop that ends exactly where it began. The small fire at the base flickers and dances, its warm orange glow rising and softly falling and returning to its start, the firelight playing across the carved totara wood and making the deep spiral koru patterns glow and dim while the inlaid paua-shell eyes catch and release iridescent blue-green glints; the carved ancestor figure stays completely still and solid, only the flame, the warm flickering light and the shifting shadows move in a gentle repeating cycle. Static camera, no zoom.",
+    "looping": true
   }
 ]

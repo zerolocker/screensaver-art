@@ -27,6 +27,7 @@ When you add a new style, append it under the section it best fits.
 - Sienese School
 - Early Netherlandish Oil Painting
 - Flemish Primitives
+- Flemish Winter Landscape
 - Hieronymus Bosch
 - Renaissance art
 - Renaissance oil painting
@@ -125,6 +126,7 @@ When you add a new style, append it under the section it best fits.
 - Song Dynasty Landscape Painting
 - Yuan Dynasty Landscape
 - Ming Dynasty Silk Painting
+- Ming Bird-and-Flower Painting
 - Nanga
 - Kano School Ink Painting
 - Ukiyo-e
@@ -148,6 +150,7 @@ When you add a new style, append it under the section it best fits.
 - Chola Dynasty Bronze Sculpture
 - Pala Dynasty Bronze
 - Tibetan Thangka
+- Sigiriya Fresco
 - Khmer Angkor Stone Sculpture
 - Javanese Borobudur Relief
 - Thai Sukhothai Buddha
@@ -198,6 +201,7 @@ When you add a new style, append it under the section it best fits.
 - Achaemenid Persian metalwork
 - Achaemenid Persepolis Relief
 - Sasanian Silverwork
+- Sasanian Palace Fresco
 - Roman Garden Fresco
 - Roman Still-Life Fresco (Xenia)
 - Hellenistic Mosaic

@@ -1779,5 +1779,57 @@
     "image_prompt": "The carved interior wall of a Māori meeting house (wharenui), intricate traditional whakairo woodcarving in dark reddish-brown totara wood — a stylised ancestor figure (poupou) with bold flowing spiral and koru patterns covering the surface, a powerful face with a protruding tongue, three-fingered hands, and inlaid iridescent blue-green paua-shell eyes — lit by warm flickering firelight from below, the deeply carved wood with its spirals and notched ridges filling the frame edge to edge, glints of paua shell catching the firelight, 19th-century Aotearoa New Zealand, museum-grade, beautiful. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background; the artwork fills the frame.",
     "video_prompt": "A seamless loop that ends exactly where it began. The small fire at the base flickers and dances, its warm orange glow rising and softly falling and returning to its start, the firelight playing across the carved totara wood and making the deep spiral koru patterns glow and dim while the inlaid paua-shell eyes catch and release iridescent blue-green glints; the carved ancestor figure stays completely still and solid, only the flame, the warm flickering light and the shifting shadows move in a gentle repeating cycle. Static camera, no zoom.",
     "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sigiriya_cloud_maidens_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sigiriya_cloud_maidens_4k.webp",
+    "title": "Cloud Maidens of Sigiriya - Sri Lankan Rock Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-06-30",
+    "tags": [
+      "South & Southeast Asian"
+    ],
+    "image_prompt": "An ancient Sri Lankan rock-shelter fresco in the style of the 5th-century Sigiriya 'cloud maidens', painted in earth pigments and mineral ochres directly on a smooth rock face: two graceful celestial apsara figures shown from the waist up, their golden-skinned bodies emerging from rolling banks of soft white and pale-grey clouds that fill the lower scene, adorned with red and gold jewelry and lotus blossoms, gently scattering handfuls of small pink and white lotus petals into the air. Warm diffuse daylight, glowing matte fresco surface with the fine cracks and patina of very old wall painting, rich ochre-gold and rose palette against a plain warm ground. The painted scene fills the entire image, extending to all four edges, viewed straight-on, flat to the camera. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "The soft banks of cloud the two celestial maidens rest upon drift and billow slowly across the rock face, curling gently sideways, while a scattering of small pink and white lotus petals tumbles and floats softly downward through the air from their open hands. Warm diffuse daylight plays across the matte fresco surface. The painted figures hold completely still and solid — only the clouds drift, the petals fall, and the light gently shifts. Static camera, no zoom.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sasanian_paradise_garden_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/sasanian_paradise_garden_4k.webp",
+    "title": "Royal Paradise Garden - Sasanian Persian Mural (AI Animated)",
+    "type": "video",
+    "date": "2026-06-30",
+    "tags": [
+      "Ancient Near East"
+    ],
+    "image_prompt": "A richly coloured painted mural decorating the plastered wall of a Sasanian Persian royal palace, 5th–6th century CE, depicting a walled 'paradise' pleasure garden (pairidaeza): a straight central watercourse of clear running water flows toward the viewer down the middle, lined with slender dark-green cypresses and flowering pomegranate and almond trees heavy with pink and red blossom, beds of red tulips and irises along the banks, brightly plumed birds — peacocks, partridges and hoopoes — perched in the branches, a pair of small fish in the channel. Flat stylised Sasanian courtly style with bold outlines and jewel-tone mineral pigments — lapis blue, malachite green, ochre, vermilion and gold — on a warm cream ground, soft even daylight, the aged painted plaster showing fine cracks. The garden scene fills the entire image, extending to all four edges, viewed straight-on and flat to the camera, symmetrical. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "The clear water in the central channel flows steadily and smoothly toward the viewer, its surface rippling with gentle moving glints of light, and the two small fish glide slowly along the channel. The slender cypresses and the blossom-laden branches sway very gently in a soft breeze, and a few pink petals drift down. The painted forms — trees, birds, flowers — stay solid and in place; only the running water, the swimming fish, the soft breeze in the foliage and the falling petals move. Soft even daylight, static camera, no zoom.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ming_lotus_pond_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ming_lotus_pond_4k.webp",
+    "title": "Lotus Pond with Mandarin Ducks - Ming Bird-and-Flower Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-06-30",
+    "tags": [
+      "Chinese & Korean"
+    ],
+    "image_prompt": "A Ming-dynasty Chinese bird-and-flower painting, ink and bright mineral colour on silk, 16th century, in the meticulous gongbi style: a tranquil lotus pond viewed from slightly above, the dark green water covered with broad round lotus leaves and several open pink-and-white lotus blossoms and buds on tall stems, a pair of mandarin ducks with vivid orange and emerald plumage swimming among the leaves, two orange-and-white koi carp gliding just beneath the surface, a red dragonfly hovering over a bud. Delicate fine-line brushwork, soft graded washes, jewel-like pigment, the silk's warm aged tone, gentle even daylight. The pond scene fills the entire image, extending to all four edges, viewed straight-on and flat to the camera. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "A seamless loop that ends exactly where it began. The two koi carp glide slowly in a gentle curving path just beneath the surface and circle back to their starting positions; the pair of mandarin ducks paddle softly, sending faint concentric ripples spreading outward across the dark water that gently fade; the lotus blossoms and broad leaves sway just slightly, and the red dragonfly hovers and drifts above a bud before returning. All motion is calm and returns to the opening pose by the end. The painted forms stay solid — only the water ripples, the swimming koi, the paddling ducks, the gentle sway and the hovering dragonfly move. Soft even daylight, static camera, no zoom.",
+    "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/flemish_winter_village_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/flemish_winter_village_4k.webp",
+    "title": "Snowfall over a Flemish Village - Netherlandish Winter Landscape (AI Animated)",
+    "type": "video",
+    "date": "2026-06-30",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "image_prompt": "A 16th-century Flemish winter landscape, oil on oak panel in the Netherlandish manner, painted with fine detail and atmospheric depth: a snow-covered village in a wide valley seen from a low rise, steep-roofed brick-and-timber houses dusted with snow, thin grey woodsmoke curling up from the chimneys, bare black trees, tiny bundled-up villagers and skaters dotted across a frozen river in the middle distance, a stone church spire and snowy fields receding to a pale wintry horizon under a heavy soft grey-white sky. Muted earthy palette — browns, greys, ochres and cold white snow — soft flat winter daylight, the warm glow of aged varnish. Snow is falling. The landscape fills the entire image, extending to all four edges, viewed straight-on. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "A seamless loop that ends exactly where it began. Soft snow falls steadily and continuously across the whole scene, countless small flakes drifting gently down and slightly sideways at an even pace, and thin grey woodsmoke curls and rises softly from the chimneys, dispersing into the cold sky. The painted village, bare trees, frozen river and figures all stay completely solid and still — only the falling snow and the rising chimney smoke move, in a calm, even, continuously repeating cycle. Soft flat winter daylight, static camera, no zoom.",
+    "looping": true
   }
 ]

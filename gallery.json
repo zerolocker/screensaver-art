@@ -1831,5 +1831,57 @@
     "image_prompt": "A 16th-century Flemish winter landscape, oil on oak panel in the Netherlandish manner, painted with fine detail and atmospheric depth: a snow-covered village in a wide valley seen from a low rise, steep-roofed brick-and-timber houses dusted with snow, thin grey woodsmoke curling up from the chimneys, bare black trees, tiny bundled-up villagers and skaters dotted across a frozen river in the middle distance, a stone church spire and snowy fields receding to a pale wintry horizon under a heavy soft grey-white sky. Muted earthy palette — browns, greys, ochres and cold white snow — soft flat winter daylight, the warm glow of aged varnish. Snow is falling. The landscape fills the entire image, extending to all four edges, viewed straight-on. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
     "video_prompt": "A seamless loop that ends exactly where it began. Soft snow falls steadily and continuously across the whole scene, countless small flakes drifting gently down and slightly sideways at an even pace, and thin grey woodsmoke curls and rises softly from the chimneys, dispersing into the cold sky. The painted village, bare trees, frozen river and figures all stay completely solid and still — only the falling snow and the rising chimney smoke move, in a calm, even, continuously repeating cycle. Soft flat winter daylight, static camera, no zoom.",
     "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/venice_grand_canal_veduta_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/venice_grand_canal_veduta_4k.webp",
+    "title": "The Grand Canal - Venetian Veduta (AI Animated)",
+    "type": "video",
+    "date": "2026-07-01",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "image_prompt": "An 18th-century Venetian veduta in the style of Canaletto, oil on canvas, luminous clear morning light. A straight-on view looking down the Grand Canal of Venice: sunlit Baroque palazzi with marble facades line both banks, their reflections shimmering in the green canal water; several black gondolas glide across the foreground water; distant church domes and campaniles under a wide sky of soft drifting cumulus clouds; small banners flutter from poles. Warm golden sunlight, crisp shadows, fine period brushwork, gentle atmospheric perspective. The scene fills the entire image, extending to all four edges, viewed straight-on. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "Gentle rippling water flows across the Grand Canal, sunlight glinting on the wavelets and reflections shimmering; the black gondolas glide slowly forward across the water, oars dipping; soft cumulus clouds drift slowly across the sky and small banners flutter lightly in the breeze. Calm warm morning light. Physically natural motion only; the marble palazzi and domes hold perfectly still and solid.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/norwegian_fjord_waterfall_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/norwegian_fjord_waterfall_4k.webp",
+    "title": "Fjord Waterfall - Norwegian Romantic Landscape (AI Animated)",
+    "type": "video",
+    "date": "2026-07-01",
+    "tags": [
+      "19th Century"
+    ],
+    "image_prompt": "A single continuous wide horizontal Norwegian Romantic landscape in the style of Johan Christian Dahl, oil on canvas, early 19th century, sublime and moody, one unified panoramic scene filling the whole width. A towering waterfall thunders down a dark granite cliff into a misty fjord gorge; wet black rocks, a wind-bent pine on the near slope, churning white water and rising spray at the base, low drifting mist, and a dramatic overcast sky broken by shafts of pale light. Rich impasto, deep tonal contrast, atmospheric grandeur. This is one seamless landscape that fills the entire image, extending to all four edges, viewed straight-on. no triptych, no panels, no side panels, no diptych, no split image, no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "The waterfall crashes and pours continuously down the granite cliff, churning white water and billowing spray rising at its base; banks of mist drift slowly up the gorge and pale storm clouds move across the sky; the lone pine and grasses sway lightly in the wind. Dramatic but physically real motion; the rocks and cliff stay solid and perfectly still.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/safavid_garden_fountain_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/safavid_garden_fountain_4k.webp",
+    "title": "Garden Fountain at Isfahan - Safavid Persian Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-07-01",
+    "tags": [
+      "Islamic"
+    ],
+    "image_prompt": "A single continuous wide Safavid Persian garden scene, 17th-century Isfahan, rendered as a lush jewel-toned painting on a grand scale, one unified panoramic view filling the whole width. A formal chahar-bagh courtyard seen straight-on: a central white marble fountain sends a rising jet of water into a long rectangular reflecting pool; tall dark cypress trees and blossoming pink fruit trees flank the pool; behind rises a tiled iwan pavilion glowing with turquoise, cobalt and gold mosaic and a pointed arch; soft warm late-afternoon light, distant garden walls. Fine miniature detail, saturated jewel palette. This is one seamless scene that fills the entire image, extending to all four edges, viewed straight-on. no triptych, no panels, no split image, no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "The marble fountain's water jet rises and falls steadily, sending gentle concentric ripples spreading across the still reflecting pool; the cypress and blossoming trees sway softly in a light breeze and a few pink petals drift down. Calm, continuous, seamless motion that settles back exactly to the opening. Physically natural; the pavilion, marble and pool edges stay perfectly still.",
+    "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyoe_moonlit_snowfall_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/ukiyoe_moonlit_snowfall_4k.webp",
+    "title": "Moonlit Snowfall at the Temple - Ukiyo-e Night Print (AI Animated)",
+    "type": "video",
+    "date": "2026-07-01",
+    "tags": [
+      "Japanese"
+    ],
+    "image_prompt": "A single continuous Japanese ukiyo-e woodblock print in the style of Utagawa Hiroshige, night snow scene, Edo period, one unified composition filling the whole width. A quiet snow-covered temple precinct under a full moon: a tiled pagoda roof and a stone lantern heaped with snow, a bare gnarled plum tree, a low wooden bridge over a frozen stream, all blanketed in soft white; deep indigo night sky graded with bokashi, a pale luminous moon, soft snowflakes drifting down. Flat bold outlines, limited woodblock palette of indigo, white and grey, delicate keyblock lines. This is one seamless scene that fills the entire image, extending to all four edges, viewed straight-on. no triptych, no panels, no split image, no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "Soft snowflakes fall gently and steadily across the whole scene, drifting slightly sideways in a faint breeze, with a subtle cool moonlight glow. Only the falling snow moves; the pagoda, stone lanterns, plum tree and bridge hold perfectly still under their snow. Continuous, calm, seamless falling snow that settles back exactly to the opening.",
+    "looping": true
   }
 ]

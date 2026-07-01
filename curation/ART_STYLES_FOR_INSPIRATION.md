@@ -41,6 +41,8 @@ When you add a new style, append it under the section it best fits.
 - Rococo
 - Neoclassicism
 - Romanticism
+- Norwegian Romantic Landscape (Dahl)
+- Venetian Veduta (Canaletto)
 - Hudson River School
 - Barbizon School
 - Realism
@@ -157,6 +159,7 @@ When you add a new style, append it under the section it best fits.
 - Islamic geometric art
 - Fatimid Rock Crystal Carving
 - Persian Safavid Miniature
+- Safavid Garden Pavilion Painting
 - Safavid Muqarnas Dome (Tilework)
 - Ottoman Iznik Ceramics
 - Timurid Manuscript Illumination

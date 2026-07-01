@@ -4,12 +4,12 @@ import { Analytics } from '@vercel/analytics/next'
 import { PostHogAuthBridge } from '@/components/posthog-auth-bridge'
 import './globals.css'
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin"],
   variable: '--font-inter'
 });
 
-const playfair = Playfair_Display({ 
+const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: '--font-playfair'
 });

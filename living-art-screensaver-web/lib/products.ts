@@ -17,10 +17,8 @@ export const PRODUCTS: Product[] = [
     description: 'Transform your Mac into a living art gallery',
     // Single source of truth for the pricing-page feature checklist.
     features: [
-      'Unlimited animated artworks',
-      'Regular new artwork additions',
-      'All art styles included',
-      'High-resolution display',
+      'Unlock all artworks',
+      'New pieces added every night',
       'Cancel anytime',
     ],
   },

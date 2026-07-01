@@ -1,64 +1,45 @@
 "use client"
 
 import posthog from "posthog-js"
-import { Button } from "@/components/ui/button"
-import { Download, ArrowRight } from "lucide-react"
+import { Download } from "lucide-react"
+import { Monitor } from "@/components/marketing/monitor"
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 lg:pt-20">
-      {/* Background Video */}
-      <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-full object-cover"
-        >
-          <source
-            src="https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/starry_coast_animated.mp4"
-            type="video/mp4"
-          />
-        </video>
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-linear-to-t from-background via-background/60 to-background/30" />
-        <div className="absolute inset-0 bg-linear-to-r from-background/80 via-transparent to-background/80" />
-      </div>
-
-      {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground leading-tight text-balance">
-          Turn your Screensaver into a
-          <span className="block text-primary">Living Gallery</span>
-        </h1>
-
-        <p className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed text-pretty">
-          AI-animated artworks in every style. New work added daily.
-        </p>
-
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button
-            size="lg"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 py-6 text-lg font-medium gap-2"
-            asChild
+    <section id="top" className="relative px-[30px] pt-[130px] pb-[92px]">
+      <div className="mx-auto grid max-w-[1280px] grid-cols-[repeat(auto-fit,minmax(340px,1fr))] items-center gap-[50px]">
+        {/* Copy */}
+        <div className="flex max-w-[560px] flex-col items-start gap-[21px] text-left">
+          <h1
+            className="m-0 font-serif font-extrabold leading-[1.02] tracking-[-0.015em] text-[#f3f4f2]"
+            style={{ fontSize: "clamp(36px,3.9vw,62px)" }}
           >
-            <a href="/download/mac" onClick={() => posthog.capture('download_clicked', { location: 'hero' })}>
-              <Download className="w-5 h-5" />
+            Turn your screensaver into a{" "}
+            <span className="font-semibold italic text-[#9EE8A2]">living gallery.</span>
+          </h1>
+          <p className="m-0 max-w-[540px] text-[18.5px] leading-[1.55] text-[#9a9c96]">
+            Centuries of art, animated by AI and hung on your idle Mac. New pieces arrive every night.
+          </p>
+          <div className="mt-1.5 flex w-full flex-wrap items-center justify-start gap-x-[18px] gap-y-3">
+            <a
+              href="/download/mac"
+              onClick={() => posthog.capture("download_clicked", { location: "hero" })}
+              className="inline-flex items-center gap-[9px] rounded-full bg-[#9EE8A2] px-[27px] py-[15px] text-[16.5px] font-semibold text-[#08130c] no-underline"
+              style={{ boxShadow: "0 12px 34px -10px rgba(158,232,162,0.6)" }}
+            >
+              <Download className="h-4 w-4" strokeWidth={2.2} />
               Download for Mac
             </a>
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="rounded-full px-8 py-6 text-lg border-foreground/20 gap-2"
-            asChild
-          >
-            <a href="#features">
-              Learn More
-              <ArrowRight className="w-5 h-5" />
-            </a>
-          </Button>
+            <div className="text-[13px]">
+              <span className="font-semibold text-[#9EE8A2]">Free forever.</span>{" "}
+              <span className="text-[#7a7c75]">In-app purchase available.</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Stage */}
+        <div className="relative w-full">
+          <Monitor stand priority interval={6000} />
         </div>
       </div>
     </section>

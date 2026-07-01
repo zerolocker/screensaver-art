@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import posthog from "posthog-js"
-import { Button } from "@/components/ui/button"
-import { Check, Download, Loader2 } from "lucide-react"
+import { Download, Loader2 } from "lucide-react"
 import { PRICING } from "@screensaver-art/constants"
 import { createClient } from "@/lib/supabase/client"
 import { createCheckoutSession } from "@/app/actions/stripe"
@@ -26,18 +25,18 @@ export function PricingSection() {
   }, [])
 
   async function handleWebSubscribe() {
-    posthog.capture('subscribe_clicked', { location: 'pricing_section', is_logged_in: !!user })
+    posthog.capture("subscribe_clicked", { location: "pricing_section", is_logged_in: !!user })
 
     if (!user) {
       // Land back on the pricing section after login (there's no /pricing route,
       // only this #pricing anchor on the home page).
-      router.push('/auth/login?redirect=/%23pricing')
+      router.push("/auth/login?redirect=/%23pricing")
       return
     }
 
     setLoading(true)
     // Back out of Stripe → return here to the pricing section, not a dead /pricing.
-    const result = await createCheckoutSession('living-art-monthly', window.location.origin, '/#pricing')
+    const result = await createCheckoutSession("living-art-monthly", window.location.origin, "/#pricing")
 
     if (result.error) {
       alert(result.error)
@@ -51,70 +50,80 @@ export function PricingSection() {
   }
 
   return (
-    <section id="pricing" className="py-24 lg:py-32 bg-card">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground text-balance">
-            Simple, Affordable Pricing
+    <section id="pricing" className="relative px-[30px] pt-[92px] pb-[96px]">
+      <div className="mx-auto max-w-[1340px]">
+        <div className="mx-auto mb-[48px] max-w-[680px] text-center">
+          <div className="mb-[14px] font-mono text-[12px] font-medium uppercase tracking-[3px] text-[#9EE8A2]">
+            Pricing
+          </div>
+          <h2
+            className="m-0 mb-[14px] font-serif font-bold leading-[1.05] tracking-[-0.01em] text-[#f3f4f2]"
+            style={{ fontSize: "clamp(30px,4vw,54px)" }}
+          >
+            Start free. Upgrade when you&apos;re hooked.
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
-            {PRICING.freeItemCount} artworks, free forever. Want more? Subscribe to unlock the full gallery, plus daily new art.
+          <p className="m-0 text-[17px] leading-[1.55] text-[#9a9c96]">
+            Download and watch your gallery come alive. Free forever. One small subscription unlocks the entire
+            ever-growing collection — and a fresh piece every night.
           </p>
         </div>
 
-        <div className="max-w-lg mx-auto">
-          <div className="relative rounded-3xl bg-linear-to-b from-primary/20 to-transparent p-px">
-            <div className="rounded-3xl bg-card p-8 lg:p-12">
-              <div className="text-center mb-8">
+        <div className="mx-auto max-w-[480px]">
+          <div
+            className="rounded-[24px] p-px"
+            style={{ background: "linear-gradient(180deg,rgba(158,232,162,0.4),rgba(158,232,162,0))" }}
+          >
+            <div className="rounded-[23px] bg-[#141416] px-[38px] py-[40px]">
+              <div className="mb-[28px] text-center">
                 <div className="flex items-end justify-center gap-2">
-                  <span className="text-2xl lg:text-3xl font-semibold text-muted-foreground/70 line-through mb-2">{PRICING.regularPrice}</span>
-                  <span className="text-5xl lg:text-6xl font-bold text-foreground">{PRICING.promoPrice}</span>
-                  <span className="text-muted-foreground mb-2">{PRICING.interval}</span>
+                  <span className="mb-[9px] text-[24px] font-semibold text-[#6a6c66] line-through">{PRICING.regularPrice}</span>
+                  <span className="font-serif text-[60px] font-bold leading-none text-[#f3f4f2]">{PRICING.promoPrice}</span>
+                  <span className="mb-[9px] text-[16px] text-[#9a9c96]">{PRICING.interval}</span>
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-[10px] font-mono text-[13px] tracking-[0.5px] text-[#73756e]">
                   {PRICING.billingNote} · promo through {PRICING.promoThrough}
                 </p>
               </div>
 
-              <ul className="space-y-4 mb-8">
+              <div className="mb-[30px] flex flex-col gap-[13px]">
                 {features.map((feature, index) => (
-                  <li key={index} className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                      <Check className="w-3 h-3 text-primary" />
-                    </div>
-                    <span className="text-foreground">{feature}</span>
-                  </li>
+                  <div key={index} className="flex items-center gap-3">
+                    <span
+                      className="flex h-[21px] w-[21px] flex-none items-center justify-center rounded-full"
+                      style={{ background: "rgba(158,232,162,0.16)" }}
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9EE8A2" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                    </span>
+                    <span className="text-[15px] text-[#d6d8d2]">{feature}</span>
+                  </div>
                 ))}
-              </ul>
-
-              <div className="space-y-3">
-                <Button
-                  size="lg"
-                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-full py-6 text-lg font-medium gap-2"
-                  asChild
-                >
-                  <a href="/download/mac" onClick={() => posthog.capture('download_clicked', { location: 'pricing_section' })}>
-                    <Download className="w-5 h-5" />
-                    Download for Mac
-                  </a>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full rounded-full py-6 text-lg border-foreground/20"
-                  onClick={handleWebSubscribe}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Loading...
-                    </>
-                  ) : (
-                    'Subscribe on Web'
-                  )}
-                </Button>
               </div>
+
+              <a
+                href="/download/mac"
+                onClick={() => posthog.capture("download_clicked", { location: "pricing_section" })}
+                className="mb-[11px] flex w-full items-center justify-center gap-[9px] rounded-full bg-[#9EE8A2] py-[15px] text-[16.5px] font-semibold text-[#08130c] no-underline"
+                style={{ boxShadow: "0 12px 30px -10px rgba(158,232,162,0.5)" }}
+              >
+                <Download className="h-4 w-4" strokeWidth={2.2} />
+                Download for Mac
+              </a>
+              <button
+                onClick={handleWebSubscribe}
+                disabled={loading}
+                className="flex w-full items-center justify-center rounded-full border border-white/[0.16] py-[14px] text-[16px] font-medium text-[#f3f4f2] disabled:opacity-70"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Loading…
+                  </>
+                ) : (
+                  "Subscribe on the web"
+                )}
+              </button>
             </div>
           </div>
         </div>

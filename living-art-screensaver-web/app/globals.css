@@ -7,6 +7,21 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Marketing homepage — "The collection" marquee (mirrors Living Art Screensaver.dc.html) */
+@keyframes lartMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.lart-marquee-track {
+  animation: lartMarquee 64s linear infinite;
+}
+.lart-marquee:hover .lart-marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lart-marquee-track { animation: none; }
+}
+
 :root {
   --background: oklch(0.08 0 0);
   --foreground: oklch(0.98 0 0);
@@ -81,7 +96,7 @@ html {
 @theme inline {
   --font-sans: var(--font-inter), 'Inter', system-ui, sans-serif;
   --font-serif: var(--font-playfair), 'Playfair Display', Georgia, serif;
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

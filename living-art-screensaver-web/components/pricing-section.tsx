@@ -57,12 +57,12 @@ export function PricingSection() {
             Pricing
           </div>
           <h2
-            className="m-0 mb-[14px] font-serif font-bold leading-[1.05] tracking-[-0.01em] text-[#f3f4f2]"
+            className="m-0 mb-[14px] font-serif font-bold leading-[1.05] tracking-[-0.01em] text-foreground"
             style={{ fontSize: "clamp(30px,4vw,54px)" }}
           >
             Start free. Upgrade when you&apos;re hooked.
           </h2>
-          <p className="m-0 text-[17px] leading-[1.55] text-[#9a9c96]">
+          <p className="m-0 text-[17px] leading-[1.55] text-muted-foreground">
             Download and watch your gallery come alive. Free forever. One small subscription unlocks the entire
             ever-growing collection — and a fresh piece every night.
           </p>
@@ -73,14 +73,14 @@ export function PricingSection() {
             className="rounded-[24px] p-px"
             style={{ background: "linear-gradient(180deg,rgba(158,232,162,0.4),rgba(158,232,162,0))" }}
           >
-            <div className="rounded-[23px] bg-[#141416] px-[38px] py-[40px]">
+            <div className="rounded-[23px] bg-secondary px-[38px] py-[40px]">
               <div className="mb-[28px] text-center">
                 <div className="flex items-end justify-center gap-2">
-                  <span className="mb-[9px] text-[24px] font-semibold text-[#6a6c66] line-through">{PRICING.regularPrice}</span>
-                  <span className="font-serif text-[60px] font-bold leading-none text-[#f3f4f2]">{PRICING.promoPrice}</span>
-                  <span className="mb-[9px] text-[16px] text-[#9a9c96]">{PRICING.interval}</span>
+                  <span className="mb-[9px] text-[24px] font-semibold text-muted-foreground-subtle line-through">{PRICING.regularPrice}</span>
+                  <span className="font-serif text-[60px] font-bold leading-none text-foreground">{PRICING.promoPrice}</span>
+                  <span className="mb-[9px] text-[16px] text-muted-foreground">{PRICING.interval}</span>
                 </div>
-                <p className="mt-[10px] font-mono text-[13px] tracking-[0.5px] text-[#73756e]">
+                <p className="mt-[10px] font-mono text-[13px] tracking-[0.5px] text-muted-foreground-subtle">
                   {PRICING.billingNote} · promo through {PRICING.promoThrough}
                 </p>
               </div>
@@ -96,7 +96,7 @@ export function PricingSection() {
                         <path d="M20 6L9 17l-5-5" />
                       </svg>
                     </span>
-                    <span className="text-[15px] text-[#d6d8d2]">{feature}</span>
+                    <span className="text-[15px] text-muted-foreground-strong">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -104,7 +104,7 @@ export function PricingSection() {
               <a
                 href="/download/mac"
                 onClick={() => posthog.capture("download_clicked", { location: "pricing_section" })}
-                className="mb-[11px] flex w-full items-center justify-center gap-[9px] rounded-full bg-[#9EE8A2] py-[15px] text-[16.5px] font-semibold text-[#08130c] no-underline"
+                className="mb-[11px] flex w-full items-center justify-center gap-[9px] rounded-full bg-[#9EE8A2] py-[15px] text-[16.5px] font-semibold text-primary-foreground no-underline"
                 style={{ boxShadow: "0 12px 30px -10px rgba(158,232,162,0.5)" }}
               >
                 <Download className="h-4 w-4" strokeWidth={2.2} />
@@ -113,7 +113,7 @@ export function PricingSection() {
               <button
                 onClick={handleWebSubscribe}
                 disabled={loading}
-                className="flex w-full items-center justify-center rounded-full border border-white/[0.16] py-[14px] text-[16px] font-medium text-[#f3f4f2] disabled:opacity-70"
+                className="flex w-full items-center justify-center rounded-full border border-white/[0.16] py-[14px] text-[16px] font-medium text-foreground disabled:opacity-70"
               >
                 {loading ? (
                   <>

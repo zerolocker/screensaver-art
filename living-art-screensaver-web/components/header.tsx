@@ -39,30 +39,30 @@ export function Header() {
             className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[9px] bg-[#9EE8A2]"
             style={{ boxShadow: "0 4px 14px -3px rgba(158,232,162,0.6)" }}
           >
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#08130c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-foreground">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
               <path d="M2 17l10 5 10-5" />
               <path d="M2 12l10 5 10-5" />
             </svg>
           </span>
-          <span className="hidden text-[16px] font-semibold tracking-[-0.01em] text-[#f3f4f2] sm:inline">Living Art Screensaver</span>
+          <span className="hidden text-[16px] font-semibold tracking-[-0.01em] text-foreground sm:inline">Living Art Screensaver</span>
         </Link>
 
         <div className="flex shrink-0 items-center gap-[14px]">
           {user ? (
-            <Link href="/account" className="flex items-center gap-1.5 whitespace-nowrap text-[14.5px] font-medium text-[#9a9c96] no-underline transition-colors hover:text-[#f3f4f2]">
+            <Link href="/account" className="flex items-center gap-1.5 whitespace-nowrap text-[14.5px] font-medium text-muted-foreground no-underline transition-colors hover:text-foreground">
               <User className="h-4 w-4" />
               Account
             </Link>
           ) : (
-            <Link href="/auth/login" className="whitespace-nowrap text-[14.5px] font-medium text-[#9a9c96] no-underline transition-colors hover:text-[#f3f4f2]">
+            <Link href="/auth/login" className="whitespace-nowrap text-[14.5px] font-medium text-muted-foreground no-underline transition-colors hover:text-foreground">
               Sign in
             </Link>
           )}
           <a
             href="/download/mac"
             onClick={() => posthog.capture("download_clicked", { location: "header" })}
-            className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-[#9EE8A2] px-[18px] py-[10px] text-[14.5px] font-semibold text-[#08130c] no-underline"
+            className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-[#9EE8A2] px-[18px] py-[10px] text-[14.5px] font-semibold text-primary-foreground no-underline"
             style={{ boxShadow: "0 6px 22px -8px rgba(158,232,162,0.55)" }}
           >
             <Download className="h-3.5 w-3.5" strokeWidth={2.3} />

@@ -57,12 +57,12 @@ export function ArtStylesSection() {
             Every movement, animated
           </div>
           <h2
-            className="m-0 mb-[14px] font-serif font-bold leading-[1.05] tracking-[-0.01em] text-[#f3f4f2]"
+            className="m-0 mb-[14px] font-serif font-bold leading-[1.05] tracking-[-0.01em] text-foreground"
             style={{ fontSize: "clamp(30px,4vw,54px)" }}
           >
             Wander the whole history of art.
           </h2>
-          <p className="m-0 text-[17px] leading-[1.55] text-[#9a9c96]">
+          <p className="m-0 text-[17px] leading-[1.55] text-muted-foreground">
             Just a taste of what&apos;s inside — pick a movement and watch it come alive. New art added every night.
           </p>
         </div>
@@ -77,14 +77,14 @@ export function ArtStylesSection() {
                   <span className="flex min-w-0 flex-col gap-[3px] text-left">
                     <span
                       className="font-serif text-[21px] font-semibold leading-[1.1]"
-                      style={{ color: active ? "#9EE8A2" : "#f3f4f2" }}
+                      style={{ color: active ? "#9EE8A2" : "var(--foreground)" }}
                     >
                       {m.name}
                     </span>
-                    <span className="font-mono text-[11px] uppercase tracking-[1px] text-[#73756e]">{m.era}</span>
+                    <span className="font-mono text-[11px] uppercase tracking-[1px] text-muted-foreground-subtle">{m.era}</span>
                   </span>
                   <span className="flex flex-none items-center">
-                    <span style={{ color: active ? "#9EE8A2" : "#4f514b", transform: `translateX(${active ? "3px" : "0px"})`, transition: "transform .25s" }}>
+                    <span style={{ color: active ? "#9EE8A2" : "var(--muted-foreground-subtle)", transform: `translateX(${active ? "3px" : "0px"})`, transition: "transform .25s" }}>
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M5 12h14" />
                         <path d="M13 6l6 6-6 6" />
@@ -167,8 +167,8 @@ export function ArtStylesSection() {
             {/* Placard */}
             <div className="flex items-start justify-between gap-5 px-1 pt-1">
               <div className="min-w-0">
-                <div className="font-serif text-[23px] font-semibold leading-[1.15] text-[#f3f4f2]">{feat.name}</div>
-                <div className="mt-[3px] text-[14.5px] text-[#9a9c96]">{feat.style}</div>
+                <div className="font-serif text-[23px] font-semibold leading-[1.15] text-foreground">{feat.name}</div>
+                <div className="mt-[3px] text-[14.5px] text-muted-foreground">{feat.style}</div>
               </div>
             </div>
 

@@ -15,7 +15,7 @@ export function CollectionSection() {
             The collection
           </div>
           <h2
-            className="m-0 font-serif font-bold leading-[1.06] tracking-[-0.01em] text-[#f3f4f2]"
+            className="m-0 font-serif font-bold leading-[1.06] tracking-[-0.01em] text-foreground"
             style={{ fontSize: "clamp(30px,3.8vw,52px)" }}
           >
             A different masterpiece
@@ -23,7 +23,7 @@ export function CollectionSection() {
             every time your Mac rests.
           </h2>
         </div>
-        <p className="m-0 max-w-[360px] text-[16px] leading-[1.55] text-[#9a9c96]">
+        <p className="m-0 max-w-[360px] text-[16px] leading-[1.55] text-muted-foreground">
           An ever-growing collection of animated works, looping in high resolution on any screen you sit in
           front of — with a new piece added every night.
         </p>

@@ -8,7 +8,7 @@ import { Footer } from "@/components/footer"
 
 export default function Home() {
   return (
-    <main className="relative w-full overflow-hidden bg-[#0a0a0b] text-[#f3f4f2]">
+    <main className="relative w-full overflow-hidden bg-background text-foreground">
       <Header />
       <HeroSection />
       <CollectionSection />

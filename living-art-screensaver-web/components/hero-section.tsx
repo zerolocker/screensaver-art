@@ -11,20 +11,20 @@ export function HeroSection() {
         {/* Copy */}
         <div className="flex max-w-[560px] flex-col items-start gap-[21px] text-left">
           <h1
-            className="m-0 font-serif font-extrabold leading-[1.02] tracking-[-0.015em] text-[#f3f4f2]"
+            className="m-0 font-serif font-extrabold leading-[1.02] tracking-[-0.015em] text-foreground"
             style={{ fontSize: "clamp(36px,3.9vw,62px)" }}
           >
             Turn your screensaver into a{" "}
             <span className="font-semibold italic text-[#9EE8A2]">living gallery.</span>
           </h1>
-          <p className="m-0 max-w-[540px] text-[18.5px] leading-[1.55] text-[#9a9c96]">
+          <p className="m-0 max-w-[540px] text-[18.5px] leading-[1.55] text-muted-foreground">
             Centuries of art, animated by AI and hung on your idle Mac. New pieces arrive every night.
           </p>
           <div className="mt-1.5 flex w-full flex-wrap items-center justify-start gap-x-[18px] gap-y-3">
             <a
               href="/download/mac"
               onClick={() => posthog.capture("download_clicked", { location: "hero" })}
-              className="inline-flex items-center gap-[9px] rounded-full bg-[#9EE8A2] px-[27px] py-[15px] text-[16.5px] font-semibold text-[#08130c] no-underline"
+              className="inline-flex items-center gap-[9px] rounded-full bg-[#9EE8A2] px-[27px] py-[15px] text-[16.5px] font-semibold text-primary-foreground no-underline"
               style={{ boxShadow: "0 12px 34px -10px rgba(158,232,162,0.6)" }}
             >
               <Download className="h-4 w-4" strokeWidth={2.2} />
@@ -32,7 +32,7 @@ export function HeroSection() {
             </a>
             <div className="text-[13px]">
               <span className="font-semibold text-[#9EE8A2]">Free forever.</span>{" "}
-              <span className="text-[#7a7c75]">In-app purchase available.</span>
+              <span className="text-muted-foreground-subtle">In-app purchase available.</span>
             </div>
           </div>
         </div>

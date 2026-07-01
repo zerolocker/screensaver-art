@@ -36,7 +36,7 @@ export function Header() {
       <div className="mx-auto flex h-[68px] max-w-[1340px] items-center justify-between gap-3 px-4 sm:gap-6 sm:px-[30px]">
         <Link href="#top" className="flex items-center gap-[11px] no-underline">
           <span
-            className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[9px] bg-[#9EE8A2]"
+            className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[9px] bg-primary"
             style={{ boxShadow: "0 4px 14px -3px rgba(158,232,162,0.6)" }}
           >
             <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-foreground">
@@ -62,7 +62,7 @@ export function Header() {
           <a
             href="/download/mac"
             onClick={() => posthog.capture("download_clicked", { location: "header" })}
-            className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-[#9EE8A2] px-[18px] py-[10px] text-[14.5px] font-semibold text-primary-foreground no-underline"
+            className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-primary px-[18px] py-[10px] text-[14.5px] font-semibold text-primary-foreground no-underline"
             style={{ boxShadow: "0 6px 22px -8px rgba(158,232,162,0.55)" }}
           >
             <Download className="h-3.5 w-3.5" strokeWidth={2.3} />

@@ -19,7 +19,7 @@ const thumbBase: CSSProperties = {
   overflow: "hidden", cursor: "pointer", padding: 0,
 }
 const thumbActive: CSSProperties = {
-  ...thumbBase, border: 0, outline: "2px solid #9EE8A2", outlineOffset: "1px",
+  ...thumbBase, border: 0, outline: "2px solid var(--primary)", outlineOffset: "1px",
   boxShadow: "0 6px 16px -6px rgba(0,0,0,0.8)",
 }
 const thumbIdle: CSSProperties = {
@@ -53,7 +53,7 @@ export function ArtStylesSection() {
     <section id="styles" className="relative px-[30px] pt-[92px] pb-[96px]">
       <div className="mx-auto max-w-[1340px]">
         <div className="mx-auto mb-[50px] max-w-[720px] text-center">
-          <div className="mb-[14px] font-mono text-[12px] font-medium uppercase tracking-[3px] text-[#9EE8A2]">
+          <div className="mb-[14px] font-mono text-[12px] font-medium uppercase tracking-[3px] text-primary">
             Every movement, animated
           </div>
           <h2
@@ -77,14 +77,14 @@ export function ArtStylesSection() {
                   <span className="flex min-w-0 flex-col gap-[3px] text-left">
                     <span
                       className="font-serif text-[21px] font-semibold leading-[1.1]"
-                      style={{ color: active ? "#9EE8A2" : "var(--foreground)" }}
+                      style={{ color: active ? "var(--primary)" : "var(--foreground)" }}
                     >
                       {m.name}
                     </span>
                     <span className="font-mono text-[11px] uppercase tracking-[1px] text-muted-foreground-subtle">{m.era}</span>
                   </span>
                   <span className="flex flex-none items-center">
-                    <span style={{ color: active ? "#9EE8A2" : "var(--muted-foreground-subtle)", transform: `translateX(${active ? "3px" : "0px"})`, transition: "transform .25s" }}>
+                    <span style={{ color: active ? "var(--primary)" : "var(--muted-foreground-subtle)", transform: `translateX(${active ? "3px" : "0px"})`, transition: "transform .25s" }}>
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M5 12h14" />
                         <path d="M13 6l6 6-6 6" />

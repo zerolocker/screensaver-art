@@ -10,7 +10,7 @@ not add a `.dark` wrapper or a theme provider for color**; tokens apply automati
 - Canvas `--background` oklch(0.08 0 0) (near-black), text `--foreground` oklch(0.98 0 0).
 - Surfaces `--card`/`--popover` oklch(0.12 0 0); `--secondary`/`--muted`/`--accent` are
   dark grays (oklch ~0.18–0.20).
-- **Accent `--primary` oklch(0.85 0.15 145) — mint green** (also `--ring`). This is the
+- **Accent `--primary` oklch(0.865 0.121 145.7) — mint green** (also `--ring`). This is the
   one saturated color; use it for primary actions, focus rings, selected states.
 - Corner radius `--radius` 0.625rem.
 

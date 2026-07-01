@@ -15,7 +15,7 @@ export function HeroSection() {
             style={{ fontSize: "clamp(36px,3.9vw,62px)" }}
           >
             Turn your screensaver into a{" "}
-            <span className="font-semibold italic text-[#9EE8A2]">living gallery.</span>
+            <span className="font-semibold italic text-primary">living gallery.</span>
           </h1>
           <p className="m-0 max-w-[540px] text-[18.5px] leading-[1.55] text-muted-foreground">
             Centuries of art, animated by AI and hung on your idle Mac. New pieces arrive every night.
@@ -24,14 +24,14 @@ export function HeroSection() {
             <a
               href="/download/mac"
               onClick={() => posthog.capture("download_clicked", { location: "hero" })}
-              className="inline-flex items-center gap-[9px] rounded-full bg-[#9EE8A2] px-[27px] py-[15px] text-[16.5px] font-semibold text-primary-foreground no-underline"
+              className="inline-flex items-center gap-[9px] rounded-full bg-primary px-[27px] py-[15px] text-[16.5px] font-semibold text-primary-foreground no-underline"
               style={{ boxShadow: "0 12px 34px -10px rgba(158,232,162,0.6)" }}
             >
               <Download className="h-4 w-4" strokeWidth={2.2} />
               Download for Mac
             </a>
             <div className="text-[13px]">
-              <span className="font-semibold text-[#9EE8A2]">Free forever.</span>{" "}
+              <span className="font-semibold text-primary">Free forever.</span>{" "}
               <span className="text-muted-foreground-subtle">In-app purchase available.</span>
             </div>
           </div>

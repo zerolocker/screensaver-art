@@ -53,7 +53,7 @@ export function PricingSection() {
     <section id="pricing" className="relative px-[30px] pt-[92px] pb-[96px]">
       <div className="mx-auto max-w-[1340px]">
         <div className="mx-auto mb-[48px] max-w-[680px] text-center">
-          <div className="mb-[14px] font-mono text-[12px] font-medium uppercase tracking-[3px] text-[#9EE8A2]">
+          <div className="mb-[14px] font-mono text-[12px] font-medium uppercase tracking-[3px] text-primary">
             Pricing
           </div>
           <h2
@@ -92,7 +92,7 @@ export function PricingSection() {
                       className="flex h-[21px] w-[21px] flex-none items-center justify-center rounded-full"
                       style={{ background: "rgba(158,232,162,0.16)" }}
                     >
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9EE8A2" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
                         <path d="M20 6L9 17l-5-5" />
                       </svg>
                     </span>
@@ -104,7 +104,7 @@ export function PricingSection() {
               <a
                 href="/download/mac"
                 onClick={() => posthog.capture("download_clicked", { location: "pricing_section" })}
-                className="mb-[11px] flex w-full items-center justify-center gap-[9px] rounded-full bg-[#9EE8A2] py-[15px] text-[16.5px] font-semibold text-primary-foreground no-underline"
+                className="mb-[11px] flex w-full items-center justify-center gap-[9px] rounded-full bg-primary py-[15px] text-[16.5px] font-semibold text-primary-foreground no-underline"
                 style={{ boxShadow: "0 12px 30px -10px rgba(158,232,162,0.5)" }}
               >
                 <Download className="h-4 w-4" strokeWidth={2.2} />

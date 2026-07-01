@@ -7,7 +7,7 @@ export function Footer() {
         {/* Brand */}
         <div>
           <div className="mb-[16px] flex items-center gap-[11px]">
-            <span className="flex h-[30px] w-[30px] items-center justify-center rounded-[9px] bg-[#9EE8A2]">
+            <span className="flex h-[30px] w-[30px] items-center justify-center rounded-[9px] bg-primary">
               <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-foreground">
                 <path d="M12 2L2 7l10 5 10-5-10-5z" />
                 <path d="M2 17l10 5 10-5" />

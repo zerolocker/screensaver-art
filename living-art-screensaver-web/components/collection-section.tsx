@@ -11,7 +11,7 @@ export function CollectionSection() {
     <section id="gallery" className="relative pt-[84px] pb-[92px]">
       <div className="mx-auto flex max-w-[1340px] flex-wrap items-end justify-between gap-[30px] px-[30px] pb-[44px]">
         <div className="max-w-[680px]">
-          <div className="mb-[14px] font-mono text-[12px] font-medium uppercase tracking-[3px] text-[#9EE8A2]">
+          <div className="mb-[14px] font-mono text-[12px] font-medium uppercase tracking-[3px] text-primary">
             The collection
           </div>
           <h2

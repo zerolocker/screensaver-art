@@ -8,7 +8,7 @@ The DS spans three places in this monorepo, unified into ONE synced library:
   shadcn equivalent: `OtpForm`, `OAuthButtons`, `SubscriptionCard`, `FeedbackForm`.
   (Its Button/Card/Input/Label/Textarea are DROPPED as duplicates — the website
   versions win; identical brand tokens, richer variants.)
-- Brand tokens (dark bg + **mint-green** `--primary: oklch(0.85 0.15 145)`,
+- Brand tokens (dark bg + **mint-green** `--primary: oklch(0.865 0.121 145.7)`,
   Inter/Playfair/Geist Mono) live identically in three `globals.css` files
   (`packages/ui/src`, `living-art-screensaver-web/app`, `electron-app/src/renderer/src`).
 - The Electron renderer adds NO new primitives (it imports `@screensaver-art/ui`

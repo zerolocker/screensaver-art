@@ -1,158 +1,191 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { useEffect, useState, type CSSProperties } from "react"
+import { AutoVideo } from "@/components/marketing/gallery-video"
+import { movements, poster, pieceLabel } from "@/lib/gallery-showcase"
 
-const artStyles = [
-  { name: "Classical", era: "Ancient Greece & Rome" },
-  { name: "Medieval", era: "5th - 15th Century" },
-  { name: "Renaissance", era: "14th - 17th Century" },
-  { name: "Baroque", era: "17th - 18th Century" },
-  { name: "Rococo", era: "18th Century" },
-  { name: "Neoclassicism", era: "18th - 19th Century" },
-  { name: "Romanticism", era: "18th - 19th Century" },
-  { name: "Impressionism", era: "19th Century" },
-  { name: "Post-Impressionism", era: "Late 19th Century" },
-  { name: "Modern Art", era: "Late 19th - Mid 20th Century" },
-  { name: "Contemporary", era: "1970s - Present" },
-  { name: "Digital Art", era: "21st Century" },
-]
+const AUTO_ADVANCE_MS = 6500
 
-const videos = [
-  {
-    src: "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/starry_coast_animated.mp4",
-    title: "Van Gogh Style",
-    subtitle: "Starry Coast — AI Animated",
-  },
-  {
-    src: "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/romanticism_storm_animated.mp4",
-    title: "Romanticism Style",
-    subtitle: "Stormy Sea — AI Animated",
-  },
-  {
-    src: "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/neoclassicism_roman_forum_animated.mp4",
-    title: "Neoclassicism Style",
-    subtitle: "Roman Forum — AI Animated",
-  },
-  {
-    src: "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/surreal_clocks_animated.mp4",
-    title: "Surrealism Style",
-    subtitle: "Melting Clocks — AI Animated",
-  },
-]
+const rowBase: CSSProperties = {
+  display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px",
+  width: "100%", padding: "16px 18px", borderRadius: "14px", cursor: "pointer",
+  transition: "background .2s", textAlign: "left",
+}
+const rowActive: CSSProperties = { ...rowBase, background: "rgba(158,232,162,0.09)", border: "1px solid rgba(158,232,162,0.4)" }
+const rowIdle: CSSProperties = { ...rowBase, background: "rgba(255,255,255,0.018)", border: "1px solid rgba(255,255,255,0.07)" }
 
-const AUTOPLAY_INTERVAL = 6000
+const thumbBase: CSSProperties = {
+  position: "relative", flex: "none", width: "96px", aspectRatio: "16 / 10", borderRadius: "9px",
+  overflow: "hidden", cursor: "pointer", padding: 0,
+}
+const thumbActive: CSSProperties = {
+  ...thumbBase, border: 0, outline: "2px solid var(--primary)", outlineOffset: "1px",
+  boxShadow: "0 6px 16px -6px rgba(0,0,0,0.8)",
+}
+const thumbIdle: CSSProperties = {
+  ...thumbBase, border: 0, outline: "1px solid rgba(255,255,255,0.1)", opacity: 0.62, transition: "opacity .2s",
+}
 
 export function ArtStylesSection() {
-  const [current, setCurrent] = useState(0)
-  const [transitioning, setTransitioning] = useState(false)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [mvIdx, setMvIdx] = useState(0)
+  const [pieceIdx, setPieceIdx] = useState(0)
+  const [hovering, setHovering] = useState(false)
 
-  const goTo = useCallback((index: number) => {
-    if (transitioning) return
-    setTransitioning(true)
-    setTimeout(() => {
-      setCurrent(index)
-      setTransitioning(false)
-    }, 300)
-  }, [transitioning])
+  const mv = movements[mvIdx] ?? movements[0]
+  const pieces = mv.pieces
+  const pIdx = ((pieceIdx % pieces.length) + pieces.length) % pieces.length
+  const feat = pieces[pIdx]
 
-  const next = useCallback(() => {
-    goTo((current + 1) % videos.length)
-  }, [current, goTo])
-
-  const prev = useCallback(() => {
-    goTo((current - 1 + videos.length) % videos.length)
-  }, [current, goTo])
-
-  // Restart the video when the slide changes
+  // Auto-advance through the current movement's pieces, unless the user is hovering.
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.load()
-      videoRef.current.play().catch(() => {})
-    }
-  }, [current])
+    const timer = setInterval(() => {
+      if (hovering) return
+      setPieceIdx((i) => (i + 1) % pieces.length)
+    }, AUTO_ADVANCE_MS)
+    return () => clearInterval(timer)
+  }, [hovering, pieces.length])
 
-  // Autoplay timer — resets whenever user manually navigates
-  useEffect(() => {
-    timerRef.current = setTimeout(next, AUTOPLAY_INTERVAL)
-    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
-  }, [current, next])
-
-  const video = videos[current]
+  const selectMovement = (i: number) => { setMvIdx(i); setPieceIdx(0) }
+  const nextPiece = () => setPieceIdx((i) => (i + 1) % pieces.length)
+  const prevPiece = () => setPieceIdx((i) => (i - 1 + pieces.length) % pieces.length)
 
   return (
-    <section id="styles" className="py-24 lg:py-32 bg-card">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Video Carousel */}
-          <div className="relative aspect-video rounded-2xl overflow-hidden border border-border/50 shadow-2xl shadow-primary/5 group">
-            <video
-              ref={videoRef}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className={`w-full h-full object-cover transition-opacity duration-300 ${transitioning ? "opacity-0" : "opacity-100"}`}
-            >
-              <source src={video.src} type="video/mp4" />
-            </video>
-            <div className="absolute inset-0 bg-gradient-to-t from-card/50 to-transparent" />
+    <section id="styles" className="relative px-[30px] pt-[92px] pb-[96px]">
+      <div className="mx-auto max-w-[1340px]">
+        <div className="mx-auto mb-[50px] max-w-[720px] text-center">
+          <div className="mb-[14px] font-mono text-[12px] font-medium uppercase tracking-[3px] text-primary">
+            Every movement, animated
+          </div>
+          <h2
+            className="m-0 mb-[14px] font-serif font-bold leading-[1.05] tracking-[-0.01em] text-foreground"
+            style={{ fontSize: "clamp(30px,4vw,54px)" }}
+          >
+            Wander the whole history of art.
+          </h2>
+          <p className="m-0 text-[17px] leading-[1.55] text-muted-foreground">
+            Just a taste of what&apos;s inside — pick a movement and watch it come alive. New art added every night.
+          </p>
+        </div>
 
-            {/* Caption */}
-            <div className="absolute bottom-4 left-4 right-16">
-              <p className="text-sm text-foreground/80 font-medium">{video.title}</p>
-              <p className="text-xs text-muted-foreground">{video.subtitle}</p>
-            </div>
-
-            {/* Prev / Next */}
-            <button
-              onClick={prev}
-              className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-background/60 backdrop-blur-sm border border-border/50 text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background/80"
-              aria-label="Previous"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={next}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-background/60 backdrop-blur-sm border border-border/50 text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background/80"
-              aria-label="Next"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-
-            {/* Dot indicators */}
-            <div className="absolute bottom-4 right-4 flex gap-1.5">
-              {videos.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => goTo(i)}
-                  aria-label={`Go to slide ${i + 1}`}
-                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === current ? "bg-foreground w-4" : "bg-foreground/40"}`}
-                />
-              ))}
-            </div>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(540px,1fr))] items-start gap-[40px]">
+          {/* Movement list */}
+          <div className="flex min-w-0 flex-col gap-[9px]">
+            {movements.map((m, i) => {
+              const active = i === mvIdx
+              return (
+                <button key={m.name} onClick={() => selectMovement(i)} style={active ? rowActive : rowIdle}>
+                  <span className="flex min-w-0 flex-col gap-[3px] text-left">
+                    <span
+                      className="font-serif text-[21px] font-semibold leading-[1.1]"
+                      style={{ color: active ? "var(--primary)" : "var(--foreground)" }}
+                    >
+                      {m.name}
+                    </span>
+                    <span className="font-mono text-[11px] uppercase tracking-[1px] text-muted-foreground-subtle">{m.era}</span>
+                  </span>
+                  <span className="flex flex-none items-center">
+                    <span style={{ color: active ? "var(--primary)" : "var(--muted-foreground-subtle)", transform: `translateX(${active ? "3px" : "0px"})`, transition: "transform .25s" }}>
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12h14" />
+                        <path d="M13 6l6 6-6 6" />
+                      </svg>
+                    </span>
+                  </span>
+                </button>
+              )
+            })}
           </div>
 
-          {/* Content */}
-          <div>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground text-balance">
-              Every Art Movement, Animated
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground leading-relaxed text-pretty">
-              From the grandeur of Classical antiquity to the bold expressions of Contemporary art. Our AI brings centuries of artistic heritage to life on your screen.
-            </p>
-
-            <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {artStyles.map((style, index) => (
+          {/* Featured display */}
+          <div
+            onMouseEnter={() => setHovering(true)}
+            onMouseLeave={() => setHovering(false)}
+            className="flex min-w-0 flex-col gap-[18px]"
+          >
+            <div
+              className="relative w-full rounded-[20px] p-[7px]"
+              style={{
+                background: "linear-gradient(180deg,#40444d,#2e313a 42%,#22252f)",
+                boxShadow:
+                  "inset 0 1.5px 0 rgba(255,255,255,0.32), inset 1px 0 0 rgba(255,255,255,0.08), inset -1px 0 0 rgba(0,0,0,0.30), inset 0 -2px 3px rgba(0,0,0,0.42), 0 0 0 1px rgba(255,255,255,0.10), 0 40px 70px -34px rgba(0,0,0,0.95)",
+              }}
+            >
+              <div
+                className="w-full rounded-[14px] p-[5px]"
+                style={{ background: "#080809", boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.9), inset 0 1px 3px rgba(0,0,0,0.85)" }}
+              >
                 <div
-                  key={index}
-                  className="group px-4 py-3 rounded-xl bg-background/50 border border-border/50 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 cursor-default"
+                  className="relative w-full overflow-hidden rounded-[7px]"
+                  style={{ aspectRatio: "16 / 9", background: poster(feat), boxShadow: "inset 0 0 0 1px #000, inset 0 0 60px rgba(0,0,0,0.5)" }}
                 >
-                  <p className="font-medium text-foreground text-sm">{style.name}</p>
-                  <p className="text-xs text-muted-foreground">{style.era}</p>
+                  <AutoVideo
+                    videoKey={`${mvIdx}:${pIdx}:${feat.src}`}
+                    src={feat.src}
+                    priority
+                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                  <div
+                    className="absolute inset-0"
+                    style={{ pointerEvents: "none", background: "linear-gradient(122deg,rgba(255,255,255,0.09) 0%,rgba(255,255,255,0) 38%)", mixBlendMode: "screen" }}
+                  />
+                  <div
+                    className="absolute bottom-[18px] left-1/2 inline-flex max-w-[84%] -translate-x-1/2 items-center rounded-full px-[18px] py-[9px]"
+                    style={{
+                      background: "rgba(16,16,18,0.5)",
+                      backdropFilter: "blur(16px) saturate(1.3)", WebkitBackdropFilter: "blur(16px) saturate(1.3)",
+                      border: "1px solid rgba(255,255,255,0.13)",
+                    }}
+                  >
+                    <span className="overflow-hidden text-ellipsis whitespace-nowrap text-[13px] font-medium tracking-[1px] text-white">
+                      {pieceLabel(feat)}
+                    </span>
+                  </div>
+                  <button
+                    onClick={prevPiece}
+                    aria-label="Previous piece"
+                    className="absolute left-[14px] top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full text-white"
+                    style={{ border: "1px solid rgba(255,255,255,0.16)", background: "rgba(10,10,11,0.55)", backdropFilter: "blur(10px)", cursor: "pointer" }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M15 18l-6-6 6-6" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={nextPiece}
+                    aria-label="Next piece"
+                    className="absolute right-[14px] top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full text-white"
+                    style={{ border: "1px solid rgba(255,255,255,0.16)", background: "rgba(10,10,11,0.55)", backdropFilter: "blur(10px)", cursor: "pointer" }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 6l6 6-6 6" />
+                    </svg>
+                  </button>
                 </div>
+              </div>
+            </div>
+
+            {/* Placard */}
+            <div className="flex items-start justify-between gap-5 px-1 pt-1">
+              <div className="min-w-0">
+                <div className="font-serif text-[23px] font-semibold leading-[1.15] text-foreground">{feat.name}</div>
+                <div className="mt-[3px] text-[14.5px] text-muted-foreground">{feat.style}</div>
+              </div>
+            </div>
+
+            {/* Thumbnails */}
+            <div className="flex flex-wrap gap-[11px]">
+              {pieces.map((p, i) => (
+                <button key={p.src} onClick={() => setPieceIdx(i)} aria-label={p.name} style={i === pIdx ? thumbActive : thumbIdle}>
+                  <span className="absolute inset-0" style={{ background: poster(p) }} />
+                  <AutoVideo
+                    src={p.src}
+                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                  <span className="absolute inset-0" style={{ background: "linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.6))" }} />
+                  <span className="absolute bottom-[7px] left-[8px] right-[8px] text-left text-[11px] font-semibold leading-[1.2] text-white">
+                    {p.name}
+                  </span>
+                </button>
               ))}
             </div>
           </div>

@@ -7,6 +7,21 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Marketing homepage — "The collection" marquee (mirrors Living Art Screensaver.dc.html) */
+@keyframes lartMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.lart-marquee-track {
+  animation: lartMarquee 64s linear infinite;
+}
+.lart-marquee:hover .lart-marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lart-marquee-track { animation: none; }
+}
+
 :root {
   --background: oklch(0.08 0 0);
   --foreground: oklch(0.98 0 0);
@@ -14,19 +29,21 @@ html {
   --card-foreground: oklch(0.98 0 0);
   --popover: oklch(0.1 0 0);
   --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.85 0.15 145);
+  --primary: oklch(0.865 0.121 145.7);
   --primary-foreground: oklch(0.15 0.03 145);
   --secondary: oklch(0.18 0 0);
   --secondary-foreground: oklch(0.98 0 0);
   --muted: oklch(0.2 0 0);
   --muted-foreground: oklch(0.65 0 0);
+  --muted-foreground-strong: oklch(0.85 0.008 123); /* brighter secondary text */
+  --muted-foreground-subtle: oklch(0.54 0.011 121); /* dimmer labels / footer */
   --accent: oklch(0.2 0 0);
   --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
   --border: oklch(0.25 0 0);
   --input: oklch(0.2 0 0);
-  --ring: oklch(0.85 0.15 145);
+  --ring: oklch(0.865 0.121 145.7);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -35,12 +52,12 @@ html {
   --radius: 0.625rem;
   --sidebar: oklch(0.1 0 0);
   --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.85 0.15 145);
+  --sidebar-primary: oklch(0.865 0.121 145.7);
   --sidebar-primary-foreground: oklch(0.15 0.03 145);
   --sidebar-accent: oklch(0.18 0 0);
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(0.25 0 0);
-  --sidebar-ring: oklch(0.85 0.15 145);
+  --sidebar-ring: oklch(0.865 0.121 145.7);
 }
 
 .dark {
@@ -50,19 +67,21 @@ html {
   --card-foreground: oklch(0.98 0 0);
   --popover: oklch(0.1 0 0);
   --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.85 0.15 145);
+  --primary: oklch(0.865 0.121 145.7);
   --primary-foreground: oklch(0.15 0.03 145);
   --secondary: oklch(0.18 0 0);
   --secondary-foreground: oklch(0.98 0 0);
   --muted: oklch(0.2 0 0);
   --muted-foreground: oklch(0.65 0 0);
+  --muted-foreground-strong: oklch(0.85 0.008 123); /* brighter secondary text */
+  --muted-foreground-subtle: oklch(0.54 0.011 121); /* dimmer labels / footer */
   --accent: oklch(0.2 0 0);
   --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
   --border: oklch(0.25 0 0);
   --input: oklch(0.2 0 0);
-  --ring: oklch(0.85 0.15 145);
+  --ring: oklch(0.865 0.121 145.7);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -70,18 +89,18 @@ html {
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.1 0 0);
   --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.85 0.15 145);
+  --sidebar-primary: oklch(0.865 0.121 145.7);
   --sidebar-primary-foreground: oklch(0.15 0.03 145);
   --sidebar-accent: oklch(0.18 0 0);
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(0.25 0 0);
-  --sidebar-ring: oklch(0.85 0.15 145);
+  --sidebar-ring: oklch(0.865 0.121 145.7);
 }
 
 @theme inline {
   --font-sans: var(--font-inter), 'Inter', system-ui, sans-serif;
   --font-serif: var(--font-playfair), 'Playfair Display', Georgia, serif;
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -94,6 +113,8 @@ html {
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-muted-foreground-strong: var(--muted-foreground-strong);
+  --color-muted-foreground-subtle: var(--muted-foreground-subtle);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);

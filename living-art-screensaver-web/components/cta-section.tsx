@@ -1,49 +1,39 @@
 "use client"
 
 import posthog from "posthog-js"
-import { Button } from "@/components/ui/button"
 import { Download } from "lucide-react"
+import { Monitor } from "@/components/marketing/monitor"
 
 export function CTASection() {
   return (
-    <section className="relative py-24 lg:py-32 overflow-hidden">
-      {/* Background Video */}
-      <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-full object-cover opacity-30"
+    <section id="get" className="relative px-[30px] pt-[120px] pb-[124px] text-center">
+      <div className="relative z-[2] mx-auto max-w-[760px]">
+        <h2
+          className="m-0 mb-[18px] font-serif font-extrabold leading-[1.04] tracking-[-0.015em] text-foreground"
+          style={{ fontSize: "clamp(34px,5vw,68px)" }}
         >
-          <source
-            src="https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/starry_coast_animated.mp4"
-            type="video/mp4"
-          />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background" />
-      </div>
-
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground text-balance">
-          Ready to Transform Your Screen?
+          Your Mac is about to get a&nbsp;lot more beautiful.
         </h2>
-        <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
-          Join thousands of art lovers who have turned their idle displays into dynamic galleries. Start your journey today.
+        <p className="m-0 mb-[30px] text-[19px] leading-[1.5] text-muted-foreground-strong">
+          Download Living Art and let the gallery open the next time you step away.
         </p>
-
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button
-            size="lg"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 py-6 text-lg font-medium gap-2"
-            asChild
+        <div className="flex flex-wrap justify-center gap-[14px]">
+          <a
+            href="/download/mac"
+            onClick={() => posthog.capture("download_clicked", { location: "cta" })}
+            className="inline-flex items-center gap-[9px] rounded-full bg-primary px-[30px] py-[16px] text-[17px] font-semibold text-primary-foreground no-underline"
+            style={{ boxShadow: "0 14px 40px -10px rgba(158,232,162,0.6)" }}
           >
-            <a href="/download/mac" onClick={() => posthog.capture('download_clicked', { location: 'cta' })}>
-              <Download className="w-5 h-5" />
-              Download for Mac
-            </a>
-          </Button>
+            <Download className="h-[17px] w-[17px]" strokeWidth={2.2} />
+            Download for Mac
+          </a>
         </div>
+        <div className="mt-[20px] font-mono text-[11.5px] tracking-[1.5px] text-muted-foreground-subtle">
+          FREE FOREVER · IN-APP PURCHASE AVAILABLE
+        </div>
+      </div>
+      <div className="relative z-[2] mx-auto mt-[60px] max-w-[760px]">
+        <Monitor stand={false} interval={5600} />
       </div>
     </section>
   )

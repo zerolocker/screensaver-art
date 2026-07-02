@@ -10,11 +10,12 @@ by Supabase's built-in mailer.
 2. `POST /api/download-link`:
    - **New email** → `supabase.auth.admin.inviteUserByEmail(email, { redirectTo })`
    - **Existing email** (invite 422s) → `supabase.auth.resetPasswordForEmail(email, { redirectTo })`
-   - `redirectTo` = `https://living-art-screensaver.com/download/start`
+   - `redirectTo` = `https://living-art-screensaver.com/?src=email-download`
 3. Supabase sends the email. The link (`{{ .ConfirmationURL }}`) goes through
-   Supabase's verify endpoint and redirects to `/download/start`.
-4. `/download/start` fires the **`download_email_link_clicked`** PostHog event
-   (the click metric) and starts the DMG.
+   Supabase's verify endpoint and redirects to the home page with `?src=email-download`.
+4. `EmailArrivalTracker` on the home page fires the **`download_email_link_clicked`**
+   PostHog event (the click metric) and starts the DMG. (The Supabase auth-token
+   fragment is stripped in `instrumentation-client.ts` before analytics load.)
 
 ### Analytics funnel (PostHog)
 `download_email_modal_opened` → `download_email_submitted` (client) →
@@ -25,12 +26,14 @@ by Supabase's built-in mailer.
 ## ⚠️ One-time Supabase configuration
 
 ### 1. Allow the redirect URL
-Supabase only redirects to allow-listed URLs. In **Authentication → URL
-Configuration → Redirect URLs**, add:
+Supabase only redirects to allow-listed URLs. The email link lands on the home
+page (`/?src=email-download`). The home page is usually already covered by your
+**Site URL**, but to be safe with the query string add a wildcard in
+**Authentication → URL Configuration → Redirect URLs**:
 
 ```
-https://living-art-screensaver.com/download/start
-http://localhost:3001/download/start        # for local dev
+https://living-art-screensaver.com/**
+http://localhost:3001/**        # for local dev
 ```
 
 ### 2. Paste the email template
@@ -56,7 +59,7 @@ Subject (both): `Your Living Art download link`
               <td style="padding:36px 36px 8px 36px;" align="left">
                 <table role="presentation" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="width:40px;height:40px;background-color:#9EE8A2;border-radius:11px;text-align:center;vertical-align:middle;font-size:22px;line-height:40px;">▲</td>
+                    <td style="vertical-align:middle;"><img src="{{ .SiteURL }}/apple-icon.png" width="40" height="40" alt="Living Art" style="display:block;border-radius:11px;" /></td>
                     <td style="padding-left:12px;color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:600;">Living Art Screensaver</td>
                   </tr>
                 </table>

@@ -59,7 +59,9 @@ export async function POST(request: NextRequest) {
   }
 
   const location = typeof body.location === 'string' ? body.location.slice(0, 40) : 'unknown'
-  const redirectTo = `${resolveOrigin(request)}/download/start`
+  // Land back on the home page; EmailArrivalTracker counts the click + starts the
+  // download. (No dedicated landing page needed.)
+  const redirectTo = `${resolveOrigin(request)}/?src=email-download`
 
   // ── Send the link ──────────────────────────────────────────────────────────
   let newUser = true

@@ -1,5 +1,19 @@
 import posthog from 'posthog-js'
 
+// A Supabase invite / magic-link redirect appends the session tokens to the URL
+// fragment (#access_token=…). We land these on the marketing home page (the
+// "email me a download link" flow → `/?src=email-download`), so strip the token
+// fragment before analytics initialise — otherwise it would ride along in a
+// PostHog pageview URL and session replay, and linger in browser history. The
+// site's own auth is PKCE (`?code=` at /auth/callback), so this only ever
+// matches these email-link redirects and never consumes a real session.
+if (typeof window !== 'undefined') {
+  const hash = window.location.hash
+  if (hash && /\b(?:access_token|refresh_token|error_code)=/.test(hash)) {
+    window.history.replaceState(null, '', window.location.pathname + window.location.search)
+  }
+}
+
 // Client-side PostHog init for the marketing + account site. Next.js 15.3+ runs
 // this file automatically on the client before hydration — it is the canonical
 // place to initialise posthog-js.

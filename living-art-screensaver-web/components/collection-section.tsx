@@ -1,7 +1,7 @@
 "use client"
 
 import { AutoVideo } from "@/components/marketing/gallery-video"
-import { carousel, poster } from "@/lib/gallery-showcase"
+import { carousel, poster, posterImage } from "@/lib/gallery-showcase"
 
 // Duplicated so the marquee track loops seamlessly (animation shifts by -50%).
 const marqueeTiles = carousel.concat(carousel)
@@ -57,8 +57,20 @@ export function CollectionSection() {
                     className="relative h-full w-full overflow-hidden rounded-[5px]"
                     style={{ background: poster(t) }}
                   >
+                    {/* Real first frame paints instantly; the clip fades over
+                        it (perceptually) as it buffers and starts looping. */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={posterImage(t)}
+                      alt=""
+                      aria-hidden
+                      loading="lazy"
+                      decoding="async"
+                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                    />
                     <AutoVideo
                       src={t.src}
+                      poster={posterImage(t)}
                       style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
                     />
                     <div

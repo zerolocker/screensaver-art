@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { poster, pieceLabel, heroReel } from "@/lib/gallery-showcase"
-import { AutoVideo } from "@/components/marketing/gallery-video"
+import { useState } from "react"
+import { poster, posterImage, pieceLabel, heroReel } from "@/lib/gallery-showcase"
+import { ReelPlayer } from "@/components/marketing/reel-player"
 
 // The reel every monitor on the page shows.
 const REEL = heroReel
@@ -18,9 +18,11 @@ const GLOW = {
 interface MonitorProps {
   /** Straight neck + T-bar foot below the screen. */
   stand?: boolean
-  /** Eagerly preload the clips (use for the above-the-fold hero). */
+  /** Eagerly load the reel (use for the above-the-fold hero). */
   priority?: boolean
-  /** Cross-fade cadence, ms. */
+  /** Minimum dwell of ACTUAL playback per clip, ms — not a wall-clock cadence.
+   * The reel only rotates once the next clip is buffered enough to play, so on
+   * slow networks the current clip keeps looping instead of exposing a poster. */
   interval?: number
 }
 
@@ -28,36 +30,11 @@ interface MonitorProps {
  * A realistic Studio-Display-style monitor that cross-fades the gallery reel,
  * with an ambient "the screen lights the wall behind it" glow and a frosted
  * title pill (mirrors the in-screensaver placard). Ported from Monitor.dc.html.
+ * Playback/rotation is delegated to ReelPlayer (readiness-gated, poster-first).
  */
 export function Monitor({ stand = true, priority = false, interval = 5200 }: MonitorProps) {
-  const n = REEL.length
-
-  const [s, setS] = useState<{
-    idx: number; active: "A" | "B"; aSrc: string; bSrc: string; aHas: boolean; bHas: boolean
-  }>({
-    idx: 0,
-    active: "A",
-    aSrc: REEL[0]?.src ?? "",
-    bSrc: "",
-    aHas: !!REEL[0],
-    bHas: false,
-  })
-
-  useEffect(() => {
-    if (n < 2) return
-    const ms = Math.max(2000, interval)
-    const timer = setInterval(() => {
-      setS((prev) => {
-        const next = (prev.idx + 1) % n
-        const item = REEL[next]
-        if (prev.active === "A") return { ...prev, idx: next, active: "B", bSrc: item.src, bHas: true }
-        return { ...prev, idx: next, active: "A", aSrc: item.src, aHas: true }
-      })
-    }, ms)
-    return () => clearInterval(timer)
-  }, [n, interval])
-
-  const cur = REEL[s.idx] || REEL[0]
+  const [idx, setIdx] = useState(0)
+  const cur = REEL[idx] ?? REEL[0]
 
   return (
     <div style={{ position: "relative", width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -70,7 +47,9 @@ export function Monitor({ stand = true, priority = false, interval = 5200 }: Mon
           filter: "blur(34px)", pointerEvents: "none",
         }}
       />
-      {/* ambient art-glow: the current art bleeding onto the wall */}
+      {/* ambient art-glow: the current art bleeding onto the wall. A static
+          poster image (the clip's first frame) under heavy blur — deliberately
+          not a second video, which used to double the hero's bandwidth. */}
       <div
         style={{
           position: "absolute", zIndex: 0, left: "50%", top: GLOW.g2Top,
@@ -79,14 +58,19 @@ export function Monitor({ stand = true, priority = false, interval = 5200 }: Mon
           opacity: 0.55, pointerEvents: "none",
         }}
       >
-        {cur?.src && (
-          <AutoVideo
-            videoKey={`g:${cur.src}`}
-            src={cur.src}
-            priority={priority}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-        )}
+        <div style={{ position: "absolute", inset: 0, background: poster(cur) }} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={posterImage(cur)}
+          alt=""
+          aria-hidden
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
+          style={{
+            position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
+            transition: "opacity 1.15s ease",
+          }}
+        />
       </div>
 
       {/* screen unit (Midnight aluminium · thin bezel · crisp edge) */}
@@ -111,30 +95,12 @@ export function Monitor({ stand = true, priority = false, interval = 5200 }: Mon
               boxShadow: "inset 0 0 0 1px #000, inset 0 0 60px rgba(0,0,0,0.5)",
             }}
           >
-            <div style={{ position: "absolute", inset: 0, background: poster(cur) }} />
-
-            {s.aHas && (
-              <AutoVideo
-                videoKey={`a:${s.aSrc}`}
-                src={s.aSrc}
-                priority={priority}
-                style={{
-                  position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
-                  opacity: s.active === "A" ? 1 : 0, transition: "opacity 1.15s ease",
-                }}
-              />
-            )}
-            {s.bHas && (
-              <AutoVideo
-                videoKey={`b:${s.bSrc}`}
-                src={s.bSrc}
-                priority={priority}
-                style={{
-                  position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
-                  opacity: s.active === "B" ? 1 : 0, transition: "opacity 1.15s ease",
-                }}
-              />
-            )}
+            <ReelPlayer
+              pieces={REEL}
+              minDwellMs={Math.max(2000, interval)}
+              eager={priority}
+              onIndexChange={setIdx}
+            />
 
             {/* glare + vignette */}
             <div

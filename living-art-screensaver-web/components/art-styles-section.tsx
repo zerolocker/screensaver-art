@@ -1,10 +1,13 @@
 "use client"
 
 import { useEffect, useRef, useState, type CSSProperties } from "react"
-import { AutoVideo } from "@/components/marketing/gallery-video"
-import { movements, poster, pieceLabel } from "@/lib/gallery-showcase"
+import { ReelPlayer } from "@/components/marketing/reel-player"
+import { movements, poster, posterImage, pieceLabel } from "@/lib/gallery-showcase"
 
-const AUTO_ADVANCE_MS = 6500
+// Minimum ACTUAL playback per piece before the featured display auto-advances
+// (rotation additionally waits for the next piece to be buffered — see
+// ReelPlayer — so slow networks watch a looping clip, not a loading poster).
+const AUTO_ADVANCE_DWELL_MS = 6500
 
 const rowBase: CSSProperties = {
   display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px",
@@ -46,15 +49,6 @@ export function ArtStylesSection() {
   const pieces = mv.pieces
   const pIdx = ((pieceIdx % pieces.length) + pieces.length) % pieces.length
   const feat = pieces[pIdx]
-
-  // Auto-advance through the current movement's pieces, unless the user is hovering.
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (hovering) return
-      setPieceIdx((i) => (i + 1) % pieces.length)
-    }, AUTO_ADVANCE_MS)
-    return () => clearInterval(timer)
-  }, [hovering, pieces.length])
 
   // Keep the active movement pill centered in the mobile picker as it changes.
   useEffect(() => {
@@ -185,11 +179,15 @@ export function ArtStylesSection() {
                   className="relative w-full overflow-hidden rounded-[7px]"
                   style={{ aspectRatio: "16 / 9", background: poster(feat), boxShadow: "inset 0 0 0 1px #000, inset 0 0 60px rgba(0,0,0,0.5)" }}
                 >
-                  <AutoVideo
-                    videoKey={`${mvIdx}:${pIdx}:${feat.src}`}
-                    src={feat.src}
-                    priority
-                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                  {/* Keyed by movement so switching movements resets the reel.
+                      Auto-advance is readiness-gated; clicks jump immediately. */}
+                  <ReelPlayer
+                    key={mv.name}
+                    pieces={pieces}
+                    minDwellMs={AUTO_ADVANCE_DWELL_MS}
+                    index={pIdx}
+                    onIndexChange={setPieceIdx}
+                    holdDwell={hovering}
                   />
                   <div
                     className="absolute inset-0"
@@ -244,9 +242,15 @@ export function ArtStylesSection() {
               {pieces.map((p, i) => (
                 <button key={p.src} onClick={() => setPieceIdx(i)} aria-label={p.name} style={i === pIdx ? thumbActive : thumbIdle}>
                   <span className="absolute inset-0" style={{ background: poster(p) }} />
-                  <AutoVideo
-                    src={p.src}
-                    still
+                  {/* Static first-frame poster — a hard byte guarantee, unlike
+                      the old preload="metadata" video tiles. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={posterImage(p)}
+                    alt=""
+                    aria-hidden
+                    loading="lazy"
+                    decoding="async"
                     style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
                   />
                   <span className="absolute inset-0" style={{ background: "linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.6))" }} />

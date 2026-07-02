@@ -31,6 +31,15 @@ export function poster(it?: { name?: string }): string {
   return `radial-gradient(125% 95% at 30% 14%, hsl(${H} 44% 40%), hsl(${H2} 50% 22%) 74%)`
 }
 
+// The real-art poster image for a piece — the exact first frame of its clip,
+// pre-extracted to a ~50 KB WebP in public/posters/ (see
+// scripts/generate-posters.mjs). Painted under/before the video so visitors on
+// slow links see the artwork immediately instead of the gradient.
+export function posterImage(it?: { src?: string }): string {
+  const file = it?.src?.split("/").pop() ?? ""
+  return "/posters/" + file.replace(/\.mp4$/, ".webp")
+}
+
 // The placard label, e.g. "Starry Coast · Post-Impressionism".
 export function pieceLabel(it?: Piece): string {
   if (!it) return ""
@@ -39,13 +48,13 @@ export function pieceLabel(it?: Piece): string {
 
 // Rotating reel behind the hero + final-CTA monitors.
 export const heroReel: Piece[] = [
-  v("gothic_glass_animated.mp4", "Cathedral Light", "Gothic Stained Glass"),
   v("starry_coast_animated.mp4", "Starry Coast", "Post-Impressionism"),
   v("romanticism_storm_animated.mp4", "Stormy Sea", "Romanticism"),
   v("floating_city_animated.mp4", "Floating City", "Steampunk"),
   v("cubism_city_animated.mp4", "Geometric Sunset", "Cubism"),
   v("dutch_golden_age_scholar_animated.mp4", "Study in Light", "Dutch Golden Age"),
   v("art_nouveau_woman_animated.mp4", "Woman and Flora", "Art Nouveau"),
+  v("gothic_glass_animated.mp4", "Cathedral Light", "Gothic Stained Glass"),
 ]
 
 // "The collection" marquee tiles.

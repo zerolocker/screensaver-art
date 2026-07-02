@@ -48,13 +48,13 @@ export function pieceLabel(it?: Piece): string {
 
 // Rotating reel behind the hero + final-CTA monitors.
 export const heroReel: Piece[] = [
-  v("gothic_glass_animated.mp4", "Cathedral Light", "Gothic Stained Glass"),
   v("starry_coast_animated.mp4", "Starry Coast", "Post-Impressionism"),
   v("romanticism_storm_animated.mp4", "Stormy Sea", "Romanticism"),
   v("floating_city_animated.mp4", "Floating City", "Steampunk"),
   v("cubism_city_animated.mp4", "Geometric Sunset", "Cubism"),
   v("dutch_golden_age_scholar_animated.mp4", "Study in Light", "Dutch Golden Age"),
   v("art_nouveau_woman_animated.mp4", "Woman and Flora", "Art Nouveau"),
+  v("gothic_glass_animated.mp4", "Cathedral Light", "Gothic Stained Glass"),
 ]
 
 // "The collection" marquee tiles.

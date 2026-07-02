@@ -1,8 +1,8 @@
 "use client"
 
-import posthog from "posthog-js"
 import { Download } from "lucide-react"
 import { Monitor } from "@/components/marketing/monitor"
+import { DownloadCTA } from "@/components/marketing/download-cta"
 
 export function HeroSection() {
   return (
@@ -21,15 +21,14 @@ export function HeroSection() {
             Centuries of art, animated by AI and hung on your idle Mac. New pieces arrive every night.
           </p>
           <div className="mt-1.5 flex w-full flex-wrap items-center justify-start gap-x-[18px] gap-y-3">
-            <a
-              href="/download/mac"
-              onClick={() => posthog.capture("download_clicked", { location: "hero" })}
-              className="inline-flex items-center gap-[9px] rounded-full bg-primary px-[27px] py-[15px] text-[16.5px] font-semibold text-primary-foreground no-underline"
+            <DownloadCTA
+              location="hero"
+              className="inline-flex cursor-pointer items-center gap-[9px] rounded-full bg-primary px-[27px] py-[15px] text-[16.5px] font-semibold text-primary-foreground no-underline"
               style={{ boxShadow: "0 12px 34px -10px rgba(158,232,162,0.6)" }}
             >
               <Download className="h-4 w-4" strokeWidth={2.2} />
               Download for Mac
-            </a>
+            </DownloadCTA>
             <div className="text-[13px]">
               <span className="font-semibold text-primary">Free forever.</span>{" "}
               <span className="text-muted-foreground-subtle">In-app purchase available.</span>

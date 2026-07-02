@@ -1,8 +1,8 @@
 "use client"
 
-import posthog from "posthog-js"
 import { Download } from "lucide-react"
 import { Monitor } from "@/components/marketing/monitor"
+import { DownloadCTA } from "@/components/marketing/download-cta"
 
 export function CTASection() {
   return (
@@ -18,15 +18,14 @@ export function CTASection() {
           Download Living Art and let the gallery open the next time you step away.
         </p>
         <div className="flex flex-wrap justify-center gap-[14px]">
-          <a
-            href="/download/mac"
-            onClick={() => posthog.capture("download_clicked", { location: "cta" })}
-            className="inline-flex items-center gap-[9px] rounded-full bg-primary px-[30px] py-[16px] text-[17px] font-semibold text-primary-foreground no-underline"
+          <DownloadCTA
+            location="cta"
+            className="inline-flex cursor-pointer items-center gap-[9px] rounded-full bg-primary px-[30px] py-[16px] text-[17px] font-semibold text-primary-foreground no-underline"
             style={{ boxShadow: "0 14px 40px -10px rgba(158,232,162,0.6)" }}
           >
             <Download className="h-[17px] w-[17px]" strokeWidth={2.2} />
             Download for Mac
-          </a>
+          </DownloadCTA>
         </div>
         <div className="mt-[20px] font-mono text-[11.5px] tracking-[1.5px] text-muted-foreground-subtle">
           FREE FOREVER · IN-APP PURCHASE AVAILABLE

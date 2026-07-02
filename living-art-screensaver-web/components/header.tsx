@@ -1,10 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import posthog from "posthog-js"
 import { Download, User } from "lucide-react"
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
+import { DownloadCTA } from "@/components/marketing/download-cta"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 
 export function Header() {
@@ -59,15 +59,14 @@ export function Header() {
               Sign in
             </Link>
           )}
-          <a
-            href="/download/mac"
-            onClick={() => posthog.capture("download_clicked", { location: "header" })}
-            className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-primary px-[18px] py-[10px] text-[14.5px] font-semibold text-primary-foreground no-underline"
+          <DownloadCTA
+            location="header"
+            className="inline-flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-full bg-primary px-[18px] py-[10px] text-[14.5px] font-semibold text-primary-foreground no-underline"
             style={{ boxShadow: "0 6px 22px -8px rgba(158,232,162,0.55)" }}
           >
             <Download className="h-3.5 w-3.5" strokeWidth={2.3} />
             Download for Mac
-          </a>
+          </DownloadCTA>
         </div>
       </div>
     </header>

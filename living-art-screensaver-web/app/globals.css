@@ -22,6 +22,15 @@ html {
   .lart-marquee-track { animation: none; }
 }
 
+/* Hide the scrollbar on horizontal scrollers (e.g. the mobile movement picker) */
+.lart-no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.lart-no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 :root {
   --background: oklch(0.08 0 0);
   --foreground: oklch(0.98 0 0);

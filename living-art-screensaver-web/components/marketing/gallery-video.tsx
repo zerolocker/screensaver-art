@@ -17,9 +17,22 @@ function galleryObserver(): IntersectionObserver | null {
         for (const entry of entries) {
           const video = entry.target as HTMLVideoElement
           if (entry.isIntersecting) {
-            video.muted = true
-            video.play().catch(() => {})
-          } else {
+            if (video.dataset.still === "true") {
+              // "Still" clips (e.g. picker thumbnails): load a first frame to
+              // paint, then never play. This guarantees no continuous decode of
+              // ~6 looping tiles (the main CPU/battery + contention win); how
+              // much actually downloads is up to the browser (Chromium may pull
+              // the whole short clip, Safari far less). Promote from
+              // preload="none" only once the tile scrolls near.
+              if (video.readyState < 2 /* HAVE_CURRENT_DATA */) {
+                video.preload = "metadata"
+                video.load()
+              }
+            } else {
+              video.muted = true
+              video.play().catch(() => {})
+            }
+          } else if (video.dataset.still !== "true") {
             video.pause()
           }
         }
@@ -35,16 +48,24 @@ function galleryObserver(): IntersectionObserver | null {
  * ref (React's `muted` attribute alone is unreliable). Playback is gated on
  * visibility by the shared observer above — no `autoPlay`, so an off-screen clip
  * is never fetched until it scrolls close.
+ *
+ * Pass `still` for a poster-style tile: the clip loads a first frame to paint
+ * and never plays. A grid of these avoids continuously decoding several loops at
+ * once, so they don't starve the featured clip on slow mobile links. (How much
+ * each tile downloads is browser-dependent — the guaranteed win is no looping
+ * playback, not a fixed byte count; for hard byte guarantees use a real image.)
  */
 export function AutoVideo({
   src,
   priority = false,
+  still = false,
   style,
   className,
   videoKey,
 }: {
   src: string
   priority?: boolean
+  still?: boolean
   style?: CSSProperties
   className?: string
   videoKey?: string
@@ -57,21 +78,23 @@ export function AutoVideo({
     video.muted = true
     const io = galleryObserver()
     if (!io) {
-      // No IntersectionObserver available — just play.
-      video.play().catch(() => {})
+      // No IntersectionObserver available — paint a frame (still) or just play.
+      if (still) video.load()
+      else video.play().catch(() => {})
       return
     }
     io.observe(video)
     return () => io.unobserve(video)
-  }, [src])
+  }, [src, still])
 
   return (
     <video
       ref={ref}
       key={videoKey ?? src}
       src={src}
+      data-still={still ? "true" : undefined}
       muted
-      loop
+      loop={!still}
       playsInline
       preload={priority ? "auto" : "none"}
       style={style}

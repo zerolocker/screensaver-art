@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, type CSSProperties } from "react"
+import { useEffect, useRef, useState, type CSSProperties } from "react"
 import { AutoVideo } from "@/components/marketing/gallery-video"
 import { movements, poster, pieceLabel } from "@/lib/gallery-showcase"
 
@@ -26,10 +26,21 @@ const thumbIdle: CSSProperties = {
   ...thumbBase, border: 0, outline: "1px solid rgba(255,255,255,0.1)", opacity: 0.62, transition: "opacity .2s",
 }
 
+// Compact movement pills for the mobile picker (a horizontal, scrollable
+// counterpart to the desktop vertical list; both drive the same mvIdx).
+const chipBase: CSSProperties = {
+  flex: "none", display: "inline-flex", flexDirection: "column", gap: "2px",
+  padding: "9px 15px", borderRadius: "12px", cursor: "pointer", textAlign: "left",
+  transition: "background .2s, border-color .2s",
+}
+const chipActive: CSSProperties = { ...chipBase, background: "rgba(158,232,162,0.1)", border: "1px solid rgba(158,232,162,0.45)" }
+const chipIdle: CSSProperties = { ...chipBase, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }
+
 export function ArtStylesSection() {
   const [mvIdx, setMvIdx] = useState(0)
   const [pieceIdx, setPieceIdx] = useState(0)
   const [hovering, setHovering] = useState(false)
+  const chipStripRef = useRef<HTMLDivElement>(null)
 
   const mv = movements[mvIdx] ?? movements[0]
   const pieces = mv.pieces
@@ -44,6 +55,21 @@ export function ArtStylesSection() {
     }, AUTO_ADVANCE_MS)
     return () => clearInterval(timer)
   }, [hovering, pieces.length])
+
+  // Keep the active movement pill centered in the mobile picker as it changes.
+  useEffect(() => {
+    const strip = chipStripRef.current
+    const active = strip?.querySelector<HTMLElement>('[data-active="true"]')
+    if (!strip || !active) return
+    const stripRect = strip.getBoundingClientRect()
+    const activeRect = active.getBoundingClientRect()
+    const delta =
+      activeRect.left - stripRect.left + strip.scrollLeft + activeRect.width / 2 - strip.clientWidth / 2
+    // Only adjusts the strip's own horizontal scroll (never the page). Direct
+    // assignment rather than scrollTo({behavior:"smooth"}), which silently no-ops
+    // on older iOS Safari.
+    strip.scrollLeft = delta
+  }, [mvIdx])
 
   const selectMovement = (i: number) => { setMvIdx(i); setPieceIdx(0) }
   const nextPiece = () => setPieceIdx((i) => (i + 1) % pieces.length)
@@ -67,9 +93,16 @@ export function ArtStylesSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(540px,1fr))] items-start gap-[40px]">
-          {/* Movement list */}
-          <div className="flex min-w-0 flex-col gap-[9px]">
+        {/* One column below lg (movement picker lives inside the featured column
+            as a horizontal strip); two columns at lg+ (vertical list | featured).
+            The grid, list, and picker all flip together at lg so the picker is
+            never shown alongside a two-column layout, and the vertical list is
+            never stacked above the monitor. */}
+        <div className="grid grid-cols-1 items-start gap-[40px] lg:grid-cols-2">
+          {/* Movement list (desktop — vertical). On mobile it's replaced by the
+              horizontal pill picker inside the featured column, so the monitor
+              and the movement selector stay on-screen together. */}
+          <div className="hidden min-w-0 flex-col gap-[9px] lg:flex">
             {movements.map((m, i) => {
               const active = i === mvIdx
               return (
@@ -102,6 +135,40 @@ export function ArtStylesSection() {
             onMouseLeave={() => setHovering(false)}
             className="flex min-w-0 flex-col gap-[18px]"
           >
+            {/* Movement picker (mobile only) — a horizontal, scrollable strip of
+                pills that sits right above the monitor so tapping a movement and
+                seeing it come alive happens on one screen. */}
+            <div
+              ref={chipStripRef}
+              className="lart-no-scrollbar -mx-[30px] flex gap-[9px] overflow-x-auto px-[30px] lg:hidden"
+              style={{
+                WebkitMaskImage: "linear-gradient(90deg,transparent,#000 30px,#000 calc(100% - 30px),transparent)",
+                maskImage: "linear-gradient(90deg,transparent,#000 30px,#000 calc(100% - 30px),transparent)",
+              }}
+            >
+              {movements.map((m, i) => {
+                const active = i === mvIdx
+                return (
+                  <button
+                    key={m.name}
+                    data-active={active}
+                    onClick={() => selectMovement(i)}
+                    style={active ? chipActive : chipIdle}
+                  >
+                    <span
+                      className="whitespace-nowrap font-serif text-[15px] font-semibold leading-none"
+                      style={{ color: active ? "var(--primary)" : "var(--foreground)" }}
+                    >
+                      {m.name}
+                    </span>
+                    <span className="whitespace-nowrap font-mono text-[10px] uppercase tracking-[1px] text-muted-foreground-subtle">
+                      {m.era}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+
             <div
               className="relative w-full rounded-[20px] p-[7px]"
               style={{
@@ -179,6 +246,7 @@ export function ArtStylesSection() {
                   <span className="absolute inset-0" style={{ background: poster(p) }} />
                   <AutoVideo
                     src={p.src}
+                    still
                     style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
                   />
                   <span className="absolute inset-0" style={{ background: "linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,0.6))" }} />

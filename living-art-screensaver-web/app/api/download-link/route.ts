@@ -8,12 +8,15 @@ import { getPostHogClient, flushPostHog } from '@/lib/posthog-server'
  *
  * Mobile visitors can't install the Mac app on their phone, so instead of a
  * dead "Download" button we capture their email here and send a link they can
- * open on their Mac. The email is sent through Supabase's built-in mailer (the
- * only mailer this project has) via `inviteUserByEmail`; the link's `redirectTo`
- * lands on `/download/start`, which tracks the click and starts the DMG.
+ * open on their Mac. Supabase is used purely as the mailer (the only one this
+ * project has): `inviteUserByEmail` triggers the send, and the email template
+ * links straight to the home page (`/?src=email-download`) — NOT to Supabase's
+ * verify endpoint. So there's no `redirectTo`, no auth token on the click, and
+ * no redirect-URL allowlist to configure. The home page's EmailArrivalTracker
+ * counts the click and starts the DMG.
  *
  * Existing emails can't be re-invited (inviteUserByEmail 422s), so we fall back
- * to `resetPasswordForEmail`, which delivers the same link to an existing user.
+ * to `resetPasswordForEmail`, which triggers the same email for an existing user.
  * Both the "Invite user" and "Reset Password" auth templates are otherwise
  * unused in this passwordless project and are repurposed with identical
  * download-link copy — see docs/download-link-email.md.
@@ -59,15 +62,13 @@ export async function POST(request: NextRequest) {
   }
 
   const location = typeof body.location === 'string' ? body.location.slice(0, 40) : 'unknown'
-  // Land back on the home page; EmailArrivalTracker counts the click + starts the
-  // download. (No dedicated landing page needed.)
-  const redirectTo = `${resolveOrigin(request)}/?src=email-download`
 
   // ── Send the link ──────────────────────────────────────────────────────────
+  // We only use Supabase as the mailer: the email template links straight to the
+  // home page (`/?src=email-download`), NOT to Supabase's verify endpoint, so no
+  // `redirectTo` is needed and the click never carries an auth token.
   let newUser = true
-  const { error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
-    redirectTo,
-  })
+  const { error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email)
 
   if (inviteError) {
     if (isRateLimited(inviteError)) {
@@ -77,11 +78,9 @@ export async function POST(request: NextRequest) {
       )
     }
     if (isAlreadyRegistered(inviteError)) {
-      // Existing user: deliver the same link via the recovery mailer instead.
+      // Existing user: trigger the same email via the recovery mailer instead.
       newUser = false
-      const { error: resetError } = await supabaseAnon.auth.resetPasswordForEmail(email, {
-        redirectTo,
-      })
+      const { error: resetError } = await supabaseAnon.auth.resetPasswordForEmail(email)
       if (resetError) {
         if (isRateLimited(resetError)) {
           return NextResponse.json(
@@ -135,14 +134,4 @@ function distinctId(request: NextRequest): string {
     }
   }
   return `anon-download-${randomUUID()}`
-}
-
-// Behind Vercel's proxy the public host is in x-forwarded-host (mirrors /api/checkout).
-function resolveOrigin(request: NextRequest): string {
-  const forwardedHost = request.headers.get('x-forwarded-host')
-  if (forwardedHost) {
-    const proto = request.headers.get('x-forwarded-proto') ?? 'https'
-    return `${proto}://${forwardedHost}`
-  }
-  return new URL(request.url).origin
 }

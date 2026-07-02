@@ -7,15 +7,15 @@ by Supabase's built-in mailer.
 ## How it works
 
 1. Mobile visitor taps a Download CTA → dialog → enters email.
-2. `POST /api/download-link`:
-   - **New email** → `supabase.auth.admin.inviteUserByEmail(email, { redirectTo })`
-   - **Existing email** (invite 422s) → `supabase.auth.resetPasswordForEmail(email, { redirectTo })`
-   - `redirectTo` = `https://living-art-screensaver.com/?src=email-download`
-3. Supabase sends the email. The link (`{{ .ConfirmationURL }}`) goes through
-   Supabase's verify endpoint and redirects to the home page with `?src=email-download`.
+2. `POST /api/download-link` triggers the send (Supabase is only the mailer):
+   - **New email** → `supabase.auth.admin.inviteUserByEmail(email)`
+   - **Existing email** (invite 422s) → `supabase.auth.resetPasswordForEmail(email)`
+3. Supabase sends the email. **The button links straight to
+   `https://living-art-screensaver.com/?src=email-download`** — a plain link, NOT
+   `{{ .ConfirmationURL }}`. So the click goes directly to the home page; it never
+   passes through Supabase's verify endpoint and carries no auth token.
 4. `EmailArrivalTracker` on the home page fires the **`download_email_link_clicked`**
-   PostHog event (the click metric) and starts the DMG. (The Supabase auth-token
-   fragment is stripped in `instrumentation-client.ts` before analytics load.)
+   PostHog event (the click metric) and starts the DMG.
 
 ### Analytics funnel (PostHog)
 `download_email_modal_opened` → `download_email_submitted` (client) →
@@ -25,18 +25,11 @@ by Supabase's built-in mailer.
 
 ## ⚠️ One-time Supabase configuration
 
-### 1. Allow the redirect URL
-Supabase only redirects to allow-listed URLs. The email link lands on the home
-page (`/?src=email-download`). The home page is usually already covered by your
-**Site URL**, but to be safe with the query string add a wildcard in
-**Authentication → URL Configuration → Redirect URLs**:
+Because the email button is a **plain link** (not `{{ .ConfirmationURL }}`),
+there's **no redirect-URL allowlist to configure** — the link goes straight to
+the site. The only setup is pasting the template.
 
-```
-https://living-art-screensaver.com/**
-http://localhost:3001/**        # for local dev
-```
-
-### 2. Paste the email template
+### Paste the email template
 This project is **passwordless** and doesn't use invites, so the **Invite user**
 and **Reset Password** templates are free to repurpose. Paste the HTML below into
 **both** (Authentication → Email Templates → *Invite user* and *Reset Password*)
@@ -80,7 +73,7 @@ Subject (both): `Your Living Art download link`
                 <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                   <tr>
                     <td align="center" bgcolor="#9EE8A2" style="border-radius:999px;">
-                      <a href="{{ .ConfirmationURL }}" target="_blank"
+                      <a href="{{ .SiteURL }}/?src=email-download" target="_blank"
                          style="display:inline-block;padding:14px 32px;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:700;color:#0a1f12;text-decoration:none;border-radius:999px;">
                         Download for Mac
                       </a>
@@ -113,8 +106,16 @@ Subject (both): `Your Living Art download link`
 ```
 
 ### Notes
-- `{{ .ConfirmationURL }}` is the download link (Supabase verify → `/download/start`).
+- The button is a **plain link** to `{{ .SiteURL }}/?src=email-download` (the home
+  page). `{{ .SiteURL }}` resolves to your configured Supabase Site URL, so it
+  doesn't hardcode the domain. It deliberately does **not** use
+  `{{ .ConfirmationURL }}` — see the top of `app/api/download-link/route.ts`.
+- The `?src=email-download` param is how the home page counts the click
+  (`download_email_link_clicked`) and starts the download.
 - The button uses the brand mint `#9EE8A2` on a dark card, matching the site.
 - `inviteUserByEmail` creates an auth user for each new email — that's an
   intentional lead-capture side effect (when they later sign in with the same
   email in the app, it's the same account).
+- **Deliverability**, not link routing, is the thing to watch: Supabase's built-in
+  SMTP is shared and rate-limited, so for production configure a custom SMTP
+  provider (Resend/Postmark/SES) with SPF/DKIM/DMARC on your sending domain.

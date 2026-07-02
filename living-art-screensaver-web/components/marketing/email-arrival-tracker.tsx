@@ -10,9 +10,6 @@ import { detectIsMac } from '@/lib/device'
  * landing here with that param is the click we count: `download_email_link_clicked`.
  * On a Mac we also start the DMG; the home page's own Download CTA is the manual
  * fallback. Renders nothing.
- *
- * (The Supabase auth-token fragment that rides along is already stripped in
- * instrumentation-client.ts before analytics load.)
  */
 export function EmailArrivalTracker() {
   const handled = useRef(false)

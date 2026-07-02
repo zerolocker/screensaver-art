@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Download, User } from "lucide-react"
+import { User } from "lucide-react"
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { DownloadCTA } from "@/components/marketing/download-cta"
@@ -61,12 +61,11 @@ export function Header() {
           )}
           <DownloadCTA
             location="header"
+            mobileLabel="Get the app"
+            iconClassName="h-3.5 w-3.5"
             className="inline-flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-full bg-primary px-[18px] py-[10px] text-[14.5px] font-semibold text-primary-foreground no-underline"
             style={{ boxShadow: "0 6px 22px -8px rgba(158,232,162,0.55)" }}
-          >
-            <Download className="h-3.5 w-3.5" strokeWidth={2.3} />
-            Download for Mac
-          </DownloadCTA>
+          />
         </div>
       </div>
     </header>

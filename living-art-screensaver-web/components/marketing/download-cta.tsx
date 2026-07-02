@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, type CSSProperties, type ReactNode } from 'react'
+import { useState, type CSSProperties } from 'react'
 import posthog from 'posthog-js'
-import { CheckCircle2, Loader2, Mail } from 'lucide-react'
+import { CheckCircle2, Download, Loader2, Mail } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -16,23 +16,28 @@ import { useIsMobileDevice } from '@/lib/device'
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 /**
- * The site's "Download for Mac" call to action.
+ * The site's "Download" call to action.
  *
- * On a Mac (or any desktop) it's a normal link to `/download/mac`. On a phone or
- * tablet — where the macOS app can't be installed — it instead opens a dialog
- * that emails a download link the visitor can open on their Mac. Same button
- * styling in both cases (pass `className`); only the behavior changes.
+ * On a Mac (or any desktop) it's a normal link to `/download/mac`, labelled
+ * `label` with a download icon. On a phone or tablet — where the macOS app can't
+ * be installed — it instead opens a dialog that emails a link to open on the
+ * Mac, and relabels to `mobileLabel` with a mail icon so the action (and that
+ * it's not an on-device download) is honest. Same button styling in both cases.
  */
 export function DownloadCTA({
   className,
   style,
-  children,
   location,
+  label = 'Download for Mac',
+  mobileLabel = 'Send it to my Mac',
+  iconClassName = 'h-4 w-4',
 }: {
   className?: string
   style?: CSSProperties
-  children: ReactNode
   location: string
+  label?: string
+  mobileLabel?: string
+  iconClassName?: string
 }) {
   const isMobile = useIsMobileDevice()
 
@@ -46,7 +51,8 @@ export function DownloadCTA({
         className={className}
         style={style}
       >
-        {children}
+        <Download className={iconClassName} strokeWidth={2.2} />
+        {label}
       </a>
     )
   }
@@ -60,7 +66,8 @@ export function DownloadCTA({
           style={style}
           onClick={() => posthog.capture('download_email_modal_opened', { location })}
         >
-          {children}
+          <Mail className={iconClassName} strokeWidth={2.2} />
+          {mobileLabel}
         </button>
       </DialogTrigger>
       <EmailLinkDialogContent location={location} />

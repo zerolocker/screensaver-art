@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import posthog from "posthog-js"
-import { Download, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { PRICING } from "@screensaver-art/constants"
 import { createClient } from "@/lib/supabase/client"
 import { DownloadCTA } from "@/components/marketing/download-cta"
@@ -104,12 +104,10 @@ export function PricingSection() {
 
               <DownloadCTA
                 location="pricing_section"
+                iconClassName="h-4 w-4"
                 className="mb-[11px] flex w-full cursor-pointer items-center justify-center gap-[9px] rounded-full bg-primary py-[15px] text-[16.5px] font-semibold text-primary-foreground no-underline"
                 style={{ boxShadow: "0 12px 30px -10px rgba(158,232,162,0.5)" }}
-              >
-                <Download className="h-4 w-4" strokeWidth={2.2} />
-                Download for Mac
-              </DownloadCTA>
+              />
               <button
                 onClick={handleWebSubscribe}
                 disabled={loading}

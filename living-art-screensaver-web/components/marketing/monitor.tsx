@@ -183,7 +183,7 @@ export function Monitor({ stand = true, priority = false, interval = 5200 }: Mon
           />
           <div
             style={{
-              position: "relative", zIndex: 1, width: "44%", minWidth: "280px", height: "16px", borderRadius: "7px",
+              position: "relative", zIndex: 1, width: "44%", maxWidth: "280px", height: "16px", borderRadius: "7px",
               background: "linear-gradient(180deg,#343841,#1e212a)",
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.16), 0 0 0 1px rgba(255,255,255,0.10), 0 22px 30px -14px rgba(0,0,0,0.85)",
             }}

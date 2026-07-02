@@ -7,7 +7,7 @@ import { Monitor } from "@/components/marketing/monitor"
 export function HeroSection() {
   return (
     <section id="top" className="relative px-[30px] pt-[130px] pb-[92px]">
-      <div className="mx-auto grid max-w-[1280px] grid-cols-[repeat(auto-fit,minmax(340px,1fr))] items-center gap-[50px]">
+      <div className="mx-auto grid max-w-[1280px] grid-cols-[repeat(auto-fit,minmax(min(340px,100%),1fr))] items-center gap-[50px]">
         {/* Copy */}
         <div className="flex max-w-[560px] flex-col items-start gap-[21px] text-left">
           <h1

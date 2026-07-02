@@ -1883,5 +1883,57 @@
     "image_prompt": "A single continuous Japanese ukiyo-e woodblock print in the style of Utagawa Hiroshige, night snow scene, Edo period, one unified composition filling the whole width. A quiet snow-covered temple precinct under a full moon: a tiled pagoda roof and a stone lantern heaped with snow, a bare gnarled plum tree, a low wooden bridge over a frozen stream, all blanketed in soft white; deep indigo night sky graded with bokashi, a pale luminous moon, soft snowflakes drifting down. Flat bold outlines, limited woodblock palette of indigo, white and grey, delicate keyblock lines. This is one seamless scene that fills the entire image, extending to all four edges, viewed straight-on. no triptych, no panels, no split image, no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
     "video_prompt": "Soft snowflakes fall gently and steadily across the whole scene, drifting slightly sideways in a faint breeze, with a subtle cool moonlight glow. Only the falling snow moves; the pagoda, stone lanterns, plum tree and bridge hold perfectly still under their snow. Continuous, calm, seamless falling snow that settles back exactly to the opening.",
     "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/etruscan_sea_birds_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/etruscan_sea_birds_4k.webp",
+    "title": "Fishing on the Bright Sea - Etruscan Tomb Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-07-02",
+    "tags": [
+      "Greek & Roman"
+    ],
+    "image_prompt": "An Etruscan tomb fresco in the archaic style of the Tomb of Hunting and Fishing at Tarquinia, painted in earth pigments (ochre, red, black, terracotta) on rough lime plaster. A wide seascape band: a calm turquoise-green sea with gentle stylized swells fills the lower half, and above it a bright cream sky filled with many small dark birds wheeling in flight. On the water, a small boat with a fisherman casting a line, and rocky islets at the edges dotted with stylized shrubs. Flat archaic Etruscan drawing, bold outlines, warm faded fresco surface with fine cracks in the plaster. The scene fills the entire image, extending to all four edges, viewed straight-on, flat to the picture plane. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "The flock of small dark birds glides and wheels slowly across the cream sky, drifting from right to left. The turquoise sea gently undulates with soft rolling swells and faint glints of light on the water. The little fishing boat bobs almost imperceptibly. Everything else — the painted plaster, the shrubs, the fisherman — holds perfectly still, as an ancient fresco. Calm, serene, physically natural motion of birds and water only; no morphing, no shape changes.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/deccan_monsoon_storm_animated.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/deccan_monsoon_storm_4k.webp",
+    "title": "Monsoon Storm over the Pleasure Garden - Deccan Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-07-02",
+    "tags": [
+      "South & Southeast Asian"
+    ],
+    "image_prompt": "A Deccan Sultanate wall painting in the courtly style of Bijapur and Golconda, opaque watercolor and gold on a large plastered wall surface: a night monsoon storm breaking over a royal pleasure garden. A white marble palace pavilion with scalloped arches and slender cypress trees, a rectangular reflecting pool, and lush flowering trees, all rendered in the jewel-toned, flattened Deccani manner with fine detail and a deep indigo-black storm sky. Jagged forks of golden lightning split the clouds; sheets of silver rain slant across the garden; the cypresses and banana leaves bend in the wind. Rich lapis, emerald, gold and crimson pigments, soft lamp-glow from the pavilion windows. The scene fills the entire image, extending to all four edges, viewed straight-on, flat to the picture plane. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "A dramatic night monsoon storm in motion. Sheets of silver rain pour down and slant across the whole garden; forks of golden lightning flash intermittently across the indigo sky, briefly lighting the clouds. The cypress and banana leaves sway and toss in the gusting wind. The surface of the reflecting pool is dimpled and rippling under the rain, its lamp reflections shivering. Warm lamplight flickers in the pavilion windows. The marble pavilion itself holds firm and still. Powerful but physically real weather — rain, wind, lightning; no morphing of the architecture.",
+    "looping": false
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/joseon_winter_valley_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/joseon_winter_valley_4k.webp",
+    "title": "Snowfall in the Mountain Valley - Joseon Dynasty Landscape (AI Animated)",
+    "type": "video",
+    "date": "2026-07-02",
+    "tags": [
+      "Chinese & Korean"
+    ],
+    "image_prompt": "A Joseon dynasty Korean literati landscape painting, ink and light mineral color on silk in the style of 18th-century court painters, one unified panoramic winter scene filling the whole width. A quiet snow-covered mountain valley: dark twisted pine trees heavy with snow, jagged grey rock cliffs, a small tiled-roof pavilion and a low wooden bridge over a half-frozen stream, distant misty peaks fading into a pale sky. Muted palette of soft ink black, silver-grey, cool white snow and faint blue-green; delicate calligraphic brushwork, atmospheric empty space, soft snowflakes drifting down. The scene fills the entire image, extending to all four edges, viewed straight-on, flat to the picture plane. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "Soft snowflakes fall gently and steadily across the whole valley, drifting slightly sideways in a faint mountain breeze. Thin veils of mist drift slowly among the distant peaks, and the half-frozen stream trickles quietly under the bridge. The snow-laden pines, rocks, pavilion and bridge hold perfectly still. Calm, continuous, seamless falling snow and drifting mist that settle back exactly to the opening. Physically natural; no morphing, no shape changes.",
+    "looping": true
+  },
+  {
+    "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/safavid_night_blossoms_looping.mp4",
+    "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/safavid_night_blossoms_4k.webp",
+    "title": "Blossom Garden by Moonlight - Safavid Persian Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-07-02",
+    "tags": [
+      "Islamic"
+    ],
+    "image_prompt": "A Safavid Persian garden scene at night, 17th-century Isfahan, opaque watercolor and gold on paper in the fine miniature idiom but painted at grand scale as one unified panoramic view filling the whole width. A walled paradise garden under a deep indigo starry sky with a slender crescent moon: several blossoming almond and cherry trees heavy with pink and white flowers, a grassy lawn strewn with tulips and irises, low tiled garden walls and a small turquoise-tiled pavilion glowing with warm lamplight in the distance. Jewel-toned palette of lapis blue, rose, gold, emerald; delicate flowering detail, gold-flecked night sky. The scene fills the entire image, extending to all four edges, viewed straight-on, flat to the picture plane. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "A gentle spring night breeze drifts through the garden: pink and white blossom petals loosen from the flowering trees and drift slowly down and sideways across the whole scene, and the blossom-laden branches sway softly. The stars in the indigo sky twinkle faintly and warm lamplight glows steadily from the pavilion windows. The strolling figures, the pavilion, garden walls and water channel all hold perfectly still. Calm, continuous, seamless drifting of petals that settles back exactly to the opening. Physically natural motion of petals, branches and starlight only; no morphing, no shape changes, faces and figures stay still.",
+    "looping": true
   }
 ]

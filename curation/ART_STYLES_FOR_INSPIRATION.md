@@ -138,6 +138,7 @@ When you add a new style, append it under the section it best fits.
 - Edo period Netsuke carving
 - Joseon Dynasty Minhwa
 - Joseon Irworobongdo Court Screen
+- Joseon Dynasty Landscape Painting
 - Goryeo Buddhist Painting
 - Rinpa School
 - Yamato-e
@@ -146,6 +147,7 @@ When you add a new style, append it under the section it best fits.
 - Mughal miniature
 - Rajput Painting
 - Pahari Miniature
+- Deccan Painting (Bijapur / Golconda)
 - Gond painting
 - Gandharan Buddhist sculpture
 - Gupta Empire Mathura Sculpture

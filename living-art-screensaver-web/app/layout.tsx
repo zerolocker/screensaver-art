@@ -35,13 +35,15 @@ export const metadata: Metadata = {
     type: 'website',
     siteName: 'Living Art Screensaver',
     url: 'https://living-art-screensaver.com',
-    title: 'Living Art Screensaver',
-    description: 'A new, curated piece of AI art on your Mac every day — as your screensaver and wallpaper.',
+    title: 'Turn your Mac into a living gallery',
+    description:
+      'Centuries of art, animated by AI and hung on your idle Mac — with a new piece every night. Free to download.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Living Art Screensaver',
-    description: 'A new, curated piece of AI art on your Mac every day — as your screensaver and wallpaper.',
+    title: 'Turn your Mac into a living gallery',
+    description:
+      'Centuries of art, animated by AI and hung on your idle Mac — with a new piece every night. Free to download.',
   },
 }
 

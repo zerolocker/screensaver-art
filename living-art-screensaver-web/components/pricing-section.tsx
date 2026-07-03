@@ -6,8 +6,6 @@ import posthog from "posthog-js"
 import { Loader2 } from "lucide-react"
 import { PRICING } from "@screensaver-art/constants"
 import { createClient } from "@/lib/supabase/client"
-import { DownloadCTA } from "@/components/marketing/download-cta"
-import { PlatformInterest } from "@/components/marketing/platform-interest"
 import { createCheckoutSession } from "@/app/actions/stripe"
 import { getProduct } from "@/lib/products"
 import type { User } from "@supabase/supabase-js"
@@ -103,12 +101,6 @@ export function PricingSection() {
                 ))}
               </div>
 
-              <DownloadCTA
-                location="pricing_section"
-                iconClassName="h-4 w-4"
-                className="mb-[11px] flex w-full cursor-pointer items-center justify-center gap-[9px] rounded-full bg-primary py-[15px] text-[16.5px] font-semibold text-primary-foreground no-underline"
-                style={{ boxShadow: "0 12px 30px -10px rgba(158,232,162,0.5)" }}
-              />
               <button
                 onClick={handleWebSubscribe}
                 disabled={loading}
@@ -123,10 +115,6 @@ export function PricingSection() {
                   "Subscribe on the web"
                 )}
               </button>
-              <PlatformInterest
-                location="pricing"
-                className="mt-[14px] block w-full cursor-pointer text-center text-[13px] text-muted-foreground-subtle underline-offset-4 transition-colors hover:text-muted-foreground hover:underline"
-              />
             </div>
           </div>
         </div>

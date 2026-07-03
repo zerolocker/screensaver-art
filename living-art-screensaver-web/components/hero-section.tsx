@@ -30,17 +30,19 @@ export function HeroSection() {
               className="inline-flex cursor-pointer items-center gap-[9px] rounded-full bg-primary px-[27px] py-[15px] text-[16.5px] font-semibold text-primary-foreground no-underline"
               style={{ boxShadow: "0 12px 34px -10px rgba(158,232,162,0.6)" }}
             />
-            <div className="text-[13px]">
-              <span className="font-semibold text-primary">Free forever.</span>{" "}
-              <span className="text-muted-foreground-subtle">
-                {isMobile ? "macOS only — we'll email you a link." : "In-app purchase available."}
-              </span>
+            <div className="flex flex-col items-start gap-[6px]">
+              <div className="text-[13px]">
+                <span className="font-semibold text-primary">Free forever.</span>{" "}
+                <span className="text-muted-foreground-subtle">
+                  {isMobile ? "macOS only — we'll email you a link." : "In-app purchase available."}
+                </span>
+              </div>
+              <PlatformInterest
+                location="hero"
+                className="cursor-pointer text-left text-[13px] text-muted-foreground-subtle underline-offset-4 transition-colors hover:text-muted-foreground hover:underline"
+              />
             </div>
           </div>
-          <PlatformInterest
-            location="hero"
-            className="cursor-pointer text-[13px] text-muted-foreground-subtle underline-offset-4 transition-colors hover:text-muted-foreground hover:underline"
-          />
         </div>
 
         {/* Stage */}

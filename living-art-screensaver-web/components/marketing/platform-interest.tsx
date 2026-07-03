@@ -201,8 +201,7 @@ export function PlatformInterest({
             <DialogHeader>
               <DialogTitle className="font-serif text-[22px]">Want us to email you?</DialogTitle>
               <DialogDescription className="text-[15px] leading-[1.55]">
-                Optional — leave your email and we&apos;ll tell you when it ships. Your vote is
-                already counted either way.
+                Optional — leave your email and we&apos;ll tell you when it ships.
               </DialogDescription>
             </DialogHeader>
 

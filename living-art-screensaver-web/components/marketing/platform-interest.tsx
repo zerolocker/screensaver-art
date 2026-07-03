@@ -25,12 +25,12 @@ const PLATFORM_OPTIONS = [
   { slug: 'windows', label: 'Windows' },
   { slug: 'ipad', label: 'iPad' },
   { slug: 'ios', label: 'iPhone' },
-  { slug: 'appletv', label: 'Apple TV' },
-  { slug: 'android', label: 'Android' },
-  { slug: 'linux', label: 'Linux' },
+  { slug: 'tv', label: 'TV' },
+  { slug: 'android-phone', label: 'Android Phone' },
+  { slug: 'android-tablet', label: 'Android Tablet' },
 ] as const
 
-const DEFAULT_LABEL = 'Want it on Windows / iPad / iOS / TV?'
+const DEFAULT_LABEL = 'Want it on Windows / iPad / iOS / TV / etc?'
 
 type Step = 1 | 2 | 'voted' | 'emailed'
 
@@ -174,7 +174,7 @@ export function PlatformInterest({
                       'rounded-full border px-4 py-2 text-[14.5px] transition-colors',
                       on
                         ? 'border-primary bg-primary/15 text-foreground'
-                        : 'border-white/12 text-muted-foreground hover:border-white/25',
+                        : 'border-white/25 text-muted-foreground hover:border-white/50',
                     )}
                   >
                     {label}

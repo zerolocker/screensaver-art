@@ -39,7 +39,7 @@ export function HeroSection() {
               </div>
               <PlatformInterest
                 location="hero"
-                className="cursor-pointer text-left text-[13px] text-muted-foreground-subtle underline-offset-4 transition-colors hover:text-muted-foreground hover:underline"
+                className="cursor-pointer text-left text-[13px] text-muted-foreground underline decoration-primary/50 underline-offset-4 transition-colors hover:decoration-primary"
               />
             </div>
           </div>

@@ -34,7 +34,7 @@ import { getPostHogClient, flushPostHog } from '@/lib/posthog-server'
  */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const ALLOWED_PLATFORMS = new Set(['windows', 'linux', 'ios', 'ipad', 'appletv', 'android'])
+const ALLOWED_PLATFORMS = new Set(['windows', 'ipad', 'ios', 'tv', 'android-phone', 'android-tablet'])
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,

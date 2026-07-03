@@ -1,0 +1,18 @@
+# Changelog — Screensaver Art
+
+Dated, chronological record of notable changes. This is the detail that used to live in `CLAUDE.md`'s "Repo history" section; `CLAUDE.md` now links here. Cross-references like "the `installer.ts` key-path row" point at `CLAUDE.md`'s tables. See `git log` for full detail.
+
+`living-art-screensaver-web` was a separate repo (`zerolocker/living-art-screensaver-web`), merged here 2026-03-22 via `git subtree add --squash`; the old repo is archived.
+
+- **2026-04-25** — Electron became the sole installer; the screensaver was reduced to a pure player (auth/subscription/fetch/upsell removed); cache files XOR-obfuscated.
+- **2026-05-30** — Migrated the macOS screensaver from the legacy `.saver` to an ExtensionKit **`.appex`** (`screensaver/` → `screensaver-macos/`, Xcode/xcodegen). Cache moved to `/Users/Shared/`, which killed the "access data from other apps" TCC prompt (deleted `mac-permission.ts`). Install via `pluginkit`; one-click "Set" via the new PaperSaver helper; universal DMG.
+- **2026-06-07** — Billing monthly → **quarterly** ($2.97 every 3 months, same $0.99/mo) to cut Stripe's sub-$1 fee; marketing repositioned free-forward; display data centralised in `@screensaver-art/ui`'s `PRICING` (guarded by the `pricing-drift` test).
+- **2026-06-08** — Removed the manual "Install Screensaver" step: the app auto-registers the embedded `.appex` on launch, **version-aware**. Fixed a real bug — the hardcoded appex `CFBundleVersion` (`"1"`) meant new app versions kept running stale screensaver code.
+- **2026-06-10** — Went **passwordless-only** (PR #25): email OTP + Apple/Google/Microsoft OAuth on the PKCE flow, on both app and website. Made auth offline-resilient (startup falls back to the stored session).
+- **2026-06-11** — Added background **auto-update** (`electron-updater`): silent download + "Relaunch to update" banner, served from the website's `/updates` feed. Needs Developer-ID signing; kicks in from the next release onward.
+- **2026-06-13** — Free-browse gallery + **client-side per-item gating** (`/api/gallery` returns the full list to everyone). Cache decoupled from the play set (deselecting keeps the `.bin` on auto-sync). Plus one-click subscribe from the app (`/api/checkout`, straight to Stripe) and fixed the `/pricing` 404.
+- **2026-06-15** — Conversion rework: `FREE_ITEM_COUNT` 100 → **50**; gating went positional → per-item `free` flag, interleaved by date so free users keep hitting locks; new pieces default to locked.
+- **2026-06-16** — Post-"Set" **screensaver status banner** (explains idle/display-off timing, adds "Preview now"; new `screensaver-timing.ts`). Replaced the full-screen in-screensaver upsell modal with the gentle `UpsellPill`.
+- **2026-06-17** — Fixed "Failed to register the screensaver" after a Squirrel in-place auto-update: `lsregister -f` the bundle before `pluginkit -a` (LaunchServices cached the pre-update bundle) and poll `find` (`pluginkit -a` registers asynchronously, ~1s later). See the `installer.ts` key-path row.
+- **2026-07-02** — Fixed the marketing site's slow-network video UX (readiness-gated reels via `reel-machine.ts` + committed WebP posters). Moved R2 assets off the `r2.dev` dev endpoint onto the Cloudflare custom domain (`screensaver-assets.living-art-asset.com`) so clips route through the CDN and cache.
+- **2026-07-03** — Backfilled a 1-year immutable `Cache-Control` onto all 222 existing gallery R2 objects (new uploads get it via the curation `upload()` helper). Two gotchas: `curl -I`/HEAD always shows `cf-cache-status: DYNAMIC` (verify caching with a real GET); and `wrangler r2 object put` doesn't purge the Cloudflare edge, so a warm key serves its old `Cache-Control` for ~4h (self-heals, or cache-bust to force it).

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { poster, posterImage, pieceLabel, heroReel } from "@/lib/gallery-showcase"
 import { ReelPlayer } from "@/components/marketing/reel-player"
 
@@ -26,28 +26,57 @@ interface MonitorProps {
  */
 export function Monitor({ stand = true, priority = false, interval = 5200 }: MonitorProps) {
   const [idx, setIdx] = useState(0)
+  // Bumped whenever the glow poster loads, to force a repaint of the blur — see glow comment.
+  const [glowKick, setGlowKick] = useState(0)
+  const glowImgRef = useRef<HTMLImageElement>(null)
   const cur = REEL[idx] ?? REEL[0]
+
+  // Force a repaint of the blurred glow once its poster is loaded. React's
+  // synthetic onLoad does NOT fire for an image that was already `complete` when
+  // the handler attached — and the eager/SSR'd hero poster is exactly that
+  // (cached before hydration) — so drive it from an effect instead: bump now if
+  // already loaded, otherwise on the native `load` event (which, unlike rAF,
+  // fires even while the tab is backgrounded). Re-runs when the reel advances
+  // (`cur` changes) to keep the glow in sync.
+  useEffect(() => {
+    const img = glowImgRef.current
+    if (!img) return
+    const bump = () => setGlowKick((k) => k + 1)
+    if (img.complete && img.naturalWidth > 0) {
+      bump()
+      return
+    }
+    img.addEventListener("load", bump, { once: true })
+    return () => img.removeEventListener("load", bump)
+  }, [cur])
 
   return (
     <div style={{ position: "relative", width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
       {/* ambient art-glow: the current art bleeding onto the wall. A static
           poster image (the clip's first frame) under heavy blur — deliberately
           not a second video, which used to double the hero's bandwidth.
-          `willChange: transform` promotes this to its own compositing layer so
-          the blur's output region is fully re-rasterized when the async poster
-          loads — without it the glow paints clipped to the layout box until a
-          scroll forces a repaint. */}
+          The async poster load doesn't invalidate the blur's output region, so
+          the glow paints clipped to the layout box until something forces a
+          repaint (e.g. a scroll). Both nudges below are required — verified by
+          testing, dropping either regresses one engine: `willChange: transform`
+          promotes it to its own compositing layer (Chrome needs this), and once
+          the poster loads (see the glowKick effect above) we toggle a no-op
+          `brightness(1)` into the filter string — mutating the filter value (a
+          paint property) forces Safari to recompute the blur region. Both are
+          visually identical to the base. */}
       <div
         style={{
           position: "absolute", zIndex: 0, left: "50%", top: "5%",
           width: "101%", height: "76%", transform: "translate(-50%,0) scale(1.06)", willChange: "transform",
-          borderRadius: "48px", overflow: "hidden", filter: "blur(48px) saturate(1.55)",
-          opacity: 0.55, pointerEvents: "none",
+          borderRadius: "48px", overflow: "hidden",
+          filter: `blur(48px) saturate(1.55)${glowKick % 2 ? " brightness(1)" : ""}`,
+          opacity: 0.55, pointerEvents: "none", 
         }}
       >
         <div style={{ position: "absolute", inset: 0, background: poster(cur) }} />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
+          ref={glowImgRef}
           src={posterImage(cur)}
           alt=""
           aria-hidden

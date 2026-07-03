@@ -283,8 +283,33 @@ export function ReelPlayer({
         if (front.readyState >= HAVE_ENOUGH_DATA || isFullyBuffered(front.duration, bufferedEnd(front)))
           dispatch({ type: "FRONT_BUFFERED" })
       }
-      const back = videoRef(m.frontLayer === "A" ? "B" : "A").current
-      if (m.backIdx !== null && !m.backReady && back && backIsReady(back)) dispatch({ type: "BACK_READY" })
+      const backLayer: LayerId = m.frontLayer === "A" ? "B" : "A"
+      const back = videoRef(backLayer).current
+      if (m.backIdx !== null && !m.backReady && back && backIsReady(back)) {
+        dispatch({ type: "BACK_READY" })
+      } else if (
+        // iOS/mobile Safari won't buffer a hidden <video> from preload alone —
+        // it only downloads once play() is called — so the back layer never
+        // reaches BACK_READY and the reel stalls on the first clip forever
+        // (the front loops fine: muted-inline autoplay via play() is allowed).
+        // Fallback: once the front has served its full dwell and the back still
+        // isn't ready, play the (still-hidden) back layer to force it to load.
+        // The crossfade still only commits on BACK_PLAYING (real frames), and
+        // the fully-buffered front keeps looping meanwhile so nothing stutters.
+        // On desktop the back is ready well before dwell, so this never runs.
+        m.backIdx !== null &&
+        !m.backReady &&
+        m.dwellMet &&
+        m.visible &&
+        m.started &&
+        !m.fading &&
+        back &&
+        back.getAttribute("src") &&
+        back.paused
+      ) {
+        wantPlaying.current[backLayer] = true
+        back.play().catch(() => {})
+      }
     }
     const timer = setInterval(tick, 1000)
     return () => clearInterval(timer)

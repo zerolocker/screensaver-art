@@ -7,7 +7,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Marketing homepage — "The collection" marquee (mirrors Living Art Screensaver.dc.html) */
+/* Marketing homepage — "The collection" marquee */
 @keyframes lartMarquee {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }

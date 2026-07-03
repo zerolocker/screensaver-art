@@ -1,7 +1,7 @@
-// Showcase data for the marketing homepage — ported from the
-// "Living Art Screensaver.dc.html" design. Pure data + helpers (no React), so it
-// can be imported by any client component. Video assets live on the public R2
-// bucket; each piece carries the same { name, style } placard shown in-app.
+// Showcase data for the marketing homepage. Pure data + helpers (no React),
+// so it can be imported by any client component.
+// Video assets live on the public R2 bucket;
+// each piece carries the same { name, style } placard shown in-app.
 
 export const R2_GALLERY = "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/"
 

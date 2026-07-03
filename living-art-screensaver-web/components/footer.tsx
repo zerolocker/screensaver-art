@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { PlatformInterest } from "@/components/marketing/platform-interest"
 
 export function Footer() {
   return (
@@ -27,6 +28,11 @@ export function Footer() {
             <Link href="#gallery" className="text-[14.5px] text-muted-foreground no-underline transition-colors hover:text-foreground">Gallery</Link>
             <Link href="#styles" className="text-[14.5px] text-muted-foreground no-underline transition-colors hover:text-foreground">Art Styles</Link>
             <Link href="#pricing" className="text-[14.5px] text-muted-foreground no-underline transition-colors hover:text-foreground">Pricing</Link>
+            <PlatformInterest
+              location="footer"
+              label="Other platforms"
+              className="cursor-pointer text-left text-[14.5px] text-muted-foreground transition-colors hover:text-foreground"
+            />
           </div>
         </div>
 

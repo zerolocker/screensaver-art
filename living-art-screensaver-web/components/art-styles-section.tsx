@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react"
 import { ReelPlayer } from "@/components/marketing/reel-player"
 import { movements, poster, posterImage, pieceLabel } from "@/lib/gallery-showcase"
+import { greenGlow } from "@/lib/brand"
 
 // Minimum ACTUAL playback per piece before the featured display auto-advances
 // (rotation additionally waits for the next piece to be buffered — see
@@ -14,7 +15,7 @@ const rowBase: CSSProperties = {
   width: "100%", padding: "16px 18px", borderRadius: "14px", cursor: "pointer",
   transition: "background .2s", textAlign: "left",
 }
-const rowActive: CSSProperties = { ...rowBase, background: "rgba(158,232,162,0.09)", border: "1px solid rgba(158,232,162,0.4)" }
+const rowActive: CSSProperties = { ...rowBase, background: greenGlow(0.09), border: `1px solid ${greenGlow(0.4)}` }
 const rowIdle: CSSProperties = { ...rowBase, background: "rgba(255,255,255,0.018)", border: "1px solid rgba(255,255,255,0.07)" }
 
 const thumbBase: CSSProperties = {
@@ -36,7 +37,7 @@ const chipBase: CSSProperties = {
   padding: "9px 15px", borderRadius: "12px", cursor: "pointer", textAlign: "left",
   transition: "background .2s, border-color .2s",
 }
-const chipActive: CSSProperties = { ...chipBase, background: "rgba(158,232,162,0.1)", border: "1px solid rgba(158,232,162,0.45)" }
+const chipActive: CSSProperties = { ...chipBase, background: greenGlow(0.1), border: `1px solid ${greenGlow(0.45)}` }
 const chipIdle: CSSProperties = { ...chipBase, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }
 
 export function ArtStylesSection() {

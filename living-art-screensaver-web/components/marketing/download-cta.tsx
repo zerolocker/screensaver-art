@@ -2,6 +2,7 @@
 
 import { useState, type CSSProperties } from 'react'
 import posthog from 'posthog-js'
+import { greenGlow } from '@/lib/brand'
 import { CheckCircle2, Download, Loader2, Mail } from 'lucide-react'
 import {
   Dialog,
@@ -117,7 +118,7 @@ function EmailLinkDialogContent({ location }: { location: string }) {
         <DialogHeader>
           <span
             className="mb-1 flex h-11 w-11 items-center justify-center rounded-full"
-            style={{ background: 'rgba(158,232,162,0.14)' }}
+            style={{ background: greenGlow(0.14) }}
           >
             <CheckCircle2 className="h-6 w-6 text-primary" />
           </span>
@@ -136,7 +137,7 @@ function EmailLinkDialogContent({ location }: { location: string }) {
       <DialogHeader>
         <span
           className="mb-1 flex h-11 w-11 items-center justify-center rounded-full"
-          style={{ background: 'rgba(158,232,162,0.14)' }}
+          style={{ background: greenGlow(0.14) }}
         >
           <Mail className="h-[22px] w-[22px] text-primary" />
         </span>
@@ -178,7 +179,7 @@ function EmailLinkDialogContent({ location }: { location: string }) {
           type="submit"
           disabled={status === 'sending'}
           className="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-[13px] text-[16px] font-semibold text-primary-foreground disabled:opacity-70"
-          style={{ boxShadow: '0 12px 30px -10px rgba(158,232,162,0.5)' }}
+          style={{ boxShadow: `0 12px 30px -10px ${greenGlow(0.5)}` }}
         >
           {status === 'sending' ? (
             <>

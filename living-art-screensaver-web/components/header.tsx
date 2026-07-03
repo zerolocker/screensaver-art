@@ -6,6 +6,7 @@ import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { DownloadCTA } from "@/components/marketing/download-cta"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
+import { greenGlow } from "@/lib/brand"
 
 export function Header() {
   const [user, setUser] = useState<SupabaseUser | null>(null)
@@ -37,7 +38,7 @@ export function Header() {
         <Link href="#top" className="flex items-center gap-[11px] no-underline">
           <span
             className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[9px] bg-primary"
-            style={{ boxShadow: "0 4px 14px -3px rgba(158,232,162,0.6)" }}
+            style={{ boxShadow: `0 4px 14px -3px ${greenGlow(0.6)}` }}
           >
             <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-foreground">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
@@ -64,7 +65,7 @@ export function Header() {
             mobileLabel="Get the app"
             iconClassName="h-3.5 w-3.5"
             className="inline-flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-full bg-primary px-[18px] py-[10px] text-[14.5px] font-semibold text-primary-foreground no-underline"
-            style={{ boxShadow: "0 6px 22px -8px rgba(158,232,162,0.55)" }}
+            style={{ boxShadow: `0 6px 22px -8px ${greenGlow(0.55)}` }}
           />
         </div>
       </div>

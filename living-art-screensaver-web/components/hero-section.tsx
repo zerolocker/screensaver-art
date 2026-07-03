@@ -4,6 +4,7 @@ import { Monitor } from "@/components/marketing/monitor"
 import { DownloadCTA } from "@/components/marketing/download-cta"
 import { PlatformInterest } from "@/components/marketing/platform-interest"
 import { useIsMobileDevice } from "@/lib/device"
+import { greenGlow } from "@/lib/brand"
 
 export function HeroSection() {
   const isMobile = useIsMobileDevice()
@@ -28,7 +29,7 @@ export function HeroSection() {
               location="hero"
               iconClassName="h-4 w-4"
               className="inline-flex cursor-pointer items-center gap-[9px] rounded-full bg-primary px-[27px] py-[15px] text-[16.5px] font-semibold text-primary-foreground no-underline"
-              style={{ boxShadow: "0 12px 34px -10px rgba(158,232,162,0.6)" }}
+              style={{ boxShadow: `0 12px 34px -10px ${greenGlow(0.6)}` }}
             />
             <div className="flex flex-col items-start gap-[6px]">
               <div className="text-[13px]">

@@ -1935,5 +1935,57 @@
     "image_prompt": "A Safavid Persian garden scene at night, 17th-century Isfahan, opaque watercolor and gold on paper in the fine miniature idiom but painted at grand scale as one unified panoramic view filling the whole width. A walled paradise garden under a deep indigo starry sky with a slender crescent moon: several blossoming almond and cherry trees heavy with pink and white flowers, a grassy lawn strewn with tulips and irises, low tiled garden walls and a small turquoise-tiled pavilion glowing with warm lamplight in the distance. Jewel-toned palette of lapis blue, rose, gold, emerald; delicate flowering detail, gold-flecked night sky. The scene fills the entire image, extending to all four edges, viewed straight-on, flat to the picture plane. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
     "video_prompt": "A gentle spring night breeze drifts through the garden: pink and white blossom petals loosen from the flowering trees and drift slowly down and sideways across the whole scene, and the blossom-laden branches sway softly. The stars in the indigo sky twinkle faintly and warm lamplight glows steadily from the pavilion windows. The strolling figures, the pavilion, garden walls and water channel all hold perfectly still. Calm, continuous, seamless drifting of petals that settles back exactly to the opening. Physically natural motion of petals, branches and starlight only; no morphing, no shape changes, faces and figures stay still.",
     "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/windmill_river_landscape_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/windmill_river_landscape_4k.webp",
+    "title": "Windmill on the River - Dutch Golden Age Landscape (AI Animated)",
+    "type": "video",
+    "date": "2026-07-03",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "image_prompt": "A Dutch Golden Age landscape oil painting in the style of Jacob van Ruisdael, circa 1670, oil on canvas with visible impasto and warm varnish. A large wooden post-windmill with canvas-covered sails stands on a grassy embankment beside a wide reflective river, its sails caught mid-turn. Low horizon under a vast dramatic sky of towering cumulus clouds lit by breaking sunlight; small fishing boats on the water, reeds swaying along the bank. Muted greens, ochres and slate-grey clouds, golden raking light from the left. Painted straight-on, flat to the picture plane; the scene fills the entire image extending to all four edges. No museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no label, no painted border, no mat, no decorative frame.",
+    "video_prompt": "The windmill's canvas sails rotate slowly and steadily clockwise, driven by the wind. Towering cumulus clouds drift across the sky while the wide river's surface ripples gently and reeds sway along the bank in the same breeze; a distant sailboat glides slowly. Warm sunlight breaks through the clouds. Physically natural motion - the windmill and land hold solid form, nothing morphs; the painterly oil texture is preserved. Slow, cinematic.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/impressionist_poppy_field_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/impressionist_poppy_field_4k.webp",
+    "title": "Poppies and Cornflowers - Impressionist Meadow (AI Animated)",
+    "type": "video",
+    "date": "2026-07-03",
+    "tags": [
+      "19th Century"
+    ],
+    "image_prompt": "An Impressionist oil painting circa 1885 in the style of Claude Monet, loose broken brushwork and thick dabs of pure colour on canvas. A sunlit summer meadow ablaze with red poppies, blue cornflowers and tall green grasses rolling toward a low horizon, bending in a soft breeze; a bright sky of drifting white clouds above. Vivid vermilion, cobalt and viridian, warm midday light, flickering dappled colour. Viewed straight-on, flat to the picture plane; the scene fills the entire image extending to all four edges. No museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no label, no painted border, no mat, no decorative frame, no figures.",
+    "video_prompt": "A steady summer breeze sweeps across the meadow - the red poppies, blue cornflowers and tall grasses bend and ripple in gentle waves, and soft white clouds drift slowly across the blue sky. The wind is the single motion; the flowers sway naturally without morphing, and the thick Impressionist brushwork and vivid colour are preserved. Gentle, continuous, cinematic.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/ukiyoe_firefly_night_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/ukiyoe_firefly_night_4k.webp",
+    "title": "Fireflies over the Bridge - Ukiyo-e Night (AI Animated)",
+    "type": "video",
+    "date": "2026-07-03",
+    "tags": [
+      "Japanese"
+    ],
+    "image_prompt": "A full-bleed Japanese ukiyo-e woodblock night scene in the style of Utagawa Hiroshige, Edo period: flat colour areas, fine keyblock outlines and subtle bokashi gradient sky. The illustrated scene itself fills the entire 16:9 image edge to edge, a wide horizontal landscape composition with no surrounding paper margin, no border, no mat, no title cartouche. Subject: a warm summer night on a riverbank, dozens of glowing fireflies drifting over dark reeds and calm water, paper lanterns glowing along a low wooden bridge with their gold reflections shimmering on the black river, a deep indigo sky and a thin crescent moon. Indigo, black and warm lantern-gold, printed woodgrain texture. Viewed straight-on, flat to the picture plane; extends to all four edges. No museum, no glass, no pedestal, no gallery wall, no spotlight, no label, no painted border, no decorative frame.",
+    "video_prompt": "The fireflies drift and float slowly through the warm night air, their soft golden glow pulsing gently, while the lantern reflections shimmer and ripple on the calm dark river. Continuous, seamless, gentle motion; the reeds barely stir and the crescent moon holds still. Nothing morphs; the flat woodblock-print colour, outlines and woodgrain texture are preserved. Calm, magical, looping.",
+    "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/sasanian_fire_temple_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/sasanian_fire_temple_4k.webp",
+    "title": "The Sacred Fire - Sasanian Fire Temple (AI Animated)",
+    "type": "video",
+    "date": "2026-07-03",
+    "tags": [
+      "Ancient Near East"
+    ],
+    "image_prompt": "A Sasanian Persian palace mural, 5th century, painted on a plastered stone wall with mineral pigments, slightly weathered. The scene fills the entire 16:9 image edge to edge with no surrounding margin. Subject: the interior of a Zoroastrian fire temple, a great golden fire-altar at the centre with tall dancing flames, set within a stone chamber of carved columns and rounded arches; warm firelight flickers across the walls and thin incense smoke curls upward. Deep ochres, gold, ember-red and shadowed umber; the sacred fire is the only light source. Viewed straight-on, flat to the picture plane, extending to all four edges. No museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no label, no painted border, no mat, no decorative frame, no people.",
+    "video_prompt": "The sacred fire on the golden altar burns and leaps continuously, flames flickering and dancing while thin blue-grey incense smoke curls and rises upward, and the warm firelight pulses and wavers across the carved stone columns and arches. Seamless, continuous looping fire and smoke motion; the architecture holds solid and still, nothing morphs; the mural's painted surface texture is preserved. Warm, meditative, looping.",
+    "looping": true
   }
 ]

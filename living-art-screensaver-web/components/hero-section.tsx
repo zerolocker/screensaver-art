@@ -2,6 +2,7 @@
 
 import { Monitor } from "@/components/marketing/monitor"
 import { DownloadCTA } from "@/components/marketing/download-cta"
+import { PlatformInterest } from "@/components/marketing/platform-interest"
 import { useIsMobileDevice } from "@/lib/device"
 
 export function HeroSection() {
@@ -36,6 +37,10 @@ export function HeroSection() {
               </span>
             </div>
           </div>
+          <PlatformInterest
+            location="hero"
+            className="cursor-pointer text-[13px] text-muted-foreground-subtle underline-offset-4 transition-colors hover:text-muted-foreground hover:underline"
+          />
         </div>
 
         {/* Stage */}

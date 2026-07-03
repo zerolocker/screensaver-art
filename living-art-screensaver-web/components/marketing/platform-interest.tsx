@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+import { greenGlow } from '@/lib/brand'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -122,7 +123,7 @@ export function PlatformInterest({
           <DialogHeader>
             <span
               className="mb-1 flex h-11 w-11 items-center justify-center rounded-full"
-              style={{ background: 'rgba(158,232,162,0.14)' }}
+              style={{ background: greenGlow(0.14) }}
             >
               <CheckCircle2 className="h-6 w-6 text-primary" />
             </span>
@@ -175,7 +176,7 @@ export function PlatformInterest({
               onClick={onContinue}
               disabled={selected.length === 0}
               className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-primary py-[13px] text-[16px] font-semibold text-primary-foreground disabled:opacity-50"
-              style={{ boxShadow: '0 12px 30px -10px rgba(158,232,162,0.5)' }}
+              style={{ boxShadow: `0 12px 30px -10px ${greenGlow(0.5)}` }}
             >
               Continue
             </button>
@@ -221,7 +222,7 @@ export function PlatformInterest({
               <button
                 type="submit"
                 className="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-[13px] text-[16px] font-semibold text-primary-foreground"
-                style={{ boxShadow: '0 12px 30px -10px rgba(158,232,162,0.5)' }}
+                style={{ boxShadow: `0 12px 30px -10px ${greenGlow(0.5)}` }}
               >
                 Notify me
               </button>

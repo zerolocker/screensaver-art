@@ -3,6 +3,7 @@
 import { Monitor } from "@/components/marketing/monitor"
 import { DownloadCTA } from "@/components/marketing/download-cta"
 import { PlatformInterest } from "@/components/marketing/platform-interest"
+import { greenGlow } from "@/lib/brand"
 
 export function CTASection() {
   return (
@@ -22,7 +23,7 @@ export function CTASection() {
             location="cta"
             iconClassName="h-[17px] w-[17px]"
             className="inline-flex cursor-pointer items-center gap-[9px] rounded-full bg-primary px-[30px] py-[16px] text-[17px] font-semibold text-primary-foreground no-underline"
-            style={{ boxShadow: "0 14px 40px -10px rgba(158,232,162,0.6)" }}
+            style={{ boxShadow: `0 14px 40px -10px ${greenGlow(0.6)}` }}
           />
         </div>
         <PlatformInterest

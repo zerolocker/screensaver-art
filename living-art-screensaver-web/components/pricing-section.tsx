@@ -6,6 +6,7 @@ import posthog from "posthog-js"
 import { Loader2 } from "lucide-react"
 import { PRICING } from "@screensaver-art/constants"
 import { createClient } from "@/lib/supabase/client"
+import { greenGlow } from "@/lib/brand"
 import { createCheckoutSession } from "@/app/actions/stripe"
 import { getProduct } from "@/lib/products"
 import type { User } from "@supabase/supabase-js"
@@ -71,7 +72,7 @@ export function PricingSection() {
         <div className="mx-auto max-w-[480px]">
           <div
             className="rounded-[24px] p-px"
-            style={{ background: "linear-gradient(180deg,rgba(158,232,162,0.4),rgba(158,232,162,0))" }}
+            style={{ background: `linear-gradient(180deg,${greenGlow(0.4)},${greenGlow(0)})` }}
           >
             <div className="rounded-[23px] bg-secondary px-[38px] py-[40px]">
               <div className="mb-[28px] text-center">
@@ -90,7 +91,7 @@ export function PricingSection() {
                   <div key={index} className="flex items-center gap-3">
                     <span
                       className="flex h-[21px] w-[21px] flex-none items-center justify-center rounded-full"
-                      style={{ background: "rgba(158,232,162,0.16)" }}
+                      style={{ background: greenGlow(0.16) }}
                     >
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
                         <path d="M20 6L9 17l-5-5" />

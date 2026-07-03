@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og'
+import { brand, greenGlow } from '@/lib/brand'
 
 /**
  * The social share card (og:image / twitter:image) for the whole site. Next
@@ -7,28 +8,22 @@ import { ImageResponse } from 'next/og'
  * X / Slack / iMessage / Pinterest unfurl with a branded preview instead of a
  * bare URL — which matters because sharing the art is the growth engine.
  *
- * Design mirrors the marketing hero: near-black canvas + the mint-green glow,
- * the layered-cube logo badge, and the Playfair Display serif headline with the
- * italic green "living gallery." accent (Playfair is fetched from Google Fonts
- * at request time; if that fails we degrade to the built-in font). Kept in one
- * place so the copy stays in sync with the site's positioning.
+ * Mirrors the marketing hero: near-black canvas + mint glow, the layered-cube
+ * logo badge, the Playfair serif headline with the italic green "living gallery."
+ * accent, and — on the right — a realistic Studio-Display-style monitor showing a
+ * real gallery still (Starry Coast), the way the hero's <Monitor> communicates
+ * the product at a glance. (satori can't blur / backdrop-filter / play video, so
+ * the ambient glow is a soft gradient and the art is a single frame.)
+ *
+ * The art still is colocated (loaded via import.meta.url so the bundler traces it
+ * on Vercel); fonts are fetched from Google at request time. Both are best-effort
+ * and degrade gracefully. Brand literals live in lib/brand.ts (satori can't read
+ * the CSS design tokens).
  */
 export const runtime = 'edge'
 export const alt = 'Living Art Screensaver — centuries of art, animated by AI, on your idle Mac'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
-
-// Brand tokens (mirrors app/globals.css: --primary ≈ mint green, --primary-foreground ≈ dark green ink).
-const GREEN = '#9ee8a2'
-const INK = '#0d2114'
-
-// Little "framed canvases" — gradients that evoke different eras/styles so the
-// card reads as an art gallery, not a color palette.
-const CANVASES = [
-  'linear-gradient(150deg, #4a3420 0%, #b07a3e 100%)', // warm / classical
-  'linear-gradient(150deg, #1f3d2c 0%, #8fd6a0 100%)', // green / landscape
-  'linear-gradient(150deg, #20284d 0%, #6a86c4 100%)', // blue / nocturne
-]
 
 type Weight = 400 | 600 | 700
 type FontEntry = { name: string; data: ArrayBuffer; weight: Weight; style: 'normal' | 'italic' }
@@ -57,25 +52,48 @@ export default async function OpengraphImage() {
   // in parallel; whatever succeeds is used, otherwise we fall back gracefully.
   const fonts = (
     await Promise.all([
-      tryFont('Playfair Display', 700, false),
-      tryFont('Playfair Display', 700, true),
-      tryFont('Inter', 400, false),
-      tryFont('Inter', 600, false),
+      tryFont(brand.fontSerif, 700, false),
+      tryFont(brand.fontSerif, 700, true),
+      tryFont(brand.fontSans, 400, false),
+      tryFont(brand.fontSans, 600, false),
     ])
   ).filter((f): f is FontEntry => f !== null)
 
   // Only claim the serif once BOTH faces exist — else the italic accent would
   // render as a non-italic fallback next to serif text.
   const hasSerif =
-    fonts.some((f) => f.name === 'Playfair Display' && f.style === 'normal') &&
-    fonts.some((f) => f.name === 'Playfair Display' && f.style === 'italic')
-  const hasSans = fonts.some((f) => f.name === 'Inter')
-  const serif = hasSerif ? 'Playfair Display' : undefined
-  const sans = hasSans ? 'Inter' : 'sans-serif'
+    fonts.some((f) => f.name === brand.fontSerif && f.style === 'normal') &&
+    fonts.some((f) => f.name === brand.fontSerif && f.style === 'italic')
+  const hasSans = fonts.some((f) => f.name === brand.fontSans)
+  const serif = hasSerif ? brand.fontSerif : undefined
+  const sans = hasSans ? brand.fontSans : 'sans-serif'
+
+  // Real art still for the on-screen frame — colocated so it's Vercel-traced.
+  let artSrc: string | null = null
+  try {
+    const buf = await fetch(new URL('./starry-coast-og.jpg', import.meta.url)).then((r) => r.arrayBuffer())
+    artSrc = `data:image/jpeg;base64,${Buffer.from(buf).toString('base64')}`
+  } catch {
+    artSrc = null
+  }
 
   const logo = `data:image/svg+xml;utf8,${encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${brand.ink}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,
   )}`
+
+  // Monitor sizing — the card's focal element. Bump MONITOR_W to resize it; the
+  // 16:9 screen, stand, glow, vertical centering and the headline column all
+  // derive from it so the composition stays balanced.
+  const MONITOR_W = 500
+  const MONITOR_RIGHT = 70
+  const SCREEN_W = MONITOR_W - 24 // outer(7) + inner(5) padding, both sides
+  const SCREEN_H = Math.round((SCREEN_W * 9) / 16)
+  const MONITOR_TOP = 150
+  const NECK_W = Math.round(MONITOR_W * 0.1)
+  const FOOT_W = Math.round(MONITOR_W * 0.42)
+  const SHADOW_W = Math.round(MONITOR_W * 0.52)
+  // Headline column fills the space left of the monitor with a ~40px gutter.
+  const COPY_MAX_W = 1200 - MONITOR_RIGHT - MONITOR_W - 149
 
   return new ImageResponse(
     (
@@ -87,33 +105,115 @@ export default async function OpengraphImage() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          padding: '66px 80px',
+          padding: '60px 76px',
           color: '#ffffff',
           fontFamily: sans,
-          background:
-            'radial-gradient(900px 520px at 86% 2%, rgba(158,232,162,0.24), transparent 62%), radial-gradient(700px 520px at 0% 100%, rgba(158,232,162,0.07), transparent 60%), linear-gradient(150deg, #0b0b0c 0%, #131316 55%, #0e1210 100%)',
+          background: `radial-gradient(820px 520px at 82% 6%, ${greenGlow(0.18)}, transparent 60%), radial-gradient(680px 520px at 0% 100%, ${greenGlow(0.06)}, transparent 60%), linear-gradient(150deg, #0b0b0c 0%, #131316 55%, #0e1210 100%)`,
         }}
       >
-        {/* Framed gallery — floated top-right inside the glow, like hung paintings */}
-        <div style={{ position: 'absolute', top: 150, right: 76, display: 'flex', gap: 16 }}>
-          {CANVASES.map((art, i) => (
-            <div
-              key={i}
-              style={{
-                display: 'flex',
-                width: 116,
-                height: 158,
-                padding: 7,
-                borderRadius: 12,
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.14)',
-                boxShadow: '0 26px 50px rgba(0,0,0,0.5)',
-                transform: `rotate(${(i - 1) * 4}deg) translateY(${i === 1 ? -10 : 6}px)`,
-              }}
-            >
-              <div style={{ display: 'flex', flex: 1, borderRadius: 5, background: art }} />
+        {/* Realistic monitor showing a real gallery still — floated on the right */}
+        <div
+          style={{
+            position: 'absolute',
+            top: MONITOR_TOP,
+            right: MONITOR_RIGHT,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <div
+            style={{
+              position: 'relative',
+              display: 'flex',
+              width: MONITOR_W,
+              padding: 7,
+              borderRadius: 20,
+            background: 'linear-gradient(180deg, #40444d, #2e313a 42%, #22252f)',
+            boxShadow:
+              'inset 0 1.5px 0 rgba(255,255,255,0.32), inset 1.5px 0 0 rgba(255,255,255,0.12), inset -1.5px 0 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(255,255,255,0.06), 0 42px 70px -30px rgba(0,0,0,0.85)',
+            }}
+          >
+            <div style={{ display: 'flex', width: '100%', padding: 5, borderRadius: 14, background: '#080809' }}>
+              <div
+                style={{
+                  position: 'relative',
+                  display: 'flex',
+                  width: SCREEN_W,
+                  height: SCREEN_H,
+                  borderRadius: 7,
+                  overflow: 'hidden',
+                  background: '#000',
+                }}
+              >
+                {artSrc ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={artSrc} width={SCREEN_W} height={SCREEN_H} alt="" style={{ objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', background: 'linear-gradient(160deg, #1a2740, #2f4a6b)' }} />
+                )}
+                {/* screen glare */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: SCREEN_W,
+                    height: SCREEN_H,
+                    background:
+                      'linear-gradient(122deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 16%, rgba(255,255,255,0) 40%)',
+                  }}
+                />
+                {/* frosted title pill (text only, per request) */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: 14,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    display: 'flex',
+                    padding: '7px 16px',
+                    borderRadius: 999,
+                    background: 'rgba(16,16,18,0.62)',
+                    border: '1px solid rgba(255,255,255,0.14)',
+                  }}
+                >
+                  <span style={{ fontSize: 15, fontWeight: 500, letterSpacing: 1, color: '#ffffff' }}>Starry Coast</span>
+                </div>
+              </div>
             </div>
-          ))}
+          </div>
+
+          {/* Stand: neck + T-bar foot + soft floor shadow (mirrors the site Monitor) */}
+          <div
+            style={{
+              width: NECK_W,
+              height: 34,
+              borderRadius: '0 0 4px 4px',
+              background: 'linear-gradient(180deg, #3c4049, #282b34 55%, #1e212a)',
+              boxShadow:
+                'inset 0 1px 0 rgba(255,255,255,0.18), inset 1px 0 0 rgba(255,255,255,0.10), inset -1px 0 0 rgba(255,255,255,0.10), 0 0 0 1px rgba(255,255,255,0.10)',
+            }}
+          />
+          <div
+            style={{
+              width: FOOT_W,
+              height: 15,
+              borderRadius: 7,
+              background: 'linear-gradient(180deg, #3c4049, #1e212a)',
+              boxShadow:
+                'inset 0 1px 0 rgba(255,255,255,0.22), inset 1px 0 0 rgba(255,255,255,0.10), inset -1px 0 0 rgba(255,255,255,0.10), 0 0 0 1px rgba(255,255,255,0.10), 0 22px 30px -14px rgba(0,0,0,0.85)',
+            }}
+          />
+          <div
+            style={{
+              width: SHADOW_W,
+              height: 20,
+              marginTop: 3,
+              borderRadius: '50%',
+              background: 'radial-gradient(closest-side, rgba(0,0,0,0.5), rgba(0,0,0,0) 74%)',
+            }}
+          />
         </div>
 
         {/* Header: logo badge + wordmark, domain on the right */}
@@ -127,8 +227,8 @@ export default async function OpengraphImage() {
                 width: 64,
                 height: 64,
                 borderRadius: 16,
-                background: GREEN,
-                boxShadow: '0 12px 34px rgba(158,232,162,0.4)',
+                background: brand.green,
+                boxShadow: `0 12px 34px ${greenGlow(0.4)}`,
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -138,40 +238,28 @@ export default async function OpengraphImage() {
               LIVING ART SCREENSAVER
             </div>
           </div>
-          <div style={{ fontSize: 20, letterSpacing: 1, color: 'rgba(255,255,255,0.5)' }}>
-            living-art-screensaver.com
-          </div>
+          <div style={{ fontSize: 20, letterSpacing: 1, color: 'rgba(255,255,255,0.8)' }}>living-art-screensaver.com</div>
         </div>
 
-        {/* Headline block: green accent bar + eyebrow + serif headline + subhead */}
-        <div style={{ display: 'flex', alignItems: 'stretch', gap: 30 }}>
-          <div
-            style={{
-              width: 5,
-              borderRadius: 99,
-              background: GREEN,
-              boxShadow: '0 0 26px rgba(158,232,162,0.55)',
-            }}
-          />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 560 }}>
-            <div style={{ fontSize: 20, fontWeight: 600, letterSpacing: 4, color: GREEN }}>
-              AI-ANIMATED · NEW EVERY NIGHT
-            </div>
+        {/* Headline block: green accent bar + serif headline + subhead */}
+        <div style={{ display: 'flex', alignItems: 'stretch', gap: 28 }}>
+          <div style={{ width: 5, borderRadius: 99, background: brand.green, boxShadow: `0 0 26px ${greenGlow(0.55)}` }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18, maxWidth: COPY_MAX_W }}>
             <div
               style={{
                 display: 'flex',
                 flexWrap: 'wrap',
-                gap: '0 16px',
+                gap: '0 15px',
                 fontFamily: serif,
                 fontWeight: 700,
-                fontSize: 62,
-                lineHeight: 1.04,
+                fontSize: 56,
+                lineHeight: 1.05,
               }}
             >
               <span>Turn your screensaver into a</span>
-              <span style={{ fontFamily: serif, fontStyle: 'italic', color: GREEN }}>living gallery.</span>
+              <span style={{ fontFamily: serif, fontStyle: 'italic', color: brand.green }}>living gallery.</span>
             </div>
-            <div style={{ fontSize: 27, lineHeight: 1.42, color: 'rgba(255,255,255,0.72)' }}>
+            <div style={{ fontSize: 25, lineHeight: 1.4, color: 'rgba(255,255,255,0.72)' }}>
               Centuries of art, animated by AI and hung on your idle Mac.
             </div>
           </div>
@@ -179,7 +267,7 @@ export default async function OpengraphImage() {
 
         {/* Footer chips with green dots */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          {['Free to download', 'macOS', 'A new piece every night'].map((chip) => (
+          {['Free forever', 'macOS', 'New art added every night'].map((chip) => (
             <div
               key={chip}
               style={{
@@ -194,7 +282,7 @@ export default async function OpengraphImage() {
                 color: 'rgba(255,255,255,0.85)',
               }}
             >
-              <div style={{ width: 8, height: 8, borderRadius: 99, background: GREEN }} />
+              <div style={{ width: 8, height: 8, borderRadius: 99, background: brand.green }} />
               <span>{chip}</span>
             </div>
           ))}

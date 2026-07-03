@@ -1,5 +1,8 @@
 # Marketing asset engine
 
+> Part of the growth initiative — live status + backlog in the hub:
+> [`../docs/GROWTH-PROGRESS.md`](../docs/GROWTH-PROGRESS.md).
+
 Turn a gallery piece into **ready-to-post social clips + captions**. The nightly
 curation agent produces landscape (16:9) art; social feeds are vertical/square.
 This reframes a piece into **9:16** (Reels / TikTok / Shorts) and **1:1** (feed /

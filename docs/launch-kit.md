@@ -1,5 +1,8 @@
 # Launch Kit — Product Hunt + Show HN (+ Reddit)
 
+> **Coordinating via the hub:** live launch status + who's-doing-what lives in
+> [`GROWTH-PROGRESS.md`](GROWTH-PROGRESS.md). Update it when you act on this kit.
+
 Ready-to-use copy and checklists for the one-time launch spikes from the growth
 strategy ([`growth-and-marketing-strategy.md`](growth-and-marketing-strategy.md) §4.2).
 These give a burst of traffic, backlinks, and first followers — treat them as a

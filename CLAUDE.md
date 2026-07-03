@@ -369,3 +369,6 @@ re-downloading the DMG and dragging it into `/Applications`.
 
 ## Repo history
 The dated change log lives in [docs/CHANGELOG.md](docs/CHANGELOG.md) — log an entry there only for major changes whose context is hard to recover from the code alone; `git log` has the rest.
+
+## Growth & marketing
+User-acquisition work (get people to the site + downloading) is tracked in a shared, multi-agent hub: **[docs/GROWTH-PROGRESS.md](docs/GROWTH-PROGRESS.md)** — the canonical live status/backlog (read + update it before/after growth work). Reasoning lives in [docs/growth-and-marketing-strategy.md](docs/growth-and-marketing-strategy.md); launch copy in [docs/launch-kit.md](docs/launch-kit.md); the social-clip generator in [marketing/](marketing/README.md). If you're doing growth work, start at the hub.

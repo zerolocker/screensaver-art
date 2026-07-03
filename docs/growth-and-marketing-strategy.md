@@ -23,42 +23,23 @@
 
 ---
 
-## Progress snapshot (updated 2026-07-03)
+## Progress & live status → see the hub
 
-**Legend:** ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (needs a decision or data).
+**This document is the *reasoning*. The live status, backlog, and who's-doing-what
+live in the shared hub: [`GROWTH-PROGRESS.md`](GROWTH-PROGRESS.md).** Multiple agents
+coordinate through that file — check it before starting, update it when you finish.
+It's the single source of truth for state; the sections below explain the *why* behind
+each item (referenced from the hub by number, e.g. "§10").
 
-| Initiative | Status | Where it lives / notes |
-|---|---|---|
-| PostHog analytics (web + Electron) | ✅ live | events + funnels wired; §3 |
-| Open Graph / Twitter social cards | ✅ live | `living-art-screensaver-web/app/opengraph-image.tsx`; §5 |
-| Mobile "email me the Mac link" | ✅ live | `components/marketing/download-cta.tsx`; §5–6 |
-| Cross-platform **demand probe** (self-report) | ✅ live | `components/marketing/platform-interest.tsx` — **PostHog-only, no backend**; superseded the old "detect Windows + waitlist" idea in §5/§8 |
-| Marketing **asset engine** (16:9 → 9:16/1:1 + captions) | 🔨 built | `marketing/make-social-assets.mjs` (+ README); §11 step (A). Not yet run on real art / posted |
-| **Launch kit** (Product Hunt / Show HN / Reddit) | 🔨 drafted | `docs/launch-kit.md`; §4.2. Not yet launched |
-| **Run the launch** (PH + Show HN) | ⏭️ next — the immediate goal | Human-led; needs real art clips + a demo recording. See `docs/launch-kit.md` |
-| Daily social posting + aggregator | ⏭️ next | §4.1 + §11 step (B) — pick upload-post / Postiz; the asset engine feeds it |
-| SEO landing pages + brand-name SEO | ⏭️ next | §4.3 ("Aerial alternative", "best Mac screensaver", comparison pages) |
-| "Art of the week" email / newsletter | ⏭️ next | §4.6 — needs an email-send path decision |
-| Option B ecosystem art packs | 🅿️ later | Appendix A (Wallpaper Engine Workshop / Lively) |
-| Retention / lifecycle email | 🅿️ later | §9 |
-| **Pricing experiments** (annual / lifetime) | 🅿️ parked — needs founder call | §10 — flagged as the **highest** conversion lever |
-| Referral / shareable export | 🅿️ later | §12 |
-| Windows / Mac App Store build | 🅿️ parked — pending demand-probe data | §8, §4.7 |
-| Paid ads | 🅿️ not now | §13 — revisit only after a higher-value tier + proven funnel |
+**Where things stand (summary — the hub has the itemized table):** the *conversion +
+analytics foundation* is live (PostHog, OG cards, mobile email-link, the self-report
+demand probe); the site has **~zero traffic**. The bottleneck is **acquisition, not
+capture** → next up is the **launch** (`docs/launch-kit.md` + the `marketing/` asset
+engine), then daily posting, SEO, and the email list. Pricing (§10) is the biggest lever
+to pull once conversion, not traffic, is the constraint.
 
-**What's live right now:** a solid *conversion + analytics foundation* (PostHog, OG cards,
-mobile email-link, the platform demand probe) on a site with **essentially no traffic yet**.
-
-**The bottleneck is now acquisition, not capture.** So the immediate next step is the
-**launch** (execute `docs/launch-kit.md`), which needs real social clips (run the asset
-engine, §11/`marketing/`) and a hero demo recording. After the launch spike, the ranked
-follow-ons are: daily posting + an aggregator, SEO pages, and the email list — with
-**pricing experiments (§10)** the biggest lever to pull whenever conversion (not traffic)
-becomes the constraint.
-
-> **For a new agent picking this up:** read `CLAUDE.md` (product), this doc (strategy),
-> `docs/launch-kit.md` (launch copy), and `marketing/README.md` (asset engine). The rows
-> above marked ⏭️/🅿️ are your backlog; the body sections explain the *why* behind each.
+> **New agent?** Read `CLAUDE.md` → **`docs/GROWTH-PROGRESS.md`** (state) → this doc
+> (why) → `docs/launch-kit.md` → `marketing/README.md`.
 
 ---
 
@@ -161,8 +142,8 @@ Your highest-leverage channel because it monetizes your free art.
   ≈ months of your own posting. Send them your best loops, free, credited.
 
 ### 4.2 Launch spikes (one-time bursts — schedule deliberately)
-> **Status:** 🔨 copy + checklists drafted in **`docs/launch-kit.md`** (Product Hunt / Show
-> HN / Reddit). ⏭️ **not yet launched** — this is the immediate next action.
+> Copy + checklists are drafted in **`docs/launch-kit.md`** (Product Hunt / Show HN /
+> Reddit). **Live launch status → the hub (`GROWTH-PROGRESS.md`).**
 
 Won't sustain traffic, but seed your first followers, backlinks, testimonials, and SEO base:
 - **Product Hunt** — ideal for a polished indie Mac app. Great demo video (you have assets),
@@ -573,8 +554,11 @@ quality bar.
   (merges the original `growth-and-marketing-strategy.md` and
   `growth-option-b-wallpaper-ecosystem-distribution.md` into a single document,
   with the Option B playbook folded in as Appendix A).
-- **2026-07-03 — execution status pass** (same session): added the **Progress snapshot**,
-  per-section 🔨/✅/⏭️/🅿️ status tags, and updated the roadmap — reflecting what shipped
-  (PostHog, OG cards, mobile email-link, the self-report demand probe that replaced the
-  Windows-detect/waitlist idea, the `marketing/` asset engine, and `docs/launch-kit.md`).
-  Intended so a fresh session can pick up execution from the current state.
+- **2026-07-03 — execution status pass** (same session): added per-section 🔨/✅/⏭️/🅿️ status
+  tags and updated the roadmap — reflecting what shipped (PostHog, OG cards, mobile
+  email-link, the self-report demand probe that replaced the Windows-detect/waitlist idea,
+  the `marketing/` asset engine, and `docs/launch-kit.md`).
+- **2026-07-03 — multi-agent hub** (same session): moved the live status table out of this
+  doc into the canonical shared hub **`docs/GROWTH-PROGRESS.md`** (state + backlog +
+  read/claim/log protocol), so multiple context-isolated agents coordinate through one
+  committed file. This doc now holds the *reasoning* and points at the hub for *state*.

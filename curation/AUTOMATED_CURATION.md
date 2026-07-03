@@ -40,7 +40,12 @@ You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't
             echo "Key $key already exists — choose a different name and retry."; return 1
           fi
           local ctflag=(); [ -n "$ct" ] && ctflag=(--content-type "$ct")
-          bash curation/with-secrets.sh CLOUDFLARE_API_TOKEN -- npx --yes wrangler r2 object put "screensaver-assets/$key" --file="$f" --remote "${ctflag[@]}"
+          # Gallery assets are immutable (keys are never overwritten), so cache them
+          # hard — Cloudflare serves this 1-year immutable Cache-Control to browsers
+          # on top of its default edge caching, so the marketing site won't re-fetch
+          # these multi-MB clips on later visits. Costs nothing; the custom domain
+          # already gives ~4h browser + edge caching without it.
+          bash curation/with-secrets.sh CLOUDFLARE_API_TOKEN -- npx --yes wrangler r2 object put "screensaver-assets/$key" --file="$f" --remote --cache-control "public, max-age=31536000, immutable" "${ctflag[@]}"
         }
         upload "gallery/<descriptive_name>_4k.webp"      "gallery/<descriptive_name>_4k.webp"      "image/webp"
         upload "gallery/<descriptive_name>_animated.mp4" "gallery/<descriptive_name>_animated.mp4"   # use _looping.mp4 for a looping piece
@@ -52,8 +57,8 @@ You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't
     *   Format:
         ```json
         {
-            "src": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/<video_filename>",
-            "img": "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/<image_filename>",
+            "src": "https://screensaver-assets.living-art-asset.com/gallery/<video_filename>",
+            "img": "https://screensaver-assets.living-art-asset.com/gallery/<image_filename>",
             "title": "Title - Style (AI Animated)",
             "type": "video",
             "date": "YYYY-MM-DD",

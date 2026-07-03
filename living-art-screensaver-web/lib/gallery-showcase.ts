@@ -1,9 +1,15 @@
 // Showcase data for the marketing homepage. Pure data + helpers (no React),
 // so it can be imported by any client component.
-// Video assets live on the public R2 bucket;
-// each piece carries the same { name, style } placard shown in-app.
+// Video assets live on the public R2 bucket, served through the Cloudflare
+// custom domain (screensaver-assets.living-art-asset.com) — NOT the r2.dev
+// dev endpoint, which bypasses Cloudflare's CDN cache and is rate-limited /
+// not-for-production. The custom domain routes through Cloudflare's edge, so
+// these multi-MB clips are edge-cached (cf-cache-status HIT) and browsers get
+// Cloudflare's default ~4h Browser Cache TTL out of the box — avoiding re-fetch
+// on repeat visits and reel wrap-arounds.
+// Each piece carries the same { name, style } placard shown in-app.
 
-export const R2_GALLERY = "https://pub-8430c52b593f42949119e2f7df4d5452.r2.dev/gallery/"
+export const R2_GALLERY = "https://screensaver-assets.living-art-asset.com/gallery/"
 
 export interface Piece {
   src: string

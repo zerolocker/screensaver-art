@@ -55,6 +55,7 @@ by PostHog regardless). If a sensitive field ever needs hiding, add the
 - `login_completed` `{ method: email_otp }` (+ `identify`)
 - `feedback_submitted` `{ source: website, has_image }`
 - `checkout_completed` / `checkout_canceled` `{ source: app_initiated }` (the public `/checkout/complete` page)
+- `platform_interest_opened` / `platform_interest_selected` `{ platforms, location }` / `platform_interest_submitted` `{ email, platforms, location }` — the cross-platform demand probe (`components/marketing/platform-interest.tsx`). No backend: the email is recorded straight onto the `_submitted` event (queryable in PostHog), relying on the `/ingest` reverse proxy for ad-blocker resilience.
 
 ### Website — server (`posthog-node`)
 - `checkout_started` `{ source: web, product_id }` — `app/actions/stripe.ts`

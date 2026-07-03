@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from 'react'
 import posthog from 'posthog-js'
-import { CheckCircle2, Loader2 } from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -16,10 +16,10 @@ import { cn } from '@/lib/utils'
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 /**
- * The platforms a visitor can vote for. `slug` is what we store + aggregate;
- * `label` is user-facing — people self-identify by *device* ("iPhone"), not OS
- * ("iOS"). Extend this list as we consider new targets; the API validates
- * against the same slugs.
+ * The platforms a visitor can vote for. `slug` is what we store + aggregate (as
+ * the `platforms` property on the PostHog events); `label` is user-facing —
+ * people self-identify by *device* ("iPhone"), not OS ("iOS"). Extend this list
+ * as we consider new targets.
  */
 const PLATFORM_OPTIONS = [
   { slug: 'windows', label: 'Windows' },
@@ -44,10 +44,13 @@ type Step = 1 | 2 | 'voted' | 'emailed'
  * (optional) email. Splitting them means a reluctant user still leaves the
  * cheap, valuable signal — the vote — even if they decline the email.
  *
- * Analytics (frontend, per product decision): `platform_interest_opened` on
- * open and `platform_interest_selected` (with the chosen platforms) on the step-1
- * vote. The email submit is tracked server-side in /api/platform-interest
- * (`platform_interest_submitted`) — not duplicated here.
+ * Analytics is entirely client-side — there is no backend. posthog-js is routed
+ * through our same-origin reverse proxy (`/ingest`, see next.config.mjs), so
+ * these events survive ad/tracker blockers without a server round-trip, and
+ * PostHog retains them long-term (query the emails there later). Events:
+ * `platform_interest_opened` (on open), `platform_interest_selected` (step-1
+ * vote), and `platform_interest_submitted` (step-2 email, with the email +
+ * platforms as properties).
  */
 export function PlatformInterest({
   location,
@@ -63,7 +66,6 @@ export function PlatformInterest({
   const [selected, setSelected] = useState<string[]>([])
   const [email, setEmail] = useState('')
   const [company, setCompany] = useState('') // honeypot
-  const [status, setStatus] = useState<'idle' | 'sending' | 'error'>('idle')
   const [error, setError] = useState('')
 
   function reset() {
@@ -71,7 +73,6 @@ export function PlatformInterest({
     setSelected([])
     setEmail('')
     setCompany('')
-    setStatus('idle')
     setError('')
   }
 
@@ -93,33 +94,19 @@ export function PlatformInterest({
     setStep(2)
   }
 
-  async function onSubmitEmail(e: React.FormEvent) {
+  function onSubmitEmail(e: React.FormEvent) {
     e.preventDefault()
     const value = email.trim()
     if (!EMAIL_RE.test(value)) {
       setError('Enter a valid email address.')
-      setStatus('error')
       return
     }
-    setStatus('sending')
-    setError('')
-    try {
-      const res = await fetch('/api/platform-interest', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: value, platforms: selected, location, company }),
-      })
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        setError(data.error ?? "Couldn't save that. Please try again.")
-        setStatus('error')
-        return
-      }
-      setStep('emailed')
-    } catch {
-      setError('Network error. Please check your connection and try again.')
-      setStatus('error')
+    // Honeypot: real users leave this empty. If a bot filled it, show success
+    // but record nothing (so bot emails never pollute the analytics event).
+    if (company.trim() === '') {
+      posthog.capture('platform_interest_submitted', { email: value, platforms: selected, location })
     }
+    setStep('emailed')
   }
 
   return (
@@ -226,32 +213,22 @@ export function PlatformInterest({
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value)
-                  if (status === 'error') setStatus('idle')
+                  if (error) setError('')
                 }}
-                disabled={status === 'sending'}
-                className="w-full rounded-xl border border-white/12 bg-white/[0.03] px-4 py-3 text-[16px] text-foreground outline-none placeholder:text-muted-foreground-subtle focus:border-primary/60 disabled:opacity-60"
+                className="w-full rounded-xl border border-white/12 bg-white/[0.03] px-4 py-3 text-[16px] text-foreground outline-none placeholder:text-muted-foreground-subtle focus:border-primary/60"
               />
-              {status === 'error' && <p className="text-[13.5px] text-red-400">{error}</p>}
+              {error && <p className="text-[13.5px] text-red-400">{error}</p>}
               <button
                 type="submit"
-                disabled={status === 'sending'}
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-[13px] text-[16px] font-semibold text-primary-foreground disabled:opacity-70"
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-[13px] text-[16px] font-semibold text-primary-foreground"
                 style={{ boxShadow: '0 12px 30px -10px rgba(158,232,162,0.5)' }}
               >
-                {status === 'sending' ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    Adding you…
-                  </>
-                ) : (
-                  'Notify me'
-                )}
+                Notify me
               </button>
               <button
                 type="button"
                 onClick={() => setStep('voted')}
-                disabled={status === 'sending'}
-                className="text-center text-[13px] text-muted-foreground-subtle underline-offset-4 hover:text-muted-foreground hover:underline disabled:opacity-60"
+                className="text-center text-[13px] text-muted-foreground-subtle underline-offset-4 hover:text-muted-foreground hover:underline"
               >
                 Just count my vote
               </button>

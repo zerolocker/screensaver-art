@@ -7,14 +7,6 @@ import { ReelPlayer } from "@/components/marketing/reel-player"
 // The reel every monitor on the page shows.
 const REEL = heroReel
 
-// Ambient-glow geometry, resolved once for the only look we use ("Top bloom",
-// size "Large"): a soft green halo (g1) plus the current art bleeding onto the
-// wall (g2). See Monitor.dc.html for the full family of styles/sizes.
-const GLOW = {
-  g1Top: "42%", g1W: "98%", g1H: "87%", g1Transform: "translate(-50%,-50%)",
-  g2Top: "5%", g2W: "101%", g2H: "76%", g2Transform: "translate(-50%,0) scale(1.06)",
-}
-
 interface MonitorProps {
   /** Straight neck + T-bar foot below the screen. */
   stand?: boolean
@@ -29,7 +21,7 @@ interface MonitorProps {
 /**
  * A realistic Studio-Display-style monitor that cross-fades the gallery reel,
  * with an ambient "the screen lights the wall behind it" glow and a frosted
- * title pill (mirrors the in-screensaver placard). Ported from Monitor.dc.html.
+ * title pill (mirrors the in-screensaver placard).
  * Playback/rotation is delegated to ReelPlayer (readiness-gated, poster-first).
  */
 export function Monitor({ stand = true, priority = false, interval = 5200 }: MonitorProps) {
@@ -38,22 +30,17 @@ export function Monitor({ stand = true, priority = false, interval = 5200 }: Mon
 
   return (
     <div style={{ position: "relative", width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      {/* ambient art-glow: soft green halo */}
-      <div
-        style={{
-          position: "absolute", zIndex: 0, left: "50%", top: GLOW.g1Top,
-          width: GLOW.g1W, height: GLOW.g1H, transform: GLOW.g1Transform, borderRadius: "50%",
-          background: "radial-gradient(closest-side, rgba(158,232,162,0.18), rgba(158,232,162,0) 72%)",
-          filter: "blur(34px)", pointerEvents: "none",
-        }}
-      />
       {/* ambient art-glow: the current art bleeding onto the wall. A static
           poster image (the clip's first frame) under heavy blur — deliberately
-          not a second video, which used to double the hero's bandwidth. */}
+          not a second video, which used to double the hero's bandwidth.
+          `willChange: transform` promotes this to its own compositing layer so
+          the blur's output region is fully re-rasterized when the async poster
+          loads — without it the glow paints clipped to the layout box until a
+          scroll forces a repaint. */}
       <div
         style={{
-          position: "absolute", zIndex: 0, left: "50%", top: GLOW.g2Top,
-          width: GLOW.g2W, height: GLOW.g2H, transform: GLOW.g2Transform,
+          position: "absolute", zIndex: 0, left: "50%", top: "5%",
+          width: "101%", height: "76%", transform: "translate(-50%,0) scale(1.06)", willChange: "transform",
           borderRadius: "48px", overflow: "hidden", filter: "blur(48px) saturate(1.55)",
           opacity: 0.55, pointerEvents: "none",
         }}

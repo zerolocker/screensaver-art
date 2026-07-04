@@ -1,10 +1,17 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
-import { Loader2, WifiOff, Search, X, CheckCheck, SlidersHorizontal, Check } from 'lucide-react'
+import { Loader2, WifiOff, Search, X, CheckCheck } from 'lucide-react'
 import { GALLERY_ENDPOINT } from '../lib/api'
 import { startCheckout } from '../lib/checkout'
 import { AppBanners } from '../components/AppBanners'
 import { PosterCard } from '../components/PosterCard'
 import { ArtModal } from '../components/ArtModal'
+import { TabButton } from '../components/TabButton'
+import { Pagination } from '../components/Pagination'
+import {
+  GallerySettingsMenu,
+  type SortOrder,
+  type PreviewMode,
+} from '../components/GallerySettingsMenu'
 import { useGallerySync } from '../lib/SyncProvider'
 import { log } from '../lib/log'
 import {
@@ -28,11 +35,6 @@ interface GalleryPageProps {
 }
 
 type Tab = 'all' | 'free' | 'paid' | 'selected'
-type SortOrder = 'oldest' | 'newest'
-// How a clicked piece previews: 'fullscreen' fills the whole display (native
-// macOS fullscreen, with its brief Space animation); 'in-app' fills just the
-// app window instantly. Default is 'fullscreen' — the more impressive preview.
-type PreviewMode = 'fullscreen' | 'in-app'
 
 const SORT_KEY = 'lart-gallery-sort'
 const PREVIEW_MODE_KEY = 'lart-gallery-preview-mode'
@@ -296,15 +298,15 @@ export function GalleryPage({ session }: GalleryPageProps) {
     () => visibleItems.filter((it) => !lockedSrcs.has(it.src)).map((it) => it.src),
     [visibleItems, lockedSrcs],
   )
-  const visibleSelectedSrcs = useMemo(
-    () => visibleItems.filter((it) => selected.has(it.src)).map((it) => it.src),
-    [visibleItems, selected],
-  )
   const canSelectMore = useMemo(
     () => visibleUnlockedSrcs.some((s) => !selected.has(s)),
     [visibleUnlockedSrcs, selected],
   )
-  const selectAllDisabled = visibleUnlockedSrcs.length === 0 && visibleSelectedSrcs.length === 0
+  const hasVisibleSelected = useMemo(
+    () => visibleItems.some((it) => selected.has(it.src)),
+    [visibleItems, selected],
+  )
+  const selectAllDisabled = visibleUnlockedSrcs.length === 0 && !hasVisibleSelected
 
   const toggleSelectAll = useCallback(() => {
     if (selectAllDisabled) return
@@ -415,7 +417,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
             )}
           </div>
 
-          <SettingsMenu
+          <GallerySettingsMenu
             sort={sort}
             onSort={selectSort}
             previewMode={previewMode}
@@ -505,222 +507,5 @@ export function GalleryPage({ session }: GalleryPageProps) {
         />
       )}
     </div>
-  )
-}
-
-function TabButton({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`relative py-2 text-sm transition-colors ${
-        active ? 'text-foreground font-semibold' : 'text-muted-foreground hover:text-foreground'
-      }`}
-    >
-      {children}
-      {active && (
-        <span className="absolute inset-x-0 -bottom-px h-0.5 bg-primary rounded-t" />
-      )}
-    </button>
-  )
-}
-
-// Windowed page list: always first + last + current±1, with ellipses filling the
-// gaps, so the control stays compact no matter how large the catalog grows.
-function pageWindow(current: number, total: number): (number | 'gap')[] {
-  const keep = new Set<number>([0, total - 1, current - 1, current, current + 1])
-  const shown = [...keep].filter((p) => p >= 0 && p < total).sort((a, b) => a - b)
-  const out: (number | 'gap')[] = []
-  let prev = -1
-  for (const p of shown) {
-    if (prev >= 0 && p - prev > 1) out.push('gap')
-    out.push(p)
-    prev = p
-  }
-  return out
-}
-
-// Page navigation shown below the grid when the filtered set spans more than one
-// page. Prev/Next plus a compact windowed list of page numbers, and a subtle
-// "showing X–Y of N" line.
-function Pagination({
-  page,
-  pageCount,
-  rangeStart,
-  rangeEnd,
-  total,
-  onChange,
-}: {
-  page: number
-  pageCount: number
-  rangeStart: number
-  rangeEnd: number
-  total: number
-  onChange: (page: number) => void
-}) {
-  return (
-    <div className="flex flex-col items-center gap-3 mt-8">
-      <div className="flex items-center gap-1">
-        <PageButton disabled={page === 0} onClick={() => onChange(page - 1)}>
-          Prev
-        </PageButton>
-        {pageWindow(page, pageCount).map((p, i) =>
-          p === 'gap' ? (
-            <span key={`gap-${i}`} className="px-1.5 text-sm text-muted-foreground select-none">
-              …
-            </span>
-          ) : (
-            <PageButton key={p} active={p === page} onClick={() => onChange(p)}>
-              {p + 1}
-            </PageButton>
-          ),
-        )}
-        <PageButton disabled={page >= pageCount - 1} onClick={() => onChange(page + 1)}>
-          Next
-        </PageButton>
-      </div>
-      <p className="text-xs text-muted-foreground tabular-nums">
-        Showing {rangeStart}–{rangeEnd} of {total}
-      </p>
-    </div>
-  )
-}
-
-function PageButton({
-  active,
-  disabled,
-  onClick,
-  children,
-}: {
-  active?: boolean
-  disabled?: boolean
-  onClick: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      aria-current={active ? 'page' : undefined}
-      className={`min-w-8 h-8 px-2.5 rounded-md text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
-        active
-          ? 'bg-primary text-primary-foreground font-medium'
-          : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
-      }`}
-    >
-      {children}
-    </button>
-  )
-}
-
-// Gear menu for view options: sort order + how a clicked piece previews. Closes
-// on outside click or Escape; stays open while toggling so several settings can
-// be changed at once.
-function SettingsMenu({
-  sort,
-  onSort,
-  previewMode,
-  onPreviewMode,
-}: {
-  sort: SortOrder
-  onSort: (s: SortOrder) => void
-  previewMode: PreviewMode
-  onPreviewMode: (m: PreviewMode) => void
-}) {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!open) return
-    const onDown = (e: MouseEvent): void => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('mousedown', onDown)
-    document.addEventListener('keydown', onKey)
-    return () => {
-      document.removeEventListener('mousedown', onDown)
-      document.removeEventListener('keydown', onKey)
-    }
-  }, [open])
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        title="View options"
-        className={`flex items-center gap-1.5 text-sm transition-colors ${
-          open ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
-        }`}
-      >
-        <SlidersHorizontal className="w-3.5 h-3.5" />
-        Options
-      </button>
-      {open && (
-        <div
-          role="menu"
-          className="absolute right-0 top-full mt-2 w-60 rounded-xl border border-border bg-card shadow-lg p-1.5 z-30 animate-[fadeIn_120ms_ease-out]"
-        >
-          <MenuLabel>Sort order</MenuLabel>
-          <MenuRadio active={sort === 'oldest'} onClick={() => onSort('oldest')}>
-            Oldest first
-          </MenuRadio>
-          <MenuRadio active={sort === 'newest'} onClick={() => onSort('newest')}>
-            Newest first
-          </MenuRadio>
-
-          <div className="my-1.5 h-px bg-border" />
-
-          <MenuLabel>Preview a piece in</MenuLabel>
-          <MenuRadio active={previewMode === 'fullscreen'} onClick={() => onPreviewMode('fullscreen')}>
-            Fullscreen
-          </MenuRadio>
-          <MenuRadio active={previewMode === 'in-app'} onClick={() => onPreviewMode('in-app')}>
-            In-app window
-          </MenuRadio>
-        </div>
-      )}
-    </div>
-  )
-}
-
-function MenuLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="px-2.5 pt-1 pb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground/70">
-      {children}
-    </div>
-  )
-}
-
-function MenuRadio({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      role="menuitemradio"
-      aria-checked={active}
-      onClick={onClick}
-      className="w-full flex items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-sm text-foreground hover:bg-secondary transition-colors"
-    >
-      <span>{children}</span>
-      {active && <Check className="w-4 h-4 text-primary" />}
-    </button>
   )
 }

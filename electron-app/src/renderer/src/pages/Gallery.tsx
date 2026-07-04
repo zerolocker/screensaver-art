@@ -1,10 +1,17 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
-import { Loader2, WifiOff, Search, X, CheckCheck, SlidersHorizontal, Check } from 'lucide-react'
+import { Loader2, WifiOff, Search, X, CheckCheck } from 'lucide-react'
 import { GALLERY_ENDPOINT } from '../lib/api'
 import { startCheckout } from '../lib/checkout'
 import { AppBanners } from '../components/AppBanners'
 import { PosterCard } from '../components/PosterCard'
 import { ArtModal } from '../components/ArtModal'
+import { TabButton } from '../components/TabButton'
+import { Pagination } from '../components/Pagination'
+import {
+  GallerySettingsMenu,
+  type SortOrder,
+  type PreviewMode,
+} from '../components/GallerySettingsMenu'
 import { useGallerySync } from '../lib/SyncProvider'
 import { log } from '../lib/log'
 import {
@@ -28,17 +35,18 @@ interface GalleryPageProps {
 }
 
 type Tab = 'all' | 'free' | 'paid' | 'selected'
-type SortOrder = 'oldest' | 'newest'
-// How a clicked piece previews: 'fullscreen' fills the whole display (native
-// macOS fullscreen, with its brief Space animation); 'in-app' fills just the
-// app window instantly. Default is 'fullscreen' — the more impressive preview.
-type PreviewMode = 'fullscreen' | 'in-app'
 
 const SORT_KEY = 'lart-gallery-sort'
 const PREVIEW_MODE_KEY = 'lart-gallery-preview-mode'
 // After the last tick, wait this long before re-syncing the cache, so rapid
 // toggling triggers one sync, not one per click.
 const SYNC_DEBOUNCE_MS = 1500
+// The grid is paginated so a large catalog never shows hundreds of poster cards
+// at once — each visible card lazily captures a first frame (a partial video
+// download + decode), so bounding the page bounds the network/decode/paint cost.
+// 51 = 3 columns × 17 rows. Search + tag filters run across the whole catalog
+// first; pagination applies to the filtered result.
+const PAGE_SIZE = 51
 
 export function GalleryPage({ session }: GalleryPageProps) {
   const [gallery, setGallery] = useState<GalleryResponse | null>(null)
@@ -54,6 +62,9 @@ export function GalleryPage({ session }: GalleryPageProps) {
   )
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set())
   const [query, setQuery] = useState('')
+  // Zero-indexed current page over the *filtered* items. Reset to 0 whenever the
+  // filters change (effect below) so new results start on page 1.
+  const [page, setPage] = useState(0)
   // Frozen snapshot of the selection when the "Selected" tab was entered, so
   // unticking a piece there dims it in place instead of making it vanish.
   const [selectedScope, setSelectedScope] = useState<Set<string>>(new Set())
@@ -252,6 +263,32 @@ export function GalleryPage({ session }: GalleryPageProps) {
   const visibleItems = useMemo(() => sortedItems.filter(isVisible), [sortedItems, isVisible])
   const visibleCount = visibleItems.length
 
+  // Pagination over the filtered set. A filter change can shrink the list below
+  // the current page, so clamp before slicing (the reset effect handles the
+  // common case; the clamp guards the render in between).
+  const pageCount = Math.max(1, Math.ceil(visibleCount / PAGE_SIZE))
+  const clampedPage = Math.min(page, pageCount - 1)
+  const pageStart = clampedPage * PAGE_SIZE
+  // Srcs of the cards on the current page. Off-page and filtered-out cards stay
+  // mounted (poster captured once, never re-captured on filter/sort/page) but are
+  // display:none'd so they're not painted or poster-captured.
+  const pageSrcs = useMemo(
+    () => new Set(visibleItems.slice(pageStart, pageStart + PAGE_SIZE).map((it) => it.src)),
+    [visibleItems, pageStart],
+  )
+
+  // Jump back to page 1 whenever the filtered set changes, so results always start
+  // at the top instead of a now-out-of-range page.
+  useEffect(() => {
+    setPage(0)
+  }, [tab, query, activeTags, sort])
+
+  const goToPage = useCallback((next: number) => {
+    setPage(next)
+    // Scroll the content area back to the top so the new page starts at row 1.
+    document.querySelector('main')?.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+
   // Select All operates on the currently-shown pieces. While any unlocked shown
   // piece is still off it reads "Select all" and turns them all on; once they're
   // all on it flips to "Deselect all", which clears every selected shown piece —
@@ -261,15 +298,15 @@ export function GalleryPage({ session }: GalleryPageProps) {
     () => visibleItems.filter((it) => !lockedSrcs.has(it.src)).map((it) => it.src),
     [visibleItems, lockedSrcs],
   )
-  const visibleSelectedSrcs = useMemo(
-    () => visibleItems.filter((it) => selected.has(it.src)).map((it) => it.src),
-    [visibleItems, selected],
-  )
   const canSelectMore = useMemo(
     () => visibleUnlockedSrcs.some((s) => !selected.has(s)),
     [visibleUnlockedSrcs, selected],
   )
-  const selectAllDisabled = visibleUnlockedSrcs.length === 0 && visibleSelectedSrcs.length === 0
+  const hasVisibleSelected = useMemo(
+    () => visibleItems.some((it) => selected.has(it.src)),
+    [visibleItems, selected],
+  )
+  const selectAllDisabled = visibleUnlockedSrcs.length === 0 && !hasVisibleSelected
 
   const toggleSelectAll = useCallback(() => {
     if (selectAllDisabled) return
@@ -347,7 +384,9 @@ export function GalleryPage({ session }: GalleryPageProps) {
             disabled={selectAllDisabled}
             className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             title={
-              canSelectMore ? 'Select all the pieces shown' : 'Deselect all the pieces shown'
+              canSelectMore
+                ? 'Select all pieces in the current view (every page, not just this one)'
+                : 'Deselect all pieces in the current view (every page, not just this one)'
             }
           >
             <CheckCheck className="w-3.5 h-3.5" />
@@ -378,7 +417,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
             )}
           </div>
 
-          <SettingsMenu
+          <GallerySettingsMenu
             sort={sort}
             onSort={selectSort}
             previewMode={previewMode}
@@ -424,8 +463,9 @@ export function GalleryPage({ session }: GalleryPageProps) {
           </div>
         )}
 
-      {/* Art grid — all cards stay mounted; visibility is toggled so filtering
-          and sorting never re-capture posters. */}
+      {/* Art grid — all cards stay mounted; visibility is toggled so filtering,
+          sorting, and paging never re-capture posters. A card shows only when it
+          passes the filters AND falls on the current page. */}
       <div
         className="grid gap-4 mt-2"
         style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}
@@ -436,13 +476,24 @@ export function GalleryPage({ session }: GalleryPageProps) {
             item={item}
             selected={selected.has(item.src)}
             locked={lockedSrcs.has(item.src)}
-            hidden={!isVisible(item)}
+            hidden={!pageSrcs.has(item.src)}
             onToggle={() => toggle(item.src)}
             onSubscribe={onSubscribe}
             onOpen={() => setModalItem(item)}
           />
         ))}
       </div>
+
+      {pageCount > 1 && (
+        <Pagination
+          page={clampedPage}
+          pageCount={pageCount}
+          rangeStart={pageStart + 1}
+          rangeEnd={Math.min(pageStart + PAGE_SIZE, visibleCount)}
+          total={visibleCount}
+          onChange={goToPage}
+        />
+      )}
 
       {modalItem && (
         <ArtModal
@@ -456,134 +507,5 @@ export function GalleryPage({ session }: GalleryPageProps) {
         />
       )}
     </div>
-  )
-}
-
-function TabButton({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`relative py-2 text-sm transition-colors ${
-        active ? 'text-foreground font-semibold' : 'text-muted-foreground hover:text-foreground'
-      }`}
-    >
-      {children}
-      {active && (
-        <span className="absolute inset-x-0 -bottom-px h-0.5 bg-primary rounded-t" />
-      )}
-    </button>
-  )
-}
-
-// Gear menu for view options: sort order + how a clicked piece previews. Closes
-// on outside click or Escape; stays open while toggling so several settings can
-// be changed at once.
-function SettingsMenu({
-  sort,
-  onSort,
-  previewMode,
-  onPreviewMode,
-}: {
-  sort: SortOrder
-  onSort: (s: SortOrder) => void
-  previewMode: PreviewMode
-  onPreviewMode: (m: PreviewMode) => void
-}) {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!open) return
-    const onDown = (e: MouseEvent): void => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('mousedown', onDown)
-    document.addEventListener('keydown', onKey)
-    return () => {
-      document.removeEventListener('mousedown', onDown)
-      document.removeEventListener('keydown', onKey)
-    }
-  }, [open])
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        title="View options"
-        className={`flex items-center gap-1.5 text-sm transition-colors ${
-          open ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
-        }`}
-      >
-        <SlidersHorizontal className="w-3.5 h-3.5" />
-        Options
-      </button>
-      {open && (
-        <div
-          role="menu"
-          className="absolute right-0 top-full mt-2 w-60 rounded-xl border border-border bg-card shadow-lg p-1.5 z-30 animate-[fadeIn_120ms_ease-out]"
-        >
-          <MenuLabel>Sort order</MenuLabel>
-          <MenuRadio active={sort === 'oldest'} onClick={() => onSort('oldest')}>
-            Oldest first
-          </MenuRadio>
-          <MenuRadio active={sort === 'newest'} onClick={() => onSort('newest')}>
-            Newest first
-          </MenuRadio>
-
-          <div className="my-1.5 h-px bg-border" />
-
-          <MenuLabel>Preview a piece in</MenuLabel>
-          <MenuRadio active={previewMode === 'fullscreen'} onClick={() => onPreviewMode('fullscreen')}>
-            Fullscreen
-          </MenuRadio>
-          <MenuRadio active={previewMode === 'in-app'} onClick={() => onPreviewMode('in-app')}>
-            In-app window
-          </MenuRadio>
-        </div>
-      )}
-    </div>
-  )
-}
-
-function MenuLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="px-2.5 pt-1 pb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground/70">
-      {children}
-    </div>
-  )
-}
-
-function MenuRadio({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      role="menuitemradio"
-      aria-checked={active}
-      onClick={onClick}
-      className="w-full flex items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-sm text-foreground hover:bg-secondary transition-colors"
-    >
-      <span>{children}</span>
-      {active && <Check className="w-4 h-4 text-primary" />}
-    </button>
   )
 }

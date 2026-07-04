@@ -39,6 +39,12 @@ const PREVIEW_MODE_KEY = 'lart-gallery-preview-mode'
 // After the last tick, wait this long before re-syncing the cache, so rapid
 // toggling triggers one sync, not one per click.
 const SYNC_DEBOUNCE_MS = 1500
+// The grid is paginated so a large catalog never shows hundreds of poster cards
+// at once — each visible card lazily captures a first frame (a partial video
+// download + decode), so bounding the page bounds the network/decode/paint cost.
+// 51 = 3 columns × 17 rows. Search + tag filters run across the whole catalog
+// first; pagination applies to the filtered result.
+const PAGE_SIZE = 51
 
 export function GalleryPage({ session }: GalleryPageProps) {
   const [gallery, setGallery] = useState<GalleryResponse | null>(null)
@@ -54,6 +60,9 @@ export function GalleryPage({ session }: GalleryPageProps) {
   )
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set())
   const [query, setQuery] = useState('')
+  // Zero-indexed current page over the *filtered* items. Reset to 0 whenever the
+  // filters change (effect below) so new results start on page 1.
+  const [page, setPage] = useState(0)
   // Frozen snapshot of the selection when the "Selected" tab was entered, so
   // unticking a piece there dims it in place instead of making it vanish.
   const [selectedScope, setSelectedScope] = useState<Set<string>>(new Set())
@@ -252,6 +261,32 @@ export function GalleryPage({ session }: GalleryPageProps) {
   const visibleItems = useMemo(() => sortedItems.filter(isVisible), [sortedItems, isVisible])
   const visibleCount = visibleItems.length
 
+  // Pagination over the filtered set. A filter change can shrink the list below
+  // the current page, so clamp before slicing (the reset effect handles the
+  // common case; the clamp guards the render in between).
+  const pageCount = Math.max(1, Math.ceil(visibleCount / PAGE_SIZE))
+  const clampedPage = Math.min(page, pageCount - 1)
+  const pageStart = clampedPage * PAGE_SIZE
+  // Srcs of the cards on the current page. Off-page and filtered-out cards stay
+  // mounted (poster captured once, never re-captured on filter/sort/page) but are
+  // display:none'd so they're not painted or poster-captured.
+  const pageSrcs = useMemo(
+    () => new Set(visibleItems.slice(pageStart, pageStart + PAGE_SIZE).map((it) => it.src)),
+    [visibleItems, pageStart],
+  )
+
+  // Jump back to page 1 whenever the filtered set changes, so results always start
+  // at the top instead of a now-out-of-range page.
+  useEffect(() => {
+    setPage(0)
+  }, [tab, query, activeTags, sort])
+
+  const goToPage = useCallback((next: number) => {
+    setPage(next)
+    // Scroll the content area back to the top so the new page starts at row 1.
+    document.querySelector('main')?.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [])
+
   // Select All operates on the currently-shown pieces. While any unlocked shown
   // piece is still off it reads "Select all" and turns them all on; once they're
   // all on it flips to "Deselect all", which clears every selected shown piece —
@@ -347,7 +382,9 @@ export function GalleryPage({ session }: GalleryPageProps) {
             disabled={selectAllDisabled}
             className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             title={
-              canSelectMore ? 'Select all the pieces shown' : 'Deselect all the pieces shown'
+              canSelectMore
+                ? 'Select all pieces in the current view (every page, not just this one)'
+                : 'Deselect all pieces in the current view (every page, not just this one)'
             }
           >
             <CheckCheck className="w-3.5 h-3.5" />
@@ -424,8 +461,9 @@ export function GalleryPage({ session }: GalleryPageProps) {
           </div>
         )}
 
-      {/* Art grid — all cards stay mounted; visibility is toggled so filtering
-          and sorting never re-capture posters. */}
+      {/* Art grid — all cards stay mounted; visibility is toggled so filtering,
+          sorting, and paging never re-capture posters. A card shows only when it
+          passes the filters AND falls on the current page. */}
       <div
         className="grid gap-4 mt-2"
         style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}
@@ -436,13 +474,24 @@ export function GalleryPage({ session }: GalleryPageProps) {
             item={item}
             selected={selected.has(item.src)}
             locked={lockedSrcs.has(item.src)}
-            hidden={!isVisible(item)}
+            hidden={!pageSrcs.has(item.src)}
             onToggle={() => toggle(item.src)}
             onSubscribe={onSubscribe}
             onOpen={() => setModalItem(item)}
           />
         ))}
       </div>
+
+      {pageCount > 1 && (
+        <Pagination
+          page={clampedPage}
+          pageCount={pageCount}
+          rangeStart={pageStart + 1}
+          rangeEnd={Math.min(pageStart + PAGE_SIZE, visibleCount)}
+          total={visibleCount}
+          onChange={goToPage}
+        />
+      )}
 
       {modalItem && (
         <ArtModal
@@ -479,6 +528,94 @@ function TabButton({
       {active && (
         <span className="absolute inset-x-0 -bottom-px h-0.5 bg-primary rounded-t" />
       )}
+    </button>
+  )
+}
+
+// Windowed page list: always first + last + current±1, with ellipses filling the
+// gaps, so the control stays compact no matter how large the catalog grows.
+function pageWindow(current: number, total: number): (number | 'gap')[] {
+  const keep = new Set<number>([0, total - 1, current - 1, current, current + 1])
+  const shown = [...keep].filter((p) => p >= 0 && p < total).sort((a, b) => a - b)
+  const out: (number | 'gap')[] = []
+  let prev = -1
+  for (const p of shown) {
+    if (prev >= 0 && p - prev > 1) out.push('gap')
+    out.push(p)
+    prev = p
+  }
+  return out
+}
+
+// Page navigation shown below the grid when the filtered set spans more than one
+// page. Prev/Next plus a compact windowed list of page numbers, and a subtle
+// "showing X–Y of N" line.
+function Pagination({
+  page,
+  pageCount,
+  rangeStart,
+  rangeEnd,
+  total,
+  onChange,
+}: {
+  page: number
+  pageCount: number
+  rangeStart: number
+  rangeEnd: number
+  total: number
+  onChange: (page: number) => void
+}) {
+  return (
+    <div className="flex flex-col items-center gap-3 mt-8">
+      <div className="flex items-center gap-1">
+        <PageButton disabled={page === 0} onClick={() => onChange(page - 1)}>
+          Prev
+        </PageButton>
+        {pageWindow(page, pageCount).map((p, i) =>
+          p === 'gap' ? (
+            <span key={`gap-${i}`} className="px-1.5 text-sm text-muted-foreground select-none">
+              …
+            </span>
+          ) : (
+            <PageButton key={p} active={p === page} onClick={() => onChange(p)}>
+              {p + 1}
+            </PageButton>
+          ),
+        )}
+        <PageButton disabled={page >= pageCount - 1} onClick={() => onChange(page + 1)}>
+          Next
+        </PageButton>
+      </div>
+      <p className="text-xs text-muted-foreground tabular-nums">
+        Showing {rangeStart}–{rangeEnd} of {total}
+      </p>
+    </div>
+  )
+}
+
+function PageButton({
+  active,
+  disabled,
+  onClick,
+  children,
+}: {
+  active?: boolean
+  disabled?: boolean
+  onClick: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      aria-current={active ? 'page' : undefined}
+      className={`min-w-8 h-8 px-2.5 rounded-md text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+        active
+          ? 'bg-primary text-primary-foreground font-medium'
+          : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+      }`}
+    >
+      {children}
     </button>
   )
 }

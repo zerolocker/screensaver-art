@@ -1987,5 +1987,57 @@
     "image_prompt": "A Sasanian Persian palace mural, 5th century, painted on a plastered stone wall with mineral pigments, slightly weathered. The scene fills the entire 16:9 image edge to edge with no surrounding margin. Subject: the interior of a Zoroastrian fire temple, a great golden fire-altar at the centre with tall dancing flames, set within a stone chamber of carved columns and rounded arches; warm firelight flickers across the walls and thin incense smoke curls upward. Deep ochres, gold, ember-red and shadowed umber; the sacred fire is the only light source. Viewed straight-on, flat to the picture plane, extending to all four edges. No museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no label, no painted border, no mat, no decorative frame, no people.",
     "video_prompt": "The sacred fire on the golden altar burns and leaps continuously, flames flickering and dancing while thin blue-grey incense smoke curls and rises upward, and the warm firelight pulses and wavers across the carved stone columns and arches. Seamless, continuous looping fire and smoke motion; the architecture holds solid and still, nothing morphs; the mural's painted surface texture is preserved. Warm, meditative, looping.",
     "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/song_waterfall_gorge_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/song_waterfall_gorge_4k.webp",
+    "title": "Waterfall in the Mountain Gorge - Song Dynasty Landscape (AI Animated)",
+    "type": "video",
+    "date": "2026-07-04",
+    "tags": [
+      "Chinese & Korean"
+    ],
+    "image_prompt": "A monumental Northern Song dynasty (11th century) Chinese landscape painting, ink and pale mineral colour on aged silk, in the manner of Fan Kuan and Guo Xi. Towering vertical mist-shrouded peaks rise from a deep river gorge; a tall slender waterfall plunges down a sheer cliff face into a pool of swirling water below; wind-bent pines cling to the rocky ledges and a low band of drifting cloud separates the near crags from the far peaks. Delicate texture strokes model the rock, ink wash graduates from deep charcoal in the foreground to silvery pale distance, soft diffuse overcast daylight, subtle warm aged-silk tone. Viewed straight-on, flat to the picture plane. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame; the scene fills the entire image edge to edge, viewed straight-on.",
+    "video_prompt": "The tall slender waterfall pours steadily down the cliff face in a continuous falling ribbon of white water; in the foreground the river rushes and churns over the rocks, rippling and swirling with real current; thin veils of low mist drift slowly upward and sideways across the distant peaks and gorge. The pine trees, cliffs and rocks stay completely still and solid. Soft diffuse overcast daylight. Very slow, almost imperceptible camera push-in. Realistic water and mist physics only.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/egyptian_nile_marsh_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/egyptian_nile_marsh_4k.webp",
+    "title": "Papyrus Marsh on the Nile - Ancient Egyptian Wall Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-07-04",
+    "tags": [
+      "Egyptian"
+    ],
+    "image_prompt": "An ancient Egyptian tomb wall painting from the New Kingdom (18th Dynasty, c. 1400 BC), in the style of the Nebamun marsh scenes — mineral pigments (Egyptian blue, yellow ochre, malachite green, carbon black, pale limewash ground) on smoothed mud plaster, with characteristic flat registers and crisp profile drawing. A dense thicket of tall slender green papyrus reeds with feathery umbels rises along the Nile bank and fills most of the scene; along the lower band, blue-green marsh water rendered as stylised zigzag ripple lines teems with painted lotus blossoms and fish; a few small ducks and butterflies perch among the papyrus. Warm even ancient-lamp light, subtle craquelure and faded, slightly flaking plaster texture of a genuinely aged painted tomb wall. Viewed straight-on, flat to the picture plane. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame; the scene fills the entire image edge to edge, viewed straight-on.",
+    "video_prompt": "A gentle breeze moves through the marsh: the tall papyrus reeds and their feathery umbels sway softly and unevenly from side to side, some leaning and springing back; the stylised blue-green zigzag water band along the bottom shimmers and ripples with a slow watery shimmer; two or three of the butterflies drift and flutter gently among the stalks. The ducks and fish stay still and painted. Warm even ancient lamplight, the plaster wall and its craquelure hold completely still. No camera movement. Realistic gentle wind and water motion only; the painted forms keep their exact shapes.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/expressionist_stormy_sea_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/expressionist_stormy_sea_4k.webp",
+    "title": "Storm over the Open Sea - German Expressionism (AI Animated)",
+    "type": "video",
+    "date": "2026-07-04",
+    "tags": [
+      "Modern"
+    ],
+    "image_prompt": "An early 20th-century German Expressionist seascape in the manner of Emil Nolde, thick impasto oil on canvas with bold visible palette-knife strokes. A churning open sea under a turbulent storm sky: deep viridian and Prussian-blue swells crested with violent whitecaps roll across the whole scene and break into surging foam in the foreground; above, a heavy sky of bruised violet, slate-grey and burnt-ochre storm clouds boils over a low horizon; a single band of pale luminous stormlight glows near the horizon line. Saturated, non-naturalistic Expressionist colour, energetic gestural brushwork, tactile ridged paint surface catching raking light. Viewed straight-on, flat to the picture plane. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame; the scene fills the entire image edge to edge, viewed straight-on.",
+    "video_prompt": "The stormy sea heaves and rolls: the deep green-blue swells surge forward and their white foam crests break, curl and dissolve, wave after wave moving across the surface with real ocean power, then the water settles smoothly back to its exact opening state. Above, the heavy bruised storm clouds churn and drift slowly across the sky and return to their starting arrangement. The band of pale stormlight at the horizon glows steadily. Thick impasto oil-paint texture preserved throughout, dramatic Expressionist colour. No camera movement. Physically real ocean-wave and cloud motion, seamless continuous loop; the horizon stays level and the paint surface stays coherent, nothing morphs into other shapes.",
+    "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/rinpa_rough_waves_gold_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/rinpa_rough_waves_gold_4k.webp",
+    "title": "Rough Waves on Gold - Rinpa Folding Screen (AI Animated)",
+    "type": "video",
+    "date": "2026-07-04",
+    "tags": [
+      "Japanese"
+    ],
+    "image_prompt": "A Japanese Rinpa school folding screen painting in the manner of Ogata Korin's 'Rough Waves' (early 18th century, Edo period), mineral pigments and gold leaf on paper. Great stylised cresting ocean waves in deep indigo, malachite green and white foam surge and churn across the whole composition, their curling claw-like foam tips rhythmically repeating and interlocking; behind and between them the background is luminous flat gold leaf suggesting bright sea-spray mist and sky. Bold decorative dark outlines, stylised swirling water patterns, the subtle texture, faint craquelure and gentle age-toning of an antique painted gold screen. No Mount Fuji, no boats, no figures. Viewed straight-on, flat to the picture plane. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame; the scene fills the entire image edge to edge, viewed straight-on.",
+    "video_prompt": "The stylised waves roll and surge across the golden screen: the indigo and green swells heave forward, the curling white foam crests churn and their spiralling claw-like tips uncurl and re-curl in a slow rhythmic ripple, wave interlocking with wave, then the whole sea eases smoothly back to its exact opening arrangement. The flat gold-leaf ground stays perfectly still and luminous. No camera movement. Gentle-to-moderate, physically believable stylised ocean-wave motion, seamless continuous loop; the bold painted outlines and decorative shapes are preserved and nothing morphs into other forms.",
+    "looping": true
   }
 ]

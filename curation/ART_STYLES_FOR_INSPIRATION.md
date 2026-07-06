@@ -61,6 +61,7 @@ When you add a new style, append it under the section it best fits.
 ## Modern & conceptual art movements (late-19th century onward)
 
 - Modern art
+- Group of Seven (Canadian landscape, Tom Thomson / A.Y. Jackson)
 - Expressionism
 - Fauvism
 - Cubism
@@ -129,6 +130,7 @@ When you add a new style, append it under the section it best fits.
 - Yuan Dynasty Landscape
 - Ming Dynasty Silk Painting
 - Ming Bird-and-Flower Painting
+- Tang Dynasty Blue-Green Landscape (qinglu shanshui)
 - Nanga
 - Kano School Ink Painting
 - Ukiyo-e
@@ -209,6 +211,7 @@ When you add a new style, append it under the section it best fits.
 - Sasanian Palace Fresco
 - Roman Garden Fresco
 - Roman Still-Life Fresco (Xenia)
+- Roman Second-Style Landscape Fresco (Odyssey Landscapes)
 - Hellenistic Mosaic
 - Macedonian Court Mosaic
 - Etruscan Tomb Painting

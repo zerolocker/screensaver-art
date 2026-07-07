@@ -2143,5 +2143,57 @@
     "image_prompt": "A blazing autumn wilderness landscape rendered in the early 20th-century Canadian Group of Seven style of Tom Thomson — thick expressive impasto oil brushwork, muscular decorative strokes, vivid saturated orange-red-gold-and-blue color. A wild northern lakeshore in full autumn: a foreground of brilliant scarlet-and-gold maple and birch foliage and dark green pines on a rocky granite shore, a clear wind-rippled deep-blue lake stretching to low rounded hills flushed with crimson and orange autumn colour, under a broad dramatic sky of drifting warm clouds lit by late-afternoon light. IMPORTANT: the painted landscape itself completely fills the picture and extends to all four edges — this is the scene seen straight-on and flat to the picture plane, NOT a photograph of a painting. No wooden panel or board, no board edges, no canvas edge, no white studio background, no drop shadow, no oblique or 3/4 angle, no museum, no glass, no pedestal, no gallery wall, no spotlight, no label, no painted border, no mat, no decorative frame. The scene fills the entire image edge to edge, viewed straight-on.",
     "video_prompt": "A steady autumn wind moves through the scene: the brilliant scarlet-and-gold maple and birch leaves flutter and shimmer, the slender birches sway, and a scattering of loose leaves drifts and spirals gently down toward the shore; the deep-blue lake ripples with small wind-driven wavelets and its coloured reflections shimmer, while the warm clouds drift slowly across the sky; then everything settles back exactly to the opening. Warm late-afternoon light. The granite rocks, the far hills and the shoreline all hold their form. No camera movement. Seamless continuous loop returning to the exact opening state. Physically real wind, leaf, water and cloud motion only; the thick impasto brushwork and every painted shape are preserved, nothing morphs or melts.",
     "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/thai_waterfall_chedi_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/thai_waterfall_chedi_4k.webp",
+    "title": "Waterfall by the Golden Chedi - Thai Temple Mural (AI Animated)",
+    "type": "video",
+    "date": "2026-07-07",
+    "tags": [
+      "South & Southeast Asian"
+    ],
+    "image_prompt": "A Thai Buddhist temple mural in the Rattanakosin style of 18th-to-19th century Siam, painted in mineral pigments and gold leaf on a monastery wall: a tall white-and-gold chedi (stupa) with a slender tapering spire stands beside a powerful jungle waterfall that plunges down dark forest cliffs into a churning emerald pool. Lush tropical foliage, banana leaves and flowering trees frame the scene; dark monsoon storm clouds gather above and rain begins to fall. Flat decorative Thai perspective with brilliant gold outlines and a lapis-and-emerald palette, warm diffuse daylight breaking through the clouds. The scene fills the entire image, extending to all four edges, viewed straight-on, flat to the picture plane. No painted border, no mat, no decorative frame around it. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background.",
+    "video_prompt": "The waterfall pours and crashes continuously down the dark cliff, whitewater churning and throwing spray and mist where it hits the emerald pool, and the pool's surface ripples outward in concentric rings. Heavy monsoon rain falls in steady slanting sheets and the banana leaves and treetops sway in the wind, while the stylized storm clouds drift slowly across the sky. The white-and-gold chedi holds perfectly still and keeps its form. Motion driven by falling water, rain and wind under warm daylight breaking through the clouds. Physically natural, nothing morphs or melts.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/ottoman_bosphorus_fireworks_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/ottoman_bosphorus_fireworks_4k.webp",
+    "title": "Fireworks over the Bosphorus - Ottoman Miniature (AI Animated)",
+    "type": "video",
+    "date": "2026-07-07",
+    "tags": [
+      "Islamic"
+    ],
+    "image_prompt": "A night celebration on the Bosphorus strait rendered in the style of an Ottoman court miniature, gouache and gold in flat decorative Ottoman perspective with a jewel-tone palette of indigo, crimson and gold. The domes and slender pencil-thin minarets of a waterside imperial palace are silhouetted at left against a deep indigo night sky; gilded caiques and sailboats crowd the dark rippling water, tiny stylized figures in red and blue robes watch from both shores holding glowing lanterns. High over the strait, bright bursts of festival fireworks bloom in gold, crimson and white, showers of sparks arcing down and reflecting in shimmering vertical streaks on the near-black water. The painted scene itself fills the entire image and extends all the way to all four edges — a full-bleed composition. Absolutely no aged-paper margin, no manuscript page, no ruled lines, no painted border, no mat, no decorative frame of any kind around the scene; the artwork is cropped so the painting reaches every edge. No museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background.",
+    "video_prompt": "Bursts of festival fireworks bloom and cascade over the strait one after another, showers of golden, crimson and white sparks arcing upward and raining down, their glow shimmering and rippling in long reflections on the dark rippling water below. The lanterns held by the tiny figures flicker warmly and the boats rock ever so gently on the swell. The palace, domes and minarets stay perfectly still and keep their form. Motion driven by the bursting fireworks, falling sparks and shimmering water reflections in glowing night light. Physically natural, nothing morphs or melts.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/millefleurs_unicorn_tapestry_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/millefleurs_unicorn_tapestry_4k.webp",
+    "title": "The Unicorn in the Flowering Meadow - Mille-fleurs Tapestry (AI Animated)",
+    "type": "video",
+    "date": "2026-07-07",
+    "tags": [
+      "Medieval & Byzantine"
+    ],
+    "image_prompt": "A late-medieval French Gothic mille-fleurs tapestry of around the year 1500, in the style of 'The Lady and the Unicorn', woven in wool and silk with visible weave texture: a serene white unicorn resting in a flowering meadow against a deep rose-red ground densely scattered with mille-fleurs — hundreds of small stylized wildflowers, blossoms, clover and leafy green sprigs — with a few small rabbits and a bird among the plants and a slender flowering tree behind. Soft even daylight, the muted red, sage-green, cream and gold palette of aged woven thread. The woven scene fills the entire image and extends all the way to every edge — full-bleed. No painted border, no mat, no ruled lines, no decorative frame or fabric selvage around it. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background.",
+    "video_prompt": "A soft breeze drifts across the flowering meadow, gently stirring the mille-fleurs blossoms, leaves and the small tree's foliage, a faint shimmer of light moving over the woven wool-and-silk threads; one rabbit's ears twitch softly and the bird ruffles once. The white unicorn rests calmly and holds its form and shape throughout. The gentle swaying is continuous and returns exactly to where it began so the clip loops seamlessly. Soft even daylight. Physically natural, nothing morphs or melts.",
+    "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/ming_cranes_misty_reeds_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/ming_cranes_misty_reeds_4k.webp",
+    "title": "Cranes in the Misty Reeds - Ming Silk Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-07-07",
+    "tags": [
+      "Chinese & Korean"
+    ],
+    "image_prompt": "A close, full-bleed view of a Ming dynasty Chinese bird-and-flower painting on silk, 16th century, in the meticulous gongbi manner with delicate fine ink outlines and mineral colour: a pair of red-crowned cranes standing calmly in the shallows of a still lake among tall golden autumn reeds and broad lotus leaves at dawn, low soft mist drifting across the calm water, a faint ink-washed distant shoreline. Muted silk tones of cream, sage-green and pale gold, the cranes' white plumage and scarlet crowns, soft diffuse misty morning light. The painted image itself extends all the way to all four edges and fills every pixel — a tight full-bleed crop into the painting surface. There are NO paler margin strips, no silk mounting band, no painted border, no mat, no ruled lines, no decorative frame anywhere around the scene. No museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background.",
+    "video_prompt": "Low soft mist drifts slowly across the still lake water, the tall golden reeds and rushes sway gently in a faint dawn breeze, and the calm water surface ripples softly with a few faint concentric rings around the cranes' legs. The two red-crowned cranes stand quietly and hold their form and shape. The gentle drifting and swaying is continuous and returns exactly to where it began so the clip loops seamlessly. Soft diffuse misty morning light. Physically natural, nothing morphs or melts.",
+    "looping": true
   }
 ]

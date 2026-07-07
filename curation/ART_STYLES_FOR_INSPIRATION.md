@@ -17,6 +17,7 @@ When you add a new style, append it under the section it best fits.
 - Gothic art
 - Gothic Stained Glass
 - Illuminated Manuscript
+- Mille-fleurs Tapestry
 - Carolingian Illumination
 - Carolingian Minuscule Calligraphy
 - Carolingian Ivory Carving
@@ -160,12 +161,14 @@ When you add a new style, append it under the section it best fits.
 - Khmer Angkor Stone Sculpture
 - Javanese Borobudur Relief
 - Thai Sukhothai Buddha
+- Rattanakosin Temple Mural (Thai)
 - Islamic geometric art
 - Fatimid Rock Crystal Carving
 - Persian Safavid Miniature
 - Safavid Garden Pavilion Painting
 - Safavid Muqarnas Dome (Tilework)
 - Ottoman Iznik Ceramics
+- Ottoman Miniature (Surname festival painting)
 - Timurid Manuscript Illumination
 - Mamluk Metalwork
 - Nasrid (Alhambra) Ornament

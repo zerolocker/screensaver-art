@@ -16,6 +16,7 @@ When you add a new style, append it under the section it best fits.
 - Romanesque Fresco
 - Gothic art
 - Gothic Stained Glass
+- International Gothic (Limbourg brothers)
 - Illuminated Manuscript
 - Mille-fleurs Tapestry
 - Carolingian Illumination
@@ -217,6 +218,7 @@ When you add a new style, append it under the section it best fits.
 - Roman Second-Style Landscape Fresco (Odyssey Landscapes)
 - Hellenistic Mosaic
 - Macedonian Court Mosaic
+- Roman Nilotic Mosaic (Palestrina)
 - Etruscan Tomb Painting
 - Etruscan Bucchero pottery
 - Etruscan Terracotta Sarcophagus

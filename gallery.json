@@ -2195,5 +2195,57 @@
     "image_prompt": "A close, full-bleed view of a Ming dynasty Chinese bird-and-flower painting on silk, 16th century, in the meticulous gongbi manner with delicate fine ink outlines and mineral colour: a pair of red-crowned cranes standing calmly in the shallows of a still lake among tall golden autumn reeds and broad lotus leaves at dawn, low soft mist drifting across the calm water, a faint ink-washed distant shoreline. Muted silk tones of cream, sage-green and pale gold, the cranes' white plumage and scarlet crowns, soft diffuse misty morning light. The painted image itself extends all the way to all four edges and fills every pixel — a tight full-bleed crop into the painting surface. There are NO paler margin strips, no silk mounting band, no painted border, no mat, no ruled lines, no decorative frame anywhere around the scene. No museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background.",
     "video_prompt": "Low soft mist drifts slowly across the still lake water, the tall golden reeds and rushes sway gently in a faint dawn breeze, and the calm water surface ripples softly with a few faint concentric rings around the cranes' legs. The two red-crowned cranes stand quietly and hold their form and shape. The gentle drifting and swaying is continuous and returns exactly to where it began so the clip loops seamlessly. Soft diffuse misty morning light. Physically natural, nothing morphs or melts.",
     "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/roman_nilotic_mosaic_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/roman_nilotic_mosaic_4k.webp",
+    "title": "Life along the Nile - Roman Nilotic Mosaic (AI Animated)",
+    "type": "video",
+    "date": "2026-07-08",
+    "tags": [
+      "Greek & Roman"
+    ],
+    "image_prompt": "An ancient Roman Nilotic mosaic (Hellenistic-Roman, c. 100 BCE, in the manner of the Palestrina Nile mosaic), made of thousands of small tessellated stone and glass tesserae with visible grout lines: a broad blue Nile river winding across the whole scene, teeming with life — small papyrus-reed boats poled by tiny figures, hippopotami and crocodiles among lotus blossoms and papyrus thickets along the banks, ibises and ducks, palm trees. Warm Mediterranean earth-tone palette — ochre, terracotta, olive green, Nile blue and cream — flat frontal bird's-eye mosaic style, even bright daylight, matte stone tesserae texture. The scene fills the entire image, extending to all four edges, viewed straight-on. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame.",
+    "video_prompt": "The tessellated blue water of the Nile ripples and flows gently across the whole scene, catching soft glints of daylight, the small reed boats bobbing very slightly on the current. The hippos, crocodiles, birds, palms, papyrus and figures all hold perfectly still and keep their mosaic form. Only the river water moves — calm, physically plausible water motion. Even bright Mediterranean daylight on the matte stone tesserae.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/yamatoe_autumn_maple_river_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/yamatoe_autumn_maple_river_4k.webp",
+    "title": "Autumn Maples on the River - Yamato-e Gold Screen (AI Animated)",
+    "type": "video",
+    "date": "2026-07-08",
+    "tags": [
+      "Japanese"
+    ],
+    "image_prompt": "A Japanese Yamato-e painting on a gilded folding screen (Edo period, c. 1650, mineral pigments and gold leaf on paper) of a mountain river in autumn: a clear blue-green stream winds diagonally through the scene over pale rocks, its banks crowded with brilliant crimson and orange Japanese maple trees, scattered red maple leaves floating on the flowing water and drifting through the air, distant gold-clouded hills. Flat decorative Yamato-e style with fine ink outlines, rich mineral pigments — vermilion, crimson, malachite green, gold — soft even daylight, matte paper-and-gold-leaf texture. The scene fills the entire image, extending to all four edges, viewed straight-on. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame.",
+    "video_prompt": "The blue-green mountain stream flows steadily and ripples as it winds through the scene, and scattered crimson maple leaves drift gently down through the air and float along on the moving water. The maple trees, rocks, gold clouds and hills hold their form and stay in place. Calm, graceful, physically plausible motion of flowing water and a few drifting leaves only — nothing morphs. Soft even autumn daylight on the gold-leaf screen.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/naive_jungle_wind_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/naive_jungle_wind_4k.webp",
+    "title": "Tropical Jungle in the Breeze - Naïve Post-Impressionism (AI Animated)",
+    "type": "video",
+    "date": "2026-07-08",
+    "tags": [
+      "19th Century"
+    ],
+    "image_prompt": "A Naïve Post-Impressionist jungle painting (late 19th century, oil on canvas in the flat faux-naïf manner of Henri Rousseau) filling the whole picture: a dense green tropical jungle seen up close, layer upon layer of large flat overlapping leaves — broad banana fronds, spiky palms, ferns and giant lily pads — in dozens of distinct shades of green, with a few big orange and white lotus-like blossoms and one bright red flower, two small tropical birds perched among the foliage. Flat outlined shapes, meticulous leaf detail, rich saturated greens, soft even jungle daylight filtering through, dreamlike stillness. The foliage fills the entire image, extending to all four edges, viewed straight-on. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame.",
+    "video_prompt": "A gentle warm breeze drifts through the jungle: the big banana fronds, palm leaves and ferns sway and flutter softly, the tall grasses lean and the lotus and hibiscus blossoms nod slightly on their stems. The two perched tropical birds stay still and keep their form. Calm, physically plausible wind motion in the foliage only — leaves bend and spring back, nothing morphs or melts. The swaying is continuous and eases back to exactly where it began so the clip loops seamlessly. Soft even jungle daylight.",
+    "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/gothic_castle_banners_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/gothic_castle_banners_4k.webp",
+    "title": "Banners over the Castle - Gothic International Style (AI Animated)",
+    "type": "video",
+    "date": "2026-07-08",
+    "tags": [
+      "Medieval & Byzantine"
+    ],
+    "image_prompt": "A late-medieval Gothic International-style painting (c. 1416, tempera and burnished gold leaf, in the jewel-toned manner of the Limbourg brothers) of a tall white fairy-tale castle with many pointed slate-blue turrets, battlements and spires rising across the whole scene; from every tower long forked heraldic banners and pennants in red, blue and gold — charged with fleurs-de-lis and lions — stream out sideways in a strong wind. Behind is a deep flat ultramarine sky flecked with small gold stars; below, a green hill with a few tiny courtiers. Flat jewel-toned Gothic style, fine black ink outlines, saturated ultramarine, vermilion and burnished gold, meticulous detail, soft even daylight. This is the painted scene itself, painted perfectly flat and straight-on, filling every pixel and extending to all four edges — full-bleed. It is NOT a book or a page: no vellum, no parchment margins, no open book, no facing page, no vine or ivy border, no floral marginal decoration, no arched frame, no gold ruled border, no painted border, no mat, no decorative frame; no oblique angle. no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background.",
+    "video_prompt": "The long forked heraldic banners and pennants on the castle towers ripple, billow and snap sideways in a steady wind, their forked tails fluttering and curling, while the small banners on poles on the hillside wave. The white stone castle, its blue turrets, the star-flecked sky and the tiny figures on the hill all hold perfectly still and keep their form. Only the cloth banners move — lively but physically plausible wind motion in the fabric, nothing morphs or melts. The rippling is continuous and eases back to exactly where it began so the clip loops seamlessly. Soft even daylight on the jewel-toned painting.",
+    "looping": true
   }
 ]

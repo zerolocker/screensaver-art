@@ -2247,5 +2247,57 @@
     "image_prompt": "A late-medieval Gothic International-style painting (c. 1416, tempera and burnished gold leaf, in the jewel-toned manner of the Limbourg brothers) of a tall white fairy-tale castle with many pointed slate-blue turrets, battlements and spires rising across the whole scene; from every tower long forked heraldic banners and pennants in red, blue and gold — charged with fleurs-de-lis and lions — stream out sideways in a strong wind. Behind is a deep flat ultramarine sky flecked with small gold stars; below, a green hill with a few tiny courtiers. Flat jewel-toned Gothic style, fine black ink outlines, saturated ultramarine, vermilion and burnished gold, meticulous detail, soft even daylight. This is the painted scene itself, painted perfectly flat and straight-on, filling every pixel and extending to all four edges — full-bleed. It is NOT a book or a page: no vellum, no parchment margins, no open book, no facing page, no vine or ivy border, no floral marginal decoration, no arched frame, no gold ruled border, no painted border, no mat, no decorative frame; no oblique angle. no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background.",
     "video_prompt": "The long forked heraldic banners and pennants on the castle towers ripple, billow and snap sideways in a steady wind, their forked tails fluttering and curling, while the small banners on poles on the hillside wave. The white stone castle, its blue turrets, the star-flecked sky and the tiny figures on the hill all hold perfectly still and keep their form. Only the cloth banners move — lively but physically plausible wind motion in the fabric, nothing morphs or melts. The rippling is continuous and eases back to exactly where it began so the clip loops seamlessly. Soft even daylight on the jewel-toned painting.",
     "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/rajput_diwali_river_lamps_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/rajput_diwali_river_lamps_4k.webp",
+    "title": "Diwali Lamps on the River - Rajput Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-07-09",
+    "tags": [
+      "South & Southeast Asian"
+    ],
+    "image_prompt": "Full-bleed Rajput Mewar-style night river scene, rendered in opaque watercolor and gold in the manner of an 18th-century Indian court painting. A wide nighttime river flows across the foreground past a white marble ghat with domed riverside temples and cusped arches on the far bank. The dark indigo water is covered with hundreds of tiny floating clay oil lamps (diya), each with a small warm golden flame, reflections shimmering on the water; a deep starry indigo sky with a slender crescent moon above. Rich flat mineral pigments — lapis blue, ochre, vermilion, gold — jewel-like Rajput palette, fine detail. IMPORTANT: this is a full-bleed scene that extends all the way to and off all four edges of the image; it is NOT a painting on paper. Absolutely no border, no gold or red rule-line, no mat, no aged-paper margin, no visible paper, no fold line — the painted scene itself must reach every edge with nothing around it. no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background. Viewed straight-on, flat to the picture plane, the river parallel to the bottom edge.",
+    "video_prompt": "The dark river current flows gently and steadily, carrying the many small floating oil lamps slowly downstream across the water; their little golden flames flicker softly and their warm reflections ripple and shimmer on the moving surface. The marble temples, the ghat, the people, and the starry sky all stay perfectly still. Slow, calm, physically plausible water motion only; nothing morphs, the lamps and buildings hold their shape.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/aztec_popocatepetl_eruption_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/aztec_popocatepetl_eruption_4k.webp",
+    "title": "Popocatépetl Erupting behind the Temple - Aztec Mural (AI Animated)",
+    "type": "video",
+    "date": "2026-07-09",
+    "tags": [
+      "Arts of the Americas"
+    ],
+    "image_prompt": "A pre-Columbian Aztec temple mural in the Mexica / Teotihuacan fresco tradition, painted in flat mineral pigments — deep red hematite, ochre, turquoise-green, cream and black outline — on aged lime plaster. Frontal, symmetrical composition: a great stepped pyramid temple with a twin shrine at its summit stands in the middle ground; directly behind it rises the snow-capped volcano Popocatépetl, its crater erupting a towering billowing plume of grey-brown ash and dark smoke shot through with an orange lava glow, unfurling high across a pale dawn sky. Stylized glyph-like clouds and rising smoke curls painted in the Aztec codex manner, bold flat color fields, confident black contour lines, cracked weathered plaster texture. The painted scene is full-bleed, extending all the way to and off all four edges — this is the mural surface itself, not an object. no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame; viewed straight-on, flat to the wall.",
+    "video_prompt": "The volcano's eruption column billows and boils upward — a thick plume of ash and dark smoke rolling, churning and unfurling higher into the sky and drifting slowly sideways on the wind, with a dull orange glow pulsing at the crater and the lava streaks glowing. The stepped pyramid temple, the staircase, the painted glyphs and figures, and the cracked plaster all stay completely still and hold their form. Dramatic but physically plausible smoke, ash and fire motion only; nothing morphs or melts.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/nanga_spring_rain_village_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/nanga_spring_rain_village_4k.webp",
+    "title": "Spring Rain over the River Village - Nanga Literati Landscape (AI Animated)",
+    "type": "video",
+    "date": "2026-07-09",
+    "tags": [
+      "Japanese"
+    ],
+    "image_prompt": "A Japanese Nanga (Bunjinga) literati landscape, ink and pale mineral watercolor on paper, mid-Edo period, in the tradition of Ike no Taiga and Yosa Buson. A misty river village in gentle spring rain: a cluster of thatched-roof cottages nestled among willows and pines on the near riverbank, a low wooden footbridge over a stream, distant soft-blue mountains dissolving into mist across the calm water. Loose calligraphic ink brushwork, wet graded washes, generous empty space, low horizon, muted grey-green, pale indigo and soft ochre palette. Fine slanting rain falling softly over the whole scene. The painted landscape is full-bleed and fills the entire image to all four edges. no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame, no visible paper margin; viewed straight-on, flat to the picture plane.",
+    "video_prompt": "A steady, gentle spring rain falls continuously and evenly across the whole landscape; the long trailing willow fronds sway softly to one side and drift back in the light breeze, and faint mist slowly drifts and curls low over the river and between the mountains. Calm, quiet, seamless repeating motion — the rain, the swaying willows and the drifting mist settle back to exactly where they began. The thatched cottages, the wooden bridge, the pine and the distant mountains stay perfectly still and hold their form; nothing morphs or melts.",
+    "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/timurid_almond_blossom_court_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/timurid_almond_blossom_court_4k.webp",
+    "title": "Almond Blossom Court - Timurid Persian Illumination (AI Animated)",
+    "type": "video",
+    "date": "2026-07-09",
+    "tags": [
+      "Islamic"
+    ],
+    "image_prompt": "A walled Persian palace garden court rendered in the flat jewel-toned style of a Timurid Herat-school miniature (opaque mineral watercolor and gold, early 15th century, manner of Bihzad), but composed as a large full-bleed scene. Seen frontally and flat: slender almond and pomegranate trees in full pink-and-white blossom against a flat burnished-gold sky with a band of lapis blue at the top, a still turquoise-tiled reflecting pool in the foreground, beds of irises and tulips, and a geometric tile-clad pavilion with cusped arches. Jewel-like flat pigments — lapis lazuli, malachite green, gold leaf, coral pink, vermilion — fine detail, high decorative flatness. A few blossom petals lift on the breeze. CRITICAL FRAMING: the garden completely fills the picture and is cropped by the edges — the blossoming trees and the pool run right off all four sides. This is the painted image itself shown edge to edge, NOT a manuscript page: there must be absolutely no border, no gold rule-line, no coloured frame, no cream or aged-paper margin anywhere, no visible paper, no calligraphy — paint reaches every one of the four edges. no museum, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background; viewed straight-on, flat to the picture plane.",
+    "video_prompt": "A soft spring breeze moves through the walled garden: pink-and-white blossom petals gently detach and drift down and sideways through the air, and the slender blossoming branches and the tall cypresses sway lightly and settle back; the still turquoise pool's surface shimmers faintly with tiny ripples. Gentle, calm, seamless cyclic motion that returns exactly to its starting state so it loops. The tiled pavilion, the gold wall, the tiled paving and the flower beds stay perfectly still and hold their form; nothing morphs or melts.",
+    "looping": true
   }
 ]

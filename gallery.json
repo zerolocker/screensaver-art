@@ -2299,5 +2299,57 @@
     "image_prompt": "A walled Persian palace garden court rendered in the flat jewel-toned style of a Timurid Herat-school miniature (opaque mineral watercolor and gold, early 15th century, manner of Bihzad), but composed as a large full-bleed scene. Seen frontally and flat: slender almond and pomegranate trees in full pink-and-white blossom against a flat burnished-gold sky with a band of lapis blue at the top, a still turquoise-tiled reflecting pool in the foreground, beds of irises and tulips, and a geometric tile-clad pavilion with cusped arches. Jewel-like flat pigments — lapis lazuli, malachite green, gold leaf, coral pink, vermilion — fine detail, high decorative flatness. A few blossom petals lift on the breeze. CRITICAL FRAMING: the garden completely fills the picture and is cropped by the edges — the blossoming trees and the pool run right off all four sides. This is the painted image itself shown edge to edge, NOT a manuscript page: there must be absolutely no border, no gold rule-line, no coloured frame, no cream or aged-paper margin anywhere, no visible paper, no calligraphy — paint reaches every one of the four edges. no museum, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background; viewed straight-on, flat to the picture plane.",
     "video_prompt": "A soft spring breeze moves through the walled garden: pink-and-white blossom petals gently detach and drift down and sideways through the air, and the slender blossoming branches and the tall cypresses sway lightly and settle back; the still turquoise pool's surface shimmers faintly with tiny ripples. Gentle, calm, seamless cyclic motion that returns exactly to its starting state so it loops. The tiled pavilion, the gold wall, the tiled paving and the flower beds stay perfectly still and hold their form; nothing morphs or melts.",
     "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/egyptian_fields_of_iaru_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/egyptian_fields_of_iaru_4k.webp",
+    "title": "The Fields of Iaru - Ancient Egyptian Tomb Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-07-10",
+    "tags": [
+      "Egyptian"
+    ],
+    "image_prompt": "An ancient Egyptian tomb wall-painting depicting the Field of Reeds (Fields of Iaru), the fertile afterlife paradise: horizontal registers of tall golden ripe emmer wheat and blue-green flax stalks heavy with grain, a straight turquoise irrigation canal running through with blue lotus blossoms and painted ripples, slender date palms laden with fruit, all rendered in the flat Egyptian register style with crisp black outlines and flat fields of Egyptian blue, ochre, earth-red, gold and green mineral pigment on cream lime-plaster with fine craquelure. Warm even daylight. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame; the scene fills the entire image edge to edge, viewed straight-on.",
+    "video_prompt": "A steady breeze sweeps across the field: the tall golden wheat and the blue-green flax bend and ripple in slow travelling waves; the band of turquoise water shimmers and its painted ripples glint softly; the date-palm fronds sway gently. Warm even daylight, the painted plaster surface holding its form. A single continuous, physically natural wind motion moving across the grain.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/maya_jungle_temple_rain_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/maya_jungle_temple_rain_4k.webp",
+    "title": "Rain over the Jungle Temple - Maya Mural (AI Animated)",
+    "type": "video",
+    "date": "2026-07-10",
+    "tags": [
+      "Arts of the Americas"
+    ],
+    "image_prompt": "A tight cropped view into a large ancient Maya fresco mural (Bonampak / San Bartolo tradition) painted on weathered lime plaster — the painted jungle scene runs off all four edges, no visible plaster margin, no border line, no red band, no frame. The scene: a stepped stone pyramid-temple facing the viewer head-on, its central staircase rising straight up the middle, terraces with faded red-stucco panels and eroded glyphs, half-swallowed by emerald rainforest, tall ceiba trees and broad banana-leaf foliage in the foreground, distant mist-veiled blue mountains, beneath a heavy grey monsoon sky breaking into rain. Genuine ancient-mural rendering — soft matte mineral pigment (Maya blue, red ochre, cream, muted jade), loose confident brushwork with irregular hand-painted contours, worn and flaked paint, salt bloom and craquelure across the plaster, no crisp vector outlines, painterly not illustrated. Overcast diffuse light. no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame, no red border band; the painted scene fills the entire image edge to edge and bleeds past all four edges, temple viewed straight-on and frontal.",
+    "video_prompt": "A heavy tropical downpour falls in long silvery streaks across the whole mural, rain drumming on the temple terraces and drenching the jungle canopy; thin mist rises from the wet foliage and drifts slowly between the trees; the broad banana leaves nod under the rain. Overcast diffuse daylight, the ancient painted surface holding its form. A single dramatic, physically natural falling-rain motion.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/qajar_rose_garden_fountain_night_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/qajar_rose_garden_fountain_night_4k.webp",
+    "title": "Rose Garden Fountain at Night - Qajar Persian Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-07-10",
+    "tags": [
+      "Islamic"
+    ],
+    "image_prompt": "A Qajar-era Persian painting of a moonlit palace garden courtyard at night: a white marble octagonal fountain at the center with a rising jet of water, surrounded by beds of deep-red and pink roses, dark cypress trees, and a wall of turquoise and cobalt tilework, a lit brass oil lamp glowing warm on a low ledge, a crescent moon and stars in a deep indigo sky, rendered in the rich Qajar oil style with lacquer-like saturated color, fine detail and gold highlights. Warm lamplight and cool moonlight. no people, no faces, no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame; the scene fills the entire image edge to edge, viewed straight-on.",
+    "video_prompt": "The marble fountain's jet rises and spills in a steady rhythm, the pool surface rippling with reflected moonlight; the brass oil lamp's flame flickers warmly; the rose bushes and dark cypress trees stir faintly in a light night breeze. Calm nocturnal motion that flows continuously and returns exactly to where it began. The painted surface holds its form.",
+    "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/english_romantic_cloud_shadows_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/english_romantic_cloud_shadows_4k.webp",
+    "title": "Cloud Shadows over the Downs - English Romantic Landscape (AI Animated)",
+    "type": "video",
+    "date": "2026-07-10",
+    "tags": [
+      "19th Century"
+    ],
+    "image_prompt": "An English Romantic landscape oil painting of rolling green chalk downland under a vast dramatic sky: billowing white and grey cumulus clouds with a bright shaft of sunlight breaking through, sweeping meadows of long grass and wildflowers, a lone oak and a distant windmill, hedgerows and a winding track, painted in the manner of early-19th-century English Romanticism with broken brushwork, luminous skies and rich green and ochre oil pigment, visible impasto and canvas texture. Bright, breezy daylight. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame; the scene fills the entire image edge to edge, viewed straight-on.",
+    "video_prompt": "Billowing clouds drift steadily across the sky and their shadows sweep over the green downland below; the long meadow grass and wildflowers ripple in the wind, the old oak's leaves shimmer, and the distant windmill's sails turn slowly. Bright breezy daylight, the motion flowing continuously and returning exactly to where it began. The painted surface holds its form.",
+    "looping": true
   }
 ]

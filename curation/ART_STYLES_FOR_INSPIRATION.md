@@ -44,6 +44,7 @@ When you add a new style, append it under the section it best fits.
 - Neoclassicism
 - Romanticism
 - Norwegian Romantic Landscape (Dahl)
+- English Romantic Landscape (Constable / Norwich School)
 - Venetian Veduta (Canaletto)
 - Hudson River School
 - Barbizon School
@@ -171,6 +172,7 @@ When you add a new style, append it under the section it best fits.
 - Ottoman Iznik Ceramics
 - Ottoman Miniature (Surname festival painting)
 - Timurid Manuscript Illumination
+- Qajar Persian Painting
 - Mamluk Metalwork
 - Nasrid (Alhambra) Ornament
 - Arabic Calligraphy

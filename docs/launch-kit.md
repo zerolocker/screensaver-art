@@ -12,7 +12,7 @@ your own** — the voice should sound like you, an indie maker, not a brand.
 > Product: **Living Art Screensaver** — a Mac screensaver that turns your idle
 > display into a gallery of AI-animated classic art, with a **new curated piece
 > every day**. Free tier; $0.99/mo (billed quarterly) unlocks the full,
-> ever-growing collection. Site: **livingartscreensaver.com**.
+> ever-growing collection. Site: **https://living-art-screensaver.com/**.
 
 ---
 

@@ -174,6 +174,7 @@ When you add a new style, append it under the section it best fits.
 - Timurid Manuscript Illumination
 - Qajar Persian Painting
 - Mamluk Metalwork
+- Mamluk Architecture (Cairene mosque interiors — ablaq stone, mihrab, mosque lamps)
 - Nasrid (Alhambra) Ornament
 - Arabic Calligraphy
 - Yoruba Sculpture

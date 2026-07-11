@@ -2351,5 +2351,57 @@
     "image_prompt": "An English Romantic landscape oil painting of rolling green chalk downland under a vast dramatic sky: billowing white and grey cumulus clouds with a bright shaft of sunlight breaking through, sweeping meadows of long grass and wildflowers, a lone oak and a distant windmill, hedgerows and a winding track, painted in the manner of early-19th-century English Romanticism with broken brushwork, luminous skies and rich green and ochre oil pigment, visible impasto and canvas texture. Bright, breezy daylight. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame; the scene fills the entire image edge to edge, viewed straight-on.",
     "video_prompt": "Billowing clouds drift steadily across the sky and their shadows sweep over the green downland below; the long meadow grass and wildflowers ripple in the wind, the old oak's leaves shimmer, and the distant windmill's sails turn slowly. Bright breezy daylight, the motion flowing continuously and returning exactly to where it began. The painted surface holds its form.",
     "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/postimpressionist_wheatfield_wind_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/postimpressionist_wheatfield_wind_4k.webp",
+    "title": "Wheatfield in the Mistral Wind - Post-Impressionism (AI Animated)",
+    "type": "video",
+    "date": "2026-07-11",
+    "tags": [
+      "19th Century"
+    ],
+    "image_prompt": "A Post-Impressionist oil painting on canvas, thick impasto brushwork with visible directional strokes and vivid unmixed color in the manner of late-1880s Provence — a golden wheatfield at high summer under a turbulent midday sky. Ripe wheat stalks in cadmium yellow and ochre fill the foreground, a row of dark cypress trees rises at the right, a strip of blue-green hills and a village with terracotta roofs sits on the horizon, and heaped white and pale-blue clouds sweep across a deep cobalt sky. Bold outlined forms, swirling energetic strokes, warm sunlight. The scene fills the entire image, extending to all four edges, viewed straight-on and flat to the picture plane. No museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "A strong warm summer wind sweeps across the wheatfield: the ripe golden wheat ripples and bends in rolling waves, the dark cypress tree sways and shivers, and the heaped white clouds drift steadily across the deep cobalt sky. A few small birds flit low over the grain. Bright midday sunlight. The painted brushstroke forms hold their shape — only the wheat, trees, and clouds move, with real wind physics; nothing morphs or melts. Camera holds steady, straight-on.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/yuan_autumn_gorge_waterfall_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/yuan_autumn_gorge_waterfall_4k.webp",
+    "title": "Autumn Gorge Waterfall - Yuan Dynasty Landscape (AI Animated)",
+    "type": "video",
+    "date": "2026-07-11",
+    "tags": [
+      "Chinese & Korean"
+    ],
+    "image_prompt": "A Yuan Dynasty Chinese literati landscape rendered in ink and light color on aged silk, a single continuous composition filling the whole image — a tall autumn mountain gorge with a slender white waterfall plunging in two tiers down dark rain-streaked cliffs into a misty pool below. Wind-bent pines and scarlet-and-gold maple trees cling to the rocky ledges, a small tiled scholar's pavilion sits half-hidden among the crags, and layered blue-grey peaks fade into pale mist above. Restrained ink washes, calligraphic texture strokes, soft warm silk tone, deep atmospheric depth. One unified scene, viewed straight-on and flat to the picture plane; the landscape fills the entire image and extends to all four edges. Not a mounted scroll, not an object; no silk mount, no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label, no plain background, no painted border, no mat, no decorative frame, no side panel, no split composition.",
+    "video_prompt": "The tall waterfall pours steadily down the cliff, churning white where it strikes the pool below and sending a soft veil of spray and mist drifting up the gorge; the lower cascade tumbles over the rocks. Thin clouds of mist curl slowly between the layered blue-grey peaks, and a few scarlet maple leaves loosen and spin down on a light breeze. Calm cool daylight filtering through the haze. The painted mountains, pines, and pavilion hold their form; only the falling water, drifting mist, and a few leaves move, with natural physics — nothing morphs. Camera holds steady, straight-on.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/edo_akikusa_moon_grasses_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/edo_akikusa_moon_grasses_4k.webp",
+    "title": "Autumn Grasses under the Moon - Edo Gold Screen (AI Animated)",
+    "type": "video",
+    "date": "2026-07-11",
+    "tags": [
+      "Japanese"
+    ],
+    "image_prompt": "A Japanese Edo-period folding-screen painting in the Rinpa manner, mineral pigments and ink on brilliant gold-leaf ground, an autumn-grasses (akikusa) design filling the whole image — tall silver-green susuki pampas grass with feathery plumes, bush clover heavy with tiny magenta blossoms, and slender blue bellflowers spread across a shimmering gold ground beneath a large pale full moon low in a deep indigo evening sky. Delicate flat decorative gold, refined ink outlines, subtle washes of dew, a faint drift of low silver mist along the ground. Quiet autumn evening. One unified scene viewed straight-on and flat to the picture plane; the design fills the entire image and extends to all four edges. No museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label, no plain background, no painted border, no mat, no decorative frame, no scroll mount.",
+    "video_prompt": "A gentle autumn evening breeze moves through the field: the tall silver susuki plumes and slender grass stalks sway and nod softly, the little bush-clover and bellflower blossoms tremble, and a thin veil of silver mist drifts slowly across the gold ground. The large pale moon hangs still in the indigo sky. Soft even moonlight glinting on the gold leaf. The painted forms hold their shape — only the grasses, blossoms, and mist move, with light natural wind; nothing morphs or melts. The motion begins and ends in the same calm state so the clip loops seamlessly. Camera holds perfectly steady, straight-on.",
+    "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/mamluk_lamp_mihrab_night_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/mamluk_lamp_mihrab_night_4k.webp",
+    "title": "Mosque Lamp by Firelight - Mamluk Cairo (AI Animated)",
+    "type": "video",
+    "date": "2026-07-11",
+    "tags": [
+      "Islamic"
+    ],
+    "image_prompt": "A Mamluk-era Cairene mosque interior at night, richly detailed Islamic architecture filling the whole image — a tall pointed mihrab niche faced in banded ablaq stonework (cream, honey and rust) with fine geometric and arabesque marble inlay, and a single large enameled-and-gilded glass mosque lamp hanging on a long bronze chain before it, glowing warm gold from the flame within. Polychrome muqarnas above, worn stone floor, a low brass brazier with faint embers, deep warm shadows lit only by the lamp. Rich jewel-toned reds, golds and deep blues, intimate candlelit atmosphere. One unified scene viewed straight-on and flat to the picture plane; the architecture fills the entire image and extends to all four edges. No museum, no display case, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain background, no painted border, no mat, no decorative frame.",
+    "video_prompt": "Warm firelight fills the quiet mosque interior at night: the flame atop the hanging enameled glass lamp wavers and flickers softly, the embers in the brass brazier on the floor pulse and glow, and a slender ribbon of pale smoke rises from the brazier and curls slowly upward through the still air. Gentle warm reflections shift across the polished marble and the blue glass lamp. Calm, candlelit stillness. The stone mihrab, muqarnas, inscriptions, and lamp hold their form perfectly — only the flames, embers, rising smoke, and soft light move, with gentle natural physics; nothing morphs. The motion returns to its starting state so the clip loops seamlessly. Camera holds perfectly steady, straight-on.",
+    "looping": true
   }
 ]

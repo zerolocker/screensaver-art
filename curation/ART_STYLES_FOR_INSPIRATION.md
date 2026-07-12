@@ -47,6 +47,7 @@ When you add a new style, append it under the section it best fits.
 - English Romantic Landscape (Constable / Norwich School)
 - Venetian Veduta (Canaletto)
 - Hudson River School
+- Heidelberg School (Australian Impressionism — Streeton, Roberts)
 - Barbizon School
 - Realism
 - Macchiaioli
@@ -138,6 +139,7 @@ When you add a new style, append it under the section it best fits.
 - Kano School Ink Painting
 - Ukiyo-e
 - Ukiyo-e Japanese woodblock print
+- Shin-hanga (early-20th-c woodblock — Kawase Hasui, Yoshida Hiroshi)
 - Kamakura Period Emakimono
 - Edo Period Byobu (Folding Screen)
 - Edo period Netsuke carving
@@ -164,6 +166,7 @@ When you add a new style, append it under the section it best fits.
 - Javanese Borobudur Relief
 - Thai Sukhothai Buddha
 - Rattanakosin Temple Mural (Thai)
+- Vietnamese Silk Painting (tranh lụa — Nguyễn Phan Chánh, Lê Phổ)
 - Islamic geometric art
 - Fatimid Rock Crystal Carving
 - Persian Safavid Miniature

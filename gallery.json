@@ -2403,5 +2403,57 @@
     "image_prompt": "A Mamluk-era Cairene mosque interior at night, richly detailed Islamic architecture filling the whole image — a tall pointed mihrab niche faced in banded ablaq stonework (cream, honey and rust) with fine geometric and arabesque marble inlay, and a single large enameled-and-gilded glass mosque lamp hanging on a long bronze chain before it, glowing warm gold from the flame within. Polychrome muqarnas above, worn stone floor, a low brass brazier with faint embers, deep warm shadows lit only by the lamp. Rich jewel-toned reds, golds and deep blues, intimate candlelit atmosphere. One unified scene viewed straight-on and flat to the picture plane; the architecture fills the entire image and extends to all four edges. No museum, no display case, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain background, no painted border, no mat, no decorative frame.",
     "video_prompt": "Warm firelight fills the quiet mosque interior at night: the flame atop the hanging enameled glass lamp wavers and flickers softly, the embers in the brass brazier on the floor pulse and glow, and a slender ribbon of pale smoke rises from the brazier and curls slowly upward through the still air. Gentle warm reflections shift across the polished marble and the blue glass lamp. Calm, candlelit stillness. The stone mihrab, muqarnas, inscriptions, and lamp hold their form perfectly — only the flames, embers, rising smoke, and soft light move, with gentle natural physics; nothing morphs. The motion returns to its starting state so the clip loops seamlessly. Camera holds perfectly steady, straight-on.",
     "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/preraphaelite_woodland_brook_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/preraphaelite_woodland_brook_4k.webp",
+    "title": "Woodland Brook in Spring - Pre-Raphaelite Brotherhood (AI Animated)",
+    "type": "video",
+    "date": "2026-07-12",
+    "tags": [
+      "19th Century"
+    ],
+    "image_prompt": "A Pre-Raphaelite Brotherhood oil painting in the style of 1850s England, jewel-bright and minutely detailed: a clear woodland brook tumbling in a small waterfall over moss-covered rocks, the foreground crowded with botanically precise wildflowers — bluebells, foxgloves, forget-me-nots, ferns and reeds — dense green undergrowth and slender silver birch trunks catching dappled sunlight, a deep verdant glade receding behind. Luminous naturalistic daylight, saturated enamel-like colour, razor-sharp botanical detail throughout, oil on canvas. The scene fills the entire image, extending to all four edges, viewed straight-on. No people, no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "The woodland brook flows and the small waterfall tumbles continuously over the mossy rocks, clear water rushing and splashing with realistic ripples and white foam in the pool below; a gentle breeze stirs the wildflowers, ferns and birch leaves, and dappled sunlight flickers softly across the glade. The camera slowly pushes in. Everything holds its painted Pre-Raphaelite form — only water, foliage and light move.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/heidelberg_school_river_bend_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/heidelberg_school_river_bend_4k.webp",
+    "title": "Sunlit River Bend - Heidelberg School (AI Animated)",
+    "type": "video",
+    "date": "2026-07-12",
+    "tags": [
+      "19th Century"
+    ],
+    "image_prompt": "An Australian Impressionist plein-air oil painting in the Heidelberg School style of the 1880s–90s (Arthur Streeton, Tom Roberts): a wide sun-drenched bend of a shallow river winding through golden bushland, tall slender blue-gum eucalyptus trees with olive and silver hanging foliage along the banks, dry ochre summer grass, pale sandy shallows and glinting water, distant hazy blue-violet hills under a high summer sky bleached almost white with heat. Brilliant hot Australian midday light, warm ochre and eucalypt-green palette, loose confident visible brushwork, oil on canvas. The scene fills the entire image, extending to all four edges, viewed straight-on. No people, no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "The shallow river glides slowly around the bend, its surface glinting with soft moving reflections and gentle ripples; a warm summer breeze sways the hanging eucalyptus foliage and ripples through the dry golden grass in the foreground, while faint heat haze shimmers over the distant blue hills under the bright bleached sky. The camera drifts almost imperceptibly forward. The trees and land hold their solid painted form — only water, foliage, grass and haze move.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/shinhanga_snow_shrine_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/shinhanga_snow_shrine_4k.webp",
+    "title": "Snow at the Shrine at Dusk - Shin-hanga (AI Animated)",
+    "type": "video",
+    "date": "2026-07-12",
+    "tags": [
+      "Japanese"
+    ],
+    "image_prompt": "A Japanese shin-hanga woodblock print in the style of Kawase Hasui, early 20th century: a quiet Shinto shrine precinct at deep blue dusk under gently falling snow, a stone-lantern path leading to a vermilion torii gate and a small wooden shrine with a snow-laden roof, snow-heavy pine boughs framing the scene, a single warm glowing paper lantern casting soft amber light on the fresh untouched snow. Serene twilight, subtle gradated indigo-to-slate sky (bokashi shading), soft flat colour areas, delicate carved outlines, visible washi paper grain, woodblock print. The scene fills the entire image, extending to all four edges, viewed straight-on. No people, no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "Fine snow falls softly and steadily straight down across the whole scene, delicate white flakes drifting gently; the warm paper lantern glows with a faint, subtle flicker and its amber light shimmers softly on the fresh snow; the snow-laden pine boughs barely stir. The snowfall is continuous and even, ending exactly as it began for a seamless loop. The torii gate, shrine, stone lanterns and pines hold perfectly still in their printed woodblock form. Static locked-off camera.",
+    "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/vietnamese_silk_lotus_pond_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/vietnamese_silk_lotus_pond_4k.webp",
+    "title": "Lotus Pond in Morning Mist - Vietnamese Silk Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-07-12",
+    "tags": [
+      "South & Southeast Asian"
+    ],
+    "image_prompt": "A Vietnamese silk painting (tranh lụa) in the style of the early-20th-century Indochina Fine Arts College (Nguyễn Phan Chánh, Lê Phổ): a tranquil lotus pond in soft misty morning light, broad blue-green lotus leaves and pale pink lotus blossoms rising from still dark water, two dragonflies hovering above the blooms, thin low mist drifting over the water surface, slender reeds at the edge. Soft luminous washes of ink and gouache dyed into fine silk, muted rose-pink, jade-green and warm ivory palette, gentle translucent gradients, the subtle woven texture of the silk showing through. The scene fills the entire image, extending to all four edges, viewed straight-on. No people, no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "Thin mist drifts slowly and softly across the still pond; gentle ripples spread over the dark water and the broad lotus leaves and pink blossoms sway almost imperceptibly; the two dragonflies hover in place, their translucent wings shimmering with a faint blur; the slender reeds barely stir in the calm air. Everything settles back exactly to its opening stillness for a seamless loop. Soft misty morning light. The lotus flowers and leaves keep their delicate painted silk-wash form. Static locked-off camera.",
+    "looping": true
   }
 ]

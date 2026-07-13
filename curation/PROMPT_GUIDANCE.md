@@ -81,6 +81,14 @@ them even before any round-specific learnings exist.
   These produce the glitchy "AI soup" look. 
 - **One clear subject, one clear motion.** Multiple simultaneous animated
   subjects tend to collide into artifacts. Describe a single focal motion.
+- **Reserve seamless loops (`looping: true`) for ambient motion and continuous
+  phenomena over held forms — light drift, mist, dust motes, water shimmer,
+  gentle ripples, human playing instruments, human talking while standing.** A
+  loop must return to its exact opening frame, and the model can't march several
+  independent animals back to a start pose — at the seam they **pop out and
+  reappear** ("the ducks and the fish disappeared and reappeared" -- a finding
+  from a curation). If the honest motion is swimming/flying/paddling creatures,
+  make the clip **non-looping** instead.
 - **Avoid faces/eyes/hands as the animated focus** unless the source style
   renders them cleanly. Subtle expression drift on a portrait is high-risk for
   the uncanny/melting look — prefer animating light or background instead.

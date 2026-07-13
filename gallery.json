@@ -1677,19 +1677,6 @@
     "looping": true
   },
   {
-    "src": "https://screensaver-assets.living-art-asset.com/gallery/kakadu_rock_art_20260628_animated.mp4",
-    "img": "https://screensaver-assets.living-art-asset.com/gallery/kakadu_rock_art_20260628_4k.webp",
-    "title": "Rock Shelter Spirits - Aboriginal Kakadu X-ray Painting (AI Animated)",
-    "type": "video",
-    "date": "2026-06-28",
-    "tags": [
-      "Arts of Africa & Oceania"
-    ],
-    "image_prompt": "An ancient Aboriginal rock art panel in the X-ray style of Arnhem Land and Kakadu, painted in red ochre, yellow ochre and white pipe-clay directly onto a weathered golden sandstone overhang that fills the entire frame edge to edge. A large barramundi fish and a long-necked freshwater turtle rendered with visible internal bones and organs, surrounded by faded hand stencils and a slender hunter figure holding a spear. The rough pitted sandstone surface is streaked with mineral and water stains, lit warmly from below by an unseen campfire so the matte earth pigments glow amber against the deep shadow inside the rock shelter. Authentic prehistoric rock painting, natural matte pigments, no canvas. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
-    "video_prompt": "Warm campfire light flickers across the sandstone overhang, the ochre figures glowing brighter then dimming as unseen flames dance below the frame. A thin veil of pale wood smoke drifts slowly upward across the rock face. The painted barramundi, turtle, hunter and hand stencils stay completely still and hold their form — only the firelight, the soft shifting shadows in the rock crevices, and the rising smoke move. Subtle heat shimmer near the base of the frame.",
-    "looping": false
-  },
-  {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/song_landscape_20260628_animated.mp4",
     "img": "https://screensaver-assets.living-art-asset.com/gallery/song_landscape_20260628_4k.webp",
     "title": "Misty Peaks and Waterfall - Song Dynasty Landscape (AI Animated)",
@@ -1701,19 +1688,6 @@
     "image_prompt": "A monumental Northern Song dynasty landscape painting in the style of Fan Kuan and Guo Xi, ink and pale mineral colour on aged silk, the painting filling the entire frame edge to edge. A towering central mountain peak rises through drifting mist, its face textured with fine 'raindrop' brush strokes; a tall thin silver waterfall plunges down the cliff into a misty gorge. Gnarled pine trees cling to the rocky ledges, and far below a tiny path winds past a temple roof half-hidden in the valley vapour. Monochrome ink wash with faint warm silk tone, soft diffused daylight, delicate atmospheric perspective, visible silk weave and age toning. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
     "video_prompt": "The tall silver waterfall streams steadily down the cliff face into the gorge below, its base dissolving into rising spray. Banks of soft mist drift slowly through the valley and curl around the mountain peaks, thickening and thinning. The gnarled pines sway almost imperceptibly. The painting keeps its ink-on-silk character throughout — mountains, rocks, temple and trees hold their form and the silk weave and age toning remain. Only the falling water, drifting mist and faint pine sway move. Static camera, no zoom.",
     "looping": false
-  },
-  {
-    "src": "https://screensaver-assets.living-art-asset.com/gallery/safavid_dome_20260628_looping.mp4",
-    "img": "https://screensaver-assets.living-art-asset.com/gallery/safavid_dome_20260628_4k.webp",
-    "title": "Dome of Light - Safavid Persian Tilework (AI Animated)",
-    "type": "video",
-    "date": "2026-06-28",
-    "tags": [
-      "Islamic"
-    ],
-    "image_prompt": "A worm's-eye view looking straight up into the interior of a Safavid Persian mosque dome, in the style of the Sheikh Lotfollah and Shah mosques of 17th-century Isfahan, the tilework filling the entire frame edge to edge. Concentric rings of glazed faience and muqarnas honeycomb vaulting spiral inward to a radiant sunburst medallion at the apex, rendered in turquoise, cobalt, lapis blue, cream and gold with arabesque vines, lotus palmettes and bands of white thuluth calligraphy. Sunlight slants through a ring of small lattice windows, casting warm pools across the glossy ceramic and deep shadow into the recesses of the vaulting. Authentic hand-glazed Iznik-style tile sheen, intricate Islamic geometric symmetry, no people. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, the artwork fills the frame.",
-    "video_prompt": "A meditative slow loop that ends exactly where it began. Warm sunlight slowly brightens then softens as it filters through the ring of lattice windows around the dome, the golden glow drifting gently across the glazed tilework and deepening the shadows in the muqarnas honeycomb vaulting. Faint dust motes float slowly through the shafts of light. The tilework, calligraphy and geometric patterns stay perfectly still and hold their form and symmetry; only the light and the drifting motes move, settling back to the opening state. Static camera, no zoom, no rotation.",
-    "looping": true
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/teotihuacan_mural_20260628_looping.mp4",
@@ -1739,19 +1713,6 @@
     ],
     "image_prompt": "A weathered sandstone bas-relief carved into a temple gallery wall at Angkor Wat, 12th-century Khmer Empire, depicting a procession of graceful apsara celestial dancers and a row of devas, deeply incised in grey-gold sandstone with lichen and age-darkened crevices, low warm raking dawn light grazing the carved surface from the left so each figure casts a long crisp shadow, the relief fills the entire frame edge to edge as an immersive wall of stone, fine surface texture and chisel marks visible, museum-grade, beautiful. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall behind, no spotlight, no museum label, no plain studio background; the artwork fills the frame.",
     "video_prompt": "The warm dawn sunlight slowly rakes lower across the carved sandstone relief, the long shadows of the apsara figures gently lengthening and shifting as the light shifts, faint dust motes drifting through the low golden light; the stone itself stays perfectly still and solid, only the light, shadow and dust move.",
-    "looping": false
-  },
-  {
-    "src": "https://screensaver-assets.living-art-asset.com/gallery/sumie_bamboo_grove_animated.mp4",
-    "img": "https://screensaver-assets.living-art-asset.com/gallery/sumie_bamboo_grove_4k.webp",
-    "title": "Bamboo in the Wind - Sumi-e Ink Wash (AI Animated)",
-    "type": "video",
-    "date": "2026-06-29",
-    "tags": [
-      "Japanese"
-    ],
-    "image_prompt": "A Japanese sumi-e ink-wash painting of a grove of slender bamboo, monochrome black ink with soft graded grey washes and a few sharp dark accent strokes on aged rice paper, Edo-period brushwork in the manner of a master ink painter, delicate tapering culms and pointed leaves bending slightly, faint mist drifting between the stalks, a pale warm paper ground with subtle tonal variation and a hint of a vermilion seal, the painting fills the frame edge to edge, museum-grade, beautiful. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background; the artwork fills the frame.",
-    "video_prompt": "A soft gust of wind moves through the bamboo grove — the slender ink-painted culms sway and the pointed leaves flutter and bend together, then ease back, a fine veil of grey mist drifting between the stalks; the rice-paper texture and ink tones hold their form, only the bamboo and the mist move gently in the breeze. Static camera, no zoom.",
     "looping": false
   },
   {
@@ -1805,19 +1766,6 @@
     "image_prompt": "A richly coloured painted mural decorating the plastered wall of a Sasanian Persian royal palace, 5th–6th century CE, depicting a walled 'paradise' pleasure garden (pairidaeza): a straight central watercourse of clear running water flows toward the viewer down the middle, lined with slender dark-green cypresses and flowering pomegranate and almond trees heavy with pink and red blossom, beds of red tulips and irises along the banks, brightly plumed birds — peacocks, partridges and hoopoes — perched in the branches, a pair of small fish in the channel. Flat stylised Sasanian courtly style with bold outlines and jewel-tone mineral pigments — lapis blue, malachite green, ochre, vermilion and gold — on a warm cream ground, soft even daylight, the aged painted plaster showing fine cracks. The garden scene fills the entire image, extending to all four edges, viewed straight-on and flat to the camera, symmetrical. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
     "video_prompt": "The clear water in the central channel flows steadily and smoothly toward the viewer, its surface rippling with gentle moving glints of light, and the two small fish glide slowly along the channel. The slender cypresses and the blossom-laden branches sway very gently in a soft breeze, and a few pink petals drift down. The painted forms — trees, birds, flowers — stay solid and in place; only the running water, the swimming fish, the soft breeze in the foliage and the falling petals move. Soft even daylight, static camera, no zoom.",
     "looping": false
-  },
-  {
-    "src": "https://screensaver-assets.living-art-asset.com/gallery/ming_lotus_pond_looping.mp4",
-    "img": "https://screensaver-assets.living-art-asset.com/gallery/ming_lotus_pond_4k.webp",
-    "title": "Lotus Pond with Mandarin Ducks - Ming Bird-and-Flower Painting (AI Animated)",
-    "type": "video",
-    "date": "2026-06-30",
-    "tags": [
-      "Chinese & Korean"
-    ],
-    "image_prompt": "A Ming-dynasty Chinese bird-and-flower painting, ink and bright mineral colour on silk, 16th century, in the meticulous gongbi style: a tranquil lotus pond viewed from slightly above, the dark green water covered with broad round lotus leaves and several open pink-and-white lotus blossoms and buds on tall stems, a pair of mandarin ducks with vivid orange and emerald plumage swimming among the leaves, two orange-and-white koi carp gliding just beneath the surface, a red dragonfly hovering over a bud. Delicate fine-line brushwork, soft graded washes, jewel-like pigment, the silk's warm aged tone, gentle even daylight. The pond scene fills the entire image, extending to all four edges, viewed straight-on and flat to the camera. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
-    "video_prompt": "A seamless loop that ends exactly where it began. The two koi carp glide slowly in a gentle curving path just beneath the surface and circle back to their starting positions; the pair of mandarin ducks paddle softly, sending faint concentric ripples spreading outward across the dark water that gently fade; the lotus blossoms and broad leaves sway just slightly, and the red dragonfly hovers and drifts above a bud before returning. All motion is calm and returns to the opening pose by the end. The painted forms stay solid — only the water ripples, the swimming koi, the paddling ducks, the gentle sway and the hovering dragonfly move. Soft even daylight, static camera, no zoom.",
-    "looping": true
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/flemish_winter_village_looping.mp4",

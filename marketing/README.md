@@ -38,7 +38,7 @@ node marketing/make-social-assets.mjs --src ./clip.mp4 --title "Stormy Sea" --st
 | `--style <text>` | derived | Override the art style used in captions + the style hashtag. |
 | `--formats <list>` | `9x16,1x1` | Comma list of `9x16`, `1x1`. |
 | `--duration <sec>` | 12 | Loop/trim target length (art clips are short, so we loop to fill). |
-| `--no-wordmark` | off | Don't burn the "LIVING ART" wordmark. |
+| `--no-wordmark` | off | Don't burn the `living-art-screensaver.com` URL pill. |
 | `--out <dir>` | `marketing/out` | Output base directory (gitignored). |
 
 ## Output
@@ -52,9 +52,11 @@ marketing/out/<slug>/
 
 ## How it reframes
 The art is never cropped or letterboxed: a blurred, zoomed-in copy of the clip
-fills the frame, and the whole piece sits centered on top. A small, semi-
-transparent wordmark sits at the bottom (skipped automatically if no font is
-found). Audio is dropped (the art is silent) — **add a trending audio natively in
+fills the frame, and the whole piece sits centered on top. A small, gentle
+`living-art-screensaver.com` pill (frosted, mirrors the in-app title placard;
+`marketing/assets/url-pill.png`) sits bottom-center as a subtle CTA back to the
+site — skipped automatically if that asset is missing, or with `--no-wordmark`.
+Audio is dropped (the art is silent) — **add a trending audio natively in
 the app when you post**; native/ trending audio meaningfully boosts reach, which a
 baked-in track can't.
 

@@ -46,7 +46,7 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 | Mobile "email me the Mac link" | ✅ live | `components/marketing/download-cta.tsx`; §5–6 |
 | Cross-platform **demand probe** (self-report) | ✅ live | `components/marketing/platform-interest.tsx` — **PostHog-only, no backend**; superseded the old "detect Windows + waitlist" idea (§5/§8) |
 | Marketing **asset engine** (16:9 → 9:16/1:1 + captions) | ✅ run | `marketing/make-social-assets.mjs`; **run 2026-07-12** on newest 6 → `marketing/out/<slug>/` (12 clips + captions). Not yet posted. §11 (A) |
-| **Hero demo clip** | ✅ produced | `marketing/out/hero/` — **literal ScreenSaverEngine capture** (`…-REAL-1080p.mp4`, 4K original too) + a faithful 16:9/1:1 reproduction + 4 stills. Lead with the real capture. |
+| **Hero demo clip** | ✅ produced | `marketing/out/hero/` — the **exact hero-section reel** (7 pieces in order, 37.6s @ site cadence, monitor.tsx Inter pill synced to each switch, branded end-card → site) as 16:9 + 1:1 + 6 stills. Social clips now carry a gentle `living-art-screensaver.com` pill (replaced the wordmark). |
 | **Launch kit** (Product Hunt / Show HN / Reddit) | ✅ finalized | `docs/launch-kit.md` — copy aligned to live-site voice + **launch-day runbook** (exact clicks/timing/UTMs) added 2026-07-12. |
 | **Run the launch** (PH + Show HN) | ⏭️ ready — founder-led | Assets + copy + runbook all done. Founder owns: PH account warm-up, the **date**, 5–10 commenters, and the submit clicks. |
 | Daily social posting + aggregator | ⏭️ next | §4.1 + §11 (B) — pick upload-post / Postiz; asset engine feeds it |
@@ -87,6 +87,15 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 ---
 
 ## Activity log (append-only — newest first)
+- **2026-07-13** — **Hero + social assets revised** (founder feedback, PR #63): discarded the
+  literal ScreenSaverEngine capture (the pieces that happened to play read poorly); rebuilt the
+  hero to mirror `hero-section.tsx` exactly — heroReel's 7 pieces in order, site cadence (6s
+  dwell / 1.15s crossfade), the `monitor.tsx` frosted pill in **Inter** with the label synced to
+  each crossfade (fixed the pill lag), and a **branded end-card → living-art-screensaver.com**
+  (37.6s, 16:9 + 1:1 + 6 stills). `make-social-assets.mjs`: the out-of-context "LIVING ART"
+  wordmark is now a gentle `living-art-screensaver.com` pill (`marketing/assets/url-pill.png`);
+  regenerated the 6 clips. Open: hero audio (recommend muted for social; needs a licensed track
+  for a music bed).
 - **2026-07-12** — **Launch prep executed** (_PR #63_, branch `growth/launch-execution`): ran the asset
   engine on the newest 6 pieces (12 social clips + captions in `marketing/out/`); produced a
   faithful **hero demo** (16:9 19.5s + 1:1 + 4 stills in `marketing/out/hero/`) from the real

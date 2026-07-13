@@ -173,11 +173,14 @@ all. Not trying to spam — genuinely made this and would love feedback. Clip be
 > build output, regenerate anytime). Re-run the two commands below to refresh from the
 > newest gallery pieces.
 
+- [x] **Literal screensaver capture** (20s, 1080p, from a 4K original):
+      `marketing/out/hero/living-art-screensaver-REAL-1080p.mp4` (+ `…-REAL-4k.mov`) — an actual
+      ScreenSaverEngine recording of Living Art running fullscreen on the Mac (Serene Village ·
+      Fruit and Silver · Organic Flow · Solarpunk City). **The most authentic hero** — lead with this.
 - [x] **Hero demo clip** (19.5s, 1080p 16:9): `marketing/out/hero/living-art-hero-16x9.mp4`
       — 4 pieces (Starry Coast · Cathedral Light · Neon City · Snow at the Shrine) at the
       screensaver's real cadence (1.5s crossfade) + the frosted title pill. Faithful
-      reproduction from the actual gallery. *(A literal ScreenSaverEngine screen-capture
-      needs the Mac idle — 30-sec recipe in the runbook §5, step P-4.)*
+      reproduction from the gallery; a clean alt/backup to the literal capture above.
 - [x] **1:1 loop** for PH thumbnail / Reddit / social: `marketing/out/hero/living-art-hero-1x1.mp4`.
 - [x] **3–5 stills** (1920×1080): `marketing/out/hero/still_{1_starry,2_cathedral,3_neon,4_snow}.png`.
 - [x] **Per-piece social clips** (9:16 + 1:1 + captions) from the newest 6 pieces:

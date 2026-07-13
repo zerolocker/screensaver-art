@@ -46,7 +46,7 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 | Mobile "email me the Mac link" | ✅ live | `components/marketing/download-cta.tsx`; §5–6 |
 | Cross-platform **demand probe** (self-report) | ✅ live | `components/marketing/platform-interest.tsx` — **PostHog-only, no backend**; superseded the old "detect Windows + waitlist" idea (§5/§8) |
 | Marketing **asset engine** (16:9 → 9:16/1:1 + captions) | ✅ run | `marketing/make-social-assets.mjs`; **run 2026-07-12** on newest 6 → `marketing/out/<slug>/` (12 clips + captions). Not yet posted. §11 (A) |
-| **Hero demo clip** (19.5s 1080p + 1:1 + 4 stills) | ✅ produced | `marketing/out/hero/` — faithful reproduction from the real gallery (screensaver cadence + title pill). Literal ScreenSaverEngine capture needs the Mac idle (recipe in launch-kit §5 P-4). |
+| **Hero demo clip** | ✅ produced | `marketing/out/hero/` — **literal ScreenSaverEngine capture** (`…-REAL-1080p.mp4`, 4K original too) + a faithful 16:9/1:1 reproduction + 4 stills. Lead with the real capture. |
 | **Launch kit** (Product Hunt / Show HN / Reddit) | ✅ finalized | `docs/launch-kit.md` — copy aligned to live-site voice + **launch-day runbook** (exact clicks/timing/UTMs) added 2026-07-12. |
 | **Run the launch** (PH + Show HN) | ⏭️ ready — founder-led | Assets + copy + runbook all done. Founder owns: PH account warm-up, the **date**, 5–10 commenters, and the submit clicks. |
 | Daily social posting + aggregator | ⏭️ next | §4.1 + §11 (B) — pick upload-post / Postiz; asset engine feeds it |
@@ -87,10 +87,12 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 ---
 
 ## Activity log (append-only — newest first)
-- **2026-07-12** — **Launch prep executed** (branch `growth/launch-execution`): ran the asset
+- **2026-07-12** — **Launch prep executed** (_PR #63_, branch `growth/launch-execution`): ran the asset
   engine on the newest 6 pieces (12 social clips + captions in `marketing/out/`); produced a
   faithful **hero demo** (16:9 19.5s + 1:1 + 4 stills in `marketing/out/hero/`) from the real
-  gallery at the screensaver's cadence; **verified the live site** — OG card unfurls (external
+  gallery at the screensaver's cadence, **plus a literal 4K ScreenSaverEngine screen-capture**
+  of it running fullscreen (`…-REAL-1080p.mp4`; active saver restored to Ventura afterward);
+  **verified the live site** — OG card unfurls (external
   crawler confirmed), `/download/mac` 302s to the signed **v1.4.5** DMG, demand-probe dialog +
   mobile "email me the link" (`/api/download-link`) both healthy, **nothing broken**; **finalized
   `docs/launch-kit.md`** — copy aligned to the live-site voice + a full **launch-day runbook**

@@ -2403,5 +2403,57 @@
     "image_prompt": "A Vietnamese silk painting (tranh lụa) in the style of the early-20th-century Indochina Fine Arts College (Nguyễn Phan Chánh, Lê Phổ): a tranquil lotus pond in soft misty morning light, broad blue-green lotus leaves and pale pink lotus blossoms rising from still dark water, two dragonflies hovering above the blooms, thin low mist drifting over the water surface, slender reeds at the edge. Soft luminous washes of ink and gouache dyed into fine silk, muted rose-pink, jade-green and warm ivory palette, gentle translucent gradients, the subtle woven texture of the silk showing through. The scene fills the entire image, extending to all four edges, viewed straight-on. No people, no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
     "video_prompt": "Thin mist drifts slowly and softly across the still pond; gentle ripples spread over the dark water and the broad lotus leaves and pink blossoms sway almost imperceptibly; the two dragonflies hover in place, their translucent wings shimmering with a faint blur; the slender reeds barely stir in the calm air. Everything settles back exactly to its opening stillness for a seamless loop. Soft misty morning light. The lotus flowers and leaves keep their delicate painted silk-wash form. Static locked-off camera.",
     "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/river_junks_wind_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/river_junks_wind_4k.webp",
+    "title": "River Junks in a Rising Wind - Chinese Ink Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-07-13",
+    "tags": [
+      "Chinese & Korean"
+    ],
+    "image_prompt": "A classical Chinese ink-and-wash landscape painting on aged silk, Ming dynasty literati style: three wooden river junks with tall patched reed sails crossing a wide river, heeling before a rising wind, their sails bellied and taut. Graded grey-black ink washes with muted ochre and indigo, fine brushwork on the rigging and plank hulls, soft mist drifting between distant blue-grey mountains, choppy water rendered in rhythmic brush-line ripples, a few ink-dot gulls wheeling low over the waves. Overcast silvery daylight from a high pale sun. Painted on a silk handscroll surface with visible weave and faint age-toning. The scene fills the entire image, extending to all four edges, viewed straight-on and flat to the picture plane. no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it.",
+    "video_prompt": "The reed sails belly and strain as a steady wind drives the junks forward across the water; the river surface rolls in rhythmic ripples and small whitecaps that travel across the frame, drifting mist thins and shifts along the base of the far mountains, and the low gulls glide, bank and flap on the wind. Physically plausible wind-and-water motion only — the boats and their rigging hold their painted form and do not distort, morph, or melt. Steady silvery overcast daylight, a slow gentle camera drift.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/nowruz_bonfire_night_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/nowruz_bonfire_night_4k.webp",
+    "title": "Nowruz Bonfire at Night - Ottoman Miniature (AI Animated)",
+    "type": "video",
+    "date": "2026-07-13",
+    "tags": [
+      "Islamic"
+    ],
+    "image_prompt": "A full-bleed detail of an Ottoman miniature painting in the Surname festival style, 16th-century, opaque gouache and gold on paper, painted edge to edge with NO border and NO margin: a night celebration in a palace garden dominated by a great central bonfire whose orange and vermilion flames leap high and throw showers of gold sparks up into a deep indigo sky studded with gold stars. Around the fire, a ring of courtiers in patterned jewel-tone kaftans and white turbans; behind them tall dark-green cypresses and a tiled arcaded pavilion with glowing hanging oil lamps. Flat jewel palette of vermilion, emerald, lapis and gold leaf, fine black outlines, high stacked-plane Ottoman vantage. The painting bleeds off all four edges and completely fills the image with color and detail — solid paint to every edge. no gold rule, no ruled lines, no painted border, no mat, no decorative frame, no cream paper margin, no manuscript page background; no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label.",
+    "video_prompt": "The great central bonfire flickers and leaps, its orange and vermilion flames swaying and curling upward while showers of gold sparks and glowing embers drift and rise into the dark starry night sky; the small hanging oil-lamp flames along the arcade flutter gently. The ranked courtiers stand still and keep their painted form — only the fire, the rising sparks, and the lamp flames move. Physically plausible fire, ember and smoke motion only; no morphing, melting, or distortion of the figures or architecture. Warm flickering firelight glow against the deep indigo night.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/mewar_lake_palace_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/mewar_lake_palace_4k.webp",
+    "title": "The Lake Palace at Dusk - Rajput Mewar Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-07-13",
+    "tags": [
+      "South & Southeast Asian"
+    ],
+    "image_prompt": "A Rajput painting of the Mewar school, 18th-century, opaque watercolor and gold on paper, painted full-bleed to every edge: a white marble lake palace with domed chhatris and scalloped arches rising on an island at dusk, mirrored in the calm rippling water of the lake below. A warm apricot-and-rose sunset sky with a few slow violet clouds; pink lotus blossoms and broad green pads float across the foreground water; distant blue hills line the far shore. Flat luminous jewel-tone palette, fine gold detailing on the palace, characteristic high Rajput vantage with stacked planes, crisp black outlines. The scene completely fills the image and bleeds off all four edges — solid painted color to every edge. no gold rule, no ruled border, no painted border, no mat, no decorative frame, no paper margin; no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label.",
+    "video_prompt": "A calm, continuous, seamless loop: the lake surface shimmers with gentle rippling water and the golden reflections of the palace waver softly; the pink lotus blossoms and broad pads sway ever so slightly on the water; the violet dusk clouds drift slowly across the apricot sky. All motion is gentle and cyclical, returning smoothly to exactly the opening state at the end. Physically plausible water, reflection and cloud motion only — the marble palace holds its form and does not morph, melt, or distort. Warm still dusk light.",
+    "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/hague_windswept_poplars_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/hague_windswept_poplars_4k.webp",
+    "title": "Windswept Poplars along the Canal - Hague School (AI Animated)",
+    "type": "video",
+    "date": "2026-07-13",
+    "tags": [
+      "19th Century"
+    ],
+    "image_prompt": "A Hague School oil painting, 19th-century Dutch, oil on canvas with visible brushwork and a muted silvery tonal palette of grey, ochre and soft green: a row of tall slender poplars leaning and bending in a fresh wind along the grassy bank of a still canal at dusk, their feathery crowns streaming to one side. A vast atmospheric sky of drifting grey and pale-gold clouds fills the upper two-thirds; the calm canal mirrors the poplars and the luminous sky in soft rippling reflections; wind combs through reeds and meadow grass in the foreground; a small dark windmill sits low on the flat horizon. Overcast dusk light breaking gold near the horizon. The painted scene fills the entire image and bleeds off all four edges — brushed color to every edge. no painted border, no mat, no decorative frame, no canvas edge; no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label.",
+    "video_prompt": "A continuous, seamless loop of a windy dusk: the feathery crowns of the poplars sway and shiver in the fresh wind, their leaves rustling to one side and easing back; the reeds and meadow grass in the foreground comb and ripple; the pale-gold and grey clouds drift slowly across the sky; the calm canal water shimmers with soft wavering reflections; the distant windmill's sails turn slowly. All motion is gentle, wind-driven and cyclical, returning smoothly to exactly the opening state. Physically plausible wind and water motion only — the tree trunks, windmill and land hold their form and do not morph, melt, or distort. Soft overcast dusk light with gold breaking at the horizon.",
+    "looping": true
   }
 ]

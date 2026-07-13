@@ -49,6 +49,7 @@ When you add a new style, append it under the section it best fits.
 - Hudson River School
 - Heidelberg School (Australian Impressionism — Streeton, Roberts)
 - Barbizon School
+- Hague School (Dutch tonal landscape — Weissenbruch, Mauve, Gabriël)
 - Realism
 - Macchiaioli
 - Tonalism

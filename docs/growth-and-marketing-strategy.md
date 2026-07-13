@@ -2,8 +2,9 @@
 
 > **Status:** Living strategy doc. Captures the reasoning from our growth conversation
 > plus areas we hadn't yet discussed. The Option B distribution play is folded in as
-> **Appendix A**.
-> **Context:** Solo/indie Mac app, just-launched website, **zero users today**.
+> **Appendix A**. **See the Progress snapshot below for what's built vs. next** — the
+> body sections are the *reasoning*; the snapshot is the *state*.
+> **Context:** Solo/indie Mac app, live website, **pre-launch, ~zero users today**.
 > Product: a screensaver (and potentially wallpaper) that streams **curated, daily-fresh
 > AI art**. Free tier (50 pieces) + **$0.99/mo subscription billed quarterly ($2.97/3mo)**.
 
@@ -16,9 +17,29 @@
 3. **Your wedge is *curation + freshness*** — the one thing the free incumbents (Aerial, Wallpaper Engine's Workshop, Lively) structurally can't offer.
 4. **Validate on Mac before building anything new** (Windows, a wallpaper engine). The Mac app already ships — validation costs *zero* build, just traffic.
 5. **Don't pivot to a wallpaper engine.** Bigger market, but commoditized to free/$5 and moated. Instead *distribute your content into it* (Option B).
-6. **Fix the funnel so traffic doesn't leak** — OS/device-aware capture (Windows waitlist, "email me the Mac link"), great link previews, brand-name SEO.
+6. **Fix the funnel so traffic doesn't leak** — device-aware capture ("email me the Mac link"), a self-report platform-demand probe, great link previews, brand-name SEO.
 7. **Instrument everything.** You can't improve what you can't see. Set up analytics + a north-star metric before you pour traffic in.
 8. **Rethink pricing.** This category pays *one-time*, not subscription — your single biggest untested lever (annual/lifetime tier). See §10.
+
+---
+
+## Progress & live status → see the hub
+
+**This document is the *reasoning*. The live status, backlog, and who's-doing-what
+live in the shared hub: [`GROWTH-PROGRESS.md`](GROWTH-PROGRESS.md).** Multiple agents
+coordinate through that file — check it before starting, update it when you finish.
+It's the single source of truth for state; the sections below explain the *why* behind
+each item (referenced from the hub by number, e.g. "§10").
+
+**Where things stand (summary — the hub has the itemized table):** the *conversion +
+analytics foundation* is live (PostHog, OG cards, mobile email-link, the self-report
+demand probe); the site has **~zero traffic**. The bottleneck is **acquisition, not
+capture** → next up is the **launch** (`docs/launch-kit.md` + the `marketing/` asset
+engine), then daily posting, SEO, and the email list. Pricing (§10) is the biggest lever
+to pull once conversion, not traffic, is the constraint.
+
+> **New agent?** Read `CLAUDE.md` → **`docs/GROWTH-PROGRESS.md`** (state) → this doc
+> (why) → `docs/launch-kit.md` → `marketing/README.md`.
 
 ---
 
@@ -121,6 +142,9 @@ Your highest-leverage channel because it monetizes your free art.
   ≈ months of your own posting. Send them your best loops, free, credited.
 
 ### 4.2 Launch spikes (one-time bursts — schedule deliberately)
+> Copy + checklists are drafted in **`docs/launch-kit.md`** (Product Hunt / Show HN /
+> Reddit). **Live launch status → the hub (`GROWTH-PROGRESS.md`).**
+
 Won't sustain traffic, but seed your first followers, backlinks, testimonials, and SEO base:
 - **Product Hunt** — ideal for a polished indie Mac app. Great demo video (you have assets),
   early comments lined up, posted on a planned day.
@@ -167,14 +191,21 @@ check once the funnel converts.
 Earned traffic is wasted if the site doesn't convert it. These are mostly **website code**
 tasks (high ROI; a 2× conversion lift ≈ 2× the traffic, for far less effort):
 
-- **OS/device-aware CTA:**
-  - **Mac** → "Download for Mac."
-  - **Windows/other** → **"Windows version? Join the waitlist"** → *measures real demand*
-    instead of guessing from market-share stats (see §8), and seeds a launch list.
+> **Status:** the capture layer below is ✅ **live** — with one change from the original
+> plan. We did **not** ship OS-detection + a Windows-only waitlist (detecting platform
+> risked mislabeling a Mac user → bounce, a very-high-cost error). Instead:
+> a universal **self-report demand probe** ("Want it on Windows / iPad / iOS / TV?") that
+> lets visitors pick the platforms they want — safer *and* richer (multi-platform intent).
+> It's **PostHog-only** (no backend): `components/marketing/platform-interest.tsx`.
+
+- **Device-aware Download CTA:**
+  - **Mac / desktop** → "Download for Mac." ✅ live
   - **Phone** → **"Email me the Mac download link"** → the cross-device bridge so mobile
-    interest survives to the desktop (see §6).
-- **Rich link previews (Open Graph / Twitter / Pinterest):** an autoplaying art preview so
-  every shared link unfurls beautifully — multiplies social reach for free.
+    interest survives to the desktop (see §6). ✅ live
+  - **Cross-platform demand probe** (all visitors) → the self-report vote above, replacing
+    the old "detect Windows → waitlist" idea. ✅ live
+- **Rich link previews (Open Graph / Twitter):** ✅ live — a branded card so every shared
+  link unfurls beautifully (`app/opengraph-image.tsx`). Multiplies social reach for free.
 - **Instant on-site preview:** let visitors *see the art moving* before downloading
   (you already have `index.html`); show the value before asking for the install.
 - **Friction audit:** minimize steps from landing → installed → first art on screen.
@@ -208,6 +239,10 @@ Acquisition is wasted if new users don't reach the "wow." For this product the w
 ---
 
 ## 8. Platform expansion — Windows (don't build it first)
+> **Status:** 🅿️ parked, **as planned** — pending real demand. Instead of guessing from the
+> market-share numbers below, the site now *measures* it via the self-report demand probe
+> (§5). Decide Windows from the PostHog `platform_interest_*` data, not the chart.
+
 - **The numbers:** Windows is ~60% of US / ~63–72% of worldwide desktop; macOS ~23% US /
   ~15–16% worldwide. So Windows is the *majority* of who'll *see* your content.
 - **But it's the worse minority to chase first:** Windows users expect screensaver/wallpaper
@@ -265,9 +300,11 @@ likely your highest-impact conversion lever:
 
 ## 11. Build vs. buy — the "agentic marketing engine"
 You can largely automate the content flywheel off your existing nightly pipeline.
-- **(A) Asset step — BUILD (cheap).** ffmpeg: reframe 16:9 → 9:16 vertical/square, burn a
-  short caption/CTA, optional music bed. ~1–2 days; $0 ongoing. Per-platform captions via
-  an LLM call (pennies).
+- **(A) Asset step — ✅ BUILT.** `marketing/make-social-assets.mjs` (+ `marketing/README.md`):
+  ffmpeg reframes each piece 16:9 → 9:16 + 1:1 (blurred-fill, never cropped) with a subtle
+  wordmark, loops to length, and writes per-platform starter captions. No npm deps. Run
+  `node marketing/make-social-assets.mjs --latest 4` after the nightly curation batch.
+  (Captions are template-based today; upgrading to Gemini is a noted easy win.)
 - **(B) Distribution — BUY.** Use a posting aggregator (upload-post, **Ayrshare**, or
   self-hosted **Postiz**) — one API call fans out to TikTok/Reels/Shorts/Pinterest.
   **~$0–40/mo.** *Critical reason to buy, not build:* platforms gate posting behind
@@ -344,29 +381,32 @@ into the product. Amplify it:
 ---
 
 ## 16. Phased roadmap (sequencing — impact × effort)
-**Phase 0 — Foundations (days, do first, highest ROI):**
-- Analytics + north-star + UTM convention (§3).
-- Conversion capture: OS/device-aware CTAs, Windows waitlist, "email me the Mac link", OG
-  cards (§5–6). *Stops traffic leaking before you create any.*
-- Brand-name SEO basics (§4.3).
+_(✅ done · 🔨 built, not used · ⏭️ next · 🅿️ parked — mirrors the Progress snapshot.)_
 
-**Phase 1 — Turn on organic (weeks):**
-- Content flywheel: daily posting (manual first), Pinterest + YouTube + Reddit emphasis (§4.1).
-- Launch spikes: Product Hunt + Show HN, scheduled (§4.2).
-- Start the email list / "art of the week" (§4.6).
+**Phase 0 — Foundations (days, do first, highest ROI):** — ✅ **essentially complete**
+- ✅ Analytics + north-star (§3). ⏭️ *still todo:* a consistent UTM convention on outbound links.
+- ✅ Conversion capture: device-aware CTAs, "email me the Mac link", the self-report demand
+  probe (replaced the Windows-waitlist idea), OG cards (§5–6).
+- ⏭️ Brand-name SEO basics (§4.3).
+
+**Phase 1 — Turn on organic (weeks):** — ⏭️ **current focus**
+- 🔨→⏭️ Content flywheel: the asset engine is built (§11); *start posting* (manual first),
+  Pinterest + YouTube + Reddit emphasis (§4.1).
+- 🔨→⏭️ Launch spikes: copy drafted in `docs/launch-kit.md`; **execute** Product Hunt + Show HN (§4.2).
+- ⏭️ Start the email list / "art of the week" (§4.6).
 
 **Phase 2 — Automate & distribute (weeks):**
-- Agentic marketing engine: ffmpeg asset step + aggregator posting (§11).
-- Option B ecosystem packs (Appendix A).
-- Lifecycle/retention email + win-back (§9).
+- ⏭️ Agentic marketing engine: asset step ✅ built (§11 A) → add **aggregator posting** (§11 B).
+- 🅿️ Option B ecosystem packs (Appendix A).
+- 🅿️ Lifecycle/retention email + win-back (§9).
 
 **Phase 3 — Optimize & expand (data-driven):**
-- **Pricing experiments** (annual/lifetime/trial) — arguably pull *earlier* if conversion is
-  the bottleneck (§10).
-- Referral program + shareable export (§12).
-- Evaluate Mac App Store discovery (§4.7).
-- Build **Windows** *iff* waitlist demand justifies it (§8).
-- Consider paid-ads test *only* after a higher-value tier + proven funnel (§13).
+- 🅿️ **Pricing experiments** (annual/lifetime/trial) — arguably pull *earlier* if conversion is
+  the bottleneck (§10). Needs a founder decision.
+- 🅿️ Referral program + shareable export (§12).
+- 🅿️ Evaluate Mac App Store discovery (§4.7).
+- 🅿️ Build **Windows** *iff* the demand-probe data justifies it (§8).
+- 🅿️ Consider paid-ads test *only* after a higher-value tier + proven funnel (§13).
 
 ---
 
@@ -514,3 +554,11 @@ quality bar.
   (merges the original `growth-and-marketing-strategy.md` and
   `growth-option-b-wallpaper-ecosystem-distribution.md` into a single document,
   with the Option B playbook folded in as Appendix A).
+- **2026-07-03 — execution status pass** (same session): added per-section 🔨/✅/⏭️/🅿️ status
+  tags and updated the roadmap — reflecting what shipped (PostHog, OG cards, mobile
+  email-link, the self-report demand probe that replaced the Windows-detect/waitlist idea,
+  the `marketing/` asset engine, and `docs/launch-kit.md`).
+- **2026-07-03 — multi-agent hub** (same session): moved the live status table out of this
+  doc into the canonical shared hub **`docs/GROWTH-PROGRESS.md`** (state + backlog +
+  read/claim/log protocol), so multiple context-isolated agents coordinate through one
+  committed file. This doc now holds the *reasoning* and points at the hub for *state*.

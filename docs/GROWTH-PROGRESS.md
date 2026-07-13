@@ -45,9 +45,10 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 | Open Graph / Twitter social cards | ✅ live | `living-art-screensaver-web/app/opengraph-image.tsx`; §5 |
 | Mobile "email me the Mac link" | ✅ live | `components/marketing/download-cta.tsx`; §5–6 |
 | Cross-platform **demand probe** (self-report) | ✅ live | `components/marketing/platform-interest.tsx` — **PostHog-only, no backend**; superseded the old "detect Windows + waitlist" idea (§5/§8) |
-| Marketing **asset engine** (16:9 → 9:16/1:1 + captions) | 🔨 built | `marketing/make-social-assets.mjs` (+ README); §11 (A). Not yet run on real art / posted |
-| **Launch kit** (Product Hunt / Show HN / Reddit) | 🔨 drafted | `docs/launch-kit.md`; §4.2. Not yet launched |
-| **Run the launch** (PH + Show HN) | ⏭️ next — immediate goal | Human-led; needs real art clips + a demo recording |
+| Marketing **asset engine** (16:9 → 9:16/1:1 + captions) | ✅ run | `marketing/make-social-assets.mjs`; **run 2026-07-12** on newest 6 → `marketing/out/<slug>/` (12 clips + captions). Not yet posted. §11 (A) |
+| **Hero demo clip** (19.5s 1080p + 1:1 + 4 stills) | ✅ produced | `marketing/out/hero/` — faithful reproduction from the real gallery (screensaver cadence + title pill). Literal ScreenSaverEngine capture needs the Mac idle (recipe in launch-kit §5 P-4). |
+| **Launch kit** (Product Hunt / Show HN / Reddit) | ✅ finalized | `docs/launch-kit.md` — copy aligned to live-site voice + **launch-day runbook** (exact clicks/timing/UTMs) added 2026-07-12. |
+| **Run the launch** (PH + Show HN) | ⏭️ ready — founder-led | Assets + copy + runbook all done. Founder owns: PH account warm-up, the **date**, 5–10 commenters, and the submit clicks. |
 | Daily social posting + aggregator | ⏭️ next | §4.1 + §11 (B) — pick upload-post / Postiz; asset engine feeds it |
 | SEO landing pages + brand-name SEO | ⏭️ next | §4.3 ("Aerial alternative", "best Mac screensaver", comparison pages) |
 | "Art of the week" email / newsletter | ⏭️ next | §4.6 — needs an email-send path decision |
@@ -65,7 +66,9 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 ## In progress (claim here before starting)
 | Task | Agent / branch / PR | Started | Notes |
 |---|---|---|---|
-| _(none — add yours here)_ | | | |
+| _(none)_ | | | |
+
+**Launch-prep done (2026-07-12, branch `growth/launch-execution`):** ✅ social clips (newest 6), ✅ hero demo (16:9 + 1:1 + 4 stills, `marketing/out/hero/`), ✅ live-site verified (OG unfurls, `/download/mac`→v1.4.5 DMG, demand-probe + mobile email-link healthy — nothing broken), ✅ launch copy finalized + runbook. **Handoff = founder executes the launch** (see the two founder-decisions below + launch-kit §5).
 
 ## Next up (prioritized backlog)
 1. **Execute the launch** — run `node marketing/make-social-assets.mjs --latest 6` for real
@@ -84,6 +87,15 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 ---
 
 ## Activity log (append-only — newest first)
+- **2026-07-12** — **Launch prep executed** (branch `growth/launch-execution`): ran the asset
+  engine on the newest 6 pieces (12 social clips + captions in `marketing/out/`); produced a
+  faithful **hero demo** (16:9 19.5s + 1:1 + 4 stills in `marketing/out/hero/`) from the real
+  gallery at the screensaver's cadence; **verified the live site** — OG card unfurls (external
+  crawler confirmed), `/download/mac` 302s to the signed **v1.4.5** DMG, demand-probe dialog +
+  mobile "email me the link" (`/api/download-link`) both healthy, **nothing broken**; **finalized
+  `docs/launch-kit.md`** — copy aligned to the live-site voice + a full **launch-day runbook**
+  (exact clicks, PH 12:01 AM PT timing, Show HN Day-2 stagger, per-channel UTM links). Remaining =
+  founder-owned submit clicks + date.
 - **2026-07-03** — Established this hub; moved live status out of the strategy doc into here.
 - **2026-07-03** — Strategy doc execution-status pass (snapshot, per-section tags, roadmap). _(PR #61)_
 - **2026-07-03** — Marketing asset engine (`marketing/make-social-assets.mjs`) + launch kit

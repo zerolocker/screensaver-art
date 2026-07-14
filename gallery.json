@@ -2455,5 +2455,57 @@
     "image_prompt": "A Hague School oil painting, 19th-century Dutch, oil on canvas with visible brushwork and a muted silvery tonal palette of grey, ochre and soft green: a row of tall slender poplars leaning and bending in a fresh wind along the grassy bank of a still canal at dusk, their feathery crowns streaming to one side. A vast atmospheric sky of drifting grey and pale-gold clouds fills the upper two-thirds; the calm canal mirrors the poplars and the luminous sky in soft rippling reflections; wind combs through reeds and meadow grass in the foreground; a small dark windmill sits low on the flat horizon. Overcast dusk light breaking gold near the horizon. The painted scene fills the entire image and bleeds off all four edges — brushed color to every edge. no painted border, no mat, no decorative frame, no canvas edge; no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label.",
     "video_prompt": "A continuous, seamless loop of a windy dusk: the feathery crowns of the poplars sway and shiver in the fresh wind, their leaves rustling to one side and easing back; the reeds and meadow grass in the foreground comb and ripple; the pale-gold and grey clouds drift slowly across the sky; the calm canal water shimmers with soft wavering reflections; the distant windmill's sails turn slowly. All motion is gentle, wind-driven and cyclical, returning smoothly to exactly the opening state. Physically plausible wind and water motion only — the tree trunks, windmill and land hold their form and do not morph, melt, or distort. Soft overcast dusk light with gold breaking at the horizon.",
     "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/vesuvius_eruption_roman_fresco_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/vesuvius_eruption_roman_fresco_4k.webp",
+    "title": "Vesuvius Erupting over the Bay - Roman Villa Fresco (AI Animated)",
+    "type": "video",
+    "date": "2026-07-14",
+    "tags": [
+      "Greek & Roman"
+    ],
+    "image_prompt": "A Roman Second-Style villa wall fresco depicting Mount Vesuvius erupting over the Bay of Naples at dusk, painted in warm earth pigments — Pompeian red, ochre, umber — on lime plaster with the soft matte texture and fine craquelure of ancient fresco. A towering volcano at center-left belches a vast dark ash column shot through with orange fire, with glowing lava streaming down its slopes; forked lightning crackles inside the ash cloud; below, a wine-dark sea with a few small Roman sailing boats heeling in the wind, a low villa colonnade and umbrella pines along the shore. Painted straight-on, flat to the picture plane. The scene fills the entire image, extending to all four edges. No museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame; viewed straight-on.",
+    "video_prompt": "The towering ash column billows and boils upward, churning dark grey and orange as glowing lava creeps down the volcano's flanks; forked lightning flickers deep inside the eruption cloud; a steady wind drives the wine-dark sea into whitecaps and heels the small boats' sails as they roll on the swell; drifting ash and embers streak slowly across the sky. The volcano, shore, and villa hold their painted fresco form. Light source is the fiery glow of the eruption against the fading dusk.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/alpine_avalanche_romantic_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/alpine_avalanche_romantic_4k.webp",
+    "title": "Alpine Avalanche - Romantic Sublime (AI Animated)",
+    "type": "video",
+    "date": "2026-07-14",
+    "tags": [
+      "19th Century"
+    ],
+    "image_prompt": "A Romantic-era oil painting in the sublime tradition (Loutherbourg, Turner) of a great avalanche thundering down a steep Alpine gorge, oil on canvas with visible impasto brushwork and glazed atmospheric depth. A massive cascade of snow and powder pours down a near-vertical dark rock face at center, exploding into billowing white clouds of spray; jagged snow-capped peaks tower above; a tiny timber chalet and a few dark pines are dwarfed in the valley below; a turbulent slate-grey sky with a break of pale gold light behind the summits. Cold blues and whites against dark wet rock. The scene fills the entire image, extending to all four edges, viewed straight-on. No museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame.",
+    "video_prompt": "The avalanche thunders down the dark rock face — a churning mass of snow and powder cascading downward and exploding into vast billowing clouds of white spray that roll and drift down the gorge; loose spindrift streams off the ridges in the wind; the heavy storm clouds move slowly across the peaks and the shaft of pale gold light shifts behind the distant summits. The mountains, pines, and chalet hold their solid form; the motion is the falling snow, the boiling spray, and the drifting cloud.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/candlelit_still_life_dutch_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/candlelit_still_life_dutch_4k.webp",
+    "title": "Candlelit Still Life - Dutch Golden Age (AI Animated)",
+    "type": "video",
+    "date": "2026-07-14",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "image_prompt": "A Dutch Golden Age candlelit still life in the manner of Pieter Claesz and Willem Kalf, deep chiaroscuro, warm oil-painting rendering, in a WIDE horizontal panoramic composition. The objects are spread out across the full width of a long dark polished table draped with a rumpled blue-grey cloth, set against a deep near-black shadowy interior that fills the whole background. Arranged left to right along the table: on the left a pewter plate with a knife and a half-peeled lemon with its rind spiralling over the edge; in the warm center a single tall lit beeswax candle with one steady golden flame beside a tipped silver tazza; on the right a tall roemer glass of pale white wine and a spilling cluster of ripe green and purple grapes. Warm candlelight glinting on glass, silver and fruit; rich velvety shadows. The scene completely fills the entire wide image and extends to all four edges with no empty margins and no blurred vertical bands on the sides. This is not a painting on a wall — no panel, no visible painting edges, no surrounding wall, no white or grey background borders. No museum, no display case, no glass case, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no painted border, no mat, no decorative frame; viewed straight-on.",
+    "video_prompt": "The single candle flame flickers and gutters gently, wavering and brightening then softening; a thin wisp of smoke drifts up from the tip of the flame; the warm pool of candlelight breathes almost imperceptibly, and soft highlights shimmer and shift across the wine in the roemer glass, the polished silver tazza, and the grapes as the flame moves. Everything else — the fruit, glass, silver, plate, lemon and cloth — holds perfectly still. Light source is the candle; the gentle motion settles smoothly back to the exact opening pose.",
+    "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/bamboo_grove_wind_ink_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/bamboo_grove_wind_ink_4k.webp",
+    "title": "Bamboo in the Wind - Chinese Ink Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-07-14",
+    "tags": [
+      "Chinese & Korean"
+    ],
+    "image_prompt": "A Chinese ink painting (shuimo) of a dense grove of bamboo bending in the wind, ink and light wash on aged silk in the scholar-literati tradition of Wen Tong and Zheng Xie. Fluid calligraphic brushstrokes: tall slender bamboo stalks and cascading sprays of narrow leaves rendered in crisp dark ink over soft grey tonal washes, leaning together as a gust passes through them; a suggestion of wet rock and a few reeds at the base; large areas of empty warm-silk ground suggesting mist and open air. Elegant, minimal, monochrome ink with delicate gradations, subtle age-toning of the silk. The composition fills the entire image, extending to all four edges, viewed straight-on. No museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame.",
+    "video_prompt": "A steady breeze moves continuously through the bamboo grove: the tall slender stalks bend and spring back, and the sprays of narrow leaves flutter, rustle and ripple as the gust passes across the whole grove from one side to the other, swaying together and easing back; the low reeds and grasses at the base tremble in the wind. The ink-painting brushwork and silk texture are preserved; gentle continuous wind motion that flows smoothly and returns exactly to the opening pose. No camera movement.",
+    "looping": true
   }
 ]

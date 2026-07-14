@@ -1,0 +1,140 @@
+#!/usr/bin/env node
+/**
+ * Generates the Living Art logo mark — "the living swirl" — and writes the
+ * repo's SVG logo assets. The mark is a single tapered brushstroke winding
+ * into a log-spiral: classic art in motion (Starry Night's sky, Hokusai's
+ * wave) reduced to clean geometry that survives a 16px favicon.
+ *
+ * Run from anywhere: `node branding/generate-logo.mjs`. It rewrites:
+ *   branding/logo-mark-ink.svg    bare swirl, ink  (for on-mint / light surfaces)
+ *   branding/logo-mark-mint.svg   bare swirl, mint (for the near-black site)
+ *   branding/logo-tile.svg        swirl on the rounded mint tile (app-icon form)
+ *   living-art-screensaver-web/public/icon.svg   (the favicon = the tile)
+ *
+ * The PNG renders (apple-icon.png 180², electron-app/build/icon.png 1024²)
+ * are rasterized from logo-tile.svg — see branding/README.md.
+ *
+ * Colors mirror lib/brand.ts / app/globals.css (--primary / --primary-foreground).
+ */
+import { writeFileSync, mkdirSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const TAU = Math.PI * 2;
+const f = (v) => +v.toFixed(2);
+
+// The swirl: log-spiral centerline from a round outer head to a pointed inner
+// tip, stroke width tapering along the way. All units in a 24×24 viewBox.
+function makeSwirl({
+  cx = 12, cy = 12,
+  rOuter = 8.6,   // centerline radius at the outer head
+  rInner = 2.1,   // centerline radius at the inner tip
+  turns = 1.45,   // revolutions between head and tip
+  thetaHead = Math.PI * 1.05, // where the head sits (radians, ~8 o'clock)
+  wHead = 3.9,    // stroke width at the head
+  taperPow = 0.95, // width falloff toward the tip
+  samples = 128,
+} = {}) {
+  const dTheta = turns * TAU;
+  const b = Math.log(rOuter / rInner) / dTheta;
+
+  // t: 0 = outer head → 1 = inner tip
+  const P = [];
+  for (let i = 0; i <= samples; i++) {
+    const t = i / samples;
+    const theta = thetaHead + dTheta * t;
+    const r = rOuter * Math.exp(-b * dTheta * t);
+    P.push({ t, x: cx + r * Math.cos(theta), y: cy + r * Math.sin(theta) });
+  }
+
+  const w = (t) => wHead * Math.pow(1 - t, taperPow) + 0.05;
+
+  const N = P.map((_, i) => {
+    const a = P[Math.max(0, i - 1)];
+    const c = P[Math.min(P.length - 1, i + 1)];
+    const dx = c.x - a.x, dy = c.y - a.y;
+    const len = Math.hypot(dx, dy) || 1;
+    return { nx: -dy / len, ny: dx / len };
+  });
+
+  const left = P.map((p, i) => ({ x: p.x + N[i].nx * w(p.t) / 2, y: p.y + N[i].ny * w(p.t) / 2 }));
+  const right = P.map((p, i) => ({ x: p.x - N[i].nx * w(p.t) / 2, y: p.y - N[i].ny * w(p.t) / 2 }));
+
+  // Explicit round cap at the head (semicircle from right[0] to left[0]
+  // bulging backwards along the reversed tangent).
+  const t0x = P[1].x - P[0].x, t0y = P[1].y - P[0].y;
+  const back = Math.atan2(-t0y, -t0x);
+  const rw = w(0) / 2;
+  const aR = Math.atan2(right[0].y - P[0].y, right[0].x - P[0].x);
+  let diff = back - aR;
+  while (diff > Math.PI) diff -= TAU;
+  while (diff < -Math.PI) diff += TAU;
+  const sweep = diff >= 0 ? 1 : -1;
+  const cap = [];
+  for (let i = 1; i < 16; i++) {
+    const a = aR + (i / 16) * Math.PI * sweep;
+    cap.push({ x: P[0].x + rw * Math.cos(a), y: P[0].y + rw * Math.sin(a) });
+  }
+
+  let d = `M ${f(left[0].x)} ${f(left[0].y)}`;
+  for (let i = 1; i < left.length; i++) d += ` L ${f(left[i].x)} ${f(left[i].y)}`;
+  for (let i = right.length - 1; i >= 0; i--) d += ` L ${f(right[i].x)} ${f(right[i].y)}`;
+  for (const p of cap) d += ` L ${f(p.x)} ${f(p.y)}`;
+  return d + ' Z';
+}
+
+// Center the outline's bounding box on (12,12). Safe because the path is
+// pure M/L coordinate pairs.
+function centerPath(d) {
+  const nums = d.match(/-?\d+\.?\d*/g).map(Number);
+  const xs = [], ys = [];
+  for (let i = 0; i < nums.length; i += 2) { xs.push(nums[i]); ys.push(nums[i + 1]); }
+  const dx = 12 - (Math.min(...xs) + Math.max(...xs)) / 2;
+  const dy = 12 - (Math.min(...ys) + Math.max(...ys)) / 2;
+  let i = 0;
+  return d.replace(/-?\d+\.?\d*/g, (m) => f(Number(m) + (i++ % 2 === 0 ? dx : dy)).toString());
+}
+
+export const SWIRL_PATH = centerPath(makeSwirl());
+
+const MINT = '#9ee8a2'; // --primary  (oklch 0.865 0.121 145.7)
+const INK = '#0d2114';  // --primary-foreground
+
+const bare = (fill) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Living Art "living swirl" mark. Generated — edit branding/generate-logo.mjs, not this file. -->
+  <path d="${SWIRL_PATH}" fill="${fill}"/>
+</svg>
+`;
+
+// Same geometry as the old icon: 180×180, rx 40 (≈ tile ratio 0.222).
+const tile = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
+  <!-- Living Art app tile: the "living swirl" on the brand-mint rounded square.
+       Mint = --primary (oklch 0.865 0.121 145.7); ink = --primary-foreground.
+       Generated — edit branding/generate-logo.mjs, not this file. -->
+  <rect width="180" height="180" rx="40" fill="${MINT}"/>
+  <g transform="scale(7.5)">
+    <path d="${SWIRL_PATH}" fill="${INK}"/>
+  </g>
+</svg>
+`;
+
+const logoPathTs = `/**
+ * GENERATED by branding/generate-logo.mjs — do not edit by hand.
+ *
+ * The Living Art "living swirl" logo mark as a single filled SVG path in a
+ * 24×24 viewBox. Shared by the header/footer <LogoMark>, and the OG image
+ * (which can't read CSS or external files under satori).
+ */
+export const logoSwirlPath =
+  '${SWIRL_PATH}'
+`;
+
+const here = dirname(fileURLToPath(import.meta.url));
+const repo = join(here, '..');
+mkdirSync(here, { recursive: true });
+writeFileSync(join(here, 'logo-mark-ink.svg'), bare(INK));
+writeFileSync(join(here, 'logo-mark-mint.svg'), bare(MINT));
+writeFileSync(join(here, 'logo-tile.svg'), tile);
+writeFileSync(join(repo, 'living-art-screensaver-web/public/icon.svg'), tile);
+writeFileSync(join(repo, 'living-art-screensaver-web/lib/logo-path.ts'), logoPathTs);
+console.log('Wrote branding/logo-*.svg, web/public/icon.svg, web/lib/logo-path.ts');

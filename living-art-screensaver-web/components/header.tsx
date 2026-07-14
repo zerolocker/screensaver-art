@@ -5,6 +5,7 @@ import { User } from "lucide-react"
 import { useState, useEffect } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { DownloadCTA } from "@/components/marketing/download-cta"
+import { LogoMark } from "@/components/logo-mark"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { greenGlow } from "@/lib/brand"
 
@@ -40,11 +41,7 @@ export function Header() {
             className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[9px] bg-primary"
             style={{ boxShadow: `0 4px 14px -3px ${greenGlow(0.6)}` }}
           >
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-foreground">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5" />
-              <path d="M2 12l10 5 10-5" />
-            </svg>
+            <LogoMark size={19} className="text-primary-foreground" />
           </span>
           <span className="hidden text-[16px] font-semibold tracking-[-0.01em] text-foreground sm:inline">Living Art Screensaver</span>
         </Link>

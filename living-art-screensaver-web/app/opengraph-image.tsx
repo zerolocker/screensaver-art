@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og'
 import { brand, greenGlow } from '@/lib/brand'
+import { logoSwirlPath } from '@/lib/logo-path'
 
 /**
  * The social share card (og:image / twitter:image) for the whole site. Next
@@ -8,7 +9,7 @@ import { brand, greenGlow } from '@/lib/brand'
  * X / Slack / iMessage / Pinterest unfurl with a branded preview instead of a
  * bare URL — which matters because sharing the art is the growth engine.
  *
- * Mirrors the marketing hero: near-black canvas + mint glow, the layered-cube
+ * Mirrors the marketing hero: near-black canvas + mint glow, the living-swirl
  * logo badge, the Playfair serif headline with the italic green "living gallery."
  * accent, and — on the right — a realistic Studio-Display-style monitor showing a
  * real gallery still (Starry Coast), the way the hero's <Monitor> communicates
@@ -78,7 +79,7 @@ export default async function OpengraphImage() {
   }
 
   const logo = `data:image/svg+xml;utf8,${encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${brand.ink}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="${logoSwirlPath}" fill="${brand.ink}"/></svg>`,
   )}`
 
   // Monitor sizing — the card's focal element. Bump MONITOR_W to resize it; the

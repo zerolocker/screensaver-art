@@ -100,8 +100,11 @@ export const SWIRL_PATH = centerPath(makeSwirl());
 const MINT = '#9ee8a2'; // --primary  (oklch 0.865 0.121 145.7)
 const INK = '#0d2114';  // --primary-foreground
 
-// NOTE: no XML comments in the emitted SVGs — some previewers (GitHub,
-// VS Code) choke on them. Provenance lives here and in branding/README.md.
+// NOTE: no XML comments in the emitted SVGs. Comments are legal SVG, but the
+// XML spec forbids "--" inside them — and a comment mentioning CSS custom
+// properties (e.g. --primary) is exactly how that bit us: GitHub/VS Code
+// refused to render the file. Simplest robust rule: emit no comments at all.
+// Provenance lives here and in branding/README.md.
 const bare = (fill) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
   <path d="${SWIRL_PATH}" fill="${fill}"/>
 </svg>

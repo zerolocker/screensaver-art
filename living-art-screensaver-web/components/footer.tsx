@@ -10,7 +10,7 @@ export function Footer() {
         <div>
           <div className="mb-[16px] flex items-center gap-[11px]">
             <span className="flex h-[30px] w-[30px] items-center justify-center rounded-[9px] bg-primary">
-              <LogoMark size={19} className="text-primary-foreground" />
+              <LogoMark size={30} className="text-primary-foreground" />
             </span>
             <span className="text-[16px] font-semibold text-foreground">Living Art Screensaver</span>
           </div>

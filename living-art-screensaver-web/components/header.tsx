@@ -41,7 +41,7 @@ export function Header() {
             className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[9px] bg-primary"
             style={{ boxShadow: `0 4px 14px -3px ${greenGlow(0.6)}` }}
           >
-            <LogoMark size={19} className="text-primary-foreground" />
+            <LogoMark size={30} className="text-primary-foreground" />
           </span>
           <span className="hidden text-[16px] font-semibold tracking-[-0.01em] text-foreground sm:inline">Living Art Screensaver</span>
         </Link>

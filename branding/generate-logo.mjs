@@ -100,17 +100,16 @@ export const SWIRL_PATH = centerPath(makeSwirl());
 const MINT = '#9ee8a2'; // --primary  (oklch 0.865 0.121 145.7)
 const INK = '#0d2114';  // --primary-foreground
 
+// NOTE: no XML comments in the emitted SVGs — some previewers (GitHub,
+// VS Code) choke on them. Provenance lives here and in branding/README.md.
 const bare = (fill) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-  <!-- Living Art "living swirl" mark. Generated — edit branding/generate-logo.mjs, not this file. -->
   <path d="${SWIRL_PATH}" fill="${fill}"/>
 </svg>
 `;
 
 // Same geometry as the old icon: 180×180, rx 40 (≈ tile ratio 0.222).
+// Mint = --primary (oklch 0.865 0.121 145.7); ink = --primary-foreground.
 const tile = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
-  <!-- Living Art app tile: the "living swirl" on the brand-mint rounded square.
-       Mint = --primary (oklch 0.865 0.121 145.7); ink = --primary-foreground.
-       Generated — edit branding/generate-logo.mjs, not this file. -->
   <rect width="180" height="180" rx="40" fill="${MINT}"/>
   <g transform="scale(7.5)">
     <path d="${SWIRL_PATH}" fill="${INK}"/>

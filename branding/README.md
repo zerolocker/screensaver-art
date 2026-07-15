@@ -40,9 +40,9 @@ motion**. It compresses the brand into one gesture:
 
 - **Classic art** — the swirl is the most recognizable shorthand for painterly
   motion in art history: Van Gogh's Starry Night sky, Hokusai's cresting wave.
-  (An earlier hand-saved `interesting-spiral-icon-for-later-use.svg` in
-  `public/` pointed the same way; this is that instinct made into clean,
-  scalable geometry.)
+  (An earlier hand-saved spiral icon — `interesting-spiral-icon-for-later-use.svg`,
+  since removed from `public/` — pointed the same way; this is that instinct
+  made into clean, scalable geometry.)
 - **Living** — a brushstroke with a thick head and a tapering tail reads as
   movement, wind, breath: art that isn't static.
 - **The daily cycle** — the spiral returns on itself: a new piece every night,
@@ -52,6 +52,12 @@ It is drawn as pure geometry (a log-spiral centerline with a tapered stroke
 width, emitted as one filled path), so it stays crisp from a 1024px app icon
 down to a 16px favicon, and it deliberately contains no letterform, sparkle, or
 "AI" cliché — the brand is the *gallery*, not the model.
+
+The mark was selected from a 14-candidate exploration (swirl weight/turn/
+direction variants, a rotating brushstroke "bloom", literal gallery-frame
+marks, a nightly "moonrise", and other sketches). The swirl won because it is
+the only concept that says *classic art* and *motion* in a single gesture and
+still survives the 16px favicon.
 
 ## Assets & usage
 

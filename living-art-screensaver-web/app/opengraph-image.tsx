@@ -232,8 +232,10 @@ export default async function OpengraphImage() {
                 boxShadow: `0 12px 34px ${greenGlow(0.4)}`,
               }}
             >
+              {/* Full badge size = the same mark-to-tile ratio as the app icon
+                  (the mark's viewBox already carries its own margin). */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={logo} width={36} height={36} alt="" />
+              <img src={logo} width={64} height={64} alt="" />
             </div>
             <div style={{ fontSize: 25, fontWeight: 600, letterSpacing: 3, color: 'rgba(255,255,255,0.92)' }}>
               LIVING ART SCREENSAVER

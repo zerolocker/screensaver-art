@@ -138,6 +138,7 @@ When you add a new style, append it under the section it best fits.
 - Tang Dynasty Blue-Green Landscape (qinglu shanshui)
 - Nanga
 - Kano School Ink Painting
+- Lingnan School (early-20th-c Chinese — Gao Jianfu, ink-and-colour realism)
 - Ukiyo-e
 - Ukiyo-e Japanese woodblock print
 - Shin-hanga (early-20th-c woodblock — Kawase Hasui, Yoshida Hiroshi)

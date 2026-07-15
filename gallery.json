@@ -2507,5 +2507,57 @@
     "image_prompt": "A Chinese ink painting (shuimo) of a dense grove of bamboo bending in the wind, ink and light wash on aged silk in the scholar-literati tradition of Wen Tong and Zheng Xie. Fluid calligraphic brushstrokes: tall slender bamboo stalks and cascading sprays of narrow leaves rendered in crisp dark ink over soft grey tonal washes, leaning together as a gust passes through them; a suggestion of wet rock and a few reeds at the base; large areas of empty warm-silk ground suggesting mist and open air. Elegant, minimal, monochrome ink with delicate gradations, subtle age-toning of the silk. The composition fills the entire image, extending to all four edges, viewed straight-on. No museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame.",
     "video_prompt": "A steady breeze moves continuously through the bamboo grove: the tall slender stalks bend and spring back, and the sprays of narrow leaves flutter, rustle and ripple as the gust passes across the whole grove from one side to the other, swaying together and easing back; the low reeds and grasses at the base tremble in the wind. The ink-painting brushwork and silk texture are preserved; gentle continuous wind motion that flows smoothly and returns exactly to the opening pose. No camera movement.",
     "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/ashcan_rainy_nocturne_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/ashcan_rainy_nocturne_4k.webp",
+    "title": "Rainy Night on the Waterfront - Ashcan School (AI Animated)",
+    "type": "video",
+    "date": "2026-07-15",
+    "tags": [
+      "Modern"
+    ],
+    "image_prompt": "An Ashcan School oil painting, c. 1910, thick loose brushwork on canvas in the manner of John Sloan and George Bellows, dark tonal palette with warm gaslight accents. A rain-soaked New York side street at night seen straight-on: wet cobblestones and slick pavement mirror the amber glow of gas street-lamps and lit shop windows, a lone hansom cab and a hunched figure under an umbrella, tenement facades with fire escapes rising into a wet indigo sky, telegraph wires. Heavy diagonal rain streaks the whole scene. Gritty urban realism, painterly impasto, moody chiaroscuro of lamplight on wet stone. The scene fills the entire image, extending to all four edges, viewed straight-on. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame.",
+    "video_prompt": "Heavy night rain falls steadily in diagonal streaks across the whole street, dimpling the puddles so the amber gaslight reflections shiver and ripple on the wet cobblestones. The gas street-lamp flame flickers gently. The horse-drawn hansom cab rolls slowly forward down the wet street. Warm light glows from the shop windows. Physically real rain and water; the buildings, lamps and figures hold their shape and do not distort. Static straight-on camera.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/futurism_speeding_express_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/futurism_speeding_express_4k.webp",
+    "title": "Dynamism of the Express - Futurism (AI Animated)",
+    "type": "video",
+    "date": "2026-07-15",
+    "tags": [
+      "Modern"
+    ],
+    "image_prompt": "A Futurist oil painting, c. 1913, in the dynamic idiom of Umberto Boccioni and Gino Severini: fragmented planes, radiating force-lines and repeated ghost-contours conveying speed, a jewel-bright palette of vermilion, cobalt and gold sliced by beams of electric light. A powerful red steam locomotive charges diagonally toward the viewer through a faceted modern city at night, headlamp blazing, wheels and connecting-rods multiplied into arcs of motion, great billowing plumes of white steam and dark coal-smoke torn backward across the composition. Interpenetrating shards of station arches, signal lights and telegraph lines splinter around it. Bold divisionist brushstrokes, kinetic energy, muscular geometry. The scene fills the entire image, extending to all four edges, viewed straight-on. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame.",
+    "video_prompt": "Great plumes of white steam and dark coal-smoke billow and roll upward from the locomotive's funnel and pistons, churning and drifting backward across the sky. Wisps of steam gust low along the tracks. The engine's headlamp glows and pulses with a bright beam. A powerful sense of the train surging forward. The steam and smoke move like real volumetric vapor; the locomotive, rails, arches and station structures keep their solid painted forms and do not warp or melt. Static camera, straight-on view.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/precisionism_grain_elevators_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/precisionism_grain_elevators_4k.webp",
+    "title": "Grain Elevators at Dawn - Precisionism (AI Animated)",
+    "type": "video",
+    "date": "2026-07-15",
+    "tags": [
+      "Modern"
+    ],
+    "image_prompt": "A Precisionist oil painting, c. 1930, in the crisp geometric idiom of Charles Sheeler and Charles Demuth: clean hard-edged planes, smooth matte surfaces, cool restrained palette of dove-grey, cream, ochre and slate-blue with a pale peach dawn sky. A monumental cluster of cylindrical concrete grain elevators and a tall factory smokestack rise beside a still, glassy river at first light, reflected in the calm water below. A single slow column of pale smoke drifts upward from the smokestack into the quiet dawn sky. Sharp diagonal shadows, industrial American machine-age grandeur, immaculate simplified forms, luminous flat light. Straight-on frontal composition. The scene fills the entire image, extending to all four edges, viewed straight-on. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame.",
+    "video_prompt": "A slow, steady column of pale smoke drifts and curls gently upward from the tall smokestack into the calm dawn sky, thinning as it rises. The glassy river surface shimmers with the faintest ripple, so the mirrored reflection of the grain elevators trembles softly. Everything is quiet and still. The concrete silos, smokestack, factory and buildings hold their exact solid geometric forms and do not move or distort. Static straight-on camera. The motion settles back to exactly where it began.",
+    "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/lingnan_cormorant_dawn_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/lingnan_cormorant_dawn_4k.webp",
+    "title": "Cormorant Fishing at Dawn - Lingnan School (AI Animated)",
+    "type": "video",
+    "date": "2026-07-15",
+    "tags": [
+      "Chinese & Korean"
+    ],
+    "image_prompt": "A Lingnan School Chinese painting, early 20th century, in the lyrical idiom of Gao Jianfu blending traditional ink-and-colour on silk with soft atmospheric realism: fluid washes, delicate graded tones, luminous mist. A tranquil dawn on the Li River in Guilin: towering conical karst limestone peaks recede in layers of pale blue-grey mist, their bases mirrored on the glassy jade-green water. In the foreground a lone fisherman in a broad conical hat stands on a slender bamboo raft, a long pole in hand, two dark cormorants perched still at the raft's end. Delicate bamboo along the near bank. Soft peach-and-silver dawn light, serene and poetic, ink-wash mountains dissolving into mist. The scene fills the entire image, extending to all four edges, viewed straight-on. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame.",
+    "video_prompt": "Soft dawn mist drifts slowly among the distant karst peaks, veiling and unveiling them. The glassy jade-green river shimmers with a gentle ripple, so the mirrored reflections of the mountains, bamboo and raft tremble softly. A few bamboo leaves stir faintly. The fisherman, the bamboo raft and the two perched cormorants stay calm and hold their positions; the mountains keep their form. Nothing morphs or teleports. Static straight-on camera; the motion settles back to where it began for a seamless loop.",
+    "looping": true
   }
 ]

@@ -97,7 +97,9 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
   Gallery grid + "is your screensaver" banner; the account email blacked out). The launch video
   got a founder-picked **art-backed end-card** (blurred Starry Coast + wordmark + green URL pill,
   1s crossfade + audio fade-out) → now 37.6s. All PH-submission media ready in
-  `marketing/out/{hero,launch-images}/`.
+  `marketing/out/{hero,launch-images}/`. _Follow-up: after master's new **swirl logo** brand
+  update, all end-cards (launch video + fullscreen hero 16:9/1:1 + the A–D option PNGs) were
+  regenerated with the new mark. The rest of the media carries no logo, so nothing else changed._
 - **2026-07-13** — **Hero + social assets revised** (founder feedback, PR #63): discarded the
   literal ScreenSaverEngine capture (the pieces that happened to play read poorly); rebuilt the
   hero to mirror `hero-section.tsx` exactly — heroReel's 7 pieces in order, site cadence (6s

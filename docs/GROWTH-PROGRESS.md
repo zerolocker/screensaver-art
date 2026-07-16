@@ -93,9 +93,11 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
   hero pieces cycling with their **real gallery audio** muxed in (composite sidesteps macOS's
   no-system-audio screen-record limitation); plus **four 16:9 launch images**
   (`marketing/out/launch-images/`: hero title card, collection grid, "every movement", pricing)
-  cropped from the live site. **App screenshots (username removed via nano-banana) not done —
-  blocked:** the Mac auto-locked while the founder was idle, so the app UI was unreachable; needs
-  the founder present + unlocked, or founder-supplied screenshots (then I do the nano-banana edit).
+  cropped from the live site, plus a **redacted app screenshot** (`05-app-gallery.png` — the
+  Gallery grid + "is your screensaver" banner; the account email blacked out). The launch video
+  got a founder-picked **art-backed end-card** (blurred Starry Coast + wordmark + green URL pill,
+  1s crossfade + audio fade-out) → now 37.6s. All PH-submission media ready in
+  `marketing/out/{hero,launch-images}/`.
 - **2026-07-13** — **Hero + social assets revised** (founder feedback, PR #63): discarded the
   literal ScreenSaverEngine capture (the pieces that happened to play read poorly); rebuilt the
   hero to mirror `hero-section.tsx` exactly — heroReel's 7 pieces in order, site cadence (6s

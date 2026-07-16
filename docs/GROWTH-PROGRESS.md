@@ -87,6 +87,15 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 ---
 
 ## Activity log (append-only — newest first)
+- **2026-07-15** — **PH launch-submission assets** (PR #63): built a **16:9 hero-section launch
+  video WITH sound** (`marketing/out/hero/living-art-launch-video-16x9.mp4`) — the real hero
+  section rendered pixel-perfect via headless Chrome (exact text + monitor + pill, no CTA), the 7
+  hero pieces cycling with their **real gallery audio** muxed in (composite sidesteps macOS's
+  no-system-audio screen-record limitation); plus **four 16:9 launch images**
+  (`marketing/out/launch-images/`: hero title card, collection grid, "every movement", pricing)
+  cropped from the live site. **App screenshots (username removed via nano-banana) not done —
+  blocked:** the Mac auto-locked while the founder was idle, so the app UI was unreachable; needs
+  the founder present + unlocked, or founder-supplied screenshots (then I do the nano-banana edit).
 - **2026-07-13** — **Hero + social assets revised** (founder feedback, PR #63): discarded the
   literal ScreenSaverEngine capture (the pieces that happened to play read poorly); rebuilt the
   hero to mirror `hero-section.tsx` exactly — heroReel's 7 pieces in order, site cadence (6s

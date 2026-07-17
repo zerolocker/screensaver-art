@@ -106,6 +106,10 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
   two-column layout with much tighter margins — the monitor screen went 531×299 → 992×558 CSS
   (~3.5× the art area).** A push-in zoom was tried and cut — it fought the headline. Final launch
   video = static layout-B hero for ~34s + the art-backed end-card, real audio throughout._
+  _Follow-up 3: with the monitor enlarged the copy read too small, so the hero text was scaled up
+  too — **headline 54→84px, subtext 16→25px and brightened** off the site's muted grey (a video
+  viewer can't lean in to read). The monitor column is pinned at 1016px so the copy grows into the
+  dead left margin instead of shrinking the art._
 - **2026-07-13** — **Hero + social assets revised** (founder feedback, PR #63): discarded the
   literal ScreenSaverEngine capture (the pieces that happened to play read poorly); rebuilt the
   hero to mirror `hero-section.tsx` exactly — heroReel's 7 pieces in order, site cadence (6s

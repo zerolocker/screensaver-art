@@ -100,11 +100,12 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
   `marketing/out/{hero,launch-images}/`. _Follow-up: after master's new **swirl logo** brand
   update, all end-cards (launch video + fullscreen hero 16:9/1:1 + the A–D option PNGs) were
   regenerated with the new mark. The rest of the media carries no logo, so nothing else changed._
-  _Follow-up 2: the launch video was **restructured for immersion** — the hero layout made the art
-  too small. Now: ~7s hero establish with a slow push-in → seamless dissolve → **~26s of fullscreen
-  art** → end-card. The dissolve is a true match cut because the monitor reel and the fullscreen
-  reel are the same 7 pieces on the same timeline. Previous cut kept as
-  `living-art-launch-video-16x9--heroOnly-backup.mp4`._
+  _Follow-up 2: the art was too small in the hero layout. Explored 6 hero-scene layouts (a
+  monitor-size ladder + bold non-site redesigns; rejected one for text/monitor imbalance and one
+  whose near-fullbleed monitor left no room for the copy). **Founder picked "B": the site's
+  two-column layout with much tighter margins — the monitor screen went 531×299 → 992×558 CSS
+  (~3.5× the art area).** A push-in zoom was tried and cut — it fought the headline. Final launch
+  video = static layout-B hero for ~34s + the art-backed end-card, real audio throughout._
 - **2026-07-13** — **Hero + social assets revised** (founder feedback, PR #63): discarded the
   literal ScreenSaverEngine capture (the pieces that happened to play read poorly); rebuilt the
   hero to mirror `hero-section.tsx` exactly — heroReel's 7 pieces in order, site cadence (6s

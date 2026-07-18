@@ -18,12 +18,12 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://living-art-screensaver.com'),
   // Per-page titles compose as "<Page> — Living Art Screensaver"; pages that
   // set no title fall back to `default` (used as-is, untemplated) — e.g. the
-  // homepage. This keeps the brand keyword in every tab/SERP title.
+  // homepage, which carries the full "…for Mac" keyword phrase for SERPs.
   title: {
-    default: 'Living Art Screensaver',
+    default: 'Living Art Screensaver — AI-Animated Art Screensaver for Mac',
     template: '%s — Living Art Screensaver',
   },
-  description: 'A screensaver that turns your idle display into a living art gallery, showcasing AI-animated artworks across every style, with new pieces added regularly.',
+  description: 'A Mac screensaver that turns your idle display into a living art gallery, showcasing AI-animated artworks across every style, with new pieces added regularly. Free Download.',
   icons: {
     icon: { url: '/icon.svg', type: 'image/svg+xml' },
     apple: '/apple-icon.png',

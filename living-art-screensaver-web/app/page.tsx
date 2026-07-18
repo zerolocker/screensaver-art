@@ -1,4 +1,5 @@
 import { PRICING } from "@screensaver-art/constants"
+import { SITE_DESCRIPTION } from "@/lib/seo"
 import { Header } from "@/components/header"
 import { EmailArrivalTracker } from "@/components/marketing/email-arrival-tracker"
 import { HeroSection } from "@/components/hero-section"
@@ -16,8 +17,7 @@ const jsonLd = {
   name: "Living Art Screensaver",
   operatingSystem: "macOS",
   applicationCategory: "DesktopEnhancementApplication",
-  description:
-    "A Mac screensaver that turns your idle display into a living art gallery of AI-animated artworks, with new pieces added regularly.",
+  description: SITE_DESCRIPTION,
   url: "https://living-art-screensaver.com",
   downloadUrl: "https://living-art-screensaver.com/download/mac",
   offers: [
@@ -26,14 +26,14 @@ const jsonLd = {
       name: "Free",
       price: "0",
       priceCurrency: "USD",
-      description: `Free forever with ${PRICING.freeItemCount} artworks.`,
+      description: "Free forever with a large collection of artworks",
     },
     {
       "@type": "Offer",
       name: "Subscription",
       price: PRICING.promoPrice.replace("$", ""),
       priceCurrency: "USD",
-      description: `Full gallery access, ${PRICING.promoPrice}${PRICING.interval} (${PRICING.billingNote.toLowerCase()}).`,
+      description: "Full gallery access, plus new artworks every day",
     },
   ],
 }

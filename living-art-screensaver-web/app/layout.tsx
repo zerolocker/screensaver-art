@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, Playfair_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { PostHogAuthBridge } from '@/components/posthog-auth-bridge'
+import { SITE_DESCRIPTION } from '@/lib/seo'
 import './globals.css'
 
 const inter = Inter({
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
     default: 'Living Art Screensaver — AI-Animated Art Screensaver for Mac',
     template: '%s — Living Art Screensaver',
   },
-  description: 'A Mac screensaver that turns your idle display into a living art gallery, showcasing AI-animated artworks across every style, with new pieces added regularly. Free Download.',
+  description: SITE_DESCRIPTION,
   icons: {
     icon: { url: '/icon.svg', type: 'image/svg+xml' },
     apple: '/apple-icon.png',

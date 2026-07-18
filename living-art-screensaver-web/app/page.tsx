@@ -43,7 +43,12 @@ export default function Home() {
     <main className="relative w-full overflow-hidden bg-background text-foreground">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        // Escape "<" so no value can break out of the script block (XSS
+        // hardening per the Next.js JSON-LD guide; JSON.stringify alone
+        // doesn't sanitize).
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
       />
       <EmailArrivalTracker />
       <Header />

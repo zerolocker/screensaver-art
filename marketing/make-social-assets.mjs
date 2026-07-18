@@ -21,7 +21,7 @@
 //   --style <text>   override the derived art style (used in captions + hashtags)
 //   --formats <list> comma list of 9x16,1x1 (default: both)
 //   --duration <sec> loop/trim target length (default: 12)
-//   --no-wordmark    don't burn the "LIVING ART" wordmark
+//   --no-wordmark    don't burn the living-art-screensaver.com URL pill
 //   --out <dir>      output base dir (default: marketing/out)
 //
 // Requires: ffmpeg on PATH. No npm deps (Node ≥18 built-ins + fetch).
@@ -36,17 +36,17 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = path.join(__dirname, '..')
 const SITE = 'livingartscreensaver.com'
 
-// A wordmark font we ship on. Falls back to skipping the wordmark if absent.
-const FONT_CANDIDATES = [
-  '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
-  '/System/Library/Fonts/Supplemental/Arial Bold.ttf',
-  '/Library/Fonts/Arial Bold.ttf',
-]
-const FONT = FONT_CANDIDATES.find((f) => existsSync(f)) || null
+// A pre-rendered "gentle" URL pill (frosted, mirrors the in-app title pill),
+// burned bottom-center as a subtle CTA back to the site — replaces the old
+// out-of-context "LIVING ART" wordmark. It's a committed PNG asset (rendered by
+// scripts/PIL into marketing/assets/) so this script stays dependency-free.
+// Skipped automatically if the asset is missing.
+const URL_PILL = path.join(__dirname, 'assets', 'url-pill.png')
+const HAS_PILL = existsSync(URL_PILL)
 
 const FORMATS = {
-  '9x16': { w: 1080, h: 1920, wordmarkY: 'h-150' },
-  '1x1': { w: 1080, h: 1080, wordmarkY: 'h-90' },
+  '9x16': { w: 1080, h: 1920, pillPad: 150 },
+  '1x1': { w: 1080, h: 1080, pillPad: 70 },
 }
 
 // ── arg parsing ─────────────────────────────────────────────────────────────
@@ -106,21 +106,20 @@ async function resolveSource(src, tmp) {
   return abs
 }
 
-function buildFilter({ w, h, wordmark, wordmarkY }) {
+function buildFilter({ w, h, pill, pillPad, pillWidth }) {
   // Blurred, zoomed-in copy fills the frame; the art sits centered and whole on
   // top — the standard "no black bars, art never cropped" reframe.
   const chain = [
     `[0:v]split=2[bg][fg]`,
     `[bg]scale=${w}:${h}:force_original_aspect_ratio=increase,crop=${w}:${h},gblur=sigma=26,eq=brightness=-0.12:saturation=1.08[bgb]`,
     `[fg]scale=${w}:${h}:force_original_aspect_ratio=decrease[fgs]`,
-    `[bgb][fgs]overlay=(W-w)/2:(H-h)/2${wordmark ? '[base]' : ',format=yuv420p[outv]'}`,
+    `[bgb][fgs]overlay=(W-w)/2:(H-h)/2${pill ? '[base]' : ',format=yuv420p[outv]'}`,
   ]
-  if (wordmark) {
-    const text = 'LIVING ART'
-    chain.push(
-      `[base]drawtext=fontfile='${FONT}':text='${text}':fontcolor=white@0.82:fontsize=34:` +
-        `x=(w-text_w)/2:y=${wordmarkY}:shadowcolor=black@0.45:shadowx=0:shadowy=2,format=yuv420p[outv]`,
-    )
+  if (pill) {
+    // Overlay the pre-rendered URL pill (input [1]), scaled to a share of the
+    // frame width and sat bottom-center as a gentle, persistent CTA.
+    chain.push(`[1:v]scale=${pillWidth}:-1[pill]`)
+    chain.push(`[base][pill]overlay=(W-w)/2:H-h-${pillPad},format=yuv420p[outv]`)
   }
   return chain.join(';')
 }
@@ -128,11 +127,13 @@ function buildFilter({ w, h, wordmark, wordmarkY }) {
 function renderFormat({ input, fmtKey, outFile, duration, wordmark }) {
   const fmt = FORMATS[fmtKey]
   if (!fmt) throw new Error(`unknown format ${fmtKey} (use 9x16 or 1x1)`)
-  const useWordmark = wordmark && !!FONT
-  const filter = buildFilter({ ...fmt, wordmark: useWordmark })
+  const usePill = wordmark && HAS_PILL
+  const pillWidth = Math.round(fmt.w * 0.46)
+  const filter = buildFilter({ ...fmt, pill: usePill, pillWidth })
   const args = [
     '-y', '-hide_banner', '-loglevel', 'error',
     '-stream_loop', '-1', '-i', input,
+    ...(usePill ? ['-loop', '1', '-i', URL_PILL] : []),
     '-filter_complex', filter,
     '-map', '[outv]',
     '-t', String(duration),
@@ -195,7 +196,7 @@ async function main() {
       '       [--style <text>] [--formats 9x16,1x1] [--duration 12] [--no-wordmark] [--out <dir>]\n')
     process.exit(a.help ? 0 : 1)
   }
-  if (!FONT) process.stderr.write('  ⚠ no wordmark font found — rendering without the wordmark.\n')
+  if (a.wordmark && !HAS_PILL) process.stderr.write('  ⚠ marketing/assets/url-pill.png not found — rendering without the URL pill.\n')
 
   // Build the work list of { entry-ish, src }.
   let jobs = []

@@ -48,7 +48,8 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 | Marketing **asset engine** (16:9 → 9:16/1:1 + captions) | ✅ run | `marketing/make-social-assets.mjs`; **run 2026-07-12** on newest 6 → `marketing/out/<slug>/` (12 clips + captions). Not yet posted. §11 (A) |
 | **Hero demo clip** | ✅ produced | `marketing/out/hero/` — the **exact hero-section reel** (7 pieces in order, 37.6s @ site cadence, monitor.tsx Inter pill synced to each switch, branded end-card → site) as 16:9 + 1:1 + 6 stills. Social clips now carry a gentle `living-art-screensaver.com` pill (replaced the wordmark). |
 | **Launch kit** (Product Hunt / Show HN / Reddit) | ✅ finalized | `docs/launch-kit.md` — copy aligned to live-site voice + **launch-day runbook** (exact clicks/timing/UTMs) added 2026-07-12. |
-| **Run the launch** (PH + Show HN) | ⏭️ ready — founder-led | Assets + copy + runbook all done. Founder owns: PH account warm-up, the **date**, 5–10 commenters, and the submit clicks. |
+| **Run the launch** (Product Hunt) | ⏭️ **SCHEDULED — Sunday** | All media + copy + runbook done. Founder owns: PH account warm-up, 5–10 commenters, the submit clicks. Day 2 = Reddit (r/macapps). |
+| **Show HN** | 🅿️ parked — not a drop | HN currently restricts **new accounts** from Show HN. Deferred to its own spike once the account is eligible; copy is ready in `launch-kit.md` §2. |
 | Daily social posting + aggregator | ⏭️ next | §4.1 + §11 (B) — pick upload-post / Postiz; asset engine feeds it |
 | SEO landing pages + brand-name SEO | ⏭️ next | §4.3 ("Aerial alternative", "best Mac screensaver", comparison pages) |
 | "Art of the week" email / newsletter | ⏭️ next | §4.6 — needs an email-send path decision |

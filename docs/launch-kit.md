@@ -28,14 +28,19 @@ pieces every night") — safest, since that copy is already yours and shipped:
 
 ## 1. Product Hunt
 
-### Timing
+### Timing — **DECIDED: Sunday** ✅
 - Launch **12:01 AM PT** (PH's day resets on Pacific). A full day of ranking beats
-  a late-morning start.
-- **Tuesday–Thursday** are competitive but high-traffic; **weekends** are quieter
-  (easier to rank #1-3, fewer eyeballs). For a small indie, a weekday is usually
-  worth it.
+  a late-morning start. If you can't be up, PH lets you **schedule** it — do that
+  the night before.
+- **Sunday is a deliberate trade:** fewer launches compete, so a **top-3 badge is
+  much more achievable**, but total traffic is lower than Tue–Thu. For a first
+  launch that's a good bet — the badge and the "featured" credibility are durable
+  assets you can cite forever, whereas a #8 finish on a busy Wednesday isn't.
+- Corollary: **the badge is the goal, not raw traffic.** Optimize for ranking
+  (early comments, fast replies), and treat the traffic spike as a bonus.
 - Line up a handful of friends/early users to comment (not just upvote — PH weights
-  genuine discussion) in the **first 2–3 hours**.
+  genuine discussion) in the **first 2–3 hours**. On a Sunday this matters *more*,
+  because a smaller field means a few real comments move you further.
 
 ### Name
 `Living Art Screensaver`
@@ -96,7 +101,21 @@ ExtensionKit sandboxing, the reframing, whatever. Feedback very welcome. 🙏
 
 ---
 
-## 2. Show HN (Hacker News)
+## 2. Show HN (Hacker News) — 🅿️ **PARKED for the Sunday launch**
+
+> **Why parked:** HN is currently restricting **new accounts** from posting to
+> Show HN, so this can't run alongside the PH launch. **Nothing here is wasted —
+> it's deferred, not dropped.** Show HN is a *separate, independent spike*: it
+> works just as well weeks after launch (arguably better, since you'll have real
+> users and feedback to cite). **Re-entry plan:** age the account and build a
+> little karma by commenting genuinely on HN threads in your wheelhouse
+> (macOS, Swift, AI pipelines) — then post this exact copy once eligible.
+> Do **not** create a throwaway account to get around the limit; HN detects it
+> and it would burn the launch permanently.
+>
+> The founder's own draft (already grammar/fact-checked in conversation) is the
+> version to post — it leads with the museum/Harry-Potter origin story, which is
+> more human than the copy below.
 
 HN rewards the **engineering story and candor**, not marketing. Lead with how it's
 built; let the product be the payoff. Overtly promotional Show HNs get flagged.
@@ -173,33 +192,40 @@ all. Not trying to spam — genuinely made this and would love feedback. Clip be
 > build output, regenerate anytime). Re-run the two commands below to refresh from the
 > newest gallery pieces.
 
-- [x] **Hero demo clip** (37.6s, 1080p 16:9): `marketing/out/hero/living-art-hero-16x9.mp4`
-      — the **exact hero-section reel**: 7 pieces in order (Starry Coast · Stormy Sea · Floating
-      City · Geometric Sunset · Study in Light · Woman and Flora · Cathedral Light) at the site's
-      cadence (6s dwell, 1.15s crossfade), the monitor.tsx frosted pill (Inter) synced to each
-      switch, and a branded end-card → living-art-screensaver.com. Stills: `still_1_…`–`still_6_…`.
-- [x] **1:1 loop** for PH thumbnail / Reddit / social: `marketing/out/hero/living-art-hero-1x1.mp4`.
-- [x] **3–5 stills** (1920×1080): `marketing/out/hero/still_{1_starry,2_cathedral,3_neon,4_snow}.png`.
+- [x] ⭐ **THE LAUNCH VIDEO** (37.6s, 1080p 16:9, **with sound**):
+      `marketing/out/hero/living-art-launch-video-16x9.mp4` — the hero scene rendered from the real
+      site components (enlarged monitor, 84px headline), 7 pieces cycling with their **real gallery
+      audio**, ending on the art-backed end-card → living-art-screensaver.com. **This is the PH
+      gallery's first item.**
+- [x] **Fullscreen art reel** (37.6s): `living-art-hero-16x9.mp4` — same 7 pieces, no monitor
+      chrome. Spare for Reddit/social where the site framing isn't needed.
+- [x] **1:1 loop** for PH thumbnail / Reddit / social: `living-art-hero-1x1.mp4`.
+- [x] **Stills** (1920×1080): `marketing/out/hero/still_1_…`–`still_6_…` (art frames).
+- [x] **Site + app images**: `marketing/out/launch-images/` — `01-hero-title`, `02-collection`,
+      `03-movements`, `05-app-gallery` (the app's Gallery grid, account email redacted).
 - [x] **Per-piece social clips** (9:16 + 1:1 + captions) from the newest 6 pieces:
       `marketing/out/<slug>/` — for daily posting. Regenerate: `node marketing/make-social-assets.mjs --latest 6`.
 - [x] **OG card** verified live — unfurls correctly (checked via microlink; §5 step P-1).
 - [ ] The **one-line pitch** (§0) pasted identically across all channels.
 - [ ] A pinned tweet/X post to point launch traffic at (optional).
 
-Regenerate the hero: `bash <the build script committed alongside, or rerun make-social-assets>`;
-regenerate the social clips: `node marketing/make-social-assets.mjs --latest 6`.
+Regenerate the social clips: `node marketing/make-social-assets.mjs --latest 6`. The launch video
+is rebuilt from a temporary `app/launch-capture` route (headless-Chrome render of the hero + ffmpeg
+composite) — see the PR #63 commits for the recipe.
 
 ## 5. Launch-day runbook (exact clicks, order, timing)
 
 > Founder owns: the accounts, the actual submit clicks, and the date. Everything below
 > is sequenced; timings are the only thing that's rigid (**PH's day resets 12:01 AM PT**).
-> Two-day plan: **Day 1 = Product Hunt**, **Day 2 = Show HN** (stagger so each gets your
-> full attention — never same hour). Reddit threaded through both.
+> **Plan: Day 1 (Sunday) = Product Hunt. Day 2 = Reddit** (promoted into the slot Show HN
+> vacated — see §2 for why it's parked). Show HN runs later as its own spike.
 
-### Pick the date
-- **Tue / Wed / Thu.** Avoid Mon (backlog) and Fri–Sun (low traffic, though easier to rank).
-- Confirm nothing big is already leading PH that day (glance at producthunt.com the night before).
-- Block ~4 focused hours on Day 1 morning to reply to comments — reply speed drives ranking.
+### The date — **Sunday** ✅
+- Glance at producthunt.com the night before to see what's already leading.
+- **Block ~4 focused hours Sunday morning** to reply to comments — reply speed is the single
+  biggest ranking lever you control, and it matters more on a quiet Sunday field.
+- Because Show HN is parked, **all of Sunday's attention goes to PH** — that's a genuine
+  advantage; the original two-front plan always risked splitting focus.
 
 ### Use UTM links so PostHog attributes the traffic (§3 of the strategy)
 Paste the matching link wherever you post (the demand-probe + funnel events tag onto the session):
@@ -214,40 +240,43 @@ Paste the matching link wherever you post (the demand-probe + funnel events tag 
   end-to-end install from the site on a clean-ish Mac if you can.
 - **P-3. Warm the PH account** — make sure it isn't brand-new (PH throttles new accounts):
   log in, complete the profile, upvote/comment on a couple of products this week.
-- **P-4. (Optional) Literal screensaver screen-capture** — if you want a *real* ScreenSaverEngine
-  recording on top of the faithful hero: System Settings → Screen Saver → pick **Living Art** →
-  start a QuickTime **New Screen Recording** → trigger the saver (`open -a ScreenSaverEngine`
-  in Terminal, or just wait for idle) → **don't touch the mouse/keyboard for ~25s** (any input
-  dismisses it) → stop the recording → trim to 15–20s. (Or tell me when you'll be away from the
-  Mac for 30s and I'll capture it for you.)
+- **P-4. Ship the new-brand app build (recommended).** The site + launch video now use the new
+  **swirl** logo, but the downloadable app is still **v1.4.5 with the old icon** — a PH visitor
+  who installs on launch day sees the old mark in their Dock. `./scripts/release.sh` (see
+  CLAUDE.md) picks up `electron-app/build/icon.png` from master. Not a blocker, but it's the one
+  visible brand seam left.
 - **P-5. Line up 5–10 people** — DM them the date/time and ask for **a comment** (a genuine
   reaction/question), not just an upvote. PH weights discussion; a pile of silent upvotes looks
-  botted. Do **not** post "please upvote" anywhere.
-- **P-6. Paste-ready doc** — have the PH tagline/description/first-comment and the Show HN
-  title/body in a scratch note, plus the asset files open in Finder.
+  botted. Do **not** post "please upvote" anywhere. On a Sunday a handful of real comments goes
+  a long way.
+- **P-6. Paste-ready doc** — have the PH tagline/description/first-comment in a scratch note,
+  plus the asset files open in Finder.
 
 ### Day 1 — Product Hunt
 - **12:01 AM PT sharp:** submit the product (Name/Tagline/Description/Topics from §1). If you
   can't be up at 12:01, PH lets you **schedule** the launch — do that the night before.
-  - **Media order:** thumbnail = `living-art-hero-1x1.mp4` (motion) or `still_1_starry.png`;
-    gallery = `living-art-hero-16x9.mp4` **first**, then the 4 stills. Motion first, always.
+  - **Media order:** gallery item #1 = ⭐ `living-art-launch-video-16x9.mp4` (the launch video —
+    motion + sound). Then `05-app-gallery.png` (shows it's a real app), `02-collection.png`,
+    `03-movements.png`, and 1–2 art stills. Thumbnail = `living-art-hero-1x1.mp4` or
+    `still_1_starry-coast.png`. **Motion first, always.**
   - **Topics:** Mac, Design Tools, Art, Productivity.
 - **12:02 AM (immediately):** post the **maker's first comment** (§1). This is non-negotiable —
   it frames the whole thread.
 - **First 2–3 hours:** ping your 5–10 people with the direct PH link (the UTM link above for the
   site, but send them the *PH post* link to comment on). Reply to **every** comment within minutes,
   technical and warm. Ask commenters questions back to keep threads alive.
-- **Midday:** post to **one** subreddit — **r/macapps**, title from §3, lead with the hero clip,
-  disclose you're the maker, link the UTM'd site. Engage in the thread; don't cross-post the same hour.
+- **All day:** stay on PH. **Don't** post to Reddit today — it splits your attention and the
+  PH thread is where replies actually move ranking. Reddit is tomorrow.
 - **All day:** watch the PostHog funnel live (download → install/activate → subscribe). Note the
   drop-off points; they're your post-launch to-do list.
 
-### Day 2 — Show HN
-- **~8:00–9:30 AM ET** (HN's high-traffic window). Submit **Show HN** (title from §2, URL =
-  the Show-HN UTM link). Immediately post **the body as the first comment** (§2).
-- Reply **fast, technical, non-defensive.** Lead with how it's built (the nightly vision-gate
-  loop, ExtensionKit sandbox, the honest "obfuscation ≠ DRM"). Candor ranks on HN.
-- **Never** ask for upvotes (fastest way to get flagged/killed). Let the engineering story carry it.
+### Day 2 (Monday) — Reddit
+_(This slot was Show HN; it's parked — see §2. Reddit gets the day instead.)_
+- **Morning:** post to **r/macapps** (title from §3) — lead with the launch video or the
+  fullscreen reel, disclose you're the maker, use the r_macapps UTM link. This is the highest-fit
+  sub; give it its own day rather than burying it in PH day.
+- Reply to every comment. Reddit rewards a maker who actually engages.
+- **Do not** cross-post the same day. One sub at a time.
 
 ### Days 3–5 — stretch the tail
 - One more Reddit post per day, one sub at a time, each led by a **different** clip:
@@ -259,5 +288,9 @@ Paste the matching link wherever you post (the demand-probe + funnel events tag 
 Launch traffic decays in ~48h. Convert it before it's gone:
 - Watch the PostHog funnel (download → activate → subscribe) live during the spike.
 - Capture emails (the site's flows) so the spike leaves a list behind.
-- Fold the best HN/PH feedback into the roadmap — and quote any nice testimonials
+- Fold the best PH/Reddit feedback into the roadmap — and quote any nice testimonials
   on the site.
+- **If you get a PH badge, put it on the site** (top-5/product-of-the-day badges are
+  durable social proof, and PH gives you the embed).
+- **Then run Show HN** as its own spike once the account is eligible (§2) — with real
+  users and launch feedback in hand, the post gets *better*, not staler.

@@ -131,6 +131,7 @@ When you add a new style, append it under the section it best fits.
 - Chinese ink painting
 - Dunhuang Mogao Cave Mural
 - Sumi-e Ink Wash
+- Balinese Kamasan Painting (earth pigment on cloth, Bali)
 - Song Dynasty Landscape Painting
 - Yuan Dynasty Landscape
 - Ming Dynasty Silk Painting
@@ -216,6 +217,7 @@ When you add a new style, append it under the section it best fits.
 - Coptic Textile Art
 - Sumerian Cuneiform Relief
 - Mesopotamian Cylinder Seal Impression
+- Mari Palace Wall Painting (Old Babylonian fresco on lime plaster)
 - Assyrian bas-relief
 - Achaemenid Persian metalwork
 - Achaemenid Persepolis Relief
@@ -249,6 +251,7 @@ When you add a new style, append it under the section it best fits.
 - Aztec Temple Mural Painting
 - Inca Textile Pattern
 - Moche Ceramics
+- Moche Polychrome Adobe Mural
 - Nazca Lines
 - Olmec Colossal Heads
 - Teotihuacan Fresco

@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { createNativeClient } from '@/lib/supabase/native-client'
+import { isSubscriptionActive } from '@screensaver-art/constants'
 import type { User } from '@supabase/supabase-js'
 
 export interface SubscriptionRow {
@@ -10,6 +11,8 @@ export interface SubscriptionRow {
   status: string
   current_period_start: string | null
   current_period_end: string | null
+  lifetime_purchased_at: string | null
+  lifetime_receipt_url: string | null
 }
 
 export interface NativeAuthResult {
@@ -40,12 +43,12 @@ export async function verifyNativeAuth(request: NextRequest): Promise<NativeAuth
 
     const { data: subscription } = await supabase
       .from('subscriptions')
-      .select('id, user_id, stripe_customer_id, stripe_subscription_id, status, current_period_start, current_period_end')
+      .select('id, user_id, stripe_customer_id, stripe_subscription_id, status, current_period_start, current_period_end, lifetime_purchased_at, lifetime_receipt_url')
       .eq('user_id', user.id)
       .single()
 
-    const isSubscribed =
-      subscription?.status === 'active' || subscription?.status === 'trialing'
+    // Full access = active/trialing subscription OR the one-time lifetime purchase.
+    const isSubscribed = isSubscriptionActive(subscription)
 
     return { user, isSubscribed, subscription: subscription ?? null }
   } catch {

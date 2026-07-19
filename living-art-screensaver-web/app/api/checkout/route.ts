@@ -2,17 +2,19 @@ import { NextRequest, NextResponse, after } from 'next/server'
 import { verifyNativeAuth } from '@/lib/auth/verify-native-auth'
 import { createSubscriptionCheckoutSession } from '@/lib/checkout'
 import { getPostHogClient, flushPostHog } from '@/lib/posthog-server'
+import type { PaidPlan } from '@screensaver-art/constants'
 
 /**
  * App-initiated checkout. The Electron app is already signed in, so instead of
  * bouncing the user to the website (re-login + a second "Subscribe" click) it
- * POSTs its Supabase access token here and we hand back a Stripe Checkout URL
- * the app opens directly — straight to payment, no website session needed.
+ * POSTs its Supabase access token here (with `{ plan }` in the JSON body) and
+ * we hand back a Stripe Checkout URL the app opens directly — straight to
+ * payment, no website session needed.
  *
  * Success/cancel land on the public `/checkout/complete` page (the browser that
  * opens Stripe checkout has no website session, so it can't use `/account`).
- * The subscription itself is synced by the Stripe webhook, and the app
- * re-verifies subscription status when its window regains focus.
+ * The purchase itself is synced by the Stripe webhook, and the app re-verifies
+ * subscription status when its window regains focus.
  */
 export async function POST(request: NextRequest) {
   const { user, isSubscribed, subscription } = await verifyNativeAuth(request)
@@ -21,7 +23,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  if (isSubscribed) {
+  // `plan` defaults to monthly so requests from app versions that predate the
+  // lifetime offer keep working.
+  const body: { plan?: string } = await request.json().catch(() => ({}))
+  const plan: PaidPlan = body.plan === 'lifetime' ? 'lifetime' : 'monthly'
+
+  if (subscription?.lifetime_purchased_at) {
+    return NextResponse.json(
+      { error: 'You already own the full gallery' },
+      { status: 409 },
+    )
+  }
+
+  // An active subscriber may still buy lifetime (the upgrade path — the webhook
+  // cancels their subscription on purchase); another subscription is a no.
+  if (plan === 'monthly' && isSubscribed) {
     return NextResponse.json(
       { error: 'You already have an active subscription' },
       { status: 409 },
@@ -30,11 +46,12 @@ export async function POST(request: NextRequest) {
 
   const origin = resolveOrigin(request)
   const result = await createSubscriptionCheckoutSession({
+    plan,
     userId: user.id,
     userEmail: user.email,
     existingCustomerId: subscription?.stripe_customer_id,
-    successUrl: `${origin}/checkout/complete?status=success`,
-    cancelUrl: `${origin}/checkout/complete?status=canceled`,
+    successUrl: `${origin}/checkout/complete?status=success&plan=${plan}`,
+    cancelUrl: `${origin}/checkout/complete?status=canceled&plan=${plan}`,
   })
 
   if (result.error || !result.url) {
@@ -50,7 +67,7 @@ export async function POST(request: NextRequest) {
   getPostHogClient().capture({
     distinctId: user.id,
     event: 'app_checkout_session_created',
-    properties: { source: 'electron_app', existing_customer: Boolean(subscription?.stripe_customer_id) },
+    properties: { source: 'electron_app', plan, existing_customer: Boolean(subscription?.stripe_customer_id) },
   })
   after(flushPostHog)
 

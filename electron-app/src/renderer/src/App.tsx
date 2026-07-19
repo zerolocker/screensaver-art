@@ -15,6 +15,7 @@ import { ScreensaverUnavailable } from './pages/ScreensaverUnavailable'
 import { SyncProvider } from './lib/SyncProvider'
 import { InstallerProvider, useInstaller } from './lib/InstallerProvider'
 import { UpdateProvider } from './lib/UpdateProvider'
+import { PlanPickerProvider } from './lib/PlanPickerProvider'
 
 // How long to wait for getSession() to validate/refresh the token at startup
 // before falling back to the stored session. Comfortably covers a normal online
@@ -156,7 +157,9 @@ export function App() {
     <SyncProvider>
       <InstallerProvider>
         <UpdateProvider>
-          <AuthedShell session={session} />
+          <PlanPickerProvider>
+            <AuthedShell session={session} />
+          </PlanPickerProvider>
         </UpdateProvider>
       </InstallerProvider>
     </SyncProvider>

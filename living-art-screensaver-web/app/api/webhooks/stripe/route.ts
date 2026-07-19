@@ -4,6 +4,7 @@ import { stripe } from '@/lib/stripe'
 import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
 import { getPostHogClient, flushPostHog } from '@/lib/posthog-server'
+import { isLifetimeCheckoutSession, recordLifetimePurchase } from '@/lib/lifetime'
 
 // Use service role for webhook handling (bypasses RLS)
 const supabaseAdmin = createClient(
@@ -99,11 +100,22 @@ export async function POST(req: Request) {
 
   try {
     switch (event.type) {
-      // Subscription created via our Checkout — record initial state. This is the
-      // canonical "a free user converted to paid" moment.
+      // A purchase completed via our Checkout — either the subscription starting
+      // or the one-time lifetime purchase. This is the canonical "a free user
+      // converted to paid" moment.
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
-        if (session.subscription) {
+        if (isLifetimeCheckoutSession(session)) {
+          await recordLifetimePurchase(session)
+          const userId = session.metadata?.supabase_user_id
+          if (userId) {
+            posthog.capture({
+              distinctId: userId,
+              event: 'lifetime_purchased',
+              properties: { stripe_checkout_session_id: session.id },
+            })
+          }
+        } else if (session.subscription) {
           await syncSubscriptionById(session.subscription as string)
           const userId = session.metadata?.supabase_user_id
           if (userId) {

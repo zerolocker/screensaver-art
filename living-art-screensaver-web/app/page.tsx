@@ -35,6 +35,13 @@ const jsonLd = {
       priceCurrency: "USD",
       description: "Full gallery access, plus new artworks every day",
     },
+    {
+      "@type": "Offer",
+      name: "Lifetime",
+      price: PRICING.lifetimePrice.replace("$", ""),
+      priceCurrency: "USD",
+      description: "One-time purchase — the full gallery and all future artworks, forever",
+    },
   ],
 }
 

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { Loader2, WifiOff, Search, X, CheckCheck } from 'lucide-react'
 import { GALLERY_ENDPOINT } from '../lib/api'
-import { startCheckout } from '../lib/checkout'
+import { usePlanPicker } from '../lib/PlanPickerProvider'
 import { AppBanners } from '../components/AppBanners'
 import { PosterCard } from '../components/PosterCard'
 import { ArtModal } from '../components/ArtModal'
@@ -74,6 +74,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
   )
 
   const { syncNow } = useGallerySync()
+  const { openPlanPicker } = usePlanPicker()
   const syncTimer = useRef<number | undefined>(undefined)
 
   const fetchGallery = useCallback(async () => {
@@ -144,9 +145,11 @@ export function GalleryPage({ session }: GalleryPageProps) {
     return () => window.clearTimeout(syncTimer.current)
   }, [])
 
+  // A lock click opens the plan picker (lifetime vs subscribe), not checkout
+  // directly — the plan choice happens in-app.
   const onSubscribe = useCallback(() => {
-    void startCheckout('gallery_lock')
-  }, [])
+    openPlanPicker('gallery_lock')
+  }, [openPlanPicker])
 
   const persistAndSync = useCallback(
     (next: Set<string>) => {

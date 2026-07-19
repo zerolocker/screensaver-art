@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 
 // updater.ts imports electron + electron-updater at module load; stub both so the
 // pure reducer can be imported without an Electron runtime.
-vi.mock('electron', () => ({ app: { isPackaged: false } }))
+vi.mock('electron', () => ({ app: { isPackaged: false }, powerMonitor: { on: vi.fn() } }))
 vi.mock('electron-updater', () => ({ autoUpdater: {} }))
 
 import { reduceUpdateState, type UpdateState } from './updater'
@@ -55,5 +55,32 @@ describe('reduceUpdateState', () => {
         message: 'net::ERR',
       }),
     ).toEqual({ status: 'error', version: '1.2.0', error: 'net::ERR' })
+  })
+
+  // Once downloaded, the "Relaunch" banner must never flicker away because a
+  // background re-check ran (observed in the field: every 6h re-check re-entered
+  // 'checking' → banner hidden → full zip re-downloaded → 'ready' again).
+  describe('ready is sticky', () => {
+    const READY: UpdateState = { status: 'ready', version: '1.2.0' }
+
+    it('a re-check does not hide the banner', () => {
+      expect(reduceUpdateState(READY, { type: 'checking' })).toEqual(READY)
+    })
+
+    it('not-available does not hide the banner', () => {
+      expect(reduceUpdateState(READY, { type: 'not-available' })).toEqual(READY)
+    })
+
+    it('re-announcing the same downloaded version does not restart the download UI', () => {
+      expect(reduceUpdateState(READY, { type: 'available', version: '1.2.0' })).toEqual(READY)
+    })
+
+    it('a NEWER version does supersede a downloaded one', () => {
+      expect(reduceUpdateState(READY, { type: 'available', version: '1.3.0' })).toEqual({
+        status: 'downloading',
+        version: '1.3.0',
+        percent: 0,
+      })
+    })
   })
 })

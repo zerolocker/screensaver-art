@@ -40,10 +40,11 @@ export async function GET(
     )
   }
 
-  // ── Resolve the latest release (cached briefly) ────────────────────────────
+  // ── Resolve the latest release (always fresh: a stale "latest" here delays
+  // every installed app's update banner — see getLatestRelease) ──────────────
   let release
   try {
-    release = await getLatestRelease(token)
+    release = await getLatestRelease(token, { fresh: true })
   } catch (err) {
     console.error('[updates] failed to fetch latest release:', err)
     return NextResponse.json(

@@ -30,11 +30,22 @@ export function githubHeaders(token: string): HeadersInit {
   }
 }
 
-/** Fetch the latest release (cached briefly). Throws on a non-OK response. */
-export async function getLatestRelease(token: string): Promise<GitHubRelease> {
+/**
+ * Fetch the latest release. Throws on a non-OK response.
+ *
+ * `fresh` skips the data cache. The default (cached) mode is
+ * stale-while-revalidate: after the window expires the next request still gets
+ * the OLD release and only *triggers* a background refresh — on a low-traffic
+ * route that can serve a just-superseded release for many minutes (observed:
+ * the auto-update feed still said 1.4.5 seventeen minutes after 1.4.6
+ * published). Fine for /download (a human retrying is cheap); wrong for
+ * /updates, where a stale answer silently delays every installed app's
+ * "Relaunch to update" banner — so the updater feed passes `fresh: true`.
+ */
+export async function getLatestRelease(token: string, opts?: { fresh?: boolean }): Promise<GitHubRelease> {
   const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
     headers: githubHeaders(token),
-    next: { revalidate: REVALIDATE_SECONDS },
+    ...(opts?.fresh ? { cache: 'no-store' as const } : { next: { revalidate: REVALIDATE_SECONDS } }),
   })
   if (!res.ok) throw new Error(`GitHub releases/latest → ${res.status}`)
   return (await res.json()) as GitHubRelease

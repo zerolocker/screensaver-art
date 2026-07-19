@@ -20,7 +20,7 @@
 // post-quitAndInstall relaunch (the appex CFBundleVersion bump is what triggers
 // it). See CLAUDE.md › Embedded .appex compatibility.
 
-import { app, type BrowserWindow } from 'electron'
+import { app, powerMonitor, type BrowserWindow } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { log } from './logger'
 
@@ -51,14 +51,23 @@ export type UpdaterEvent =
  * on, so an available update goes straight to `downloading` (the download starts
  * immediately); progress keeps the version we learned at `available`; a finished
  * download is `ready` (the only state that shows the "Relaunch" prompt).
+ *
+ * `ready` is sticky: once an update is downloaded, a later 'checking' /
+ * 'not-available' must not hide the "Relaunch" banner (checkForUpdates skips
+ * re-checks while ready, but this guards any event that slips through — the
+ * only ways forward from ready are relaunching or a *different* version
+ * becoming available).
  */
 export function reduceUpdateState(prev: UpdateState, event: UpdaterEvent): UpdateState {
   switch (event.type) {
     case 'checking':
+      if (prev.status === 'ready') return prev
       return { status: 'checking', version: prev.version }
     case 'available':
+      if (prev.status === 'ready' && prev.version === event.version) return prev
       return { status: 'downloading', version: event.version, percent: 0 }
     case 'not-available':
+      if (prev.status === 'ready') return prev
       return { status: 'idle' }
     case 'progress':
       return { status: 'downloading', version: prev.version, percent: event.percent }
@@ -69,12 +78,25 @@ export function reduceUpdateState(prev: UpdateState, event: UpdaterEvent): Updat
   }
 }
 
-const RECHECK_INTERVAL_MS = 6 * 60 * 60 * 1000 // re-check every 6 hours while running
+// Why a check can start: which trigger fired. Logged with every check so the
+// time-to-banner after a release can be reconstructed from main.log.
+export type CheckTrigger = 'launch' | 'interval' | 'focus' | 'resume' | 'manual'
+
+const RECHECK_INTERVAL_MS = 6 * 60 * 60 * 1000 // background fallback while running
 const INITIAL_CHECK_DELAY_MS = 3_000 // let the window settle before the first check
+// A window-focus check runs at most this often. Focus is the high-value moment
+// (the user is *looking* at the app — exactly when the banner can be seen), so
+// this is deliberately much shorter than the background interval.
+const FOCUS_CHECK_MIN_GAP_MS = 15 * 60 * 1000
+// After system wake, give the network a moment to come back before checking.
+// setInterval doesn't fire while the machine sleeps (the 6h cadence stretches —
+// observed 6h42m gaps in the field), so wake gets its own trigger.
+const RESUME_CHECK_DELAY_MS = 10_000
 
 let currentState: UpdateState = { status: 'idle' }
 let getWindow: () => BrowserWindow | null = () => null
 let wired = false
+let lastCheckStartedAt = 0
 
 function emit(event: UpdaterEvent): void {
   currentState = reduceUpdateState(currentState, event)
@@ -88,14 +110,29 @@ export function getUpdateState(): UpdateState {
   return currentState
 }
 
-export async function checkForUpdates(): Promise<void> {
+export async function checkForUpdates(trigger: CheckTrigger = 'manual'): Promise<void> {
   if (!app.isPackaged) return
+  // Once an update is downloaded there is nothing left to check for — and a
+  // re-check would re-download the whole zip (autoDownload re-fetches a version
+  // it already has: observed ~30 redundant full downloads of one release over 8
+  // days in the field) and momentarily knock the "Relaunch" banner out.
+  if (currentState.status === 'ready') {
+    log.info('updater', 'check skipped: update already downloaded', {
+      trigger,
+      version: currentState.version,
+    })
+    return
+  }
+  const sinceLastCheckMs = lastCheckStartedAt ? Date.now() - lastCheckStartedAt : null
+  lastCheckStartedAt = Date.now()
+  log.info('updater', 'check started', { trigger, sinceLastCheckMs })
   try {
     await autoUpdater.checkForUpdates()
   } catch (err) {
     // checkForUpdates can reject on a transient network failure; the 'error'
     // event also fires, so just log here and let the state machine handle it.
     log.warn('updater', 'checkForUpdates threw', {
+      trigger,
       error: err instanceof Error ? err.message : String(err),
     })
   }
@@ -138,12 +175,39 @@ export function initUpdater(windowGetter: () => BrowserWindow | null): void {
   autoUpdater.on('update-available', (info) => emit({ type: 'available', version: info.version }))
   autoUpdater.on('update-not-available', () => emit({ type: 'not-available' }))
   autoUpdater.on('download-progress', (p) => emit({ type: 'progress', percent: Math.round(p.percent) }))
-  autoUpdater.on('update-downloaded', (info) => emit({ type: 'downloaded', version: info.version }))
+  autoUpdater.on('update-downloaded', (info) => {
+    // The moment the "Relaunch to update" banner becomes possible — log the
+    // time from check start so time-to-banner is measurable per release.
+    log.info('updater', 'update downloaded (banner ready)', {
+      version: info.version,
+      sinceCheckStartMs: lastCheckStartedAt ? Date.now() - lastCheckStartedAt : null,
+    })
+    emit({ type: 'downloaded', version: info.version })
+  })
   autoUpdater.on('error', (err) =>
     emit({ type: 'error', message: err instanceof Error ? err.message : String(err) }),
   )
 
   log.info('updater', 'auto-update enabled', { version: app.getVersion() })
-  setTimeout(() => void checkForUpdates(), INITIAL_CHECK_DELAY_MS)
-  setInterval(() => void checkForUpdates(), RECHECK_INTERVAL_MS)
+  setTimeout(() => void checkForUpdates('launch'), INITIAL_CHECK_DELAY_MS)
+  // Background fallback. setInterval doesn't tick during system sleep, so this
+  // alone can stretch far past 6h — the focus/resume triggers below are what
+  // keep discovery timely for a machine that sleeps or an app left open.
+  setInterval(() => void checkForUpdates('interval'), RECHECK_INTERVAL_MS)
+
+  // The user just brought the app to the front — the one moment the banner is
+  // actually visible. Throttled so window-hopping doesn't hammer the feed.
+  app.on('browser-window-focus', () => {
+    if (Date.now() - lastCheckStartedAt < FOCUS_CHECK_MIN_GAP_MS) return
+    void checkForUpdates('focus')
+  })
+
+  // System wake: the interval timer was suspended and may be hours away from
+  // its next tick; check shortly after the network is back instead.
+  powerMonitor.on('resume', () => {
+    setTimeout(() => {
+      if (Date.now() - lastCheckStartedAt < FOCUS_CHECK_MIN_GAP_MS) return
+      void checkForUpdates('resume')
+    }, RESUME_CHECK_DELAY_MS)
+  })
 }

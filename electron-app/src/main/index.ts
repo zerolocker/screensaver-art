@@ -237,7 +237,7 @@ ipcMain.handle('screensaver:preview', () => startScreensaverPreview())
 // Auto-update (electron-updater). No-op in dev / unpackaged builds.
 // ---------------------------------------------------------------------------
 ipcMain.handle('update:getState', () => getUpdateState())
-ipcMain.handle('update:check', () => checkForUpdates())
+ipcMain.handle('update:check', () => checkForUpdates('manual'))
 ipcMain.handle('update:quitAndInstall', () => quitAndInstall())
 
 ipcMain.handle('shell:openExternal', (_evt, url: string) => shell.openExternal(url))

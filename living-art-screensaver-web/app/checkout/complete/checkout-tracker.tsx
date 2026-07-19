@@ -9,14 +9,14 @@ import posthog from 'posthog-js'
 // visitor's distinct_id — these events stitch to that person. The authoritative
 // "they actually paid" signal is the server-side `subscription_started` webhook
 // event; this just captures the funnel's final client step.
-export function CheckoutTracker({ status }: { status: string | undefined }) {
+export function CheckoutTracker({ status, plan }: { status: string | undefined; plan: string | undefined }) {
   useEffect(() => {
     if (status === 'success') {
-      posthog.capture('checkout_completed', { source: 'app_initiated' })
+      posthog.capture('checkout_completed', { source: 'app_initiated', plan })
     } else if (status === 'canceled') {
-      posthog.capture('checkout_canceled', { source: 'app_initiated' })
+      posthog.capture('checkout_canceled', { source: 'app_initiated', plan })
     }
-  }, [status])
+  }, [status, plan])
 
   return null
 }

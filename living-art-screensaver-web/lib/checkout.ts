@@ -1,8 +1,11 @@
 import 'server-only'
 
 import { stripe } from '@/lib/stripe'
+import type { PaidPlan } from '@screensaver-art/constants'
 
 export interface CheckoutSessionOptions {
+  /** Which paid offer: the recurring subscription or the one-time lifetime purchase. */
+  plan: PaidPlan
   /** Supabase user id — stamped into Stripe metadata so the webhook can attribute the sub. */
   userId: string
   userEmail?: string | null
@@ -13,21 +16,30 @@ export interface CheckoutSessionOptions {
 }
 
 /**
- * Creates a Stripe Checkout Session for the single subscription product. Shared
- * by the website server action (cookie-authed) and the `/api/checkout` route
+ * Creates a Stripe Checkout Session for either paid offer. Shared by the
+ * website server action (cookie-authed) and the `/api/checkout` route
  * (Bearer-authed, called by the Electron app) so there's one place that knows
  * how the session is built.
  *
- * The charged amount is the Stripe catalog Price (`STRIPE_PRICE_ID`, set
- * per-environment in Vercel — test vs live differ by ID). See
- * docs/stripe-webhooks.md.
+ * The charged amounts are Stripe catalog Prices, set per-environment in Vercel
+ * (test vs live differ by ID): `STRIPE_PRICE_ID` (recurring, quarterly) and
+ * `STRIPE_LIFETIME_PRICE_ID` (one-time, $15.99). See docs/stripe-webhooks.md.
+ *
+ * Lifetime sessions run in `payment` mode and carry `purpose: 'lifetime'` in
+ * metadata — that's what the webhook keys on to record the purchase (and cancel
+ * any running subscription, so an upgrading subscriber is never double-billed).
  */
 export async function createSubscriptionCheckoutSession(
   opts: CheckoutSessionOptions,
 ): Promise<{ url?: string; error?: string }> {
-  const priceId = process.env.STRIPE_PRICE_ID
+  const priceId =
+    opts.plan === 'lifetime' ? process.env.STRIPE_LIFETIME_PRICE_ID : process.env.STRIPE_PRICE_ID
   if (!priceId) {
-    console.error('STRIPE_PRICE_ID is not configured')
+    console.error(
+      opts.plan === 'lifetime'
+        ? 'STRIPE_LIFETIME_PRICE_ID is not configured'
+        : 'STRIPE_PRICE_ID is not configured',
+    )
     return { error: 'Pricing is not configured. Please contact support.' }
   }
 
@@ -40,9 +52,14 @@ export async function createSubscriptionCheckoutSession(
     customerId = customer.id
   }
 
+  const metadata = {
+    supabase_user_id: opts.userId,
+    ...(opts.plan === 'lifetime' ? { purpose: 'lifetime' } : {}),
+  }
+
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
-    mode: 'subscription',
+    mode: opts.plan === 'lifetime' ? 'payment' : 'subscription',
     payment_method_types: ['card'],
     // Lets users enter a Stripe promotion code at checkout. Doubles as the
     // zero-cost way to smoke-test the *live* flow: a 100%-off live coupon runs
@@ -51,10 +68,10 @@ export async function createSubscriptionCheckoutSession(
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: opts.successUrl,
     cancel_url: opts.cancelUrl,
-    subscription_data: {
-      metadata: { supabase_user_id: opts.userId },
-    },
-    metadata: { supabase_user_id: opts.userId },
+    ...(opts.plan === 'lifetime'
+      ? { payment_intent_data: { metadata } }
+      : { subscription_data: { metadata } }),
+    metadata,
   })
 
   return { url: session.url ?? undefined }

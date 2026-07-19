@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { startCheckout } from '../lib/checkout'
+import { usePlanPicker } from '../lib/PlanPickerProvider'
 import { UpsellBanner } from './UpsellBanner'
 import { ScreensaverSetBanner } from './ScreensaverSetBanner'
 import { ScreensaverStatusBanner, LOCK_SCREEN_SETTINGS_URL } from './ScreensaverStatusBanner'
@@ -34,6 +34,7 @@ export function AppBanners({ showUpsell, lockedCount }: AppBannersProps) {
     useInstaller()
   const { state: update, updateReady, relaunch } = useUpdate()
   const { reporting, reportResult, sendReport } = useErrorReport()
+  const { openPlanPicker } = usePlanPicker()
 
   const [relaunching, setRelaunching] = useState(false)
   const handleRelaunch = async () => {
@@ -77,7 +78,7 @@ export function AppBanners({ showUpsell, lockedCount }: AppBannersProps) {
         />
       )}
       {showUpsell && (
-        <UpsellBanner onSubscribe={() => void startCheckout('upsell_banner')} lockedCount={lockedCount} />
+        <UpsellBanner onUnlock={() => openPlanPicker('upsell_banner')} lockedCount={lockedCount} />
       )}
     </>
   )

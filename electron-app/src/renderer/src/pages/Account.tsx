@@ -9,6 +9,7 @@ import {
   Button,
 } from '@screensaver-art/ui'
 import type { Subscription } from '@screensaver-art/ui'
+import { isSubscriptionActive } from '@screensaver-art/constants'
 import { SUBSCRIPTION_VERIFY_ENDPOINT } from '../lib/api'
 import { startCheckout } from '../lib/checkout'
 import { log } from '../lib/log'
@@ -98,10 +99,6 @@ export function AccountPage({ session }: AccountPageProps) {
     setClearing(false)
   }
 
-  function isActiveSubscription(sub: Subscription | null): boolean {
-    return sub?.status === 'active' || sub?.status === 'trialing'
-  }
-
   function formatBytes(bytes: number): string {
     if (bytes === 0) return '0 B'
     const k = 1024
@@ -114,7 +111,7 @@ export function AccountPage({ session }: AccountPageProps) {
     // No top padding: content starts flush under the app shell's titlebar strip
     // so it lines up with the sidebar title (matches the Gallery tab).
     <div className="px-6 pb-6">
-      <AppBanners showUpsell={!subLoading && !isActiveSubscription(subscription)} />
+      <AppBanners showUpsell={!subLoading && !isSubscriptionActive(subscription)} />
 
       <div className="space-y-6">
         {/* Account info */}
@@ -146,16 +143,19 @@ export function AccountPage({ session }: AccountPageProps) {
         ) : (
           <SubscriptionCard
             subscription={subscription}
-            onSubscribe={async () => {
+            onCheckout={async (plan) => {
               // Skip the website re-login + extra click: create a Stripe checkout
-              // from the app's session and open it directly.
-              await startCheckout('account_card')
+              // from the app's session and open it directly. The card's buttons
+              // are per-plan ("Buy once - own it forever" / "Subscribe" / "Upgrade to Lifetime"),
+              // so no plan picker here.
+              await startCheckout('account_card', plan)
               return {}
             }}
             onManage={async () => {
               window.electronAPI.shell.openExternal('https://living-art-screensaver.com/account')
               return {}
             }}
+            openExternal={(url) => void window.electronAPI.shell.openExternal(url)}
           />
         )}
 

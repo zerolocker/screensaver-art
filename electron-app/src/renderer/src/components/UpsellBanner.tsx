@@ -3,13 +3,14 @@ import { Button } from '@screensaver-art/ui'
 import { PRICING } from '@screensaver-art/constants'
 
 interface UpsellBannerProps {
-  onSubscribe: () => void
+  /** Opens the plan-picker modal (lifetime vs subscription). */
+  onUnlock: () => void
   /** Number of locked pieces. When > 0 the copy quantifies the wall ("Unlock N
       more artworks") — concrete scarcity converts better than "the full gallery". */
   lockedCount?: number
 }
 
-export function UpsellBanner({ onSubscribe, lockedCount }: UpsellBannerProps) {
+export function UpsellBanner({ onUnlock, lockedCount }: UpsellBannerProps) {
   const headline =
     lockedCount && lockedCount > 0
       ? `Unlock ${lockedCount} more artworks`
@@ -22,13 +23,13 @@ export function UpsellBanner({ onSubscribe, lockedCount }: UpsellBannerProps) {
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-foreground">{headline}</p>
         <p className="text-sm text-muted-foreground">
-          You're on the free plan — {PRICING.freeItemCount} artworks. Unlock the full gallery plus
-          new pieces every day for {PRICING.promoPrice}
-          {PRICING.interval}. {PRICING.billingNote}.
+          You're on the free plan — {PRICING.freeItemCount} artworks. Unlock everything plus new
+          pieces added every day from {PRICING.promoPrice}
+          {PRICING.interval}, or one payment of {PRICING.lifetimePrice}.
         </p>
       </div>
-      <Button onClick={onSubscribe} className="shrink-0">
-        Subscribe
+      <Button onClick={onUnlock} className="shrink-0">
+        Unlock
       </Button>
     </div>
   )

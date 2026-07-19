@@ -57,7 +57,7 @@ class UpsellPill: NSView {
         icon.setContentHuggingPriority(.required, for: .horizontal)
 
         let lbl = NSTextField(labelWithString:
-            "Enjoying the free preview? Subscribe in app to unlock the full gallery")
+            "Enjoying the free preview? Unlock the full gallery in the Living Art app")
         lbl.translatesAutoresizingMaskIntoConstraints = false
         lbl.textColor       = .white
         lbl.font            = NSFont.systemFont(ofSize: 13, weight: .medium)

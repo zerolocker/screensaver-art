@@ -5,8 +5,8 @@ import { type ArtItem, tagsOf } from '@screensaver-art/constants'
 interface ArtModalProps {
   item: ArtItem
   selected: boolean
-  // Locked = a non-subscriber's piece beyond the free count: the add action
-  // becomes "Subscribe to unlock".
+  // Locked = a non-subscriber's non-free piece: the add action becomes an
+  // "Unlock" that opens the plan picker.
   locked: boolean
   onToggle: () => void
   onSubscribe: () => void
@@ -27,7 +27,7 @@ function formatDate(date?: string): string | null {
 // Full-screen preview of a single piece so the art reads the way it will as a
 // screensaver. The video fills the viewport with object-cover (mirroring the
 // screensaver's AVLayerVideoGravity.resizeAspectFill); the title/tags/date and
-// the add/remove (or "Subscribe to unlock") action float over a bottom gradient
+// the add/remove (or "Unlock") action float over a bottom gradient
 // scrim. Clicking anywhere (except that action button), Escape, or the close
 // button dismisses — so it's a quick tap back to the gallery.
 export function ArtModal({
@@ -120,7 +120,7 @@ export function ArtModal({
             }}
             className="shrink-0 inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-medium bg-primary text-primary-foreground transition-colors hover:brightness-105"
           >
-            <Lock className="w-4 h-4" /> Subscribe to unlock
+            <Lock className="w-4 h-4" /> Unlock
           </button>
         ) : (
           <button

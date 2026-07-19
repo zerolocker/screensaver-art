@@ -50,4 +50,38 @@ export const PRICING = {
   freeItemCount: FREE_ITEM_COUNT,
   /** Human-readable last day the promo price is valid. */
   promoThrough: '2026/12/31',
+  /**
+   * One-time "Own it forever" purchase — unlocks the full gallery (including all
+   * future art) with no recurring billing. Must equal the Stripe catalog Price
+   * referenced by the website's `STRIPE_LIFETIME_PRICE_ID` env var (a one-time
+   * Price; the pricing-drift test enforces the amount).
+   */
+  lifetimePrice: '$15.99',
+  /** Display name of the one-time offer, shared across every surface. */
+  lifetimeLabel: 'Own it forever',
+  /** One-line pitch under the lifetime price. */
+  lifetimeNote: 'One payment, no renewals.',
 } as const
+
+/** The two paid offers. `monthly` is the subscription; `lifetime` the one-time purchase. */
+export type PaidPlan = 'monthly' | 'lifetime'
+
+/**
+ * The minimal shape of a `subscriptions` row that access decisions need. Both
+ * the website (server routes) and the Electron app hold rows of this shape.
+ */
+export interface SubscriptionAccess {
+  status?: string | null
+  /** Set once the user completes the one-time "Own it forever" purchase. */
+  lifetime_purchased_at?: string | null
+}
+
+/**
+ * The single "does this user have full gallery access?" rule: a lifetime
+ * purchase, or a subscription that is active/trialing. Every gate (gallery API,
+ * cache-sync via `isSubscribed`, the account cards) derives from this.
+ */
+export function isSubscriptionActive(sub: SubscriptionAccess | null | undefined): boolean {
+  if (!sub) return false
+  return Boolean(sub.lifetime_purchased_at) || sub.status === 'active' || sub.status === 'trialing'
+}

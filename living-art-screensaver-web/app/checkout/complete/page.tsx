@@ -8,21 +8,22 @@ export const metadata: Metadata = {
 }
 
 interface CheckoutCompletePageProps {
-  searchParams: Promise<{ status?: string }>
+  searchParams: Promise<{ status?: string; plan?: string }>
 }
 
 // Public landing for app-initiated Stripe checkouts (success or cancel). The
 // browser that ran checkout has no website session, so this page deliberately
-// needs no auth. The subscription is recorded by the Stripe webhook; the app
+// needs no auth. The purchase is recorded by the Stripe webhook; the app
 // re-checks status when its window regains focus, so the user just returns to
 // the app.
 export default async function CheckoutCompletePage({ searchParams }: CheckoutCompletePageProps) {
-  const { status } = await searchParams
+  const { status, plan } = await searchParams
   const canceled = status === 'canceled'
+  const lifetime = plan === 'lifetime'
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <CheckoutTracker status={status} />
+      <CheckoutTracker status={status} plan={plan} />
       <div className="w-full max-w-md text-center space-y-6">
         {canceled ? (
           <>
@@ -33,7 +34,7 @@ export default async function CheckoutCompletePage({ searchParams }: CheckoutCom
               <h1 className="font-serif text-2xl font-bold text-foreground">Checkout canceled</h1>
               <p className="text-muted-foreground">
                 No charge was made. You can close this tab and head back to the Living Art
-                Screensaver app whenever you&apos;d like to subscribe.
+                Screensaver app whenever you&apos;d like to unlock the gallery.
               </p>
             </div>
           </>
@@ -43,10 +44,21 @@ export default async function CheckoutCompletePage({ searchParams }: CheckoutCom
               <CheckCircle className="w-8 h-8 text-green-500" />
             </div>
             <div className="space-y-2">
-              <h1 className="font-serif text-2xl font-bold text-foreground">You&apos;re subscribed!</h1>
+              <h1 className="font-serif text-2xl font-bold text-foreground">
+                {lifetime ? <>It&apos;s yours — forever.</> : <>You&apos;re subscribed!</>}
+              </h1>
               <p className="text-muted-foreground">
-                Thanks for supporting Living Art. Return to the app — your full gallery unlocks
-                automatically, with new pieces added every day.
+                {lifetime ? (
+                  <>
+                    Thanks for supporting Living Art. The entire gallery — including every future
+                    piece — is unlocked for good. Return to the app; it updates automatically.
+                  </>
+                ) : (
+                  <>
+                    Thanks for supporting Living Art. Return to the app — your full gallery unlocks
+                    automatically, with new pieces added every day.
+                  </>
+                )}
               </p>
             </div>
           </>

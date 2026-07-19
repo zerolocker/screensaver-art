@@ -107,7 +107,7 @@ Without this, classes like `bg-primary` used only in `packages/ui` components wo
 | Service | What it does |
 |---|---|
 | **Supabase** | Auth (passwordless: email one-time code + Apple/Google/Microsoft OAuth) + `subscriptions` table + `user-error-reports` Storage bucket (private; debug reports from the Electron app) |
-| **Stripe** | Payments — $0.99/month billed quarterly ($2.97 every 3 months, to cut per-transaction fees), single tier |
+| **Stripe** | Payments — two offers: $0.99/month billed quarterly ($2.97 every 3 months, to cut per-transaction fees) via `STRIPE_PRICE_ID`, and a $15.99 one-time "Own it forever" lifetime purchase via `STRIPE_LIFETIME_PRICE_ID` (both Vercel env vars, per-mode test/live IDs) |
 | **Cloudflare R2** | Hosts MP4 video assets (public, no auth) |
 | **Vercel** | Hosts the Next.js website |
 | **GitHub Pages** | Hosts `gallery.json` and `index.html` at `https://zerolocker.github.io/screensaver-art/` — deployed natively from `master` (Settings → Pages → "Deploy from a branch") |
@@ -124,7 +124,8 @@ The Apple (6-month) and Microsoft/Azure (24-month) sign-in secrets **expire** an
 ## Subscription & Gating Architecture
 
 ### The product model
-- Users subscribe at `living-art-screensaver.com` ($0.99/month, billed quarterly as $2.97 every 3 months via Stripe), or directly inside the Electron app (every "Subscribe" CTA — gallery locks, the upsell banner, the Account card — calls `startCheckout()`, which goes **straight to Stripe checkout**; see *App-initiated checkout* below)
+- Two paid offers, both at `living-art-screensaver.com` and directly inside the Electron app: a **subscription** ($0.99/month, billed quarterly as $2.97 every 3 months via Stripe) and a **lifetime one-time purchase** ($15.99, "Own it forever" — no renewals). In the app, generic unlock CTAs (gallery locks, the upsell banner, the fullscreen preview) open a **plan-picker modal** (`PlanPickerModal` via `PlanPickerProvider`, lifetime pre-selected); the Account card's per-plan buttons skip the picker. Either way `startCheckout(source, plan)` goes **straight to Stripe checkout** (see *App-initiated checkout* below).
+- **Lifetime** is recorded on the same `subscriptions` row (`lifetime_purchased_at` + `lifetime_receipt_url` + `stripe_payment_intent_id`, migration `scripts/002_add_lifetime_purchase.sql`); the single access rule is `isSubscriptionActive()` in `@screensaver-art/constants` (lifetime OR active/trialing). The webhook handles the payment-mode checkout session (`metadata.purpose === 'lifetime'`, shared logic in `lib/lifetime.ts`) and **auto-cancels any running subscription** on lifetime purchase — the "your subscription ends automatically, no double billing" upgrade path. Subscription syncs never touch the lifetime columns, so a later subscription event can't revoke lifetime access.
 - **Everyone** browses the *entire* gallery in the app — a free user can preview every piece.
 - **Subscribed**: can select + cache any pieces (selection drives what plays).
 - **Not subscribed**: only the **free** pieces (those flagged `free: true` in `gallery.json`) are *unlockable*; every other piece shows a lock ("Subscribe to unlock") and is never downloaded/cached. The free pieces are selected by default.
@@ -210,9 +211,12 @@ stripe_subscription_id text
 status                text  ('active' | 'trialing' | 'inactive' | 'cancelled' | 'past_due')
 current_period_start  timestamp
 current_period_end    timestamp
+lifetime_purchased_at timestamp  -- set on the one-time "Own it forever" purchase
+lifetime_receipt_url  text       -- Stripe-hosted receipt, captured by the webhook
+stripe_payment_intent_id text
 updated_at            timestamp
 ```
-`isActive` = status is `active` OR `trialing`
+`isActive` = `lifetime_purchased_at` set OR status is `active`/`trialing` (`isSubscriptionActive` in `@screensaver-art/constants` — the one rule every gate uses)
 
 ### Native Supabase client (for Electron app requests)
 The website's default Supabase client uses cookies (for browser sessions). The Electron app sends a Bearer token instead. Use `lib/supabase/native-client.ts` which creates a `@supabase/supabase-js` client with `Authorization: Bearer <token>` in the global headers — **not** the SSR cookie client.

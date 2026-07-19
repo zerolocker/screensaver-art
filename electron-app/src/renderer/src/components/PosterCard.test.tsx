@@ -46,9 +46,9 @@ describe('<PosterCard />', () => {
     expect(screen.getByTitle('Playing — click to remove')).toBeInTheDocument()
   })
 
-  it('locked: shows a lock that prompts to subscribe and never toggles', () => {
+  it('locked: shows a lock that prompts to unlock and never toggles', () => {
     const { onToggle, onSubscribe } = setup({ locked: true })
-    fireEvent.click(screen.getByLabelText('Subscribe to unlock this piece'))
+    fireEvent.click(screen.getByLabelText('Unlock this piece'))
     expect(onSubscribe).toHaveBeenCalledTimes(1)
     expect(onToggle).not.toHaveBeenCalled()
     // The add tick is gone — there's no way to add a locked piece.
@@ -57,14 +57,13 @@ describe('<PosterCard />', () => {
 
   it('locked: hovering the lock shows the upsell tooltip instantly', () => {
     setup({ locked: true })
-    const lock = screen.getByLabelText('Subscribe to unlock this piece')
+    const lock = screen.getByLabelText('Unlock this piece')
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
     fireEvent.mouseEnter(lock)
     const tip = screen.getByRole('tooltip')
-    expect(tip).toHaveTextContent(/click to subscribe/i)
-    expect(tip).toHaveTextContent(/unlock the full gallery plus new pieces every day/i)
-    expect(tip).toHaveTextContent(/\$0\.99\/month/)
-    expect(tip).toHaveTextContent(/billed quarterly/i)
+    expect(tip).toHaveTextContent(/you're on the free plan/i)
+    expect(tip).toHaveTextContent(/click to unlock all artworks \(including this\)/i)
+    expect(tip).toHaveTextContent(/new pieces added every day with paid plans/i)
     fireEvent.mouseLeave(lock)
     expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
   })

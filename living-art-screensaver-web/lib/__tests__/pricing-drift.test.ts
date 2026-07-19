@@ -40,7 +40,9 @@ loadEnvLocal()
 
 const secretKey = process.env.STRIPE_SECRET_KEY
 const priceId = process.env.STRIPE_PRICE_ID
+const lifetimePriceId = process.env.STRIPE_LIFETIME_PRICE_ID
 const configured = Boolean(secretKey && priceId)
+const lifetimeConfigured = Boolean(secretKey && lifetimePriceId)
 
 /** "$0.99" -> 99 (cents). */
 function displayPriceToCents(display: string): number {
@@ -82,8 +84,27 @@ describe('pricing drift: displayed PRICING vs Stripe catalog Price', () => {
     20_000,
   )
 
-  it.skipIf(configured)('skipped: STRIPE_SECRET_KEY / STRIPE_PRICE_ID not set', () => {
-    // Intentionally empty — this branch only documents why the guard is inactive.
-    expect(true).toBe(true)
-  })
+  // Same guard for the one-time "Own it forever" Price: what we display as
+  // PRICING.lifetimePrice must be what STRIPE_LIFETIME_PRICE_ID charges.
+  it.runIf(lifetimeConfigured)(
+    'PRICING.lifetimePrice matches the Stripe lifetime Price (one-time)',
+    async () => {
+      const stripe = new Stripe(secretKey!)
+      const price = await stripe.prices.retrieve(lifetimePriceId!)
+
+      expect(price.active).toBe(true)
+      expect(price.type).toBe('one_time')
+      expect(price.unit_amount).toBe(displayPriceToCents(PRICING.lifetimePrice))
+      expect(price.currency).toBe('usd')
+    },
+    20_000,
+  )
+
+  it.skipIf(configured && lifetimeConfigured)(
+    'skipped: STRIPE_SECRET_KEY / STRIPE_PRICE_ID / STRIPE_LIFETIME_PRICE_ID not fully set',
+    () => {
+      // Intentionally empty — this branch only documents why a guard is inactive.
+      expect(true).toBe(true)
+    },
+  )
 })

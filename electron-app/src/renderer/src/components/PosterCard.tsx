@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Check, Lock } from 'lucide-react'
 import { observePoster, spawnPreview } from '../lib/poster-engine'
-import { type ArtItem, PRICING } from '@screensaver-art/constants'
+import { type ArtItem } from '@screensaver-art/constants'
 
 // Wait this long on hover before spawning a live preview, so a quick mouse
 // sweep across the grid doesn't fire up dozens of videos.
@@ -41,8 +41,8 @@ export function PosterCard({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
 
-  // Instant upsell tooltip for the lock icon — explains what a click does (jump
-  // to checkout) before it happens. Rendered in a portal so the card's
+  // Instant upsell tooltip for the lock icon — explains what a click does (open
+  // the plan picker) before it happens. Rendered in a portal so the card's
   // overflow-hidden can't clip it. Position is computed from the lock's rect.
   const [tip, setTip] = useState<{ top: number; left: number } | null>(null)
   const showTip = (e: React.SyntheticEvent<HTMLElement>): void => {
@@ -125,7 +125,7 @@ export function PosterCard({
           onMouseLeave={hideTip}
           onFocus={showTip}
           onBlur={hideTip}
-          aria-label="Subscribe to unlock this piece"
+          aria-label="Unlock this piece"
           className="absolute top-2 right-2 z-10 w-7 h-7 rounded-full flex items-center justify-center border-2 border-white/80 bg-black/55 text-white cursor-pointer transition-all hover:scale-110 hover:border-white hover:bg-black/75"
         >
           <Lock className="w-3.5 h-3.5" strokeWidth={2.5} />
@@ -164,15 +164,9 @@ export function PosterCard({
             className="z-50 pointer-events-none rounded-lg border border-border bg-popover text-popover-foreground shadow-xl px-3 py-2.5"
           >
             <p className="text-xs leading-relaxed">
-              <span className="font-medium">Click to subscribe.</span> Unlock the full gallery plus
-              new pieces every day for{' '}
-              <span className="font-semibold text-primary">
-                {PRICING.promoPrice}
-                {PRICING.interval}
-              </span>
-              .
+              You&apos;re on the free plan. Click to unlock all artworks (including this) plus new
+              pieces added every day with paid plans.
             </p>
-            <p className="text-[11px] text-muted-foreground mt-1">{PRICING.billingNote}.</p>
           </div>,
           document.body,
         )}

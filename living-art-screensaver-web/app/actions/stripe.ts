@@ -7,6 +7,7 @@ import { createSubscriptionCheckoutSession } from '@/lib/checkout'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { getPostHogClient, flushPostHog } from '@/lib/posthog-server'
+import { isLifetimeCheckoutSession, recordLifetimePurchase } from '@/lib/lifetime'
 
 /**
  * Web (cookie-authed) checkout. `cancelPath` is where Stripe sends the user if
@@ -37,8 +38,14 @@ export async function createCheckoutSession(
     .eq('user_id', user.id)
     .single()
 
-  // If user has an active subscription, redirect to manage
-  if (subscription?.status === 'active') {
+  // Lifetime is terminal — nothing left to buy.
+  if (subscription?.lifetime_purchased_at) {
+    return { error: 'You already own the full gallery' }
+  }
+
+  // An active subscriber may still buy lifetime (the upgrade path — the webhook
+  // cancels their subscription on purchase), but not a second subscription.
+  if (product.plan === 'monthly' && subscription?.status === 'active') {
     return { error: 'You already have an active subscription' }
   }
 
@@ -52,6 +59,7 @@ export async function createCheckoutSession(
   after(flushPostHog)
 
   return createSubscriptionCheckoutSession({
+    plan: product.plan,
     userId: user.id,
     userEmail: user.email,
     existingCustomerId: subscription?.stripe_customer_id,
@@ -76,6 +84,17 @@ export async function syncSubscriptionFromSession(sessionId: string) {
     // Verify this session belongs to the current user
     if (session.metadata?.supabase_user_id !== user.id) {
       return { error: 'Session does not belong to current user' }
+    }
+
+    // Lifetime (payment-mode) checkout: record the purchase directly — the
+    // webhook does the same, but syncing here means the account page reflects
+    // the purchase on the very redirect back from Stripe. Idempotent.
+    if (isLifetimeCheckoutSession(session)) {
+      if (session.payment_status !== 'paid') {
+        return { error: 'Payment not completed' }
+      }
+      await recordLifetimePurchase(session)
+      return { success: true }
     }
 
     if (!session.subscription || typeof session.subscription === 'string') {

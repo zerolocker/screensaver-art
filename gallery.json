@@ -2611,5 +2611,57 @@
     "image_prompt": "A Balinese Kamasan-style painting, 19th century: natural earth pigments and soot black on hand-woven cotton primed with rice paste, warm ochre, sienna, indigo, terracotta and cream, fine dark bamboo-pen outlines, dense ornamental patterning filling every area, flat two-dimensional composition with no perspective. The scene is a sacred spring temple: a long carved stone wall of lion-head spouts pours thick arcs of water down into a bathing pool rendered as stylized swirling water scrolls; lotus blossoms and lily pads float on it; frangipani branches in flower and fanned palm fronds crowd overhead; tiered black-thatched meru shrine roofs and a carved split gateway rise behind; a few small worshippers in patterned sarongs stand at the pool's edge. IMPORTANT COMPOSITION: the painted scene itself is the entire picture and bleeds off all four edges — no visible edge of the cloth, no frayed selvedge, no white or empty background anywhere, no border, no mat, no decorative frame, the painting is cropped by the picture edges on every side. Viewed straight-on, completely flat to the picture plane. No museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background.",
     "video_prompt": "The water pours continuously: each lion-head spout sends a steady unbroken arc of pale water down into the pool, splashing where it lands, while the stylized spiral water scrolls of the pool surface turn and drift slowly and evenly across the basin. The lotus blossoms and lily pads bob very gently on the moving water. The frangipani leaves and palm fronds stir slightly in a faint breeze. The worshippers stand still with their hands pressed together, holding their painted shapes exactly; the temple walls, gateways, thatched shrine roofs and all carved ornament remain perfectly static. All motion is flat, two-dimensional and painterly, as if the pigment itself were flowing; nothing gains depth, nothing morphs or changes shape. The flow is even and unchanging from the first moment to the last so the clip returns exactly to its opening state. Camera locked off, straight-on, no zoom, no camera movement.",
     "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/nihonga_cedar_gorge_rain_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/nihonga_cedar_gorge_rain_4k.webp",
+    "title": "Summer Downpour in the Cedar Gorge - Nihonga (AI Animated)",
+    "type": "video",
+    "date": "2026-07-19",
+    "tags": [
+      "Japanese"
+    ],
+    "image_prompt": "A sudden summer downpour sweeping through a steep cedar gorge, painted in the Nihonga manner of Meiji-period Japan: ground mineral pigments — malachite green, azurite blue, gofun shell white — in soft matte washes with delicate sumi ink outlines. Tall cryptomeria trunks in deep malachite green, a swollen white torrent tumbling over dark wet rocks across the lower third, pale mist banking between the trees, silver-grey rain falling in fine diagonal strokes. Overcast diffused daylight, muted and atmospheric, a luminous pale sky glimpsed at the top. IMPORTANT: this is the painted scene itself, seen straight-on and flat to the picture plane, filling the entire image and extending past all four edges — a full-bleed view of the painting's surface, not a photograph of an artwork. No visible silk edge, selvage, fraying, hanging scroll, canvas edge, paper edge or backing surface anywhere; no painted border, no mat, no decorative frame; no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no studio background, no table or floor, no text, no signature, no red seal.",
+    "video_prompt": "A heavy summer rainstorm in a Japanese Nihonga painting comes alive. Silver-grey rain streaks down steadily and diagonally across the whole scene, splashing and stippling the surface of the water. The white torrent in the foreground churns and rushes over the dark wet rocks, spray leaping and foam sliding downstream. Pale mist drifts slowly upward and sideways between the distant cedar trunks. The cedar boughs sway gently under the weight of the rain. Diffused overcast daylight, cool and even. The camera holds still, straight-on and flat to the painting; the trees, rocks and painted forms keep their exact shapes and do not change.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/regionalist_storm_over_farmland_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/regionalist_storm_over_farmland_4k.webp",
+    "title": "Storm over the Farmland - American Regionalism (AI Animated)",
+    "type": "video",
+    "date": "2026-07-19",
+    "tags": [
+      "Modern"
+    ],
+    "image_prompt": "A thunderstorm rolling over farmland, painted in the American Regionalist style of the 1930s — egg tempera and oil glazes on panel, with the sinuous rhythmic modelling and saturated earthy palette of Thomas Hart Benton and Grant Wood. Rolling green and ochre hills stacked in undulating bands, curving plowed furrows and hay ricks, a red barn and a white clapboard farmhouse small at mid-distance, a row of dark trees bending along a fence line. Above them a towering blue-black storm front boils across the sky in muscular sculpted clouds, with a shaft of hot yellow sunlight still raking the near hillside. Dramatic pre-storm light, deep shadows, high clarity. IMPORTANT: this is the painted scene itself, seen straight-on and flat to the picture plane, filling the entire image and extending past all four edges — a full-bleed view of the painting's surface, not a photograph of an artwork. No visible canvas edge, panel edge or backing surface; no painted border, no mat, no decorative frame; no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label, no studio background, no text, no signature.",
+    "video_prompt": "An American Regionalist farmland painting comes alive as a summer thunderstorm sweeps in. The towering blue-black storm clouds roll and billow steadily from right to left, their sculpted forms churning and stacking. The grey curtain of rain beneath them drags slowly across the distant hills. Strong wind bends the row of dark trees along the fence line, their foliage thrashing and rippling, and combs visible waves through the green grass and the standing hay in the foreground. The shaft of hot yellow sunlight on the near hillside slides and narrows as the shadow of the storm advances. The camera holds still, straight-on and flat to the painting; the barn, farmhouse, hay ricks and plowed furrows keep their exact shapes and stay put.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/gondarine_lamplit_church_wall_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/gondarine_lamplit_church_wall_4k.webp",
+    "title": "Lamplit Wall of Saints - Gondarine Ethiopian Church Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-07-19",
+    "tags": [
+      "Arts of Africa & Oceania"
+    ],
+    "image_prompt": "The painted interior wall of a 17th-century Ethiopian Orthodox church at Gondar, in the bold Gondarine style: distemper pigments on cloth laid onto stone, flat saturated colour — vermilion red, deep indigo, ochre yellow, olive green — with heavy black outlines and no perspective. A register of standing haloed saints in patterned robes, painted frontally with large almond eyes, fills the upper wall; beneath them runs a band of interlaced geometric ornament. In front of the wall stands a row of small brass oil lamps with live flames and a hanging brass censer trailing incense smoke. Warm flickering lamplight from below, deep shadow in the corners, the pigment surface slightly worn and matte. IMPORTANT: this is the painted wall itself seen straight-on and flat to the picture plane, filling the entire image and extending past all four edges — full-bleed, no receding perspective, no oblique angle. No painted border, no mat, no decorative frame; no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no studio background, no visitors, no text or caption.",
+    "video_prompt": "A lamplit Ethiopian church interior, held still and quiet. The five brass oil lamps burn with small live flames that flicker, lean and waver gently in the still air. A thin ribbon of incense smoke rises from the hanging brass censer, curling and drifting slowly upward before dissipating. Their warm golden light pulses softly across the painted wall, shadows breathing in the corners. Nothing else moves: the painted saints, their halos, robes and faces, the interlace border and the wall itself keep their exact shapes and stay perfectly still. The camera does not move, straight-on and flat to the wall. The motion is ambient and continuous, settling back exactly to how it began.",
+    "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/peredvizhniki_birch_flood_spring_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/peredvizhniki_birch_flood_spring_4k.webp",
+    "title": "Spring Flood in the Birch Grove - Peredvizhniki Landscape (AI Animated)",
+    "type": "video",
+    "date": "2026-07-19",
+    "tags": [
+      "19th Century"
+    ],
+    "image_prompt": "A spring birch grove beside a flooded river, painted in the manner of the 19th-century Russian Peredvizhniki (Wanderers) — oil on canvas, loose confident brushwork, a lyrical naturalist palette of silvery whites, fresh yellow-green and cool blue. Slender white birch trunks with black scars rise across the whole scene, their first tiny leaves catching the light; behind them the swollen river spreads in a still blue-grey sheet through the trees, mirroring trunks and sky. Melting patches of snow linger in the shadowed hollows, and wet brown earth shows through the pale grass. Clear bright spring sunlight rakes in from the left, throwing long blue tree shadows across the ground. IMPORTANT: this is the painted scene itself, seen straight-on and flat to the picture plane, filling the entire image and extending past all four edges — a full-bleed view of the painting's surface, not a photograph of an artwork. No visible canvas edge or backing surface; no painted border, no mat, no decorative frame; no museum, no display case, no glass, no pedestal, no gallery wall, no spotlight, no museum label, no studio background, no figures, no text, no signature.",
+    "video_prompt": "A Russian spring birch grove painting comes gently alive. A light breeze stirs the slender bare branches and sets the small yellow-green new leaves quivering and twinkling in the sunlight. The still floodwater breathes with fine ripples that shimmer and spread, softly wobbling the mirrored trunks and sky on its surface. High white clouds drift very slowly across the pale blue sky. Bright spring sunlight rakes in from the left, warm and clear. The camera does not move, straight-on and flat to the painting; the birch trunks, snow patches and ground keep their exact shapes and stay put. The motion is ambient and continuous, settling back exactly to how it began.",
+    "looping": true
   }
 ]

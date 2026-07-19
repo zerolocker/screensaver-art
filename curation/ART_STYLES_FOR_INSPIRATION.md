@@ -62,11 +62,13 @@ When you add a new style, append it under the section it best fits.
 - Post-Impressionism
 - Symbolism
 - Art Nouveau
+- Peredvizhniki / The Wanderers (Russian realist landscape, Levitan / Savrasov)
 
 ## Modern & conceptual art movements (late-19th century onward)
 
 - Modern art
 - Group of Seven (Canadian landscape, Tom Thomson / A.Y. Jackson)
+- American Regionalism (1930s, Thomas Hart Benton / Grant Wood)
 - Expressionism
 - Fauvism
 - Cubism
@@ -132,6 +134,8 @@ When you add a new style, append it under the section it best fits.
 - Dunhuang Mogao Cave Mural
 - Sumi-e Ink Wash
 - Balinese Kamasan Painting (earth pigment on cloth, Bali)
+- Nihonga (Meiji-era Japanese mineral-pigment painting on silk)
+- Gondarine Ethiopian Church Wall Painting (17th c., distemper on cloth)
 - Song Dynasty Landscape Painting
 - Yuan Dynasty Landscape
 - Ming Dynasty Silk Painting

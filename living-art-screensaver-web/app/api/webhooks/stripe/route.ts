@@ -51,7 +51,11 @@ async function syncSubscriptionById(subscriptionId: string) {
   const row = {
     stripe_customer_id: sub.customer as string,
     stripe_subscription_id: sub.id,
-    status: sub.status,
+    // Stripe spells it `canceled`; our schema + UI use `cancelled` (which is
+    // also what the `customer.subscription.deleted` handler below writes). Map
+    // it here so one state can't land in the column under two spellings
+    // depending on which event arrives last.
+    status: sub.status === 'canceled' ? 'cancelled' : sub.status,
     current_period_start: toIso(item?.current_period_start),
     current_period_end: toIso(item?.current_period_end),
     updated_at: new Date().toISOString(),

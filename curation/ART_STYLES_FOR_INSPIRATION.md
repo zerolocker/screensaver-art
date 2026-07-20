@@ -191,6 +191,7 @@ When you add a new style, append it under the section it best fits.
 - Benin Bronzes
 - Ife Sculpture
 - Asante Goldwork
+- Fante Asafo Flag (Ghanaian appliqué banner)
 - Dogon Sculpture
 - Ethiopian Illuminated Manuscript
 - Lalibela Rock-Hewn Church Architecture

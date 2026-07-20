@@ -101,7 +101,7 @@ Tailwind v4's Vite plugin auto-detects classes in imported files, but **does not
 @import 'tailwindcss';
 @source "../../../../packages/ui/src";   /* relative to the CSS file */
 ```
-Without this, classes like `bg-primary` used only in `packages/ui` components won't be generated. The website avoids this issue because Next.js handles transpilePackages differently.
+Without this, classes like `bg-primary` used only in `packages/ui` components won't be generated.
 
 ## Infrastructure
 | Service | What it does |

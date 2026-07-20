@@ -212,8 +212,11 @@ export function SubscriptionCard({
   }
 
   // ── 3. Free plan (incl. lapsed/past-due) — both offers, lifetime featured ─
+  // @container: the two offer boxes go side-by-side when the *card* (not the
+  // viewport) is wide — wide in the Electron app, stacked in the website's
+  // half-width account grid.
   return (
-    <Card className="bg-card border-border">
+    <Card className="bg-card border-border @container">
       <CardHeader>
         <CardTitle className="text-foreground">Unlock the gallery</CardTitle>
       </CardHeader>
@@ -233,52 +236,54 @@ export function SubscriptionCard({
           ways:
         </p>
 
-        <div className="p-4 rounded-lg bg-primary/5 border border-primary/40 space-y-3">
-          <div className="flex items-center gap-2">
-            <p className="font-medium text-foreground">{PRICING.lifetimeLabel}</p>
-            <span className="rounded-full bg-primary/15 px-2 py-0.5 text-xs font-medium text-primary">
-              Best value
-            </span>
+        <div className="grid gap-4 @2xl:grid-cols-2">
+          <div className="flex flex-col gap-3 p-4 rounded-lg bg-primary/5 border border-primary/40">
+            <div className="flex items-center gap-2">
+              <p className="font-medium text-foreground">{PRICING.lifetimeLabel}</p>
+              <span className="rounded-full bg-primary/15 px-2 py-0.5 text-xs font-medium text-primary">
+                Best value
+              </span>
+            </div>
+            <div className="flex items-end gap-2">
+              <span className="text-3xl font-bold text-foreground leading-none">
+                {PRICING.lifetimePrice}
+              </span>
+              <span className="text-muted-foreground">once</span>
+            </div>
+            <p className="text-xs text-muted-foreground/80">{PRICING.lifetimeNote}</p>
+            <Button
+              onClick={() => run('lifetime', () => onCheckout('lifetime'))}
+              variant="outline"
+              className="w-full mt-auto"
+              disabled={loading !== null}
+            >
+              {loading === 'lifetime' ? spinner : null}
+              Buy once - own it forever
+            </Button>
           </div>
-          <div className="flex items-end gap-2">
-            <span className="text-3xl font-bold text-foreground leading-none">
-              {PRICING.lifetimePrice}
-            </span>
-            <span className="text-muted-foreground">once</span>
-          </div>
-          <p className="text-xs text-muted-foreground/80">{PRICING.lifetimeNote}</p>
-          <Button
-            onClick={() => run('lifetime', () => onCheckout('lifetime'))}
-            variant="outline"
-            className="w-full border-primary/50 text-primary hover:bg-primary/10"
-            disabled={loading !== null}
-          >
-            {loading === 'lifetime' ? spinner : null}
-            Buy once - own it forever
-          </Button>
-        </div>
 
-        <div className="p-4 rounded-lg bg-primary/5 border border-primary/20 space-y-3">
-          <p className="font-medium text-foreground">Subscribe</p>
-          <div className="flex items-end gap-2">
-            <span className="text-lg font-semibold text-muted-foreground line-through">
-              {PRICING.regularPrice}
-            </span>
-            <span className="text-3xl font-bold text-foreground leading-none">{PRICING.promoPrice}</span>
-            <span className="text-muted-foreground">{PRICING.interval}</span>
+          <div className="flex flex-col gap-3 p-4 rounded-lg bg-primary/5 border border-primary/20">
+            <p className="font-medium text-foreground">Subscribe</p>
+            <div className="flex items-end gap-2">
+              <span className="text-lg font-semibold text-muted-foreground line-through">
+                {PRICING.regularPrice}
+              </span>
+              <span className="text-3xl font-bold text-foreground leading-none">{PRICING.promoPrice}</span>
+              <span className="text-muted-foreground">{PRICING.interval}</span>
+            </div>
+            <p className="text-xs text-muted-foreground/80">
+              {PRICING.billingNote} · promo through {PRICING.promoThrough} · cancel anytime
+            </p>
+            <Button
+              onClick={() => run('monthly', () => onCheckout('monthly'))}
+              variant="outline"
+              className="w-full mt-auto"
+              disabled={loading !== null}
+            >
+              {loading === 'monthly' ? spinner : null}
+              Subscribe
+            </Button>
           </div>
-          <p className="text-xs text-muted-foreground/80">
-            {PRICING.billingNote} · promo through {PRICING.promoThrough} · cancel anytime
-          </p>
-          <Button
-            onClick={() => run('monthly', () => onCheckout('monthly'))}
-            variant="outline"
-            className="w-full"
-            disabled={loading !== null}
-          >
-            {loading === 'monthly' ? spinner : null}
-            Subscribe
-          </Button>
         </div>
       </CardContent>
     </Card>

@@ -20,5 +20,5 @@ export {
 
 // Pricing — the displayed price/cadence/promo framing (not what Stripe charges),
 // the paid-plan vocabulary, and the single full-access rule.
-export { PRICING, isSubscriptionActive } from './pricing'
-export type { PaidPlan, SubscriptionAccess } from './pricing'
+export { PRICING, isSubscriptionActive, normalizeSubscriptionStatus } from './pricing'
+export type { PaidPlan, SubscriptionAccess, SubscriptionStatus } from './pricing'

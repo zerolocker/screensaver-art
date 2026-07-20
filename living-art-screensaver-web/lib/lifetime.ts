@@ -3,6 +3,7 @@ import 'server-only'
 import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
 import { stripe } from '@/lib/stripe'
+import { normalizeSubscriptionStatus } from '@screensaver-art/constants'
 
 // Service-role client: lifetime purchases are recorded server-to-server (webhook
 // or post-checkout sync), bypassing RLS.
@@ -73,7 +74,11 @@ export async function recordLifetimePurchase(session: Stripe.Checkout.Session): 
       .select('stripe_subscription_id, status')
       .eq('user_id', userId)
       .single()
-    if (row?.stripe_subscription_id && row.status !== 'cancelled') {
+    // Normalize before comparing: a row synced straight from Stripe could carry
+    // `canceled`, which wouldn't match our `cancelled` and would send us on a
+    // pointless retrieve (harmless — the Stripe-side check below still guards
+    // the actual cancel — but the intent should read correctly).
+    if (row?.stripe_subscription_id && normalizeSubscriptionStatus(row.status) !== 'cancelled') {
       const sub = await stripe.subscriptions.retrieve(row.stripe_subscription_id)
       if (sub.status !== 'canceled') {
         await stripe.subscriptions.cancel(sub.id)

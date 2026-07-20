@@ -4,7 +4,12 @@ import { useState } from 'react'
 import { Loader2, CheckCircle, XCircle, AlertCircle, Clock, Infinity } from 'lucide-react'
 import { Button } from './button'
 import { Card, CardContent, CardHeader, CardTitle } from './card'
-import { PRICING, type PaidPlan } from '@screensaver-art/constants'
+import {
+  PRICING,
+  normalizeSubscriptionStatus,
+  type PaidPlan,
+  type SubscriptionStatus,
+} from '@screensaver-art/constants'
 
 export interface Subscription {
   id: string
@@ -30,7 +35,12 @@ export interface SubscriptionCardProps {
   openExternal?: (url: string) => void
 }
 
-const statusConfig = {
+// Keyed by the canonical vocabulary, so TypeScript enforces that every status
+// the normalizer can return has a chip (no silent fallback to "Inactive").
+const statusConfig: Record<
+  SubscriptionStatus,
+  { icon: typeof CheckCircle; label: string; color: string; bgColor: string }
+> = {
   active: {
     icon: CheckCircle,
     label: 'Active',
@@ -79,8 +89,11 @@ export function SubscriptionCard({
   // disabling all of them.
   const [loading, setLoading] = useState<'lifetime' | 'monthly' | 'manage' | null>(null)
 
-  const status = subscription?.status || 'inactive'
-  const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.inactive
+  // Normalize on read too: rows written before the webhook normalized (or by any
+  // other writer) can still carry Stripe's `canceled`, which would otherwise miss
+  // the lookup and render as "Inactive".
+  const status = normalizeSubscriptionStatus(subscription?.status)
+  const config = statusConfig[status]
   const StatusIcon = config.icon
 
   const isLifetime = Boolean(subscription?.lifetime_purchased_at)

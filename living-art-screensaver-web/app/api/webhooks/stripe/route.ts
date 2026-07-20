@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
 import { getPostHogClient, flushPostHog } from '@/lib/posthog-server'
 import { isLifetimeCheckoutSession, recordLifetimePurchase } from '@/lib/lifetime'
+import { normalizeSubscriptionStatus } from '@screensaver-art/constants'
 
 // Use service role for webhook handling (bypasses RLS)
 const supabaseAdmin = createClient(
@@ -51,7 +52,10 @@ async function syncSubscriptionById(subscriptionId: string) {
   const row = {
     stripe_customer_id: sub.customer as string,
     stripe_subscription_id: sub.id,
-    status: sub.status,
+    // Stripe's vocabulary is wider than ours and spells it `canceled`; normalize
+    // so this path and the `subscription.deleted` path below can never write two
+    // different values for the same state (whichever event lands last won).
+    status: normalizeSubscriptionStatus(sub.status),
     current_period_start: toIso(item?.current_period_start),
     current_period_end: toIso(item?.current_period_end),
     updated_at: new Date().toISOString(),
@@ -142,7 +146,10 @@ export async function POST(req: Request) {
         const subscription = event.data.object as Stripe.Subscription
         await supabaseAdmin
           .from('subscriptions')
-          .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+          .update({
+            status: normalizeSubscriptionStatus('canceled'),
+            updated_at: new Date().toISOString(),
+          })
           .eq('stripe_subscription_id', subscription.id)
         const userId = subscription.metadata?.supabase_user_id
         if (userId) {

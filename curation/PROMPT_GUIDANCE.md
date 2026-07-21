@@ -43,18 +43,48 @@ album cover, pick something else.
 These are stable defaults derived from how Veo 3.1 behaves on this gallery. Keep
 them even before any round-specific learnings exist.
 
-- **Pick subjects that genuinely move — "light glides across the artwork" is NOT
-  motion.** This was *half* of the 2026-06-28 round's rejects: a static carved
-  relief, mural, or flat painting with nothing animated but a slow highlight
-  sweeping over it ("uninteresting animation — just lights"). Before committing to
-  a subject, ask *what in this scene actually moves?* and favour **intrinsic
-  motion**: water (waves, rivers, waterfalls, rain), fire (flames, embers,
-  torches), smoke/incense, clouds/sky, wind in foliage/grass/banners/cloth,
-  falling petals or snow, fountains, birds, fish. **Flat carved-stone reliefs and
-  architectural friezes** (Assyrian, Persepolis, Babylonian, Khmer, Borobudur,
-  Maya…) were the worst offenders — monochrome, monotonous, light-sweep-only — so
-  lean away from them toward colourful, compositionally dynamic painted works. If
-  the only honest motion is the light, **choose a different subject.**
+- **Every clip needs a PRIMARY MOVER that performs a legible action.** You must be
+  able to describe what happens in one sentence with a real verb and a real actor:
+  *"the crane beats its wings and lifts off the marsh"*, *"the paddler pulls a full
+  stroke and the boat surges"*, *"the weaver's shuttle crosses the loom"*. If the
+  only sentence you can write is *"the light shimmers"* / *"the water ripples"* /
+  *"the flame flickers"*, **you do not have a clip yet — pick a different subject.**
+  This was the whole 2026-07-19 round: 11 rejects, 11 of them ambient-only, the
+  reviewer's note being *"the animation is mostly only ripples, which is very
+  uninteresting — there are way more objects that can be animated than ripples."*
+- **Order of preference for what moves.** Reach for the top of this list first;
+  the bottom of the list is **garnish, never the main course**:
+  1. **People and animals doing something** — walking, rowing, dancing, working,
+     playing, drinking, bowing, fighting, hunting; birds flying, horses running,
+     fish swimming, camels plodding, dogs bounding.
+  2. **Objects with mechanical motion** — boats, carts, wheels, mills, looms,
+     bells, swings, banners, sails, kites, spinning tops, pouring vessels.
+  3. **Cloth and hair in wind** — robes, veils, curtains, flags, manes, tassels.
+  4. **Weather and elements as the *driver* of the above** — a squall that bends
+     the trees *and* heels the boat over.
+  5. **Bare ambient shimmer** — ripples, flicker, smoke, drifting cloud. Fine as a
+     supporting layer under 1–4. **Never the only thing in the clip.**
+  **Cap: at most ~1/3 of new pieces may be ambient-led**, and only where the scene
+  genuinely has no actor (an empty landscape, a pure still life). Two consecutive
+  ambient-led pieces is a signal you are back in the rut.
+- **"Holds its form" ≠ "holds still".** The anti-morph rules below protect an
+  object's *identity*, not its *position*. Write **"the heron keeps its exact
+  painted shape, colours and markings while it beats its wings and glides left"** —
+  never *"the heron stays perfectly still"*. **Do not write blanket freeze
+  clauses.** These specific strings caused the 2026-07-19 rejects and are banned:
+  *"the courtiers stand still"*, *"the worshippers stand still"*, *"the painted
+  fish and birds stay exactly where they are"*, *"nothing else moves"*. If a scene
+  contains people or animals, **animating them is the default expectation** —
+  freezing them is the thing that needs justifying. Architecture, ground, walls and
+  carved ornament *should* stay put; that is what the static clause is for.
+- **"Light glides across the artwork" is NOT motion.** This was *half* of the
+  2026-06-28 round's rejects: a static carved relief, mural, or flat painting with
+  nothing animated but a slow highlight sweeping over it ("uninteresting animation
+  — just lights"). **Flat carved-stone reliefs and architectural friezes**
+  (Assyrian, Persepolis, Babylonian, Khmer, Borobudur, Maya…) were the worst
+  offenders — monochrome, monotonous, light-sweep-only — so lean away from them
+  toward colourful, compositionally dynamic painted works **with figures in them**.
+  If the only honest motion is the light, **choose a different subject.**
 - **Match motion intensity to the scene — don't default everything to "subtle".**
   The failure mode isn't *strong* motion, it's *incoherent* motion. A quiet
   still-life still wants a small but *real* motion (a guttering candle flame, a
@@ -79,21 +109,54 @@ them even before any round-specific learnings exist.
 - **Never animate anything that should morph, melt, or teleport.** Avoid
   verbs like *morph, melt, teleport, transform, dissolve, regenerate*.
   These produce the glitchy "AI soup" look. 
-- **One clear subject, one clear motion.** Multiple simultaneous animated
-  subjects tend to collide into artifacts. Describe a single focal motion.
-- **Reserve seamless loops (`looping: true`) for ambient motion and continuous
-  phenomena over held forms — light drift, mist, dust motes, water shimmer,
-  gentle ripples, human playing instruments, human talking while standing.** A
-  loop must return to its exact opening frame, and the model can't march several
-  independent animals back to a start pose — at the seam they **pop out and
-  reappear** ("the ducks and the fish disappeared and reappeared" -- a finding
-  from a curation). If the honest motion is swimming/flying/paddling creatures,
-  make the clip **non-looping** instead.
+- **One clear FOCAL action — not a frozen tableau.** Keep one thing as the clear
+  centre of attention so the motion reads; a dozen independently choreographed
+  subjects collide into artifacts. But this is a rule about **focus, not
+  suppression**: secondary figures may move naturally and *should* (a crowd shifts
+  its weight, bystanders' robes stir) — just don't give three subjects competing
+  hero actions. Misreading this rule as "freeze everything but one element"
+  produced the entire 2026-07-19 reject batch.
+- **Seamless loops (`looping: true`) may close three different ways.** A loop must
+  return to its opening state — but "return to the opening state" is *not* a
+  synonym for "barely move". Pick whichever fits:
+  - **Oscillation** — something swings out and back: ripples, flames, a swinging
+    bell, a rocking boat, a breathing sail, a swaying dancer. (Careful: this is the
+    lazy default, and at low amplitude it degenerates into the ripple rut.)
+  - **Traversal** — a steady stream crosses the image, one subject leaving as
+    another enters, so the *aggregate* opening state is unchanged: a caravan
+    crossing, boats drifting past, birds streaming across a sky, a river of
+    pilgrims. This is the best way to get real movement into a loop.
+  - **Complete action cycle** — the actor finishes a full cycle back to its own
+    start pose: one whole paddle stroke, one wingbeat, one turn of a wheel or
+    mill, one bow, one hammer swing, one pass of a weaver's shuttle.
+- **Don't downgrade the motion just to make it loop — drop the loop instead.** If
+  the honest motion is a **countable set of independent creatures** wandering
+  freely (a few ducks, a school of fish), a loop seam makes them **pop out and
+  reappear** ("the ducks and the fish disappeared and reappeared" — a finding from
+  a curation). The fix is to set **`looping: false`** and let them swim, **not** to
+  freeze the ducks and animate the water. Non-looping is cheap; a boring clip is not.
 - **Avoid faces/eyes/hands as the animated focus** unless the source style
   renders them cleanly. Subtle expression drift on a portrait is high-risk for
   the uncanny/melting look — prefer animating light or background instead.
 - **Anchor the style and era concretely** in the image prompt (medium, material,
   period, lighting). Vague prompts give the model room to invent ugly detail.
+- **Depict every artwork as if freshly made — never prompt surface aging or paint
+  texture.** Name the medium and style ("oil on canvas, Utrecht Caravaggist
+  tenebrism"; "distemper on cloth") but **stop at the medium — do not describe its
+  physical condition or surface**. Banned descriptors: *craquelure, cracked /
+  crazed / aged / yellowed varnish, cupping, flaking, "visible brushwork", impasto
+  texture, canvas / silk / panel weave, weathered / pitted / worn / distressed
+  surface*. Image models render fine repetitive texture far too densely and too
+  bright, turning "aged cracked oil surface" into a glaring spider-web of light
+  cracks — **worst on dark / tenebrist scenes**, where the cracks vanish on the lit
+  areas but scream against the near-black shadows. (The 2026-07-20 "Village Forge
+  at Night" reject: its entire dark left half was a bright crack-net, straight from
+  the prompt's *"aged varnish, cracked oil-paint surface"* + *"craquelure remain
+  visible"*.) And **don't "fix" it with a negative cue** — writing *"no craquelure
+  / no cracks"* risks summoning the very texture you named, the same backfire that
+  made "frame" draw a frame (2026-06-28). The fix is simply to **never mention
+  surface condition at all**; the step-2 self-review vision gate is the backstop
+  for any aging the model adds unbidden.
 - **Render the artwork in-situ, filling the whole image — NOT as a museum object.**
   This is the single biggest source of undesirable pieces (see 2026-06-12 round).
   Prompting only the artifact ("a highly detailed bronze plaque, 2nd century BC")
@@ -244,5 +307,87 @@ leaned on the extracted first frames + the reviewer's free-form notes.
 - New hard rule: **don't regenerate famous icons or gallery duplicates.**
 - Reworded the in-situ rule + negative cues to **avoid the word "frame"** and add
   **"no painted border / mat / decorative frame"**, per the reviewer's hypothesis.
+
+### 2026-07-19 — removed 11 undesirable, kept 0 great
+
+**The frames were fine. The motion was the problem.** Every one of the 11 rejects
+is a genuinely handsome first frame (see `undesirable_01.png`) — no museum-object
+shots, no oblique angles, no painted borders, no icon duplicates. The last three
+rounds' image-side rules are *working*. This round is entirely a **video-prompt
+failure**, and it is one this file caused.
+
+**Reviewer's note (the whole round in one line):** *"the animation is mostly only
+ripples, which is very uninteresting. There are way more objects that can be
+animated other than ripples."*
+
+**Avoid (undesirable — patterns from prompts + frames + note):**
+- **Ambient-only motion — 11 of 11.** Tally what actually moves in each reject:
+  water ripples/pours (7), flame/ember flicker (5), smoke curl (3), drifting
+  clouds (3), foliage stirring (4). That is the entire list. Not one clip has a
+  subject that *performs an action*.
+- **The prompts explicitly freeze every living thing — 8 of 11 carry a freeze
+  clause.** These are the actual strings: *"The ranked courtiers stand still"*
+  (a whole Ottoman crowd), *"The worshippers stand still with their hands pressed
+  together"*, *"the painted saints, their halos, robes and faces… stay perfectly
+  still"*, *"the painted fish, the birds, the goddess… stay exactly in place"*,
+  *"The painted fish, crabs and long-beaked birds stay exactly where they are"*.
+  The bot repeatedly **chose scenes full of animatable actors and then forbade all
+  of them from moving**, leaving only the water to animate. Nowruz Bonfire is the
+  purest case: dozens of courtiers around a fire, and only the fire moves.
+- **Not a few bad apples — it's the house style.** All **57** pieces generated
+  since 2026-07-01 use the same ambient vocabulary (ripple/shimmer/flicker/drift/
+  sway/smoke/clouds). The 11 removed are just the ones dull enough to notice.
+
+**Root cause — three existing rules compounded into "only ripples":**
+1. The 06-28 **intrinsic-motion menu** ("water, fire, smoke/incense, clouds/sky,
+   wind in foliage, falling petals, fountains, birds, fish") is **8/10 elemental**.
+   The bot read a menu of *examples* as the *complete permitted set*.
+2. The **loop rule** then deleted the only two non-elemental entries: birds and
+   fish are exactly the "several independent animals" the rule says pop at the
+   seam. 8 of 11 rejects are `looping: true`. Menu minus animals = fluids and fire.
+3. **"Statues, mosaics and architecture should hold their form"** + **"one clear
+   subject, one clear motion"** generalized into *freeze every figure in the
+   scene*, because the earlier "ducks and fish disappeared/reappeared" scare
+   taught the bot that a moving creature is a liability.
+   Net effect: the anti-morph guardrails were doing their job, but the bot
+   satisfied them the cheap way — by assigning motion only to things that have no
+   fixed identity to violate. Technically clean, dramatically dead.
+
+**The distinction the guidance was missing:** *holding form ≠ holding position.*
+- **Identity-preserving motion (want):** a crane beats its wings and glides across;
+  a paddler pulls a full stroke; a horse strides; a dancer completes a turn; a
+  weaver's shuttle crosses; a bell swings; a cart wheel turns; a curtain billows
+  out and falls. The object keeps its exact painted shape, colours and count — it
+  **translates, rotates, or articulates**.
+- **Identity-destroying motion (still banned):** things appearing/disappearing,
+  counts changing, features sliding around, melting/morphing. That was the real
+  complaint behind "the ducks and the fish disappeared" — the *popping*, not the
+  swimming.
+
+**Loop mechanics — why the constraint itself manufactures ripples:** "must return
+exactly to its opening frame" mathematically selects for **oscillation**, and
+low-amplitude oscillation *is* shimmer and flicker. Ripples aren't the bot's taste,
+they're the only thing that trivially satisfies the constraint. Fixed by allowing
+loops to close two other ways (see the rewritten rule): **continuous traversal**
+(a steady stream of subjects crossing frame — one exits as another enters, so the
+aggregate state is unchanged) and **complete action cycles** (a full paddle stroke,
+a full wingbeat, a full bow returns the body to its own start pose).
+
+**New / reinforced rules** (folded into the sections above):
+- New hard rule: **every clip needs a primary mover that performs a legible
+  action** — you must be able to say what happens in a sentence with a real verb
+  ("the crane takes off", not "the light shimmers"). Ambient motion is demoted to
+  **garnish, never the main course**.
+- New hard rule: **hold form ≠ hold still.** Banned the blanket freeze clause;
+  write *"keeps its exact painted shape and colours while it moves"* instead of
+  *"stays perfectly still"*. If a scene contains people/animals, animating them is
+  now the **default expectation**, not a risk to avoid.
+- Rewrote the **loop rule**: loops may close via oscillation, traversal, **or** a
+  complete action cycle; and when the honest motion is an actor doing something,
+  **prefer non-looping** rather than downgrading the motion to fit a loop.
+- Rewrote the **intrinsic-motion menu** to lead with actors (people, animals,
+  vehicles, machines, cloth) and list elements second, with an explicit cap.
+- Clarified **"one clear subject, one clear motion"**: one *focal action*, not a
+  frozen tableau — secondary figures may move naturally.
 
 <!-- Claude appends new rounds above this line. -->

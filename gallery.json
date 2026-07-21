@@ -2520,5 +2520,57 @@
     "image_prompt": "A sudden summer downpour sweeping through a steep cedar gorge, painted in the Nihonga manner of Meiji-period Japan: ground mineral pigments — malachite green, azurite blue, gofun shell white — in soft matte washes with delicate sumi ink outlines. Tall cryptomeria trunks in deep malachite green, a swollen white torrent tumbling over dark wet rocks across the lower third, pale mist banking between the trees, silver-grey rain falling in fine diagonal strokes. Overcast diffused daylight, muted and atmospheric, a luminous pale sky glimpsed at the top. IMPORTANT: this is the painted scene itself, seen straight-on and flat to the picture plane, filling the entire image and extending past all four edges — a full-bleed view of the painting's surface, not a photograph of an artwork. No visible silk edge, selvage, fraying, hanging scroll, canvas edge, paper edge or backing surface anywhere; no painted border, no mat, no decorative frame; no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no studio background, no table or floor, no text, no signature, no red seal.",
     "video_prompt": "A heavy summer rainstorm in a Japanese Nihonga painting comes alive. Silver-grey rain streaks down steadily and diagonally across the whole scene, splashing and stippling the surface of the water. The white torrent in the foreground churns and rushes over the dark wet rocks, spray leaping and foam sliding downstream. Pale mist drifts slowly upward and sideways between the distant cedar trunks. The cedar boughs sway gently under the weight of the rain. Diffused overcast daylight, cool and even. The camera holds still, straight-on and flat to the painting; the trees, rocks and painted forms keep their exact shapes and do not change.",
     "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/tornado_plains_regionalism_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/tornado_plains_regionalism_4k.webp",
+    "title": "Tornado over the Plains - American Regionalism (AI Animated)",
+    "type": "video",
+    "date": "2026-07-21",
+    "tags": [
+      "Modern"
+    ],
+    "image_prompt": "An American Regionalist oil painting on canvas in the manner of John Steuart Curry, 1930s Midwest. A colossal dark tornado funnel twists down from a churning blue-black thunderhead onto golden summer wheat fields on the Kansas plains. The great grey-brown funnel dominates the centre, roping and swelling where it touches the earth, kicking up a spreading skirt of dust and torn debris at its base. Below it a small white clapboard farmhouse and a red barn stand exposed on the flat land, the wheat flattened in rippling waves by the wind, a low rail fence, and an eerie greenish-yellow storm light breaking beneath the clouds with a pale shaft of sun on the far fields. Muscular regionalist brushwork, thick painterly clouds, rich earth tones and stormy blues. The scene fills the entire image, extending to all four edges, viewed straight-on and flat to the picture plane. no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame; no text.",
+    "video_prompt": "The tornado funnel twists and ropes, swaying slowly as it snakes down from the churning thunderhead, its dark column writhing with the wind while a thick skirt of brown dust and torn debris boils and spreads outward where it meets the ground. The golden wheat in the foreground bends and ripples in surging waves as gusts sweep across the field toward the storm. Overhead the blue-black storm clouds roll and churn, and pale shafts of god-ray sunlight shift and flicker through the breaking clouds on the left. Rain haze drifts across the far fields. The little farmhouse and red barn stand still and solid. Physically real weather motion — wind, dust, cloud and light — nothing morphs or melts. The camera is locked off, straight-on. Dramatic, powerful, cinematic.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/burning_troy_baroque_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/burning_troy_baroque_4k.webp",
+    "title": "The Burning of Troy - Baroque Oil (AI Animated)",
+    "type": "video",
+    "date": "2026-07-21",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "image_prompt": "A dramatic tenebrist night scene of an ancient classical city ablaze, rendered in the manner of a 17th-century Baroque history painting in oil — molten firelight and deep shadow. A great colonnaded marble temple and palaces are engulfed in towering orange flames against a smoke-blackened sky; rolling billows of black and grey smoke pile up into the darkness lit from within, and showers of glowing embers stream upward. Warm firelight rakes across fluted columns, marble statues and a triumphal arch, and glints on the helmets and spears of small fleeing soldiers in the cobbled foreground street. To the right a harbour with burning ships, their reflections flickering on dark water. Deep chiaroscuro, molten oranges and reds against cold blue-black night, rich impasto brushwork. IMPORTANT: this is a full-bleed view of the painted scene itself — the imagery fills 100 percent of the image and runs off all four edges. no gold frame, no gilded picture frame, no wooden frame, no painted border, no mat, no matting, no vitrine, no glass, no museum, no gallery wall, no pedestal, no label, no plain studio background; viewed straight-on and flat. no text.",
+    "video_prompt": "The great fires roar and billow — tongues of orange flame leap and flicker across the burning temple and palaces, dancing higher and lower, while thick black smoke rolls and boils upward across the night sky and glowing embers and sparks stream up into the darkness. On the harbour to the right the burning ships blaze, their flames wavering and their reflections rippling and shimmering on the dark water. Warm firelight pulses and flickers over the marble columns, the triumphal arch and the cobbled street. The stone buildings, statues and columns stay perfectly solid and still — only fire, smoke, embers, light and water move. Physically real combustion, nothing morphs or melts. The camera is locked off, straight-on. Dramatic, roaring, cinematic.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/geumgangsan_mist_joseon_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/geumgangsan_mist_joseon_4k.webp",
+    "title": "Mist over the Diamond Mountains - Joseon True-View Landscape (AI Animated)",
+    "type": "video",
+    "date": "2026-07-21",
+    "tags": [
+      "Chinese & Korean"
+    ],
+    "image_prompt": "A sweeping Korean 'true-view' (jingyeong sansu) ink-and-light-colour mountain landscape in the manner of Jeong Seon, Joseon dynasty — brushed ink and pale mineral washes. Jagged white granite peaks and the ten-thousand pinnacles of the Diamond Mountains (Geumgangsan) rise in sharp vertical spires drawn with taut ink brushstrokes; dark pines and a few red-orange autumn maples cling to the ridges and clefts. Soft white mist and low cloud pour and drift between the stone pinnacles and along the deep valleys, half-veiling the far peaks; a thin waterfall descends a gorge on the right into a rocky stream below. Pale dawn light, muted grey ink with touches of blue-green and ochre. IMPORTANT: the painted mountain scene itself fills 100 percent of the image and runs off all four edges — a full-bleed view. no paper mount, no album leaf, no visible paper edge, no border, no margin, no matting, no frame, no museum, no glass, no red seals, no calligraphy, no signature, no text; viewed straight-on and flat.",
+    "video_prompt": "Soft white mist and low cloud drift slowly and continuously through the valleys and between the granite pinnacles, curling and rolling, thinning and thickening so the far peaks gently veil and reveal. On the right the waterfall pours steadily down the gorge into the rocky stream, the water flowing and shimmering, and the small cascade on the left trickles. The pines sway almost imperceptibly in a faint breeze. The stone peaks, cliffs and trees hold their exact shapes and never move or morph — only the mist, the falling water and the light drift. Gentle, tranquil, ambient continuous motion that settles back exactly to how it began. The camera is locked off, straight-on.",
+    "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/lotus_pond_rain_vietnamese_silk_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/lotus_pond_rain_vietnamese_silk_4k.webp",
+    "title": "Spring Rain on the Lotus Pond - Vietnamese Silk Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-07-21",
+    "tags": [
+      "South & Southeast Asian"
+    ],
+    "image_prompt": "A Vietnamese silk painting (tranh lua) in the manner of Nguyen Phan Chanh, early 20th century — delicate ink and translucent watercolour washes on fine silk, soft, muted and atmospheric. A quiet lotus pond in spring rain seen from just above the water: broad blue-green lotus pads float across the still surface, a few pale pink lotus blossoms and buds rising among them on slender stems, tall slim reeds and a drooping willow branch at one edge. Fine grey rain falls in soft diagonal threads, dimpling the water into countless concentric rings; the pond surface holds muted reflections of the grey sky and the floating pads. Overcast pearly light, a restrained palette of soft greens, dove-grey and blush pink, the tender grain of the silk showing through the washes. The scene fills the entire image, extending to all four edges, viewed straight-on from just above the water. no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame, no seals, no calligraphy, no signature, no text.",
+    "video_prompt": "Steady fine spring rain falls across the pond in soft diagonal threads, dimpling the calm water so countless concentric ripple rings bloom outward, overlap and fade all across the surface. The broad lotus pads nod and quiver gently as raindrops strike them, a few beads sliding off their rims, and the tall reeds and the drooping willow fronds at the left sway softly in the damp breeze. The pink lotus blossoms tremble very slightly on their stems. Muted reflections shimmer on the rippling water. The pads, flowers and willow keep their exact shapes and never morph — only the rain, the ripples, the gentle sway and the reflections move. Tranquil, continuous ambient motion that settles back exactly to how it began. The camera is locked off, straight-on.",
+    "looping": true
   }
 ]

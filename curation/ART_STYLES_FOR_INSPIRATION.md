@@ -153,6 +153,7 @@ When you add a new style, append it under the section it best fits.
 - Joseon Dynasty Minhwa
 - Joseon Irworobongdo Court Screen
 - Joseon Dynasty Landscape Painting
+- Joseon True-View Landscape (jingyeong sansu — Jeong Seon / Geumgangsan)
 - Goryeo Buddhist Painting
 - Rinpa School
 - Yamato-e

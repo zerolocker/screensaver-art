@@ -50,6 +50,7 @@ When you add a new style, append it under the section it best fits.
 - Heidelberg School (Australian Impressionism — Streeton, Roberts)
 - Barbizon School
 - Hague School (Dutch tonal landscape — Weissenbruch, Mauve, Gabriël)
+- Skagen School (Danish plein-air coastal painting — Michael Ancher, P.S. Krøyer)
 - Realism
 - Macchiaioli
 - Tonalism
@@ -170,6 +171,7 @@ When you add a new style, append it under the section it best fits.
 - Chola Dynasty Bronze Sculpture
 - Pala Dynasty Bronze
 - Tibetan Thangka
+- Tibetan Menri Monastery Mural (Cham dance / courtyard scenes)
 - Sigiriya Fresco
 - Khmer Angkor Stone Sculpture
 - Javanese Borobudur Relief
@@ -227,6 +229,7 @@ When you add a new style, append it under the section it best fits.
 - Mesopotamian Cylinder Seal Impression
 - Mari Palace Wall Painting (Old Babylonian fresco on lime plaster)
 - Assyrian bas-relief
+- Neo-Assyrian Palace Wall Painting (Til Barsip, pigment on lime plaster)
 - Achaemenid Persian metalwork
 - Achaemenid Persepolis Relief
 - Sasanian Silverwork
@@ -235,6 +238,7 @@ When you add a new style, append it under the section it best fits.
 - Roman Still-Life Fresco (Xenia)
 - Roman Second-Style Landscape Fresco (Odyssey Landscapes)
 - Hellenistic Mosaic
+- Attic Red-Figure Vase Painting (Kleophrades / Berlin Painter)
 - Macedonian Court Mosaic
 - Roman Nilotic Mosaic (Palestrina)
 - Etruscan Tomb Painting

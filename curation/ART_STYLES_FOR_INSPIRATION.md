@@ -69,6 +69,7 @@ When you add a new style, append it under the section it best fits.
 - Modern art
 - Group of Seven (Canadian landscape, Tom Thomson / A.Y. Jackson)
 - American Regionalism (1930s, Thomas Hart Benton / Grant Wood)
+- Mexican Muralism (1920s–40s fresco, Rivera / Orozco / Siqueiros)
 - Expressionism
 - Fauvism
 - Cubism
@@ -183,6 +184,7 @@ When you add a new style, append it under the section it best fits.
 - Ottoman Iznik Ceramics
 - Ottoman Miniature (Surname festival painting)
 - Timurid Manuscript Illumination
+- Timurid Herat-School Painting (Bihzad circle — courtly outdoor scenes, polo, hunts)
 - Qajar Persian Painting
 - Mamluk Metalwork
 - Mamluk Architecture (Cairene mosque interiors — ablaq stone, mihrab, mosque lamps)

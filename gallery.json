@@ -2572,5 +2572,57 @@
     "image_prompt": "A Vietnamese silk painting (tranh lua) in the manner of Nguyen Phan Chanh, early 20th century — delicate ink and translucent watercolour washes on fine silk, soft, muted and atmospheric. A quiet lotus pond in spring rain seen from just above the water: broad blue-green lotus pads float across the still surface, a few pale pink lotus blossoms and buds rising among them on slender stems, tall slim reeds and a drooping willow branch at one edge. Fine grey rain falls in soft diagonal threads, dimpling the water into countless concentric rings; the pond surface holds muted reflections of the grey sky and the floating pads. Overcast pearly light, a restrained palette of soft greens, dove-grey and blush pink, the tender grain of the silk showing through the washes. The scene fills the entire image, extending to all four edges, viewed straight-on from just above the water. no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame, no seals, no calligraphy, no signature, no text.",
     "video_prompt": "Steady fine spring rain falls across the pond in soft diagonal threads, dimpling the calm water so countless concentric ripple rings bloom outward, overlap and fade all across the surface. The broad lotus pads nod and quiver gently as raindrops strike them, a few beads sliding off their rims, and the tall reeds and the drooping willow fronds at the left sway softly in the damp breeze. The pink lotus blossoms tremble very slightly on their stems. Muted reflections shimmer on the rippling water. The pads, flowers and willow keep their exact shapes and never morph — only the rain, the ripples, the gentle sway and the reflections move. Tranquil, continuous ambient motion that settles back exactly to how it began. The camera is locked off, straight-on.",
     "looping": true
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/timurid_polo_maidan_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/timurid_polo_maidan_4k.webp",
+    "title": "Polo Match on the Royal Maidan - Timurid Herat Miniature (AI Animated)",
+    "type": "video",
+    "date": "2026-07-21",
+    "tags": [
+      "Islamic"
+    ],
+    "image_prompt": "An extreme full-bleed close crop of a Timurid Herat-school Persian painting, circa 1440, opaque watercolour and gold, so that the painted scene itself covers every pixel and bleeds off all four edges. The scene: a royal polo match on a brilliant emerald maidan - four mounted riders in patterned silk robes and turbans gallop after a small white ball, long-handled polo mallets raised, their horses (chestnut, dappled grey, black and bay) at full stretch with manes and tails streaming. Flowering almond trees and a low turquoise-tiled garden wall run across the upper part, lapis-blue sky with gold scrolling clouds above, the green ground scattered with tiny painted flowers. Jewel-like flat colour, fine black outlines, no cast shadows, high viewpoint, figures in clear profile. Bright even daylight. Nothing surrounds the painting: no paper margin, no cream page edge, no gold rule lines, no painted border, no mat, no decorative surround, no museum, no display case, no glass, no vitrine, no pedestal, no gallery wall, no spotlight, no museum label, no plain studio background, no text, no calligraphy, no inscriptions. Viewed straight-on, flat to the picture plane.",
+    "video_prompt": "The two central riders drive their horses forward at a gallop and the leading rider swings his mallet down in a full arc, striking the small white ball so it skips away across the green; all four horses gallop with legs extended, manes and tails streaming, and the riders lean into the chase, their silk robes and turban ends flying. Each horse and rider keeps its exact painted shape, colours, markings and count while it moves. Blossom petals drift down from the almond trees and the branches sway lightly. The turquoise-tiled wall, the gold clouds and the flowered ground stay in place. Flat jewel-like colour, bright even daylight, static straight-on camera.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/gondarine_saint_george_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/gondarine_saint_george_4k.webp",
+    "title": "Saint George and the Dragon - Gondarine Ethiopian Church Painting (AI Animated)",
+    "type": "video",
+    "date": "2026-07-21",
+    "tags": [
+      "Arts of Africa & Oceania"
+    ],
+    "image_prompt": "A Gondarine Ethiopian Orthodox church wall painting, 17th century, distemper on cloth covering the chapel wall: Saint George in a red cloak and gold tunic rides a white horse and thrusts a long slender spear down into a green scaled dragon coiled beneath the horse's hooves; a small crowned princess in a saffron robe stands at the right holding a lamp. Flat brilliant fields of red, saffron yellow, emerald green and indigo, bold black outlines, large almond eyes, stylised drapery folds, a gold halo disc, an ochre background band with simple decorative rosettes. Even bright interior light. The painting fills the entire image, extending to all four edges, viewed straight-on and flat to the picture plane. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it, no text, no inscriptions, no lettering.",
+    "video_prompt": "Saint George drives his spear downward in one steady thrust into the dragon's open jaws; the dragon lashes its coiled green tail and pulls its head back. The white horse tosses its head and lifts a foreleg, its long mane and tail swinging, and the saint's red cloak billows out behind him and settles. The crowned princess turns slightly and the small flame in her lamp wavers and brightens. Every figure keeps its exact painted shape, flat colours and black outlines while it moves. The ochre and indigo background bands, the rosettes and the gold halo stay in place. Even bright interior light, static straight-on camera.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/maya_ballgame_court_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/maya_ballgame_court_4k.webp",
+    "title": "The Ballgame - Maya Polychrome Mural (AI Animated)",
+    "type": "video",
+    "date": "2026-07-21",
+    "tags": [
+      "Arts of the Americas"
+    ],
+    "image_prompt": "A Classic Maya polychrome wall painting, 8th century, mineral pigments on lime plaster, showing a ball-game in progress on a stepped court: two players in profile - one lunging low with his padded hip driving a large black rubber ball into the air, the other crouched ready with arms spread - wearing jade-bead collars, white loincloths, thick waist yokes and towering quetzal-feather headdresses in green and turquoise. Flanking them, a row of seated lords in white mantles and a standing drummer watch from the terrace. Flat brilliant Maya blue, red ochre, cream and black, confident calligraphic black outlines, no cast shadows, figures in clear profile against a red-ochre ground with a cream band above. Bright even daylight. The painting fills the entire image, extending to all four edges, viewed straight-on and flat to the picture plane, no oblique or receding angle. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it, no text, no glyph blocks, no inscriptions.",
+    "video_prompt": "The running player lunges forward and drives the black rubber ball upward with his padded hip; the ball arcs across the red wall and the crouching player springs up to meet it with his arms spread. Their tall quetzal-feather headdresses sweep and ripple with the movement, the standing drummer's hands beat on his drum, and the seated lords turn their heads and shift their weight. Every figure keeps its exact painted shape, flat colours, outlines and ornament while it moves. The stepped terrace, the red-ochre and cream bands and the blue panel stay in place. Bright even daylight, static straight-on camera.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/mexican_mural_fiesta_dance_looping.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/mexican_mural_fiesta_dance_4k.webp",
+    "title": "Fiesta Dance in the Village Square - Mexican Muralism (AI Animated)",
+    "type": "video",
+    "date": "2026-07-21",
+    "tags": [
+      "Modern"
+    ],
+    "image_prompt": "A Mexican muralist fresco of the 1930s mural renaissance, fresco on plaster, depicting a village fiesta dance: at the centre a woman in a full crimson and green skirt spins in the jarabe, her braided hair swinging out and her hands lifted, while a man in white cotton and a wide straw hat steps around her; behind them three musicians play guitar, violin and guitarron, and market women in blue rebozos sit with baskets of marigolds and painted pottery. Solid modelled forms, broad simplified volumes, earthy ochres, terracotta, deep blue and warm cream, strong clear daylight, a low adobe wall and blue volcanic hills across the background. The scene fills the entire image, extending to all four edges, viewed straight-on and flat to the picture plane. no museum, no display case, no glass, no vitrine, no pedestal or plinth, no gallery wall, no spotlight, no museum label, no plain studio background, no painted border, no mat, no decorative frame around it, no text, no lettering, no banners with writing.",
+    "video_prompt": "The dancer completes one full turn of the jarabe: her crimson and green skirt flares out into a wide circle, her long braid swings around, and she comes back to exactly the pose she started in; her partner in white steps once around her and back. The guitarist's strumming hand sweeps, the violinist draws his bow across and back, and the marigolds and the women's blue rebozos stir in the warm breeze before settling. Every figure keeps its exact painted shape, colours and clothing while it moves, and the whole motion returns exactly to the opening pose. The adobe wall, the pottery, the baskets and the blue volcanic hills stay in place. Strong clear daylight, static straight-on camera.",
+    "looping": true
   }
 ]

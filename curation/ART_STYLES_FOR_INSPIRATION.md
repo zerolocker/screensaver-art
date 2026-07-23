@@ -37,6 +37,7 @@ When you add a new style, append it under the section it best fits.
 - Mannerism
 - Tudor Portrait Miniature
 - Dutch Golden Age
+- Dutch Golden Age Winter Landscape (Avercamp — ice-skating genre scenes)
 - Baroque
 - Baroque Oil Painting
 - Utrecht Caravaggism
@@ -152,6 +153,7 @@ When you add a new style, append it under the section it best fits.
 - Kamakura Period Emakimono
 - Edo Period Byobu (Folding Screen)
 - Edo period Netsuke carving
+- Joseon Genre Painting (pungsokhwa — Kim Hong-do / Sin Yun-bok village life)
 - Joseon Dynasty Minhwa
 - Joseon Irworobongdo Court Screen
 - Joseon Dynasty Landscape Painting

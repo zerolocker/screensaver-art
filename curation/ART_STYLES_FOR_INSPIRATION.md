@@ -239,6 +239,7 @@ When you add a new style, append it under the section it best fits.
 - Roman Garden Fresco
 - Roman Still-Life Fresco (Xenia)
 - Roman Second-Style Landscape Fresco (Odyssey Landscapes)
+- Roman Villa Figural Fresco (Villa of the Mysteries — Dionysian dance/mystery scenes)
 - Hellenistic Mosaic
 - Attic Red-Figure Vase Painting (Kleophrades / Berlin Painter)
 - Macedonian Court Mosaic

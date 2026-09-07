@@ -62,7 +62,7 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 | **Show HN** | ❌ **dropped as a plan item** | Blocked at submission 2026-08-02 (HN not taking new Show HN posts). Copy stays loaded; **nothing may depend on it reopening.** |
 | Reddit (r/macapps + visual subs) | ⏭️ **never run** | Day-2 slot unused. Highest-fit free channel, ~20 min (`launch-kit.md` §3). |
 | **Daily social posting + aggregator** | ⏭️ **#1 — vendors chosen 2026-08-02** | §4.1 + §11 (B) — **upload-post** (IG + YT) + **Zernio** (TikTok + Pinterest), both start free. Glue script not written. Best fit for 0 h/week: build once, posts nightly forever. |
-| **Clip audio: Lyria music bed** | ⏭️ **founder-owned** | §11.2 — clips will be scored with **Lyria-generated music**; the founder is building it as a repo skill. **Agents: don't implement it, and don't commit audio** (`CLAUDE.md` → Repo rules). |
+| **Clip audio: Lyria music bed** | 🔨 **generator built 2026-08-23** | §11.2 — `lyria-music-gen` skill turns a prompt into an instrumental MP3 (Lyria **sings by default** — the prompt must say "instrumental, no vocals"; the skill enforces it). **Not yet wired:** `make-social-assets.mjs` still passes `-an`. |
 | Brand-name / on-page SEO basics | ✅ live | 2026-07-17 (PRs #68, #69): keyword title, shared meta description, JSON-LD. |
 | **Gallery landing pages** (`/gallery`, `/art/<slug>`, `/era/<tag>`) | ✅ **shipped 2026-08-03** | §4.3 — dropped then **reversed** the same day, justified as **social landing pages, not SEO**. 262 piece pages + 15 era wings + a 6-page index + a self-growing sitemap, all prerendered from `gallery.json`. `/art/*` is `noindex, follow` behind one constant (`INDEX_ART_PAGES`); `/gallery` + `/era/*` are indexable. `/style/<movement>` still deferred (203 labels, 158 singletons). **Ready for #1's posts.** |
 | **Directory submissions** | ⏭️ **#2** | §4.4 — alternativeto.net, MacUpdate, indie dirs. Agent preps the pack, founder pastes once. |
@@ -77,9 +77,9 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 
 **One-liner:** foundation live, pricing closed, **the pins now have somewhere to land** (283 new
 gallery routes), **still ~zero traffic and therefore zero conversion data**. Next: **automated
-posting → directories → press/creators → Reddit.** ⚠️ **#1 is the entire plan and it's blocked on
-one founder chore** (create the two vendor accounts) — nothing else moves the needle at this
-scale.
+posting → directories → press/creators → Reddit.** ⚠️ **#1 is the entire plan.** The vendor accounts now **exist**
+(`UPLOADPOST_API_KEY` + `ZERNIO_API_KEY` in `curation/.env`), so the remaining work is the glue
+script — agent work, no longer blocked on the founder.
 
 ## In progress (claim here before starting)
 | Task | Agent / branch / PR | Started | Notes |
@@ -154,6 +154,14 @@ Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batc
 ---
 
 ## Activity log (append-only — newest first)
+- **2026-08-23** — **`lyria-music-gen` skill built** (§11.2). One call, prompt in, instrumental
+  MP3 out, on the existing `GEMINI_API_KEY` — no new vendor. `clip` ≈30s, `pro` ≈3min.
+  **Verified the vocals trap is real:** "a gentle folk song about autumn rain" came back sung,
+  with a timestamped lyric sheet. So the skill warns pre-call when the prompt lacks instrumental
+  wording, and post-call detects lyrics from Lyria's own text part (`<instrumental>` vs
+  timestamped lines) and exits non-zero — the audio is still written so the paid call isn't
+  wasted. `--allow-vocals` opts out. Next: wire it into `make-social-assets.mjs`, which still
+  renders silent. _(This PR.)_
 - **2026-08-23** — **Removed the platform rankings; all four social channels are now equal.**
   The docs had ranked TikTok below Pinterest/YouTube on content "durability" and called
   Reels/TikTok "viral lottery tickets". **Unsupported** — TikTok treats posts as evergreen (old

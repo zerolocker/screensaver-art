@@ -1364,4 +1364,72 @@ with four *deliberately different* kinds of primary mover, and a global spread
   were all distinct from each other and from the recent sport/race-heavy batches. The
   powder-throw (Holi) is a genuinely new mover class worth reusing.
 
+### 2026-09-07 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, **all intact-medium** (0 archaeological — within
+the ≤1 cap), leaning bright/dense/colourful, continuing the **mover-type rut-break**
+with four *different* kinds of primary mover, and hitting **two under-used wings**
+(`Islamic` 16, `Medieval & Byzantine` 18):
+- **The Dyers' Courtyard — Deccan Painting** (`Islamic`, non-looping) — a *lift-and-
+  wring / splash* mover: dyers heave dripping skeins of freshly dyed yarn up out of
+  brilliant indigo/crimson/saffron/emerald vats onto drying rails of rainbow hanks,
+  dye water streaming; a boy stirs a vat. A genuinely fresh mover class (nothing else
+  dyes) and one of the most saturated frames the gallery has — rainbow skeins fill it.
+- **Hawking in the Meadow — International Gothic** (`Medieval & Byzantine`,
+  non-looping) — a *bird-launch + ride* mover: the lead falconer's white gyrfalcon
+  beats up off the raised gauntlet as an elegant Très-Riches-Heures hawking party
+  rides out across a mille-fleurs meadow, hounds coursing, gold sky, blue château.
+- **The Stilt-Walkers' Parade — Qing New Year Folk Painting** (`Chinese & Korean`,
+  non-looping) — a *stilt-walk/sway* mover (fresh): a troupe of opera-costumed gaoqiao
+  performers strides and sways down a lantern-strung holiday street, streamers flying,
+  drummers and cymbal-players striking below, a dense delighted crowd. Yangliuqing
+  nianhua register — brilliant, extremely dense.
+- **The Splash Fountain — Contemporary Illustration** (`Contemporary`, non-looping) —
+  a *run/leap-through-water* mover: children leap and splash through erupting arcing
+  jets of a summer city-plaza splash fountain, one child leaping up through a bursting
+  water column, a dog shaking off. Deliberately a **painterly gouache-and-coloured-
+  pencil** register (explicitly "NOT flat vector") to keep varying the heavy recent
+  flat-vector look.
+
+**What worked / reinforced:**
+- **All four videos accepted first try; 3 of 4 stills passed the vision gate first
+  try.** Standing image rules kept producing bright, dense, edge-to-edge frames.
+  Veo drift stayed a mild zoom in every clip with the "on the spot / same size / same
+  place" + camera-lock + zoom/pan negative block; no morphing, popping, lost actors,
+  or count changes. The crimson-skein heave (with dye water streaming into the vat),
+  the gyrfalcon beating up off the gauntlet keeping its exact white form, the lead
+  stilt-walker's big striding step on rigid stilts, and the central child's leap
+  through the erupting water column all read as clean legible primary actions.
+- **Under-used-wing + mover-type variety remain the cheap rut-breaks** (per 09-02→09-06).
+  Hitting `Islamic` and `Medieval & Byzantine` (both sparse among the favoured wings)
+  with a jewel-bright Deccan dyers' yard and an International Gothic hawking party —
+  both "old" but pristine, intact-medium and hyper-colourful, dodging the worn
+  archaeological register entirely. And the four movers (dye-lift/splash /
+  bird-launch+ride / stilt-walk / kids-through-water-jets) were all distinct from each
+  other and from the recent sport/festival-crowd batches. The dyers' rainbow-skein
+  scene is a genuinely new mover *and* a palette-and-density standout worth reusing.
+- **International Gothic manuscript still summons a ruled page border on the LEFT
+  and RIGHT edges — and the full-bleed close-crop clause only got 3 of 4 edges.** The
+  Hawking still came back edge-to-edge top/bottom but with a gold+maroon ruled border
+  strip (~110 px native) down *both* the left and right edges (the
+  [[curation-miniature-paper-border]] family — vellum/manuscript carries a ruled-frame
+  prior just like silk/paper miniatures). This time I **patched rather than rerolled**
+  (the composition was otherwise perfect and a locked-camera clip won't crop the edges
+  the way the usual mild zoom does): a **feathered mirror patch** per
+  [[curation-artist-name-summons-signature]]'s technique — for each side, paste a
+  horizontally-flipped copy of the ~120 px column just inboard of the border over the
+  border box, composited through a Gaussian-blurred mask that feathers to 0 at the
+  inner seam (the flip makes the seam self-match, so it's invisible; the thin residual
+  verticals read as the party's lances). Clean both sides first try. Takeaway:
+  **for a manuscript/miniature pick, expect a border on *both* side edges, and if the
+  camera is locked (so Veo won't crop it) patch both edges rather than trusting the
+  zoom.** Kept the pre-patch original in the scratchpad per
+  [[curation-keep-rejected-renders]].
+- **Ottoman is now the crowded corner of the `Islamic` wing** (5 Ottoman miniatures:
+  Mehter, Festival Acrobats, Carpet Bazaar, Fireworks Bosphorus, Iznik) and Persian
+  heavier still (12) — so the Deccan (Golconda) register was chosen deliberately to
+  fill `Islamic` without another Ottoman/Persian court miniature. When picking for
+  `Islamic`, check *which* sub-tradition is over-used, not just the wing count.
+
 <!-- Claude appends new rounds above this line. -->

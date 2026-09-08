@@ -62,7 +62,7 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 | **Show HN** | ❌ **dropped as a plan item** | Blocked at submission 2026-08-02 (HN not taking new Show HN posts). Copy stays loaded; **nothing may depend on it reopening.** |
 | Reddit (r/macapps + visual subs) | ⏭️ **never run** | Day-2 slot unused. Highest-fit free channel, ~20 min (`launch-kit.md` §3). |
 | **Daily social posting + aggregator** | ✅ **live 2026-09-07** | §4.1 + §11 (B) — `marketing/post-social.mjs`, hung off the nightly curation (`AUTOMATED_CURATION.md` step 8). One piece a night to **all four** channels, each linking to its own `/art/<slug>` + UTM. **Verified with real posts on IG / YT / TikTok / Pinterest.** ⚠️ upload-post's free 10 uploads/mo covers ~5 days — IG + YT need the $24/mo plan to keep running. |
-| **Clip audio: Lyria music bed** | ✅ **live 2026-09-07** | §11.2 — `make-social-assets.mjs --audio` loops a bed at −9 dB. Library of **5 beds** built once by `marketing/make-beds.mjs`, hosted on R2, never committed; picked deterministically per piece. |
+| **Clip audio: Lyria music bed** | ✅ **live 2026-09-07, per-piece 2026-09-08** | §11.2 — `make-social-assets.mjs --music-prompt` scores the posted clip at −9 dB with music written for *that* artwork. The nightly agent writes the prompt (`PROMPT_GUIDANCE.md` → Music prompts); it is recorded as `music_prompt` in `gallery.json` and the MP3 is temp-only. The 5-bed shared library it replaced is deleted. |
 | Brand-name / on-page SEO basics | ✅ live | 2026-07-17 (PRs #68, #69): keyword title, shared meta description, JSON-LD. |
 | **Gallery landing pages** (`/gallery`, `/art/<slug>`, `/era/<tag>`) | ✅ **shipped 2026-08-03** | §4.3 — dropped then **reversed** the same day, justified as **social landing pages, not SEO**. 262 piece pages + 15 era wings + a 6-page index + a self-growing sitemap, all prerendered from `gallery.json`. `/art/*` is `noindex, follow` behind one constant (`INDEX_ART_PAGES`); `/gallery` + `/era/*` are indexable. `/style/<movement>` still deferred (203 labels, 158 singletons). **Ready for #1's posts.** |
 | **Directory submissions** | ⏭️ **#2** | §4.4 — alternativeto.net, MacUpdate, indie dirs. Agent preps the pack, founder pastes once. |
@@ -132,6 +132,23 @@ Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batc
 ---
 
 ## Activity log (append-only — newest first)
+- **2026-09-08** — **Music is now scored to the artwork, and the nightly agent owns both calls.**
+  Founder review of the first clip killed the shared-bed design: a joyful, noisy summer plaza
+  full of children in a splash fountain had been scored with *"solo felt piano in a large empty
+  room, tender and slow"*. The library reasoning ("nobody notices the bed varying nightly") was
+  true and beside the point — **what gets noticed is music that contradicts the picture**, and
+  that is worse than silence. So: the 5-bed library and its R2 objects are **deleted**,
+  `make-social-assets.mjs --music-prompt` makes **one Lyria call per posted piece**, and the
+  **nightly curation agent** now (a) picks which of its four pieces to post and (b) writes that
+  piece's music prompt — it has just written the image and video prompts and looked at the still,
+  so nothing downstream knows the piece as well.
+  **The prompt is the durable artifact, not the MP3:** the audio is generated to a temp dir,
+  muxed at −9 dB, and deleted; `music_prompt` is written onto that piece's `gallery.json` entry
+  as a curation-only field beside `image_prompt`/`video_prompt`. Only the posted piece is scored,
+  so **only one of the four carries the field** — and the script refuses `--music-prompt` when
+  more than one piece matches, so that can't drift. Selection criteria, prompt rules, a worked
+  example and the anti-patterns are in `curation/PROMPT_GUIDANCE.md` → *Music prompts*; the
+  runbook is `AUTOMATED_CURATION.md` step 8. _(This PR.)_
 - **2026-09-07** — **#1 shipped: the art now posts itself, nightly, to all four channels.**
   `marketing/post-social.mjs` glues the rendered clips to upload-post (Instagram + YouTube) and
   Zernio (TikTok + Pinterest) and hangs off the nightly curation as step 8. **Verified with real
@@ -139,11 +156,9 @@ Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batc
   [YT](https://www.youtube.com/watch?v=xC6V8iTtdEQ) ·
   [TikTok](https://www.tiktok.com/@livingartscreensaver/video/7682974613550271775) ·
   [Pinterest](https://www.pinterest.com/pin/1146940230213600786/) — then a second full round on a
-  different piece to prove the fixed code path. **Clips are no longer silent:** `--audio` mixes a
-  Lyria bed at −9 dB from a **5-bed library** built once (`make-beds.mjs`) and hosted on R2;
-  per-clip generation was rejected as a recurring bill for a difference no viewer can perceive.
-  **No media committed** — `marketing/beds/` and `out/` are gitignored; `beds.json` holds only
-  ids, prompts and URLs.
+  different piece to prove the fixed code path. **Clips are no longer silent:** `--audio` mixed a
+  Lyria bed at −9 dB, drawn from a small shared library — a design superseded the next day, see
+  the 2026-09-08 entry. **No media committed** — `marketing/out/` is gitignored.
   Decisions worth not relitigating: **(1) one piece a night, not four** — four posts a day is a
   cadence nobody wants, and it would spend upload-post's free month in under a week. **(2) Every
   post links to `/art/<slug>` with a per-channel UTM**, and the slug is *read from the render's

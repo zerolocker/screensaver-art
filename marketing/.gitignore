@@ -1,6 +1,2 @@
 # Rendered social assets are build output, not source.
 out/
-
-# The generated music beds are media: cached from R2, never committed
-# (CLAUDE.md -> Repo rules). marketing/beds.json holds the metadata.
-beds/

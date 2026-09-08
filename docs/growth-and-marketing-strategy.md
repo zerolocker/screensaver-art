@@ -478,13 +478,26 @@ fully sung track with its own lyric sheet. **Put "instrumental, no vocals" in th
 skill warns before spending a call and fails after one if it detects lyrics, so automation can't
 ship vocals by accident.
 
-**✅ Wired 2026-09-07.** `make-social-assets.mjs --audio` loops a bed under the clip at **−9 dB**
-with a 1 s / 1.5 s fade, and `marketing/make-beds.mjs` generates the library. The call that
-mattered: **a small library reused across clips, not a track per clip** — five beds, picked
-deterministically per piece. Nobody watching a nightly feed can tell tonight's bed also played
-last Tuesday, so per-clip generation would be a standing API bill for an imperceptible
-difference. **The MP3s live on R2, never in git** (`CLAUDE.md` → Repo rules); `marketing/beds.json`
-commits only the id, the prompt and the URL, and the audio is cached locally on first use.
+**✅ Wired 2026-09-07; made per-piece 2026-09-08.** `make-social-assets.mjs --music-prompt`
+makes one Lyria call and loops the result under the clip at **−9 dB** with a 1 s / 1.5 s fade.
+
+**The music is scored to the artwork, not drawn from a library.** The first version reused five
+generic ambient beds, reasoning that nobody notices the bed varying nightly. That is true and
+beside the point: what *is* noticed is a bright, noisy plaza of children playing in a fountain
+scored with a slow, tender solo piano — the music contradicts the picture and reads as a
+mistake. **Matching music is worth one API call a night; mismatched music is worth less than
+silence.** So the library, and its R2 copies, are gone.
+
+**The prompt is the durable artifact, not the MP3.** The audio is generated to a temp dir, muxed,
+and deleted; what persists is **`music_prompt` on that piece's `gallery.json` entry** — a
+curation-only field beside `image_prompt`/`video_prompt`, which the shared `ArtItem` type
+deliberately omits. Only the one piece a night that gets posted is scored, so only that piece
+carries the field.
+
+**The nightly curation agent writes the prompt** (and picks which of its four pieces to post):
+it has just written the image and video prompts and looked at the still, so nothing downstream
+knows the piece as well. Rules + worked example + anti-patterns: `curation/PROMPT_GUIDANCE.md`
+→ *Music prompts*; runbook: `curation/AUTOMATED_CURATION.md` step 8.
 
 ### 11.1 Vendor decision (2026-08-02) — split across two, consolidate later
 

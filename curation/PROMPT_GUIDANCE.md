@@ -331,6 +331,69 @@ reopened on 2026-07-25 and new pieces may use it.
 
 ---
 
+## Music prompts (the `music_prompt` field)
+
+**Only the one piece a night that gets posted to social carries this field.** It is
+the prompt that scored that piece's social clip (`make-social-assets.mjs
+--music-prompt`, step 8 of `AUTOMATED_CURATION.md`), recorded here alongside
+`image_prompt` and `video_prompt` because **the prompt is the durable half of the
+score** — the MP3 itself is scratch and is deleted after the render.
+
+**You are the one who writes it**, because you have just written the image and
+video prompts and looked at the still: nothing downstream knows the piece as well.
+
+### The rule: the music must belong to the picture
+Match **era/culture, mood, and energy**. This is not decoration — a mismatch reads
+as a mistake to anyone watching, and is worse than silence. The failure that
+motivated the field: a bright, noisy summer plaza packed with children shrieking in
+a splash fountain, scored with *"solo felt piano in a large empty room, tender and
+slow"* — beautiful, and completely wrong. It sounded like a different film.
+
+Write **instrumentation + mood + tempo + texture**. Lyria responds to musical
+direction, not adjectives; ~20-35 words is plenty.
+
+- **Era/culture** — let the instruments live in the piece's world without tipping
+  into pastiche: koto/shakuhachi and sparse percussion for Ukiyo-e; harpsichord and
+  small string consort for Baroque; warm brass and upright bass for Art Deco;
+  marimba, pizzicato strings and glockenspiel for a bright contemporary
+  illustration; low drones and bone flute for Prehistoric.
+- **Mood + energy** — read them off the *scene*, not the movement label. A joyful
+  crowd wants buoyancy; a snow-lit shrine at dusk wants stillness; a storm wants
+  weight without drama.
+- **Palette has a sound** — luminous saturated colour and bright daylight suggest
+  major, light, airy; muted earth and low light suggest minor, warm, sparse.
+
+### Two lines that go in every prompt
+1. **"Instrumental, no vocals."** ⚠️ **Lyria sings by default** — a perfectly
+   innocent prompt comes back as a fully sung track with its own lyric sheet. The
+   skill warns before the call and fails after it if it hears lyrics, and
+   `make-social-assets.mjs` refuses a prompt that doesn't say this at all.
+2. **"Even dynamics, no build, drop or swell."** The music plays *under* a picture
+   at −9 dB. A crescendo pulls attention off the art, which is the one thing the
+   clip exists to show.
+
+### Worked example
+> *The Splash Fountain — Contemporary Illustration.* Gouache-and-pencil summer
+> plaza, a dozen children leaping through sunlit water jets, cafés and green trees,
+> luminous saturated colour.
+
+```
+Bright, playful summer daytime music: pizzicato strings and warm marimba with light
+glockenspiel sparkles and soft brushed percussion, buoyant mid-tempo, major key,
+sunny and carefree. Even dynamics, no build or drop. Instrumental, no vocals.
+```
+
+### Anti-patterns
+- **Slow tender piano as a default.** It fits maybe one piece in five and quietly
+  contradicts the rest.
+- **"Epic cinematic trailer", "emotional", "inspiring".** Trailer music is built
+  entirely out of the builds and drops this bed must not have.
+- **Naming an artist or a track.** Describe the sound instead.
+- **Scoring the *style label* rather than the *scene*.** "Impressionism" is not a
+  mood; a windy poppy field at noon is.
+
+---
+
 ## Round log (newest first)
 
 Each entry is appended by Claude after a curation round. Format:

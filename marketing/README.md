@@ -7,7 +7,7 @@ Turn a gallery piece into **ready-to-post social clips + captions — and then p
 them**. The nightly curation agent produces landscape (16:9) art; social feeds are
 vertical/square. `make-social-assets.mjs` reframes a piece into **9:16** (Reels /
 TikTok / Shorts) and **1:1** (feed / Pinterest) with a blurred-fill background, a
-subtle wordmark and a music bed, loops it to a comfortable length, and writes
+subtle wordmark and a music bed written for that artwork, loops it to a comfortable length, and writes
 per-platform captions. `post-social.mjs` then publishes it to **Instagram,
 YouTube, TikTok and Pinterest**.
 
@@ -15,7 +15,7 @@ YouTube, TikTok and Pinterest**.
 |---|---|
 | `make-social-assets.mjs` | renders the clips + `captions.md` + `meta.json` |
 | `post-social.mjs` | publishes one rendered piece to all four channels |
-| `make-beds.mjs` | one-off: generates the music-bed library and puts it on R2 |
+| `lib/music.mjs` | generates the per-piece bed (one Lyria call, via the `lyria-music-gen` skill) |
 
 Because it reuses art you already generate nightly, the marginal cost of a day's
 worth of social content is ~one ffmpeg run. This is the engine behind the
@@ -27,8 +27,11 @@ worth of social content is ~one ffmpeg run. This is the engine behind the
 
 ## Usage
 ```bash
-# The nightly batch — the 4 newest gallery.json pieces, scored with a music bed:
-node marketing/make-social-assets.mjs --latest 4 --audio
+# Render the night's four pieces (silent — only the one being posted gets scored):
+node marketing/make-social-assets.mjs --latest 4
+
+# The piece being posted, scored with music written for it:
+node marketing/make-social-assets.mjs --title "Splash Fountain" --music-prompt "$MUSIC_PROMPT"
 
 # A specific piece (title substring match, case-insensitive):
 node marketing/make-social-assets.mjs --title "Art Nouveau"
@@ -46,7 +49,8 @@ node marketing/make-social-assets.mjs --src ./clip.mp4 --title "Stormy Sea" --st
 | `--style <text>` | derived | Override the art style used in captions + the style hashtag. |
 | `--formats <list>` | `9x16,1x1` | Comma list of `9x16`, `1x1`. |
 | `--duration <sec>` | 12 | Loop/trim target length (art clips are short, so we loop to fill). |
-| `--audio [bed]` | off | Score the clip with a music bed. Bare `--audio` picks one from `beds.json` (deterministically per piece); pass a bed id, a path or a URL to pin one. |
+| `--music-prompt <text>` | off | Generate a bed from this prompt (one Lyria call) and score the clip with it. Also records the prompt as `music_prompt` on the piece's `gallery.json` entry. Refused when more than one piece matches. |
+| `--audio <file\|url>` | off | Score with an existing audio file instead of generating one. |
 | `--gain <dB>` | `-9` | Bed level. Negative = quieter than the source. |
 | `--no-wordmark` | off | Don't burn the `living-art-screensaver.com` URL pill. |
 | `--out <dir>` | `marketing/out` | Output base directory (gitignored). |
@@ -57,7 +61,7 @@ marketing/out/<slug>/
   <slug>_9x16.mp4     # 1080×1920, blurred-fill, wordmark, looped, scored
   <slug>_1x1.mp4      # 1080×1080
   captions.md         # the exact per-platform copy the poster will publish
-  meta.json           # the hand-off to post-social.mjs
+  meta.json           # the hand-off to post-social.mjs (incl. the music prompt used)
 marketing/out/.posted.json   # ledger: what has already been published where
 ```
 `out/` is gitignored — it's build output, not source.
@@ -72,33 +76,45 @@ fills the frame, and the whole piece sits centered on top. A small, gentle
 `living-art-screensaver.com` pill (frosted, mirrors the in-app title placard;
 `marketing/assets/url-pill.png`) sits bottom-center as a subtle CTA back to the
 site — skipped automatically if that asset is missing, or with `--no-wordmark`.
-## Audio — the music bed
-`--audio` loops a bed under the clip at **−9 dB**, with a 1 s fade in and a 1.5 s fade
-out (a hard cut on a sustained pad is very audible). The art leads; the music sits
-under it.
+## Audio — the per-piece music bed
+`--music-prompt` makes one Lyria call, then loops the result under the clip at
+**−9 dB** with a 1 s fade in and a 1.5 s fade out (a hard cut on a sustained pad is
+very audible). The art leads; the music sits under it.
 
-The beds are generated once by the **`lyria-music-gen`** skill and reused. Nobody
-watching a nightly feed notices that tonight's bed also played last Tuesday, so a
-fresh track per clip would be a standing API bill for an imperceptible difference —
-`make-social-assets.mjs` instead picks one of five deterministically per piece.
+**The music is written for the specific artwork, not pulled from a library.** An
+earlier version reused five generic ambient beds, on the theory that nobody notices
+the bed varying nightly. True — but it misses what *is* noticed: a bright, noisy
+plaza full of children playing in a fountain scored with a slow, tender solo piano
+reads as a mistake, because the music contradicts the picture. Matching music is
+worth one API call a night; mismatched music is worth less than silence.
 
-```bash
-node marketing/make-beds.mjs                              # build the library (one-off)
-node marketing/make-beds.mjs --only still-water --force   # replace one bed
-```
+**The prompt is the durable artifact, not the MP3.** The audio is generated into a
+temp dir, muxed into the clips, and deleted — nothing is committed, nothing is
+uploaded (`CLAUDE.md` → Repo rules). What persists is `music_prompt` on that piece's
+`gallery.json` entry, a curation-only field alongside `image_prompt` and
+`video_prompt` (the shared `ArtItem` type deliberately omits all three — no client
+reads them). Because only one piece a night is posted, **only one piece a night
+carries the field**, and the script refuses `--music-prompt` when more than one piece
+matches so that can't drift.
 
-- **`marketing/beds.json` is committed; the MP3s are not** (`CLAUDE.md` → Repo rules).
-  The manifest holds each bed's id, its generation prompt and its public R2 URL; the
-  audio is cached into the gitignored `marketing/beds/` on first use, including on a
-  fresh clone.
-- ⚠️ **Lyria sings by default** — every prompt in `beds.json` says *"instrumental, no
-  vocals"*, and `make-beds.mjs` refuses to generate one that doesn't. (The skill checks
-  the *result* too and exits non-zero if it hears lyrics, so a bad bed can't be
-  published by accident.)
-- Self-generated audio is the only workable answer here: the platforms' trending
-  libraries are licence-restricted for commercial accounts *and* a posting API can't
-  attach a native sound anyway (strategy **§11**/**§11.2**). A baked-in track needs no
-  cooperation from anyone.
+**Who writes the prompt: the nightly curation agent.** It has just written the image
+and video prompts and looked at the still, so nothing downstream knows the piece as
+well. The rules, a worked example and the anti-patterns live in
+[`curation/PROMPT_GUIDANCE.md`](../curation/PROMPT_GUIDANCE.md) → *Music prompts*;
+the runbook is step 8 of [`curation/AUTOMATED_CURATION.md`](../curation/AUTOMATED_CURATION.md).
+
+Two clauses belong in every prompt:
+- ⚠️ **"Instrumental, no vocals."** Lyria sings by default — a perfectly innocent
+  prompt comes back fully sung, with its own lyric sheet. `make-social-assets.mjs`
+  rejects a prompt without this *before* spending the call, and the skill fails
+  after one if it hears lyrics.
+- **"Even dynamics, no build or drop."** A crescendo pulls attention off the art,
+  which is the one thing the clip exists to show.
+
+Self-generated audio is also the only workable answer here: the platforms' trending
+libraries are licence-restricted for commercial accounts *and* a posting API can't
+attach a native sound anyway (strategy **§11**/**§11.2**). A baked-in track needs no
+cooperation from anyone.
 
 ## Posting (`post-social.mjs`)
 

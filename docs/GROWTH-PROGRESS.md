@@ -86,48 +86,24 @@ scale.
 |---|---|---|---|
 | _(nothing in flight)_ | | | |
 
-## 🧑‍💻 Founder TODO — social + aggregator accounts (pick up in its own session)
+## ✅ Founder setup — DONE (2026-08-23)
 
-**Self-contained: everything #1 waits on. No agent can do any of it** (identity, credentials,
-payment). All four channels are equal priority — connect them in whatever order is convenient.
+Accounts created and connected; API keys in `curation/.env` as `UPLOADPOST_API_KEY` and
+`ZERNIO_API_KEY` (documented in `curation/.env.example`, reachable via
+`curation/with-secrets.sh`). **Zernio → TikTok publishes publicly** — verified by live test, so
+no channel is contingent. All four channels are equal priority.
 
-**1. Brand social accounts** (none exist yet; the aggregators only *connect* accounts):
-- [ ] **Pinterest — business account** (free; convert or create).
-- [ ] **YouTube** — a channel on the brand's Google account.
-- [ ] **Instagram — Business or Creator, linked to a Facebook Page.** A personal account
-      cannot post via API; this linkage is the slow part.
-- [ ] **TikTok** — a standard account is enough to connect.
-- Use the **same handle everywhere** — it feeds the brand-name search we deliberately kept (§4.3).
-
-**2. Aggregator accounts** (vendors chosen in §11.1):
-- [ ] **upload-post** → connect **Instagram + YouTube**. Free tier is 10 uploads/mo (~5 days at
-      nightly cadence), then $24/mo ($16 annual) unlimited. Treat free as a trial.
-- [ ] **Zernio** → connect **TikTok + Pinterest**. Free tier = exactly 2 accounts, so don't
-      spend a slot on IG/YT.
-- 💡 **Check at signup:** which platforms each vendor actually covers on its free tier — §11.1
-      never enumerated Zernio's list. If one vendor covers more of the four, use it for more.
-
-**3. The one test that changes the plan:**
-- [ ] Post one clip to **TikTok via Zernio** and check whether it lands **public** or
-      **private/`SELF_ONLY`**. Zernio's TikTok audit status is undocumented; an unaudited API
-      client is forced to private. If private → move TikTok to upload-post (documented public
-      posting) and leave Zernio with Pinterest only.
-
-**4. Hand back to an agent:**
-- [ ] Put both API keys in `curation/.env` (gitignored) and report **the variable names, not the
-      values**, plus which accounts connected and the TikTok test result. An agent then wires
-      `make-social-assets.mjs` → the aggregator APIs off the nightly job (backlog #1).
+**Nothing here blocks backlog #1 any more — the remaining work is the glue script (agent work).**
 
 ## Next up (prioritized backlog)
 Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batched last.
 
 1. **Wire the posting automation** (§11 B) — clips exist, nothing has ever been posted. Glue
    `make-social-assets.mjs` → upload-post (IG + YT) + Zernio (TikTok + Pinterest), hung off the
-   nightly curation job. **Do first:** one live Zernio post to confirm TikTok isn't forced
-   `SELF_ONLY` (audit status undocumented) — if it is, move TikTok to upload-post. All four run
-   unattended (a platform trending sound is both licence-blocked and un-attachable via API, so
-   there's no per-post human step). **Include the audio bed** — clips ship silent today; mux a
-   **Lyria-generated music track** (§11.2). Add §11 (C) captions in the same pass
+   nightly curation job. Zernio's public TikTok posting is **verified** (live test 2026-08-23),
+   so no channel is contingent. All four run unattended (a platform trending sound is both licence-blocked and un-attachable via API, so
+   there's no per-post human step). **Include the audio bed** — clips render silent; mux a track from the
+   **`lyria-music-gen` skill** (§11.2; the prompt must say "instrumental, no vocals"). Add §11 (C) captions in the same pass
    if cheap — templates at daily cadence read as spam. Founder: create 2 accounts + connect socials.
 2. **Directory submissions** (§4.4) — agent builds a ready-to-paste pack (blurbs at each site's
    length limit, screenshots, categories, links); founder pastes in one sitting.
@@ -154,6 +130,11 @@ Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batc
 ---
 
 ## Activity log (append-only — newest first)
+- **2026-08-23** — **Zernio → TikTok public posting confirmed** by a founder live test: a real
+  post published rather than landing as a private draft, so its client is audited. This was the
+  last open contingency in backlog #1 — the four-channel plan now has no "verify before relying
+  on it" caveat, and §11.1's table reads ✅ instead of ⚠️. Also removed the remaining framing
+  that treated TikTok as lower priority or riskier than the other three; all four are equal.
 - **2026-08-23** — **Removed the platform rankings; all four social channels are now equal.**
   The docs had ranked TikTok below Pinterest/YouTube on content "durability" and called
   Reels/TikTok "viral lottery tickets". **Unsupported** — TikTok treats posts as evergreen (old
@@ -236,8 +217,8 @@ Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batc
   aggregator** — hosted *and* self-hosted it requires your own TikTok developer app, making you
   the unaudited client (posts forced `SELF_ONLY`); it's now ruled out in the §11.1 table.
   **(2) Ayrshare repriced ~$49 → $149/mo minimum**, putting it ~4× over budget.
-  _Open risk:_ Zernio's own TikTok audit status is undocumented — **verify with one live post
-  before relying on it**. No code written; glue script deliberately deferred.
+  _Open risk at the time (**resolved 2026-08-23** — see the newer entry above):_ Zernio's own
+  TikTok audit status was undocumented, so it needed one live post to verify. No code written; glue script deliberately deferred.
 - **2026-07-12 → 07-15** — **Launch media + kit built** (PR #63, branch `growth/launch-execution`).
   Asset engine run on the newest 6 pieces (12 clips + captions); hero rebuilt to mirror
   `hero-section.tsx` exactly (7 pieces, site cadence, synced pill) rather than a literal

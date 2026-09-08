@@ -61,16 +61,20 @@ score the clips with background music from **Google's Lyria API**. Self-generate
 licence-clean (the platforms' trending libraries are restricted to personal/non-commercial use —
 strategy **§11.2**) *and* it survives API posting, since an aggregator can't attach a
 platform-native sound but a baked-in track needs no cooperation.
-**The founder is building this as a repo skill** — agents should not implement it here, and
-should not commit audio files (see the media rule in `CLAUDE.md`).
+**The generator exists**: the `lyria-music-gen` skill (`.claude/skills/lyria-music-gen/`) turns a
+prompt into an instrumental MP3 — remember to ask for *"instrumental, no vocals"*, since Lyria
+sings by default. **Still to do:** an `--audio` flag here to loop/fade a bed to clip length.
+Don't commit the MP3s (media rule in `CLAUDE.md`).
 
 ## Hooking it into the nightly pipeline
 Run it right after the nightly curation appends the new pieces — e.g. at the end
 of the curation run, `node marketing/make-social-assets.mjs --latest 4` — and the
-day's clips + captions are waiting in `marketing/out/`. Posting itself stays
-manual for now (or wire an aggregator like Postiz / upload-post — see the
-build-vs-buy section of the strategy doc). A ~2-min human pass to pick a trending
-audio and reply to early comments is worth far more than fully hands-off posting.
+day's clips + captions are waiting in `marketing/out/`. **Posting is still manual** —
+the aggregators are chosen (upload-post for IG + YT, Zernio for TikTok + Pinterest,
+§11.1) and the accounts exist, but the glue script isn't written; that's backlog #1.
+Don't reach for a platform trending sound: it's licence-restricted for commercial
+accounts *and* a posting API can't attach one (§11), which is why we score the clips
+ourselves. Spend the ~2 min/day replying to early comments instead.
 
 ## Caption copy
 `captions.md` is a **starting point**, not gospel — tweak the hook, keep it human.

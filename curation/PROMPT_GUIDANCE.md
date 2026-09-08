@@ -1455,4 +1455,91 @@ with four *different* kinds of primary mover, and hitting **two under-used wings
   fill `Islamic` without another Ottoman/Persian court miniature. When picking for
   `Islamic`, check *which* sub-tradition is over-used, not just the wing count.
 
+### 2026-09-08 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, **all intact-medium** (0 archaeological — within
+the ≤1 cap), leaning bright/dense/colourful, continuing the **mover-type rut-break**
+with four *different* kinds of primary mover, and hitting the two sparsest workable
+wings (`Arts of Africa & Oceania` 5, `Islamic` 17) plus `Medieval & Byzantine` (19):
+- **The Sing-sing — Papua New Guinea Highlands Painting** (`Arts of Africa & Oceania`,
+  non-looping) — a *stamp-dance + drum* mover: a central dancer leaps and stamps on the
+  spot while two front kundu drummers strike and dozens of plumed dancers stamp in place,
+  bird-of-paradise headdresses shaking. Vivid bold-outlined Melanesian folk-painting
+  register (new style added to `ART_STYLES_FOR_INSPIRATION.md`), fills the sparsest wing.
+- **The Building of the Palace — Mughal Miniature** (`Islamic`, non-looping) — a fresh
+  *construction* mover (Akbarnama register): stonemasons chisel blocks, a labourer climbs
+  a scaffold ladder with a basket, porters carry stone, an architect directs. Dense
+  jewel-toned paper miniature — a non-Ottoman/Persian-court pick to fill `Islamic`.
+- **Treading the Grapes — Medieval Book of Hours** (`Medieval & Byzantine`, non-looping)
+  — a fresh *grape-treading* mover: barefoot peasants stamp grapes in a wooden vat, purple
+  must splashing, basket-carriers alongside. International Gothic Labours-of-the-Months
+  illumination — burnished gold sky, blue château, mille-fleurs (new styles added).
+- **The Winnowing — French Rural Naturalism** (`19th Century`, non-looping) — a fresh
+  *grain-toss* mover: a winnower tosses a great golden arc of grain into the air, chaff
+  streaming on the breeze, harvesters gathering across a luminous sunlit field. Jules-
+  Breton/Bastien-Lepage register (new style added).
+
+**What worked / reinforced:**
+- **All four videos accepted first try; Veo drift stayed a mild zoom/reframe** with the
+  "on the spot / same size / same place" + camera-lock + zoom/pan negative block — no
+  morphing, popping, lost actors, or count changes. The leaping sing-sing dancer + drum
+  strikes, the masons' chiselling + ladder-climb, the must-splashing grape-tread, and the
+  full winnowing toss→settle cycle all read as clean legible primary actions. On the two
+  miniatures/manuscripts the mild Veo reframe helpfully *revealed* edge figures (a zoom-out
+  traversal, not popping) and cropped the extreme top corners.
+- **Fresh mover classes + sparse-wing picks remain the cheap rut-breaks** (per 09-02→09-07).
+  Grape-treading, grain-toss and palace-construction are all new movers; the Sing-sing is
+  a genuinely new register and mover that filled the gallery's *sparsest* wing.
+
+**MAJOR TOOL EVENT — `gemini-3-pro-image` was effectively DOWN for ~1 h (sustained 503),
+so stills 2–4 were generated on the `gemini-2.5-flash-image` fallback model.**
+- **What happened.** Piece 1's still slipped through an early lucky window on Pro
+  (~05:28). After that, **~50 straight 503s** across ~1 h of patient retry loops (8+15
+  full invocations, each with the wrapper's own 4 internal retries) — the Pro image model
+  returned `503 UNAVAILABLE … high demand` on *every* call. This is the [[curation-ffmpeg-no-libwebp]]-adjacent
+  09-01 "heavy 503 load" note, but far worse: not intermittent, a solid multi-hour wall.
+- **The fix that unblocked the night: `--model gemini-2.5-flash-image`.** The non-Pro
+  Nano-Banana image model had ample capacity and returned a still on the *first* call
+  every time. The skill's `--model` flag makes this a one-word switch. Stills 2, 3 and 4
+  were all generated on flash; piece 1 is the only Pro still tonight.
+- **Flash-model quality notes (what the vision gate caught).** Flash output is softer /
+  lower-detail than Pro (files ~300–450 kB vs Pro's ~3 MB at "4K"; it seems to cap
+  resolution regardless of `--size 4K`). It also leans **muted/sparse and stronger on the
+  bordered-page / signature priors** than Pro:
+  - Piece 2 first flash still came back **muted and sparse** (big empty terracotta floor,
+    a black central-arch void) — the "visually thin / too dark" register. A reroll pushing
+    *"extremely dense, crowded … no empty ground, bright blue sky, jewel-toned, no large
+    dark doorway"* fixed it (bright dense courtyard). **Lesson: on flash, explicitly
+    demand density + brightness + "no dark void" — it under-fills and under-lights by
+    default more than Pro does.**
+  - Piece 3 (Book of Hours) hit the [[curation-miniature-paper-border]] prior **hard and
+    twice** — even with the full-bleed close-crop clause, flash drew a full ruled
+    manuscript border (maroon/gold rules on 3 edges + gothic **corner spandrels** over the
+    gold sky). Rerolling didn't shake it. **Feathered mirror-patch fixed it deterministically**
+    (per [[curation-artist-name-summons-signature]]'s technique): mirror the inboard
+    foliage columns over the L/R vertical borders (≈135 px each), a thin vertical-mirror
+    over the top rule, and two small **vertical-mirror corner boxes** for the spandrels —
+    kept *clear of the castle* (x<180 left, x>W−235 right) so nothing duplicated the
+    turrets. Takeaway: **for a manuscript pick on flash, expect a border on ~3 edges incl.
+    corner spandrels; patch (don't loop rerolls) — verticals by horizontal mirror, top
+    rule + corner spandrels by short vertical-mirror boxes that avoid tall foreground/
+    skyline objects.**
+  - Piece 4 (rural-naturalist oil) came back with the expected corner **signature**
+    ([[curation-artist-name-summons-signature]]) on static straw ground → cheap feathered
+    vertical-mirror patch, per the standing "corner signature on a static area → patch"
+    rule. Clean, no seam.
+- **Operational takeaway for a Pro outage.** Don't burn an hour on Pro retry loops when
+  the wall is solid — **probe `gemini-2.5-flash-image` early**, and if it works, finish the
+  round on it while applying the vision gate strictly (demand density+brightness up front,
+  and budget a patch for the border/signature priors, which flash trips harder). Note in
+  the round log which stills used the fallback. (Numpy is **not** installed on this
+  machine — write patch scripts in **pure Pillow**, not numpy.)
+
+**Step 8 (social post) SKIPPED — missing secrets.** `UPLOADPOST_API_KEY` and
+`ZERNIO_API_KEY` are both absent from `curation/.env`, so the day's art was not posted to
+social (per AUTOMATED_CURATION step 8, a missing key costs the night's posts, not the
+night's art). No piece was scored (`music_prompt`), by design. The four pieces are
+published and committed.
+
 <!-- Claude appends new rounds above this line. -->

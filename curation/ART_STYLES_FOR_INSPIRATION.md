@@ -18,6 +18,8 @@ When you add a new style, append it under the section it best fits.
 - Gothic Stained Glass
 - International Gothic (Limbourg brothers)
 - Illuminated Manuscript
+- Book of Hours calendar illumination (Labours of the Months — e.g. September wine harvest / grape-treading; burnished gold sky, blue turreted château, mille-fleurs, jewel colours)
+- French Rural Naturalism (Jules Breton / Bastien-Lepage harvest realism — luminous golden plein-air daylight, peasant harvesters winnowing/reaping/gathering, densely-figured sunlit fields)
 - Newlyn School (1880s British plein-air realism, Cornish fishing-village life)
 - English Landscape (Gainsborough / Constable — 18th–19th-c. pastoral: hay wagons, wooded lanes, grazing sheep, luminous skies)
 - Mille-fleurs Tapestry
@@ -191,6 +193,7 @@ is the **AI-cliché** test in `PROMPT_GUIDANCE.md` ("Brand & taste"), not recenc
 - Chinese ink painting
 - Haitian Naïve Painting (flat bright folk-art, densely-packed Caribbean market & celebration scenes)
 - Contemporary West African Narrative Painting (modern Nigerian/Ghanaian festival painting — bold saturated opaque colour, confident dark outlines, richly patterned wax-print cloth; densely-packed village festivals, masquerade dances, drummers and markets; painterly, NOT flat-vector)
+- Papua New Guinea Highlands Festival Painting (contemporary Melanesian folk painting — bold flat brightly-outlined figures, brilliant tropical colour; sing-sing gatherings of plumed dancers in towering bird-of-paradise headdresses, face-paint, grass skirts, kundu drummers; densely-packed edge-to-edge)
 - Dunhuang Mogao Cave Mural
 - Sumi-e Ink Wash
 - Balinese Kamasan Painting (earth pigment on cloth, Bali)

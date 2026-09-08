@@ -32,7 +32,7 @@ duplicate its arguments here; link to a section (e.g. "§10") instead.
 | **`docs/GROWTH-PROGRESS.md`** (this file) | **Live state + backlog + protocol** — the hub |
 | `docs/growth-and-marketing-strategy.md` | The strategy + *why* (reasoning, not state) |
 | `docs/launch-kit.md` | 📕 **Archive** — the launch ran and failed (§4.2). Copy/media still reusable; **§3 Reddit is the one live item** |
-| `marketing/README.md` | The social asset engine (`marketing/make-social-assets.mjs`) |
+| `marketing/README.md` | The social asset engine **and the poster** (`make-social-assets.mjs` → `post-social.mjs`) |
 
 ---
 
@@ -56,13 +56,13 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 | Open Graph / Twitter social cards | ✅ live | `living-art-screensaver-web/app/opengraph-image.tsx`; §5 |
 | Mobile "email me the Mac link" | ✅ live | `components/marketing/download-cta.tsx`; §5–6 |
 | Cross-platform **demand probe** (self-report) | ✅ live | `components/marketing/platform-interest.tsx` — **PostHog-only, no backend**; superseded the old "detect Windows + waitlist" idea (§5/§8) |
-| Marketing **asset engine** + launch media | ✅ produced | `marketing/make-social-assets.mjs` → `out/<slug>/`; launch video/reel/stills/screenshots in `out/{hero,launch-images}/` (inventory: `launch-kit.md` §4). **Never posted anywhere.** §11 (A) |
+| Marketing **asset engine** + launch media | ✅ live | `marketing/make-social-assets.mjs` → `out/<slug>/` (clips + captions + `meta.json`), now feeding the poster nightly. Launch video/reel/stills/screenshots in `out/{hero,launch-images}/` (inventory: `launch-kit.md` §4) — **those** are still unposted. §11 (A) |
 | **Launch kit** | 📕 archive | `docs/launch-kit.md` — copy + media still reusable; §3 Reddit is its one live item. |
 | **Product Hunt launch** | ❌ **ran 2026-07-26 — flopped** | **5 upvotes, 2 comments, no badge, no measurable traffic.** Post-mortem → §4.2. Not re-runnable for months. |
 | **Show HN** | ❌ **dropped as a plan item** | Blocked at submission 2026-08-02 (HN not taking new Show HN posts). Copy stays loaded; **nothing may depend on it reopening.** |
 | Reddit (r/macapps + visual subs) | ⏭️ **never run** | Day-2 slot unused. Highest-fit free channel, ~20 min (`launch-kit.md` §3). |
-| **Daily social posting + aggregator** | ⏭️ **#1 — vendors chosen 2026-08-02** | §4.1 + §11 (B) — **upload-post** (IG + YT) + **Zernio** (TikTok + Pinterest), both start free. Glue script not written. Best fit for 0 h/week: build once, posts nightly forever. |
-| **Clip audio: Lyria music bed** | 🔨 **generator built 2026-08-23** | §11.2 — `lyria-music-gen` skill turns a prompt into an instrumental MP3 (Lyria **sings by default** — the prompt must say "instrumental, no vocals"; the skill enforces it). **Not yet wired:** `make-social-assets.mjs` still passes `-an`. |
+| **Daily social posting + aggregator** | ✅ **live 2026-09-07** | §4.1 + §11 (B) — `marketing/post-social.mjs`, hung off the nightly curation (`AUTOMATED_CURATION.md` step 8). One piece a night to **all four** channels, each linking to its own `/art/<slug>` + UTM. **Verified with real posts on IG / YT / TikTok / Pinterest.** ⚠️ upload-post's free 10 uploads/mo covers ~5 days — IG + YT need the $24/mo plan to keep running. |
+| **Clip audio: Lyria music bed** | ✅ **live 2026-09-07, per-piece 2026-09-08** | §11.2 — `make-social-assets.mjs --music-prompt` scores the posted clip at −9 dB with music written for *that* artwork. The nightly agent writes the prompt (`PROMPT_GUIDANCE.md` → Music prompts); it is recorded as `music_prompt` in `gallery.json` and the MP3 is temp-only. The 5-bed shared library it replaced is deleted. |
 | Brand-name / on-page SEO basics | ✅ live | 2026-07-17 (PRs #68, #69): keyword title, shared meta description, JSON-LD. |
 | **Gallery landing pages** (`/gallery`, `/art/<slug>`, `/era/<tag>`) | ✅ **shipped 2026-08-03** | §4.3 — dropped then **reversed** the same day, justified as **social landing pages, not SEO**. 262 piece pages + 15 era wings + a 6-page index + a self-growing sitemap, all prerendered from `gallery.json`. `/art/*` is `noindex, follow` behind one constant (`INDEX_ART_PAGES`); `/gallery` + `/era/*` are indexable. `/style/<movement>` still deferred (203 labels, 158 singletons). **Ready for #1's posts.** |
 | **Directory submissions** | ⏭️ **#2** | §4.4 — alternativeto.net, MacUpdate, indie dirs. Agent preps the pack, founder pastes once. |
@@ -75,11 +75,11 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 | Windows / Mac App Store build | 🅿️ pending demand-probe data | §8, §4.7 |
 | Paid ads | 🅿️ not now | §13 — only after a proven funnel |
 
-**One-liner:** foundation live, pricing closed, **the pins now have somewhere to land** (283 new
-gallery routes), **still ~zero traffic and therefore zero conversion data**. Next: **automated
-posting → directories → press/creators → Reddit.** ⚠️ **#1 is the entire plan.** The vendor accounts now **exist**
-(`UPLOADPOST_API_KEY` + `ZERNIO_API_KEY` in `curation/.env`), so the remaining work is the glue
-script — agent work, no longer blocked on the founder.
+**One-liner:** foundation live, pricing closed, the pins have somewhere to land (283 gallery
+routes) — and **as of 2026-09-07 the art posts itself nightly to all four channels**. First
+real traffic should now arrive with per-channel UTMs, so the next thing this hub gains is
+**data**: which of IG / YouTube / TikTok / Pinterest actually converts. Next: **directories →
+press/creators → Reddit.**
 
 ## In progress (claim here before starting)
 | Task | Agent / branch / PR | Started | Notes |
@@ -93,24 +93,59 @@ Accounts created and connected; API keys in `curation/.env` as `UPLOADPOST_API_K
 `curation/with-secrets.sh`). **Zernio → TikTok publishes publicly** — verified by live test, so
 no channel is contingent. All four channels are equal priority.
 
-**Nothing here blocks backlog #1 any more — the remaining work is the glue script (agent work).**
+**Backlog #1 shipped on top of this 2026-09-07.** One thing still needs the founder, and it is
+now a *billing* decision, not a setup chore: ⚠️ **upload-post's free tier is 10 uploads/month**,
+and one piece a night costs 2 (IG + YT), so **Instagram and YouTube stop publishing around day 6
+until the $24/mo ($16 annual) Basic plan is on.** TikTok + Pinterest stay free (Zernio's first 2
+accounts). If the nightly log starts reporting IG/YT failures, this is why.
+
+## ⏰ Dated reminders
+| When | Who | What |
+|---|---|---|
+| **2026-09-22** (2 weeks after go-live) | **founder** | **Review the automated social posts for quality and errors.** ~15 min, once. Open the four accounts and actually look at what a fortnight of unattended posting produced. Checklist below. |
+
+**2026-09-22 — first quality review of the automated posts.** The nightly job has been
+publishing since 2026-09-07 with nobody watching it. Two weeks in is the first point where
+there is enough output to judge, and early enough that a systematic error hasn't run for a
+month. Go through the four accounts ([IG](https://www.instagram.com/living_art_screensaver/) ·
+[YouTube](https://www.youtube.com/@livingartscreensaver) ·
+[TikTok](https://www.tiktok.com/@livingartscreensaver) ·
+[Pinterest](https://www.pinterest.com/livingartscreensaver/daily-curation/)) and check:
+
+- **The music fits the art** — the failure mode this design exists to prevent (a tender piano
+  under a plaza of shrieking kids). If several misses, the fix is `PROMPT_GUIDANCE.md` →
+  *Music prompts*, not the code. **Any singing at all is a bug** — the guards should make it
+  impossible, so report it rather than shrugging.
+- **Clip length + framing** — each clip should be the piece's own length (~8s), playing once,
+  art never cropped.
+- **The captions haven't gone stale** — they come from variant pools, so check that a fortnight
+  doesn't read like the same three sentences. If it does, §11 (C)'s per-piece Gemini captions
+  is the upgrade.
+- **Every link resolves** to that piece's `/art/<slug>` page, not a 404 and not the home page.
+- **Piece selection** — is the agent picking pieces that work as a vertical phone clip, or
+  defaulting to whatever is newest? Criteria are `AUTOMATED_CURATION.md` step 8a.
+- **⚠️ Did Instagram + YouTube stop around day 6?** upload-post's free tier is 10 uploads/month
+  and each night costs 2. If those two went quiet, that's the plan, not a bug — see the founder
+  note above.
+- **Anything the UTM data says** (backlog #4 lands the same week).
+
+Log what you find in the Activity log, and fold any prompt/criteria changes back into
+`curation/PROMPT_GUIDANCE.md` so the nightly agent inherits them.
 
 ## Next up (prioritized backlog)
 Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batched last.
 
-1. **Wire the posting automation** (§11 B) — clips exist, nothing has ever been posted. Glue
-   `make-social-assets.mjs` → upload-post (IG + YT) + Zernio (TikTok + Pinterest), hung off the
-   nightly curation job. Zernio's public TikTok posting is **verified** (live test 2026-08-23),
-   so no channel is contingent. All four run unattended (a platform trending sound is both licence-blocked and un-attachable via API, so
-   there's no per-post human step). **Include the audio bed** — clips render silent; mux a track from the
-   **`lyria-music-gen` skill** (§11.2; the prompt must say "instrumental, no vocals"). Add §11 (C) captions in the same pass
-   if cheap — templates at daily cadence read as spam. Founder: create 2 accounts + connect socials.
-2. **Directory submissions** (§4.4) — agent builds a ready-to-paste pack (blurbs at each site's
+1. **Directory submissions** (§4.4) — agent builds a ready-to-paste pack (blurbs at each site's
    length limit, screenshots, categories, links); founder pastes in one sitting.
-3. **Press + creator outreach** (§4.1/§4.4) — target list, `/press` kit page, personalized
+2. **Press + creator outreach** (§4.1/§4.4) — target list, `/press` kit page, personalized
    drafts. **One feature ≈ months of our own posting.**
-4. **Reddit** (`launch-kit.md` §3) — ~20 min; do it once #1 is live so traffic lands on a site
-   that keeps earning.
+3. **Reddit** (`launch-kit.md` §3) — ~20 min; the posting automation is live, so traffic now
+   lands on a site that keeps earning.
+4. **Read the UTM data** (**2026-09-22**, with the post review above) — the four channels are
+   tagged `utm_source=<platform>&utm_medium=social&utm_campaign=daily`. First real evidence of
+   which converts; §4.1 deliberately ranks none of them until this exists.
+
+~~Wire the posting automation~~ ✅ **done 2026-09-07** — see the Status table and the activity log.
 
 ## Decisions needed from the founder
 - **Email-send path** — Supabase mailer / Resend / other. Blocks §4.6 + §9; only viable if the
@@ -130,6 +165,49 @@ Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batc
 ---
 
 ## Activity log (append-only — newest first)
+- **2026-09-08** — **Music is now scored to the artwork, and the nightly agent owns both calls.**
+  Founder review of the first clip killed the shared-bed design: a joyful, noisy summer plaza
+  full of children in a splash fountain had been scored with *"solo felt piano in a large empty
+  room, tender and slow"*. The library reasoning ("nobody notices the bed varying nightly") was
+  true and beside the point — **what gets noticed is music that contradicts the picture**, and
+  that is worse than silence. So: the 5-bed library and its R2 objects are **deleted**,
+  `make-social-assets.mjs --music-prompt` makes **one Lyria call per posted piece**, and the
+  **nightly curation agent** now (a) picks which of its four pieces to post and (b) writes that
+  piece's music prompt — it has just written the image and video prompts and looked at the still,
+  so nothing downstream knows the piece as well.
+  **The prompt is the durable artifact, not the MP3:** the audio is generated to a temp dir,
+  muxed at −9 dB, and deleted; `music_prompt` is written onto that piece's `gallery.json` entry
+  as a curation-only field beside `image_prompt`/`video_prompt`. Only the posted piece is scored,
+  so **only one of the four carries the field** — and the script refuses `--music-prompt` when
+  more than one piece matches, so that can't drift. Selection criteria, prompt rules, a worked
+  example and the anti-patterns are in `curation/PROMPT_GUIDANCE.md` → *Music prompts*; the
+  runbook is `AUTOMATED_CURATION.md` step 8. _(This PR.)_
+- **2026-09-07** — **#1 shipped: the art now posts itself, nightly, to all four channels.**
+  `marketing/post-social.mjs` glues the rendered clips to upload-post (Instagram + YouTube) and
+  Zernio (TikTok + Pinterest) and hangs off the nightly curation as step 8. **Verified with real
+  posts on all four** — [IG](https://www.instagram.com/reel/DdAiNn_jS9q/) ·
+  [YT](https://www.youtube.com/watch?v=xC6V8iTtdEQ) ·
+  [TikTok](https://www.tiktok.com/@livingartscreensaver/video/7682974613550271775) ·
+  [Pinterest](https://www.pinterest.com/pin/1146940230213600786/) — then a second full round on a
+  different piece to prove the fixed code path. **Clips are no longer silent:** `--audio` mixed a
+  Lyria bed at −9 dB, drawn from a small shared library — a design superseded the next day, see
+  the 2026-09-08 entry. **No media committed** — `marketing/out/` is gitignored.
+  Decisions worth not relitigating: **(1) one piece a night, not four** — four posts a day is a
+  cadence nobody wants, and it would spend upload-post's free month in under a week. **(2) Every
+  post links to `/art/<slug>` with a per-channel UTM**, and the slug is *read from the render's
+  `meta.json`*, never improvised — a post's destination URL can't be edited after publishing, so
+  a drift test now fails the build if the poster's slug rule and the website's ever diverge.
+  **(3) The poster refuses to publish a link that isn't live yet**, waiting out the Vercel deploy
+  that the same night's `gallery.json` push triggers. **(4) Captions come from variant pools**
+  keyed per piece + platform — deterministic (a retry republishes identical copy) but never the
+  same sentence twice running, which is the actual failure mode of one template at daily cadence.
+  Three things the vendors' docs got wrong, found the hard way: Zernio's `upload-direct` is
+  documented at 25 MB but rejects >~4.5 MB (we use the presigned path), its `pending` status
+  means "retrying", **not** failed — a pin that first errored published a minute later, and
+  reporting it as a failure would have made the next night post a duplicate — and its presign
+  response field is `publicUrl`, not the `fileUrl` the docs claim.
+  ⚠️ **The one live cost:** upload-post free = **10 uploads/month**, so IG + YT go quiet around
+  day 6 without the $24/mo plan. Zernio's half is durably free at 2 accounts. _(This PR.)_
 - **2026-08-23** — **Zernio → TikTok public posting confirmed** by a founder live test: a real
   post published rather than landing as a private draft, so its client is audited. This was the
   last open contingency in backlog #1 — the four-channel plan now has no "verify before relying

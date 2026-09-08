@@ -331,6 +331,29 @@ reopened on 2026-07-25 and new pieces may use it.
 
 ---
 
+## Music prompts (the `music_prompt` field)
+
+### The rule: the music must belong to the picture
+Match **era/culture, mood, and energy**. ~10-35 words.
+
+- **Era/culture** — let the instruments live in the piece's world without tipping
+  into pastiche: koto/shakuhachi and sparse percussion for Ukiyo-e; harpsichord and
+  small string consort for Baroque; warm brass and upright bass for Art Deco;
+  marimba, pizzicato strings and glockenspiel for a bright contemporary
+  illustration; low drones and bone flute for Prehistoric.
+- **Mood + energy** — read them off the *scene*, not the movement label. A joyful
+  crowd wants buoyancy; a snow-lit shrine at dusk wants stillness; a storm wants
+  weight without drama.
+- **Palette has a sound** — luminous saturated colour and bright daylight suggest
+  major, light, airy; muted earth and low light suggest minor, warm, sparse.
+
+### Append "Instrumental, no vocals." to prompt
+Without this, Lyria sings by default.
+The skill warns before the call and fails after it if it hears lyrics, and
+`make-social-assets.mjs` refuses a prompt that doesn't say this at all.
+
+---
+
 ## Round log (newest first)
 
 Each entry is appended by Claude after a curation round. Format:

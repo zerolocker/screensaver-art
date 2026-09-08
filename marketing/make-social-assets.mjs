@@ -4,12 +4,21 @@
 // The nightly curation agent produces landscape (16:9) art and appends it to
 // gallery.json. Social feeds are vertical/square, so this script reframes a
 // piece into 9:16 (Reels/TikTok/Shorts) and 1:1 (feed) with a tasteful
-// blurred-fill background + a subtle wordmark, loops it to a comfortable
-// duration, and writes starter per-platform captions. Reuses art you already
-// generate — the marginal cost of a day's social content is ~one ffmpeg run.
+// blurred-fill background + a subtle wordmark, scores it with a music bed
+// written for that specific artwork, and writes starter per-platform captions.
+// The clip keeps the source's own length and plays exactly once — these are
+// authored pieces, and half of them are deliberately non-looping. Reuses art you
+// already generate: the marginal cost of a day's social content is ~one ffmpeg
+// run plus one Lyria call.
+//
+// It also writes a `meta.json` next to each piece's clips: the hand-off to
+// `post-social.mjs`, which publishes them. That file is why the poster never has
+// to re-derive a title, a style or (critically) a landing-page slug.
 //
 // Usage:
-//   node marketing/make-social-assets.mjs --latest 4          # the nightly batch
+//   node marketing/make-social-assets.mjs --latest 4              # render the night's batch
+//   node marketing/make-social-assets.mjs --title "Splash Fountain" \
+//     --music-prompt "$MUSIC_PROMPT"                              # score the one being posted
 //   node marketing/make-social-assets.mjs --title "Art Nouveau"
 //   node marketing/make-social-assets.mjs --src ./clip.mp4 --title "My Piece" --style "Baroque"
 //   node marketing/make-social-assets.mjs --title x --formats 9x16 --duration 15 --no-wordmark
@@ -20,21 +29,25 @@
 //   --src <path|url> use this MP4 directly (skip gallery lookup); pair with --title/--style
 //   --style <text>   override the derived art style (used in captions + hashtags)
 //   --formats <list> comma list of 9x16,1x1 (default: both)
-//   --duration <sec> loop/trim target length (default: 12)
+//   --duration <sec> trim to at most N seconds (default: the source clip's own length)
+//   --music-prompt <text>  generate a bed from this prompt (Lyria) and score the clip with it;
+//                          also records it as `music_prompt` on the piece's gallery.json entry
+//   --audio <file|url>     score with an existing audio file instead of generating one
+//   --gain <dB>            bed level, negative = quieter (default: -9)
 //   --no-wordmark    don't burn the living-art-screensaver.com URL pill
 //   --out <dir>      output base dir (default: marketing/out)
 //
 // Requires: ffmpeg on PATH. No npm deps (Node ≥18 built-ins + fetch).
 
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, mkdirSync, writeFileSync, existsSync, rmSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { captionsMarkdown } from './lib/captions.mjs'
+import { assetSlug, deriveMeta, galleryVideos, REPO_ROOT, webSlugForSrc } from './lib/pieces.mjs'
+import { DEFAULT_GAIN_DB, generateBed } from './lib/music.mjs'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const REPO_ROOT = path.join(__dirname, '..')
-const SITE = 'livingartscreensaver.com'
+const __dirname = path.join(REPO_ROOT, 'marketing')
 
 // A pre-rendered "gentle" URL pill (frosted, mirrors the in-app title pill),
 // burned bottom-center as a subtle CTA back to the site — replaces the old
@@ -51,7 +64,10 @@ const FORMATS = {
 
 // ── arg parsing ─────────────────────────────────────────────────────────────
 function parseArgs(argv) {
-  const a = { formats: ['9x16', '1x1'], duration: 12, wordmark: true, out: path.join(REPO_ROOT, 'marketing', 'out') }
+  const a = {
+    formats: ['9x16', '1x1'], wordmark: true,
+    gain: DEFAULT_GAIN_DB, out: path.join(REPO_ROOT, 'marketing', 'out'),
+  }
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
     const next = () => argv[++i]
@@ -62,7 +78,10 @@ function parseArgs(argv) {
     else if (arg === '--src') a.src = next()
     else if (arg === '--style') a.style = next()
     else if (arg === '--formats') a.formats = next().split(',').map((s) => s.trim()).filter(Boolean)
-    else if (arg === '--duration') a.duration = Math.max(3, parseInt(next(), 10) || 12)
+    else if (arg === '--duration') a.duration = Math.max(1, parseInt(next(), 10) || 0) || undefined
+    else if (arg === '--music-prompt') a.musicPrompt = next()
+    else if (arg === '--audio') a.audio = next()
+    else if (arg === '--gain') a.gain = parseFloat(next())
     else if (arg === '--no-wordmark') a.wordmark = false
     else if (arg === '--out') a.out = path.resolve(next())
     else if (arg === '--help' || arg === '-h') a.help = true
@@ -71,25 +90,6 @@ function parseArgs(argv) {
 }
 
 // ── helpers ─────────────────────────────────────────────────────────────────
-function slugify(s) {
-  return s.toLowerCase().replace(/\(ai animated\)/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60)
-}
-
-// Best-effort art-style extraction: "Woman and Flora - Art Nouveau (AI Animated)"
-// → style "Art Nouveau", clean title "Woman and Flora". Falls back to the first tag.
-function deriveMeta(entry, override) {
-  const raw = entry.title || 'Living Art'
-  const noSuffix = raw.replace(/\s*\(AI Animated\)\s*/i, '').trim()
-  let style = override
-  let title = noSuffix
-  const dash = noSuffix.lastIndexOf(' - ')
-  if (dash !== -1) {
-    title = noSuffix.slice(0, dash).trim()
-    if (!style) style = noSuffix.slice(dash + 3).trim()
-  }
-  if (!style) style = (entry.tags && entry.tags[0]) || 'classic art'
-  return { title, style }
-}
 
 async function resolveSource(src, tmp) {
   if (/^https?:\/\//i.test(src)) {
@@ -106,7 +106,47 @@ async function resolveSource(src, tmp) {
   return abs
 }
 
-function buildFilter({ w, h, pill, pillPad, pillWidth }) {
+/**
+ * Write the score's prompt onto the piece's `gallery.json` entry.
+ *
+ * `music_prompt` sits alongside `image_prompt` and `video_prompt` as a
+ * curation-only field — the shared `ArtItem` type deliberately omits all three,
+ * because no client reads them. Only the one piece per night that actually gets
+ * posted is scored, so only that one carries the field.
+ */
+function recordMusicPrompt(src, prompt) {
+  const galleryPath = path.join(REPO_ROOT, 'gallery.json')
+  const items = JSON.parse(readFileSync(galleryPath, 'utf8'))
+  const entry = items.find((e) => e.src === src)
+  if (!entry) {
+    process.stderr.write(`  ⚠ no gallery.json entry for ${src} — music_prompt not recorded\n`)
+    return
+  }
+  entry.music_prompt = prompt
+  writeFileSync(galleryPath, JSON.stringify(items, null, 2) + '\n')
+  process.stdout.write(`  ✓ gallery.json: music_prompt recorded on "${entry.title}"\n`)
+}
+
+/**
+ * How long the source clip actually is.
+ *
+ * This is the clip's length, full stop. An earlier version looped the source to a
+ * fixed 12s target, which meant every 8s piece silently replayed its first four
+ * seconds — on pieces `gallery.json` explicitly marks `looping: false`, i.e. ones
+ * authored *not* to repeat. The art decides the length; we don't pad it.
+ */
+function probeDuration(file) {
+  const r = spawnSync('ffprobe', [
+    '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file,
+  ], { encoding: 'utf8' })
+  const seconds = parseFloat((r.stdout || '').trim())
+  if (r.status !== 0 || !Number.isFinite(seconds) || seconds <= 0) {
+    throw new Error(`could not read the duration of ${path.basename(file)}`)
+  }
+  return seconds
+}
+
+function buildFilter({ w, h, pill, pillPad, pillWidth, audio, audioIndex, gain, duration }) {
   // Blurred, zoomed-in copy fills the frame; the art sits centered and whole on
   // top — the standard "no black bars, art never cropped" reframe.
   const chain = [
@@ -121,75 +161,46 @@ function buildFilter({ w, h, pill, pillPad, pillWidth }) {
     chain.push(`[1:v]scale=${pillWidth}:-1[pill]`)
     chain.push(`[base][pill]overlay=(W-w)/2:H-h-${pillPad},format=yuv420p[outv]`)
   }
+  if (audio) {
+    // The bed is a ~30s take cut to the clip's length, so it only needs levelling
+    // and a fade at each end — a hard cut on a sustained pad is very audible. The
+    // fades scale with the clip so a short piece doesn't end up nearly all fade.
+    // It sits well under the art on purpose (§11.2: the picture leads).
+    const fadeIn = Math.min(1, duration / 8).toFixed(2)
+    const fadeOut = Math.min(1.5, duration / 5)
+    const out = Math.max(0, duration - fadeOut).toFixed(2)
+    chain.push(`[${audioIndex}:a]volume=${gain}dB,afade=t=in:st=0:d=${fadeIn},` +
+      `afade=t=out:st=${out}:d=${fadeOut.toFixed(2)}[outa]`)
+  }
   return chain.join(';')
 }
 
-function renderFormat({ input, fmtKey, outFile, duration, wordmark }) {
+function renderFormat({ input, fmtKey, outFile, duration, wordmark, bed, gain }) {
   const fmt = FORMATS[fmtKey]
   if (!fmt) throw new Error(`unknown format ${fmtKey} (use 9x16 or 1x1)`)
   const usePill = wordmark && HAS_PILL
   const pillWidth = Math.round(fmt.w * 0.46)
-  const filter = buildFilter({ ...fmt, pill: usePill, pillWidth })
+  // Input order decides the filter's stream indices: art, [pill], [bed].
+  const audioIndex = usePill ? 2 : 1
+  const filter = buildFilter({ ...fmt, pill: usePill, pillWidth, audio: !!bed, audioIndex, gain, duration })
   const args = [
     '-y', '-hide_banner', '-loglevel', 'error',
-    '-stream_loop', '-1', '-i', input,
+    // The art plays once, at its own length — no -stream_loop here. Only the
+    // still pill and the music bed repeat, and -t bounds both.
+    '-i', input,
     ...(usePill ? ['-loop', '1', '-i', URL_PILL] : []),
+    ...(bed ? ['-stream_loop', '-1', '-i', bed] : []),
     '-filter_complex', filter,
     '-map', '[outv]',
+    ...(bed ? ['-map', '[outa]', '-c:a', 'aac', '-b:a', '128k', '-ar', '44100', '-ac', '2'] : ['-an']),
     '-t', String(duration),
     '-r', '30',
     '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-pix_fmt', 'yuv420p',
     '-movflags', '+faststart',
-    // TODO(--audio): mux a Lyria-generated music bed here (looped + faded to length).
-    // Platform trending libraries are licence-restricted for commercial accounts, and an
-    // API-posted clip can't attach a native sound anyway — see strategy §11.2.
-    '-an',
     outFile,
   ]
   const r = spawnSync('ffmpeg', args, { stdio: ['ignore', 'ignore', 'inherit'] })
   if (r.status !== 0) throw new Error(`ffmpeg failed for ${fmtKey}`)
-}
-
-function captionsMarkdown({ title, style }) {
-  const styleTag = '#' + slugify(style).replace(/-/g, '')
-  const base = `#screensaver #livewallpaper #aiart #digitalart #macsetup #desksetup #aesthetic ${styleTag}`
-  const cta = `Free on Mac, new art every day → ${SITE}`
-  return `# Social captions — ${title}
-
-_Starter copy. Tweak the hook, keep it human. Post the 9×16 to Reels/TikTok/Shorts,
-the 1×1 to feed/Pinterest. These clips are silent for now — a Lyria-generated music
-bed is planned (strategy §11.2); don't reach for a platform trending sound, it's
-licence-restricted for commercial accounts._
-
-## Instagram Reels / Facebook
-\`\`\`
-${title} — ${style}, animated by AI. ✨
-Your Mac deserves this. A new curated piece like this arrives every day as your screensaver.
-${cta}
-.
-${base} #reels #artreel #interiordesign
-\`\`\`
-
-## TikTok
-\`\`\`
-POV: your screensaver is an art gallery now 🖼️ (${style})
-${cta}
-${base} #arttok #fyp #satisfying
-\`\`\`
-
-## YouTube Shorts
-\`\`\`
-${title} — ${style} art, brought to life by AI. New piece every day on your Mac. ${SITE}
-${base} #shorts #aivideo
-\`\`\`
-
-## Pinterest
-\`\`\`
-${title} — animated ${style} art for your desktop. Living Art turns your Mac screensaver into a
-daily-refreshed gallery. ${cta}
-${base} #wallpaper #aestheticwallpaper
-\`\`\`
-`
 }
 
 // ── main ────────────────────────────────────────────────────────────────────
@@ -197,7 +208,9 @@ async function main() {
   const a = parseArgs(process.argv.slice(2))
   if (a.help || (!a.src && !a.title && !a.latest)) {
     process.stdout.write('Usage: node marketing/make-social-assets.mjs [--latest N | --title <substr> | --src <path|url>]\n' +
-      '       [--style <text>] [--formats 9x16,1x1] [--duration 12] [--no-wordmark] [--out <dir>]\n')
+      '       [--style <text>] [--formats 9x16,1x1] [--duration <sec, trims>]\n' +
+      '       [--music-prompt <text> | --audio <file|url>] [--gain -9]\n' +
+      '       [--no-wordmark] [--out <dir>]\n')
     process.exit(a.help ? 0 : 1)
   }
   if (a.wordmark && !HAS_PILL) process.stderr.write('  ⚠ marketing/assets/url-pill.png not found — rendering without the URL pill.\n')
@@ -207,9 +220,7 @@ async function main() {
   if (a.src) {
     jobs = [{ title: a.title || path.basename(a.src).replace(/\.[^.]+$/, ''), tags: [], src: a.src }]
   } else {
-    const galleryPath = path.join(REPO_ROOT, 'gallery.json')
-    const gallery = JSON.parse(await import('node:fs/promises').then((m) => m.readFile(galleryPath, 'utf8')))
-    const videos = gallery.filter((e) => e.src && (e.type === 'video' || /\.mp4($|\?)/i.test(e.src)))
+    const videos = galleryVideos()
     if (a.title) {
       const t = a.title.toLowerCase()
       jobs = videos.filter((e) => (e.title || '').toLowerCase().includes(t))
@@ -219,33 +230,95 @@ async function main() {
     }
   }
 
-  process.stdout.write(`Rendering ${jobs.length} piece(s) → ${a.out}\n`)
-  let ok = 0
-  for (const entry of jobs) {
-    const { title, style } = deriveMeta(entry, a.style)
-    const slug = slugify(title) || 'piece'
-    const dir = path.join(a.out, slug)
-    mkdirSync(dir, { recursive: true })
-    const tmp = mkdtempSync(path.join(tmpdir(), 'lart-social-'))
-    try {
-      process.stdout.write(`• ${title}  [${style}]\n`)
-      const input = await resolveSource(entry.src, tmp)
-      for (const fmtKey of a.formats) {
-        const outFile = path.join(dir, `${slug}_${fmtKey}.mp4`)
-        renderFormat({ input, fmtKey, outFile, duration: a.duration, wordmark: a.wordmark })
-        process.stdout.write(`  ✓ ${path.relative(REPO_ROOT, outFile)}\n`)
-      }
-      writeFileSync(path.join(dir, 'captions.md'), captionsMarkdown({ title, style }))
-      process.stdout.write(`  ✓ ${path.relative(REPO_ROOT, path.join(dir, 'captions.md'))}\n`)
-      ok++
-    } catch (err) {
-      process.stderr.write(`  ✗ ${title}: ${err.message}\n`)
-    } finally {
-      rmSync(tmp, { recursive: true, force: true })
-    }
+  // The music is written for ONE artwork, so refuse to spread it over a batch:
+  // scoring four different pieces with the same bed is the generic-library
+  // mistake this replaced, and it would write the same `music_prompt` onto four
+  // gallery entries when only the piece being posted should carry one.
+  if (a.musicPrompt && a.audio) throw new Error('pass either --music-prompt or --audio, not both')
+  if ((a.musicPrompt || a.audio) && jobs.length > 1) {
+    throw new Error(`music is per piece, but ${jobs.length} pieces matched — narrow it with ` +
+      `--title <substr> (or --latest 1). The nightly run scores only the piece it posts.`)
   }
-  process.stdout.write(`Done: ${ok}/${jobs.length} piece(s).\n`)
-  if (ok === 0) process.exit(1)
+
+  // Generate (or fetch) the bed once, before any ffmpeg work, so a failed call
+  // costs nothing rather than stopping halfway through a render.
+  const scratch = mkdtempSync(path.join(tmpdir(), 'lart-music-'))
+  let bed = null
+  try {
+    if (a.musicPrompt) {
+      process.stdout.write(`Music: generating a bed for this piece…\n  ${a.musicPrompt}\n`)
+      bed = generateBed({ prompt: a.musicPrompt, outFile: path.join(scratch, 'bed.mp3') })
+    } else if (a.audio) {
+      bed = /^https?:\/\//i.test(a.audio) ? await resolveSource(a.audio, scratch) : path.resolve(a.audio)
+      if (!existsSync(bed)) throw new Error(`audio not found: ${bed}`)
+    }
+    if (bed) process.stdout.write(`  ✓ bed ready, mixing at ${a.gain} dB\n`)
+
+    process.stdout.write(`Rendering ${jobs.length} piece(s) → ${a.out}\n`)
+    let ok = 0
+    for (const entry of jobs) {
+      const { title, style } = deriveMeta(entry, a.style)
+      const slug = assetSlug(title) || 'piece'
+      const webSlug = a.src && !entry.date ? null : webSlugForSrc(entry.src)
+      const dir = path.join(a.out, slug)
+      mkdirSync(dir, { recursive: true })
+      const tmp = mkdtempSync(path.join(tmpdir(), 'lart-social-'))
+      try {
+        process.stdout.write(`• ${title}  [${style}]\n`)
+        const input = await resolveSource(entry.src, tmp)
+        // The source's own length is the clip's length. --duration only ever
+        // trims: with no looping there is nothing to pad a longer target with.
+        const sourceDuration = probeDuration(input)
+        const duration = a.duration ? Math.min(a.duration, sourceDuration) : sourceDuration
+        if (a.duration && a.duration > sourceDuration) {
+          process.stderr.write(`  ⚠ --duration ${a.duration}s exceeds the source (${sourceDuration.toFixed(1)}s) — using the source length\n`)
+        }
+        process.stdout.write(`  ${duration.toFixed(1)}s${duration < sourceDuration ? ` (trimmed from ${sourceDuration.toFixed(1)}s)` : ''}\n`)
+        const formats = {}
+        for (const fmtKey of a.formats) {
+          const name = `${slug}_${fmtKey}.mp4`
+          const outFile = path.join(dir, name)
+          renderFormat({ input, fmtKey, outFile, duration, wordmark: a.wordmark, bed, gain: a.gain })
+          formats[fmtKey] = name
+          process.stdout.write(`  ✓ ${path.relative(REPO_ROOT, outFile)} (${(statSync(outFile).size / 1e6).toFixed(1)} MB)\n`)
+        }
+        writeFileSync(path.join(dir, 'captions.md'), captionsMarkdown({ title, style, webSlug }))
+        // The hand-off to post-social.mjs. Everything it needs to publish this
+        // piece — above all `webSlug`, the permanent landing page — is recorded
+        // here at render time, so the poster never re-derives it.
+        writeFileSync(path.join(dir, 'meta.json'), JSON.stringify({
+          schema: 1,
+          assetSlug: slug,
+          webSlug,
+          title,
+          style,
+          galleryTitle: entry.title ?? null,
+          src: entry.src,
+          date: entry.date ?? null,
+          duration: Number(duration.toFixed(3)),
+          musicPrompt: a.musicPrompt ?? null,
+          formats,
+          renderedAt: new Date().toISOString(),
+        }, null, 2) + '\n')
+        process.stdout.write(`  ✓ ${path.relative(REPO_ROOT, path.join(dir, 'captions.md'))} + meta.json\n`)
+        // The prompt is the durable half of the score: record it on the piece
+        // itself so the catalog says how this artwork sounds, and the MP3 can
+        // stay disposable.
+        if (a.musicPrompt && !a.src) recordMusicPrompt(entry.src, a.musicPrompt)
+        ok++
+      } catch (err) {
+        process.stderr.write(`  ✗ ${title}: ${err.message}\n`)
+      } finally {
+        rmSync(tmp, { recursive: true, force: true })
+      }
+    }
+    process.stdout.write(`Done: ${ok}/${jobs.length} piece(s).\n`)
+    if (ok === 0) process.exit(1)
+  } finally {
+    // The bed is scratch by design — the prompt in gallery.json is what makes it
+    // reproducible, so there is nothing here worth keeping.
+    rmSync(scratch, { recursive: true, force: true })
+  }
 }
 
 main().catch((err) => {

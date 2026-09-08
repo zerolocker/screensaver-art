@@ -347,11 +347,10 @@ Match **era/culture, mood, and energy**. ~10-35 words.
 - **Palette has a sound** — luminous saturated colour and bright daylight suggest
   major, light, airy; muted earth and low light suggest minor, warm, sparse.
 
-### Two lines that go in every prompt
-1. **"Instrumental, no vocals."** ⚠️ **Lyria sings by default** — a perfectly
-   innocent prompt comes back as a fully sung track with its own lyric sheet. The
-   skill warns before the call and fails after it if it hears lyrics, and
-   `make-social-assets.mjs` refuses a prompt that doesn't say this at all.
+### Append "Instrumental, no vocals." to prompt
+Without this, Lyria sings by default.
+The skill warns before the call and fails after it if it hears lyrics, and
+`make-social-assets.mjs` refuses a prompt that doesn't say this at all.
 
 ---
 

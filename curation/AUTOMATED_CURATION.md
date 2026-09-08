@@ -75,12 +75,7 @@ You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't
         lists what has already gone out; avoid a third consecutive misty landscape.
 
     **8b. Write its music prompt.** Read **"Music prompts"** in
-    [`curation/PROMPT_GUIDANCE.md`](PROMPT_GUIDANCE.md) first — it has the rules, a
-    worked example and the anti-patterns. In short: match the era, mood and energy of
-    *that* artwork, name instrumentation/tempo/texture, and always end with **"Even
-    dynamics, no build or drop. Instrumental, no vocals."** (⚠️ Lyria sings by default.)
-    You are writing this because you have the most context on the piece — nothing
-    downstream does.
+    [`curation/PROMPT_GUIDANCE.md`](PROMPT_GUIDANCE.md) first.
 
     **8c. Render and post it:**
     ```bash
@@ -93,7 +88,7 @@ You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't
     bash curation/with-secrets.sh UPLOADPOST_API_KEY ZERNIO_API_KEY -- \
       node marketing/post-social.mjs --slug <asset-slug-from-the-render>
     ```
-    The first generates the bed (one Lyria call), renders 9:16 + 1:1 clips with it mixed
+    The first generates the music (one Lyria call), renders 9:16 + 1:1 clips with it mixed
     at −9 dB, writes `captions.md` + `meta.json`, and **records `music_prompt` on that
     piece's `gallery.json` entry**. The second publishes it to all four channels —
     Instagram + YouTube via upload-post, TikTok + Pinterest via Zernio — each post

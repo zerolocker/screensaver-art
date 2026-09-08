@@ -99,6 +99,39 @@ and one piece a night costs 2 (IG + YT), so **Instagram and YouTube stop publish
 until the $24/mo ($16 annual) Basic plan is on.** TikTok + Pinterest stay free (Zernio's first 2
 accounts). If the nightly log starts reporting IG/YT failures, this is why.
 
+## ⏰ Dated reminders
+| When | Who | What |
+|---|---|---|
+| **2026-09-22** (2 weeks after go-live) | **founder** | **Review the automated social posts for quality and errors.** ~15 min, once. Open the four accounts and actually look at what a fortnight of unattended posting produced. Checklist below. |
+
+**2026-09-22 — first quality review of the automated posts.** The nightly job has been
+publishing since 2026-09-07 with nobody watching it. Two weeks in is the first point where
+there is enough output to judge, and early enough that a systematic error hasn't run for a
+month. Go through the four accounts ([IG](https://www.instagram.com/living_art_screensaver/) ·
+[YouTube](https://www.youtube.com/@livingartscreensaver) ·
+[TikTok](https://www.tiktok.com/@livingartscreensaver) ·
+[Pinterest](https://www.pinterest.com/livingartscreensaver/daily-curation/)) and check:
+
+- **The music fits the art** — the failure mode this design exists to prevent (a tender piano
+  under a plaza of shrieking kids). If several misses, the fix is `PROMPT_GUIDANCE.md` →
+  *Music prompts*, not the code. **Any singing at all is a bug** — the guards should make it
+  impossible, so report it rather than shrugging.
+- **Clip length + framing** — each clip should be the piece's own length (~8s), playing once,
+  art never cropped.
+- **The captions haven't gone stale** — they come from variant pools, so check that a fortnight
+  doesn't read like the same three sentences. If it does, §11 (C)'s per-piece Gemini captions
+  is the upgrade.
+- **Every link resolves** to that piece's `/art/<slug>` page, not a 404 and not the home page.
+- **Piece selection** — is the agent picking pieces that work as a vertical phone clip, or
+  defaulting to whatever is newest? Criteria are `AUTOMATED_CURATION.md` step 8a.
+- **⚠️ Did Instagram + YouTube stop around day 6?** upload-post's free tier is 10 uploads/month
+  and each night costs 2. If those two went quiet, that's the plan, not a bug — see the founder
+  note above.
+- **Anything the UTM data says** (backlog #4 lands the same week).
+
+Log what you find in the Activity log, and fold any prompt/criteria changes back into
+`curation/PROMPT_GUIDANCE.md` so the nightly agent inherits them.
+
 ## Next up (prioritized backlog)
 Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batched last.
 
@@ -108,9 +141,9 @@ Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batc
    drafts. **One feature ≈ months of our own posting.**
 3. **Reddit** (`launch-kit.md` §3) — ~20 min; the posting automation is live, so traffic now
    lands on a site that keeps earning.
-4. **Read the UTM data** (~2 weeks after 2026-09-07) — the four channels are tagged
-   `utm_source=<platform>&utm_medium=social&utm_campaign=daily`. First real evidence of which
-   converts; §4.1 deliberately ranks none of them until this exists.
+4. **Read the UTM data** (**2026-09-22**, with the post review above) — the four channels are
+   tagged `utm_source=<platform>&utm_medium=social&utm_campaign=daily`. First real evidence of
+   which converts; §4.1 deliberately ranks none of them until this exists.
 
 ~~Wire the posting automation~~ ✅ **done 2026-09-07** — see the Status table and the activity log.
 

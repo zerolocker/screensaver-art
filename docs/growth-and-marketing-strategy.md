@@ -418,8 +418,7 @@ You can largely automate the content flywheel off your existing nightly pipeline
   (Captions are template-based today; upgrading to Gemini is a noted easy win.)
 - **(B) Distribution — BUY. ✅ vendors decided 2026-08-02 — see §11.1.** One API call fans out to
   TikTok/Reels/Shorts/Pinterest. **$0/mo to start.** *Critical reason to buy, not build:*
-  **TikTok forces `SELF_ONLY` (private, creator-only) on every post from an unaudited API
-  client.** Lifting it needs a separate Content Posting API audit (~1–2 weeks) that requires
+  **TikTok's Content Posting API restricts *unaudited* API clients to private posting.** Lifting it needs a separate Content Posting API audit (~1–2 weeks) that requires
   demonstrating a compliant UI with privacy/comment/duet toggles — a UI we don't have and would
   have to build. Instagram/YouTube/Pinterest add their own app review on top. Vendors holding
   their *own* audited client sidestep all of it; building the raw posting/OAuth layer = months
@@ -496,10 +495,9 @@ Two caveats to plan around, neither a blocker:
 - **Only the Zernio half is durably free.** upload-post's free tier is 10 uploads/mo — about
   five days at nightly cadence — so IG + YT converts to $24/mo ($16 annual, unlimited uploads)
   almost immediately. Treat it as a trial, not a runway.
-- **Zernio's TikTok audit status is unconfirmed.** Its API exposes `PUBLIC_TO_EVERYONE` and
-  requires TikTok's consent flags (consistent with an audited client), but the docs never say so
-  outright. **Verify with one live post before relying on it** — if it lands `SELF_ONLY`, move
-  TikTok to upload-post, whose public-posting default *is* documented.
+- **Zernio posts publicly to TikTok — ✅ confirmed by live test (founder, 2026-08-23).** Its
+  client is audited: a real post landed published, not a private draft. Nothing about the
+  four-channel plan is contingent any more.
 
 **Others researched** — prices verified 2026-08-02 against each vendor's live pricing page
 (several secondary/blog sources were stale by 2–3×):
@@ -507,7 +505,7 @@ Two caveats to plan around, neither a blocker:
 | Vendor | Entry price | Billing unit | TikTok public post | Verdict |
 |---|---|---|---|---|
 | **upload-post** | free (10 uploads/mo, no TikTok) → **$24/mo**, $16 annual, unlimited | **profile** = one account *per platform*; all platforms included | ✅ own audited client | **chosen** — IG + YT |
-| **Zernio** | **free** for 2 accounts → $6/mo each (3–10), $3 (11–100) | connected account | ⚠️ unconfirmed | **chosen** — TikTok + Pinterest |
+| **Zernio** | **free** for 2 accounts → $6/mo each (3–10), $3 (11–100) | connected account | ✅ verified by live test | **chosen** — TikTok + Pinterest |
 | Blotato | $29/mo (20 accounts) | account | ✅ | ❌ API excluded from the 7-day trial |
 | Postiz | $29/mo hosted; free self-host | channel | ❌ BYO developer app | ❌ we'd inherit the audit |
 | Ayrshare | $149/mo (1 profile) | profile (≤13 networks) | ✅ | ❌ ~4× budget; built for multi-tenant SaaS |

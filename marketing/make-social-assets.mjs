@@ -5,9 +5,11 @@
 // gallery.json. Social feeds are vertical/square, so this script reframes a
 // piece into 9:16 (Reels/TikTok/Shorts) and 1:1 (feed) with a tasteful
 // blurred-fill background + a subtle wordmark, scores it with a music bed
-// written for that specific artwork, loops it to a comfortable duration, and
-// writes starter per-platform captions. Reuses art you already generate — the
-// marginal cost of a day's social content is ~one ffmpeg run plus one Lyria call.
+// written for that specific artwork, and writes starter per-platform captions.
+// The clip keeps the source's own length and plays exactly once — these are
+// authored pieces, and half of them are deliberately non-looping. Reuses art you
+// already generate: the marginal cost of a day's social content is ~one ffmpeg
+// run plus one Lyria call.
 //
 // It also writes a `meta.json` next to each piece's clips: the hand-off to
 // `post-social.mjs`, which publishes them. That file is why the poster never has
@@ -27,7 +29,7 @@
 //   --src <path|url> use this MP4 directly (skip gallery lookup); pair with --title/--style
 //   --style <text>   override the derived art style (used in captions + hashtags)
 //   --formats <list> comma list of 9x16,1x1 (default: both)
-//   --duration <sec> loop/trim target length (default: 12)
+//   --duration <sec> trim to at most N seconds (default: the source clip's own length)
 //   --music-prompt <text>  generate a bed from this prompt (Lyria) and score the clip with it;
 //                          also records it as `music_prompt` on the piece's gallery.json entry
 //   --audio <file|url>     score with an existing audio file instead of generating one
@@ -63,7 +65,7 @@ const FORMATS = {
 // ── arg parsing ─────────────────────────────────────────────────────────────
 function parseArgs(argv) {
   const a = {
-    formats: ['9x16', '1x1'], duration: 12, wordmark: true,
+    formats: ['9x16', '1x1'], wordmark: true,
     gain: DEFAULT_GAIN_DB, out: path.join(REPO_ROOT, 'marketing', 'out'),
   }
   for (let i = 0; i < argv.length; i++) {
@@ -76,7 +78,7 @@ function parseArgs(argv) {
     else if (arg === '--src') a.src = next()
     else if (arg === '--style') a.style = next()
     else if (arg === '--formats') a.formats = next().split(',').map((s) => s.trim()).filter(Boolean)
-    else if (arg === '--duration') a.duration = Math.max(3, parseInt(next(), 10) || 12)
+    else if (arg === '--duration') a.duration = Math.max(1, parseInt(next(), 10) || 0) || undefined
     else if (arg === '--music-prompt') a.musicPrompt = next()
     else if (arg === '--audio') a.audio = next()
     else if (arg === '--gain') a.gain = parseFloat(next())
@@ -125,6 +127,25 @@ function recordMusicPrompt(src, prompt) {
   process.stdout.write(`  ✓ gallery.json: music_prompt recorded on "${entry.title}"\n`)
 }
 
+/**
+ * How long the source clip actually is.
+ *
+ * This is the clip's length, full stop. An earlier version looped the source to a
+ * fixed 12s target, which meant every 8s piece silently replayed its first four
+ * seconds — on pieces `gallery.json` explicitly marks `looping: false`, i.e. ones
+ * authored *not* to repeat. The art decides the length; we don't pad it.
+ */
+function probeDuration(file) {
+  const r = spawnSync('ffprobe', [
+    '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file,
+  ], { encoding: 'utf8' })
+  const seconds = parseFloat((r.stdout || '').trim())
+  if (r.status !== 0 || !Number.isFinite(seconds) || seconds <= 0) {
+    throw new Error(`could not read the duration of ${path.basename(file)}`)
+  }
+  return seconds
+}
+
 function buildFilter({ w, h, pill, pillPad, pillWidth, audio, audioIndex, gain, duration }) {
   // Blurred, zoomed-in copy fills the frame; the art sits centered and whole on
   // top — the standard "no black bars, art never cropped" reframe.
@@ -141,11 +162,15 @@ function buildFilter({ w, h, pill, pillPad, pillWidth, audio, audioIndex, gain, 
     chain.push(`[base][pill]overlay=(W-w)/2:H-h-${pillPad},format=yuv420p[outv]`)
   }
   if (audio) {
-    // The bed is looped by -stream_loop and cut by -t, so it only needs levelling
-    // and a fade at each end — a hard cut on a sustained pad is very audible.
+    // The bed is a ~30s take cut to the clip's length, so it only needs levelling
+    // and a fade at each end — a hard cut on a sustained pad is very audible. The
+    // fades scale with the clip so a short piece doesn't end up nearly all fade.
     // It sits well under the art on purpose (§11.2: the picture leads).
-    const out = Math.max(0, duration - 1.5)
-    chain.push(`[${audioIndex}:a]volume=${gain}dB,afade=t=in:st=0:d=1,afade=t=out:st=${out}:d=1.5[outa]`)
+    const fadeIn = Math.min(1, duration / 8).toFixed(2)
+    const fadeOut = Math.min(1.5, duration / 5)
+    const out = Math.max(0, duration - fadeOut).toFixed(2)
+    chain.push(`[${audioIndex}:a]volume=${gain}dB,afade=t=in:st=0:d=${fadeIn},` +
+      `afade=t=out:st=${out}:d=${fadeOut.toFixed(2)}[outa]`)
   }
   return chain.join(';')
 }
@@ -160,7 +185,9 @@ function renderFormat({ input, fmtKey, outFile, duration, wordmark, bed, gain })
   const filter = buildFilter({ ...fmt, pill: usePill, pillWidth, audio: !!bed, audioIndex, gain, duration })
   const args = [
     '-y', '-hide_banner', '-loglevel', 'error',
-    '-stream_loop', '-1', '-i', input,
+    // The art plays once, at its own length — no -stream_loop here. Only the
+    // still pill and the music bed repeat, and -t bounds both.
+    '-i', input,
     ...(usePill ? ['-loop', '1', '-i', URL_PILL] : []),
     ...(bed ? ['-stream_loop', '-1', '-i', bed] : []),
     '-filter_complex', filter,
@@ -181,7 +208,7 @@ async function main() {
   const a = parseArgs(process.argv.slice(2))
   if (a.help || (!a.src && !a.title && !a.latest)) {
     process.stdout.write('Usage: node marketing/make-social-assets.mjs [--latest N | --title <substr> | --src <path|url>]\n' +
-      '       [--style <text>] [--formats 9x16,1x1] [--duration 12]\n' +
+      '       [--style <text>] [--formats 9x16,1x1] [--duration <sec, trims>]\n' +
       '       [--music-prompt <text> | --audio <file|url>] [--gain -9]\n' +
       '       [--no-wordmark] [--out <dir>]\n')
     process.exit(a.help ? 0 : 1)
@@ -239,11 +266,19 @@ async function main() {
       try {
         process.stdout.write(`• ${title}  [${style}]\n`)
         const input = await resolveSource(entry.src, tmp)
+        // The source's own length is the clip's length. --duration only ever
+        // trims: with no looping there is nothing to pad a longer target with.
+        const sourceDuration = probeDuration(input)
+        const duration = a.duration ? Math.min(a.duration, sourceDuration) : sourceDuration
+        if (a.duration && a.duration > sourceDuration) {
+          process.stderr.write(`  ⚠ --duration ${a.duration}s exceeds the source (${sourceDuration.toFixed(1)}s) — using the source length\n`)
+        }
+        process.stdout.write(`  ${duration.toFixed(1)}s${duration < sourceDuration ? ` (trimmed from ${sourceDuration.toFixed(1)}s)` : ''}\n`)
         const formats = {}
         for (const fmtKey of a.formats) {
           const name = `${slug}_${fmtKey}.mp4`
           const outFile = path.join(dir, name)
-          renderFormat({ input, fmtKey, outFile, duration: a.duration, wordmark: a.wordmark, bed, gain: a.gain })
+          renderFormat({ input, fmtKey, outFile, duration, wordmark: a.wordmark, bed, gain: a.gain })
           formats[fmtKey] = name
           process.stdout.write(`  ✓ ${path.relative(REPO_ROOT, outFile)} (${(statSync(outFile).size / 1e6).toFixed(1)} MB)\n`)
         }
@@ -260,7 +295,7 @@ async function main() {
           galleryTitle: entry.title ?? null,
           src: entry.src,
           date: entry.date ?? null,
-          duration: a.duration,
+          duration: Number(duration.toFixed(3)),
           musicPrompt: a.musicPrompt ?? null,
           formats,
           renderedAt: new Date().toISOString(),

@@ -7,8 +7,9 @@ Turn a gallery piece into **ready-to-post social clips + captions — and then p
 them**. The nightly curation agent produces landscape (16:9) art; social feeds are
 vertical/square. `make-social-assets.mjs` reframes a piece into **9:16** (Reels /
 TikTok / Shorts) and **1:1** (feed / Pinterest) with a blurred-fill background, a
-subtle wordmark and a music bed written for that artwork, loops it to a comfortable length, and writes
-per-platform captions. `post-social.mjs` then publishes it to **Instagram,
+subtle wordmark and a music bed written for that artwork, and writes per-platform
+captions. **The clip keeps the source's own length and plays once** — these are
+authored pieces, and many are deliberately non-looping. `post-social.mjs` then publishes it to **Instagram,
 YouTube, TikTok and Pinterest**.
 
 | Script | What it does |
@@ -48,7 +49,7 @@ node marketing/make-social-assets.mjs --src ./clip.mp4 --title "Stormy Sea" --st
 | `--src <path\|url>` | — | Use this MP4 directly (skips gallery lookup). Pair with `--title`/`--style`. |
 | `--style <text>` | derived | Override the art style used in captions + the style hashtag. |
 | `--formats <list>` | `9x16,1x1` | Comma list of `9x16`, `1x1`. |
-| `--duration <sec>` | 12 | Loop/trim target length (art clips are short, so we loop to fill). |
+| `--duration <sec>` | source length | Trim to at most N seconds. Only ever trims — nothing is looped to pad a longer target. |
 | `--music-prompt <text>` | off | Generate a bed from this prompt (one Lyria call) and score the clip with it. Also records the prompt as `music_prompt` on the piece's `gallery.json` entry. Refused when more than one piece matches. |
 | `--audio <file\|url>` | off | Score with an existing audio file instead of generating one. |
 | `--gain <dB>` | `-9` | Bed level. Negative = quieter than the source. |
@@ -58,7 +59,7 @@ node marketing/make-social-assets.mjs --src ./clip.mp4 --title "Stormy Sea" --st
 ## Output
 ```
 marketing/out/<slug>/
-  <slug>_9x16.mp4     # 1080×1920, blurred-fill, wordmark, looped, scored
+  <slug>_9x16.mp4     # 1080×1920, blurred-fill, wordmark, scored, source length
   <slug>_1x1.mp4      # 1080×1080
   captions.md         # the exact per-platform copy the poster will publish
   meta.json           # the hand-off to post-social.mjs (incl. the music prompt used)
@@ -77,9 +78,10 @@ fills the frame, and the whole piece sits centered on top. A small, gentle
 `marketing/assets/url-pill.png`) sits bottom-center as a subtle CTA back to the
 site — skipped automatically if that asset is missing, or with `--no-wordmark`.
 ## Audio — the per-piece music bed
-`--music-prompt` makes one Lyria call, then loops the result under the clip at
-**−9 dB** with a 1 s fade in and a 1.5 s fade out (a hard cut on a sustained pad is
-very audible). The art leads; the music sits under it.
+`--music-prompt` makes one Lyria call, then cuts the ~30s result to the clip's own
+length at **−9 dB**, with fades in and out that scale with the clip (up to 1 s / 1.5 s
+— a hard cut on a sustained pad is very audible). The art leads; the music sits
+under it.
 
 **The music is written for the specific artwork, not pulled from a library.** An
 earlier version reused five generic ambient beds, on the theory that nobody notices

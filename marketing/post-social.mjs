@@ -57,7 +57,7 @@ const DEFAULT_PINTEREST_BOARD = 'Daily Curation'
  * posted. We use the presigned-upload path (5 GB) rather than the simpler
  * /media/upload-direct: that one is documented at 25 MB but is served by a
  * serverless function that rejects anything over ~4.5 MB
- * (FUNCTION_PAYLOAD_TOO_LARGE), and a 12s 1080x1920 clip is ~12 MB.
+ * (FUNCTION_PAYLOAD_TOO_LARGE), and an 8s 1080x1920 clip is ~8 MB.
  */
 const ZERNIO_MAX_UPLOAD = 5 * 1024 * 1024 * 1024
 

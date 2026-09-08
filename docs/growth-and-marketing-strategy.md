@@ -413,7 +413,7 @@ likely your highest-impact conversion lever *once traffic exists*:
 You can largely automate the content flywheel off your existing nightly pipeline.
 - **(A) Asset step — ✅ BUILT.** `marketing/make-social-assets.mjs` (+ `marketing/README.md`):
   ffmpeg reframes each piece 16:9 → 9:16 + 1:1 (blurred-fill, never cropped) with a subtle
-  wordmark, loops to length, and writes per-platform starter captions. No npm deps. Run
+  wordmark, keeps the source's own length, and writes per-platform starter captions. No npm deps. Run
   `node marketing/make-social-assets.mjs --latest 4` after the nightly curation batch.
   (Captions are template-based today; upgrading to Gemini is a noted easy win.)
 - **(B) Distribution — BUY, and ✅ WIRED 2026-09-07.** `marketing/post-social.mjs` publishes one
@@ -479,7 +479,7 @@ skill warns before spending a call and fails after one if it detects lyrics, so 
 ship vocals by accident.
 
 **✅ Wired 2026-09-07; made per-piece 2026-09-08.** `make-social-assets.mjs --music-prompt`
-makes one Lyria call and loops the result under the clip at **−9 dB** with a 1 s / 1.5 s fade.
+makes one Lyria call and mixes the result under the clip at **−9 dB** with scaled fades.
 
 **The music is scored to the artwork, not drawn from a library.** The first version reused five
 generic ambient beds, reasoning that nobody notices the bed varying nightly. That is true and
@@ -533,7 +533,7 @@ own docs on 2026-09-07, while wiring the poster:
 
 One gotcha worth recording, since it cost a failed post: **Zernio's `/media/upload-direct` is
 documented at 25 MB but sits behind a serverless function that rejects anything over ~4.5 MB**
-(`FUNCTION_PAYLOAD_TOO_LARGE`), and a 12 s 1080×1920 clip is ~12 MB. The poster uses the
+(`FUNCTION_PAYLOAD_TOO_LARGE`), and an 8 s 1080×1920 clip is ~8 MB. The poster uses the
 presigned-upload path (5 GB) instead.
 
 **Others researched** — prices verified 2026-08-02 against each vendor's live pricing page

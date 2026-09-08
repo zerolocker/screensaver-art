@@ -65,13 +65,10 @@ You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't
 
 8.  **Post the day's art to social — you choose the piece and score it.**
 
-    **8a. Pick the one piece of the four to post.** This is a judgement call and it is
-    yours — you have seen all four stills and know how each turned out. Pick the one
+    **8a. Pick the one piece of the four to post.** Pick the one
     that will do best as a **vertical clip on a phone, seen for three seconds, muted**:
     *   **One obvious subject** that survives being reframed to 9:16 and shrunk to phone
         size. A piece whose appeal is fine detail across a wide composition loses it.
-    *   **Motion you notice immediately** — the clip is 12s and loops. If you have to
-        hunt for what moves, scroll past it.
     *   **Colour and light that pop in a feed**, which is a brighter, higher-contrast bar
         than "looks good framed on a wall".
     *   **Something different from the last few nights.** `marketing/out/.posted.json`

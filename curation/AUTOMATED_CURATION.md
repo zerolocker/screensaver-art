@@ -15,6 +15,10 @@ if any is missing — so each call names exactly what it depends on:
   (see each skill's `SKILL.md`).
 - **`CLOUDFLARE_API_TOKEN`** — the R2 upload. `curation/publish-piece.mjs` (step 4)
   wraps itself in `with-secrets.sh`, so you never pass this one by hand.
+- **`UPLOADPOST_API_KEY` + `ZERNIO_API_KEY`** — the social posting in step 8. Passed
+  explicitly: `bash curation/with-secrets.sh UPLOADPOST_API_KEY ZERNIO_API_KEY -- node
+  marketing/post-social.mjs …`. Steps 1-7 don't need them, so a missing key costs the
+  night's posts, not the night's art.
 
 If a required secret is missing, **abort** and report it rather than proceeding.
 
@@ -58,4 +62,26 @@ You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't
 7.  **Commit and Push:**
     *   Run: `git add gallery.json curation/ART_STYLES_FOR_INSPIRATION.md && git commit -m "AUTO_CURATION: Added [Style 1, Style 2, Style 3, Style 4] collections"`
     *   Run: `git push` to sync changes to the remote. Remember your task is to curate, so don't push other stuff you generated to the repo.
+
+8.  **Post the day's art to social — two commands, no human step:**
+    ```bash
+    node marketing/make-social-assets.mjs --latest 4 --audio
+
+    bash curation/with-secrets.sh UPLOADPOST_API_KEY ZERNIO_API_KEY -- \
+      node marketing/post-social.mjs --latest 4
+    ```
+    The first renders 9:16 + 1:1 clips with a music bed and a `meta.json`; the second
+    publishes **one** of them to all four channels — Instagram + YouTube via upload-post,
+    TikTok + Pinterest via Zernio — linking each post to that piece's own
+    `/art/<slug>` page. Details in [`marketing/README.md`](../marketing/README.md).
+    *   **Order matters:** this runs *after* the push, because each post links to a
+        landing page that only exists once Vercel has rebuilt from the new
+        `gallery.json`. The poster checks the page is live before publishing (a post's
+        destination URL can never be edited) and waits out the deploy.
+    *   **One piece a night, not four.** The other three stay rendered and are picked
+        up on later nights; a ledger (`marketing/out/.posted.json`) makes re-runs safe.
+    *   **Never commit anything from `marketing/out/` or `marketing/beds/`** — clips and
+        MP3s are media (repo rules in `CLAUDE.md`), and both paths are gitignored.
+    *   If it exits non-zero, report which channel failed and carry on; a missed post is
+        not worth failing the curation run over.
 

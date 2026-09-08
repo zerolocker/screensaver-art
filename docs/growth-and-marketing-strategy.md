@@ -416,15 +416,20 @@ You can largely automate the content flywheel off your existing nightly pipeline
   wordmark, loops to length, and writes per-platform starter captions. No npm deps. Run
   `node marketing/make-social-assets.mjs --latest 4` after the nightly curation batch.
   (Captions are template-based today; upgrading to Gemini is a noted easy win.)
-- **(B) Distribution — BUY. ✅ vendors decided 2026-08-02 — see §11.1.** One API call fans out to
-  TikTok/Reels/Shorts/Pinterest. **$0/mo to start.** *Critical reason to buy, not build:*
+- **(B) Distribution — BUY, and ✅ WIRED 2026-09-07.** `marketing/post-social.mjs` publishes one
+  rendered piece a night to all four channels and hangs off the nightly curation run
+  (`curation/AUTOMATED_CURATION.md` step 8). Verified with real posts on all four
+  (see the hub's activity log). Vendors: §11.1. **$0/mo to start.** *Critical reason to buy, not build:*
   **TikTok's Content Posting API restricts *unaudited* API clients to private posting.** Lifting it needs a separate Content Posting API audit (~1–2 weeks) that requires
   demonstrating a compliant UI with privacy/comment/duet toggles — a UI we don't have and would
   have to build. Instagram/YouTube/Pinterest add their own app review on top. Vendors holding
   their *own* audited client sidestep all of it; building the raw posting/OAuth layer = months
   of compliance for one app's marketing. Don't.
-- **(C) Agentic layer — optional BUILD.** A nightly Claude call picks the best clip and writes
-  per-platform captions/hashtags. ~1 day.
+- **(C) Agentic layer — optional BUILD, 90% covered cheaply.** Captions are now drawn from
+  variant pools keyed by a hash of the piece + platform (`marketing/lib/captions.mjs`):
+  deterministic, so a retry republishes byte-identical copy, but no two nights read alike —
+  which is the actual problem a daily cadence has with one fixed template. A nightly Gemini
+  call for genuinely per-piece copy remains the upgrade, now worth ~half a day, not one.
 - **Total: ~3–4 days of build + $0/mo to start, ~$16–24/mo once IG + YT leave the free tier**,
   hanging off the nightly job → near-unattended daily multi-platform marketing.
 - **Keep a human in the loop ~2 min/day** (reply to comments, add a trending sound). The reason
@@ -473,8 +478,13 @@ fully sung track with its own lyric sheet. **Put "instrumental, no vocals" in th
 skill warns before spending a call and fails after one if it detects lyrics, so automation can't
 ship vocals by accident.
 
-**Still open:** wiring the bed into `make-social-assets.mjs` (it passes ffmpeg `-an` today) — and
-**don't commit the MP3s** (`CLAUDE.md` → Repo rules); they belong on R2 or a scratch path.
+**✅ Wired 2026-09-07.** `make-social-assets.mjs --audio` loops a bed under the clip at **−9 dB**
+with a 1 s / 1.5 s fade, and `marketing/make-beds.mjs` generates the library. The call that
+mattered: **a small library reused across clips, not a track per clip** — five beds, picked
+deterministically per piece. Nobody watching a nightly feed can tell tonight's bed also played
+last Tuesday, so per-clip generation would be a standing API bill for an imperceptible
+difference. **The MP3s live on R2, never in git** (`CLAUDE.md` → Repo rules); `marketing/beds.json`
+commits only the id, the prompt and the URL, and the audio is cached locally on first use.
 
 ### 11.1 Vendor decision (2026-08-02) — split across two, consolidate later
 
@@ -490,14 +500,28 @@ REST wrapper either way, so switching costs an afternoon. The split also lines u
 tier: Zernio's 2 free accounts exactly cover TikTok + Pinterest (TikTok being the one channel
 upload-post gates behind a paid plan), while upload-post's free tier covers IG + YT.
 
-Two caveats to plan around, neither a blocker:
+**What each free tier actually covers** — checked against the live accounts and each vendor's
+own docs on 2026-09-07, while wiring the poster:
 
-- **Only the Zernio half is durably free.** upload-post's free tier is 10 uploads/mo — about
-  five days at nightly cadence — so IG + YT converts to $24/mo ($16 annual, unlimited uploads)
-  almost immediately. Treat it as a trial, not a runway.
-- **Zernio posts publicly to TikTok — ✅ confirmed by live test (founder, 2026-08-23).** Its
-  client is audited: a real post landed published, not a private draft. Nothing about the
-  four-channel plan is contingent any more.
+- **upload-post free = 10 uploads/month, 2 profiles, and no TikTok.** (A "profile" is one
+  account *per platform*, so our single profile carries IG + YT together; the free platform
+  list is Instagram, LinkedIn, YouTube, Facebook, X, Threads, Pinterest, Reddit, Bluesky.) At
+  one piece a night that is **two uploads a night → the free month is spent in five days**, so
+  ⚠️ **IG + YT go dark around day 6 until this converts to Basic, $24/mo ($16 annual, unlimited
+  uploads, 5 profiles, TikTok included).** This is the one recurring cost the plan has, and the
+  first thing to check if the posts stop.
+- **Zernio free = the first 2 connected accounts, unlimited posts, full API** — which is exactly
+  TikTok + Pinterest, so that half is durably $0. (The account is now on Zernio's usage-based
+  billing, `planName: "Usage-Based"`, with unlimited uploads/profiles and $5 of credit sitting
+  unused; at two accounts nothing is billable.) Paid accounts start at $6/mo each for 3-10.
+- **Zernio posts publicly to TikTok — ✅ confirmed twice**: the founder's live test (2026-08-23)
+  and the automation's own first post (2026-09-07). Its client is audited; nothing about the
+  four-channel plan is contingent.
+
+One gotcha worth recording, since it cost a failed post: **Zernio's `/media/upload-direct` is
+documented at 25 MB but sits behind a serverless function that rejects anything over ~4.5 MB**
+(`FUNCTION_PAYLOAD_TOO_LARGE`), and a 12 s 1080×1920 clip is ~12 MB. The poster uses the
+presigned-upload path (5 GB) instead.
 
 **Others researched** — prices verified 2026-08-02 against each vendor's live pricing page
 (several secondary/blog sources were stale by 2–3×):

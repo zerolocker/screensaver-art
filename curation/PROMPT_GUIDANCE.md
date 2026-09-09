@@ -1542,4 +1542,68 @@ social (per AUTOMATED_CURATION step 8, a missing key costs the night's posts, no
 night's art). No piece was scored (`music_prompt`), by design. The four pieces are
 published and committed.
 
+### 2026-09-09 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four favoured, non-archaeological wings deliberately chosen to *avoid*
+the wings hammered the last three nights (Islamic ×3, Medieval & Byzantine ×2), all
+intact-medium (0 archaeological — within the ≤1 cap), bright/dense/colourful, with
+four *distinct* primary movers:
+- **Blind Man's Buff — Rococo** (`Renaissance & Baroque`, non-looping) — a *game
+  grope-and-scatter* mover: a blindfolded woman in pale-rose silk gropes forward while
+  a ring of pastel-silk guests duck, dodge and lean away. Fragonard/Lancret fête-galante,
+  luminous, dense. **Pro** still, first-try vision-gate pass.
+- **The Bandstand Concert — American Scene Painting** (`Modern`, non-looping) — a *live
+  brass-band* mover: conductor beating time (back to camera — no facial risk), trombone
+  slides working, bass drum struck, bunting and flags snapping, a dense picnic crowd on
+  the green. Bright wholesome regionalist register. **Pro** still, first-try pass.
+- **The Kemari Match — Yamato-e** (`Japanese`, non-looping) — a fresh *keepy-uppy kick*
+  mover: Heian courtiers ring a raked-sand court keeping a white deerskin ball aloft with
+  their feet, the central player mid-kick. Gold-clouded Tosa-handscroll register with a
+  vermilion veranda of watching court ladies. **flash** still.
+- **The Sheepdog Trial — Contemporary Folk Illustration** (`Contemporary`, non-looping) —
+  a *herding-dog-drives-flowing-flock* mover: a border collie streaks low and circles to
+  push a bunched flock through a gate, shepherd whistling. Warm painterly folk register
+  (NOT flat vector, to vary the heavy recent flat-vector Contemporary look). **flash** still.
+
+**What worked / reinforced:**
+- **All four videos accepted first try.** Veo drift stayed a mild zoom/reframe with the
+  "on the spot / same size / same place" + camera-lock + zoom/pan negative block — no
+  morphing, popping, lost actors, or count changes. Notably the figure-dense Rococo animated
+  cleanly (many faces) because the motion was assigned to *groping/dodging/skirts*, not to
+  facial expression — the standing "avoid faces as the animated focus" rule satisfied by
+  choosing a body-action mover in a crowd scene.
+- **The full-title scan is doing real work** ([[curation-check-full-title-list]]). The
+  gallery is now dense (407→411). My first four ideas — Dutch ice-skating, a Fauvist
+  carousel, a Sorolla fishing-haul, a kite festival — were **all already in the gallery**
+  (some multiple times). Scanning every title + image_prompt for candidate keywords before
+  committing caught all four collisions; the replacements above are genuinely absent.
+  Takeaway: at 400+ pieces, assume your first instinct is already taken and grep the full
+  list for the *subject and the mover* before generating.
+
+**TOOL EVENT — `gemini-3-pro-image` 503s escalated from intermittent to a wall mid-round;
+finished pieces 3 & 4 on `gemini-2.5-flash-image` (the [[curation-pro-image-outage-flash-fallback]]
+/ 09-08 playbook).** Pieces 1 & 2 landed on Pro with one 503 retry each; then piece 4
+exhausted all 4 retries (solid 503) and piece 3 hung mid-retry. Killed the stuck Pro task,
+switched 3 & 4 to `--model gemini-2.5-flash-image` — both returned on the first call.
+- **Density demand fixes flash's under-fill/under-light, again.** Prepending
+  *"EXTREMELY DENSE … richly saturated … NO empty ground, NO dark areas, bright and colourful
+  edge to edge"* to the flash prompts gave a well-filled, bright sheepdog scene and an
+  acceptable kemari (only a mild pale-court centre — characteristic of the raked-sand subject,
+  carried by the dense colourful ring + gold sky). Reinforces the 09-08 lesson.
+- **NEW flash+Veo finding — flash stills are 1344×768 (1.75), not true 16:9, so Veo
+  pillarboxes them → ~10 px black bars on the LEFT and RIGHT of the clip.** (Pro stills are a
+  true-16:9 5504×3072 and don't do this.) `cropdetect` missed it — the bars are only 10 px and
+  its rounding skips them — so **measure the edge pixels directly** (a few-line Pillow script:
+  count near-black columns in from each edge at several heights). Fix that worked on both flash
+  clips: crop 12 px per side and rescale back to 1280×720 with the real ffmpeg
+  (`crop=1256:720:12:0,scale=1280:720:flags=lanczos`, `libx264 -crf 18`, `-c:a copy`), done
+  **before** publish (publish uploads the MP4 as-is; the still's web derivatives are unaffected).
+  Originals kept in the scratchpad per [[curation-keep-rejected-renders]]. **Takeaway for any
+  flash-fallback night: after animating a flash still, check for ~10 px L/R black bars and
+  crop+rescale before publishing** — or pre-crop the flash still to exact 16:9 before feeding Veo.
+- **Operational takeaway (reaffirmed):** don't burn time on Pro retry loops once the 503s are a
+  wall — probe flash early, finish on it, apply the vision gate strictly (density+brightness up
+  front), and budget for the pillarbox crop. Pure-Pillow only (no numpy on this machine).
+
 <!-- Claude appends new rounds above this line. -->

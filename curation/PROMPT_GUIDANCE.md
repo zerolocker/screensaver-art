@@ -1606,4 +1606,55 @@ switched 3 & 4 to `--model gemini-2.5-flash-image` — both returned on the firs
   wall — probe flash early, finish on it, apply the vision gate strictly (density+brightness up
   front), and budget for the pillarbox crop. Pure-Pillow only (no numpy on this machine).
 
+### 2026-09-10 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, **all intact-medium** (0 archaeological — within
+the ≤1 cap), leaning bright/dense/colourful, with four *distinct* primary movers and
+a deliberate spread of registers (no flat-vector Contemporary this round, to vary the
+heavy recent Contemporary-illustration run):
+- **The Ramakien Battle — Thai Temple Mural** (`South & Southeast Asian`, non-looping) —
+  a *combat-leap* mover: the white monkey-warrior Hanuman leaps and strikes with his
+  trident on the spot, monkey soldiers surging and demon warriors recoiling around him.
+  Rattanakosin gold-and-vermilion mural register — brilliant, extremely dense. **Pro** still,
+  first-try vision-gate pass. Nice Veo touch: the gold kranok flame-scrolls around Hanuman
+  flickered into real fire (fitting the fiery warrior), form held.
+- **The Cabaret Can-Can — Belle Époque** (`19th Century`, non-looping) — a *chorus-line
+  high-kick* mover: five dancers kick in unison in a froth of white-and-scarlet petticoats,
+  central dancer highest; packed café-concert audience, trumpeters, gilded boxes. Luminous
+  1890s Montmartre colour-lithograph register (new style added; described as "illustration",
+  text forbidden, per [[curation-poster-summons-object]]). **Pro** still, first-try pass.
+- **Children at Play in the Garden — Song Dynasty** (`Chinese & Korean`, non-looping) — a
+  *child-at-play* mover: a boy trots pulling a wheeled toy lion on a string, another spins a
+  top, a third's pinwheel spins; ten children in a lush jewel-toned gongbi garden. "Hundred
+  children at play" (baizi tu) tradition. **Pro** still, first-try pass.
+- **The Running of the Bulls — Spanish Modernism** (`Modern`, non-looping) — an *advancing
+  stampede* mover: a pack of dark bulls gallops down a whitewashed festival street toward the
+  camera (legs cycling on the spot), white-clad runners scattering, balconies packed with
+  spectators and flags. Bold flat-plane Spanish-modernist mural register (new style added).
+  **Pro** still, first-try pass. **Posted to social** (step 8) — the round's standout
+  feed clip: one obvious high-contrast subject that reads at phone size, a clean break from
+  the last two posts (both Contemporary illustration).
+
+**What worked / reinforced:**
+- **All four stills passed the vision gate first try, and all four videos accepted first try**
+  — a clean first-try night on `gemini-3-pro-image` (no 503 wall tonight, unlike 09-08/09-09).
+  Standing image rules kept producing bright, dense, edge-to-edge frames; Veo drift stayed a
+  mild zoom/reframe in every clip with the "on the spot / same size / same place" + camera-lock
+  + zoom/pan negative block — no morphing, popping, lost actors, or count changes. The Hanuman
+  leap-strike, the unison can-can kick, the top-spin/pull-toy, and the bull pack galloping in
+  place all read as clean legible primary actions.
+- **"On the spot" tames the advancing stampede again** (per 08-24/08-26). The bull pack
+  naturally advances toward camera; cycling their legs "on the spot, staying the same size"
+  gave a full headlong gallop with only the usual mild residual zoom (a helpful zoom-*out* that
+  revealed more street — traversal, not popping).
+- **Full-title scan keeps catching first-instinct collisions** ([[curation-check-full-title-list]]).
+  Grepping the whole gallery (subject + mover) knocked out Futurist cycling ("The Sprint"/"The
+  Grand Prix"), a Léger "The Builders", a Dutch marine ("A Man-of-War in a Fresh Breeze"), ssireum
+  wrestling and a Harlem jazz cabaret — all already present. The four above are genuinely absent.
+- **Register variety was the cheap rut-break this round.** Deliberately avoided flat-vector
+  Contemporary (over-used the last several nights) and spread across a Thai mural, a Parisian
+  lithograph, a Chinese gongbi and a Spanish modernist mural — four different palettes and four
+  different mover classes (combat / dance / child-play / stampede).
+
 <!-- Claude appends new rounds above this line. -->

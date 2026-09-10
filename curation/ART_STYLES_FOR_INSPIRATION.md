@@ -89,6 +89,7 @@ When you add a new style, append it under the section it best fits.
 - Italian Divisionism (Segantini / Pellizza da Volpedo — Neo-Impressionist painting built from separated threads of pure complementary colour; Alpine pastoral and rural-labour subjects, brilliant clear mountain light)
 - Flemish Renaissance (Pieter Bruegel the Elder — densely-composed peasant village life: kermis fairs, maypole and wedding dances, seasonal labour under bright even daylight)
 - Spanish Romanticism (Goya's Tauromaquia / Eugenio Lucas — sunlit bullring corridas, festivals and majas; loose confident brushwork, saturated vermilion-and-gold palette)
+- Belle Époque café-concert / colour-lithograph illustration (1890s Montmartre — Chéret / Toulouse-Lautrec register: bold flat areas of saturated colour and clean confident outlines; cabaret and can-can stage scenes, packed audiences, footlit theatre interiors. Say "illustration/painting", never "poster", and forbid text — see the poster-summons-object rule)
 
 ## Modern & conceptual art movements (late-19th century onward)
 
@@ -145,6 +146,7 @@ When you add a new style, append it under the section it best fits.
 - Psychedelic Art
 - Afrofuturism
 - Ballets Russes / Léon Bakst (early-20th-c theatrical costume & set design — vivid, ornamental, decorative)
+- Spanish Modernist festival mural (mid-20th-c bold flattened planes of saturated colour with thick confident outlines, luminous and high-contrast — fiestas, processions, running of the bulls; a vivid public-mural register, bright even sunlight)
 
 ## Contemporary & atmospheric genre looks (reopened 2026-07-25)
 

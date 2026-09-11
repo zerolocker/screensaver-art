@@ -100,6 +100,7 @@ When you add a new style, append it under the section it best fits.
 - Brazilian Modernism (Cândido Portinari / Tarsila do Amaral — monumental rounded stylised figures, bold flat saturated tropical colour with strong dark outlines; carnival, coffee harvest, favela and folk-festival subjects)
 - Harlem Renaissance Narrative (Jacob Lawrence — flat bold-colour migration & labour scenes)
 - Expressionism
+- Irish Expressionism (Jack B. Yeats — vivid loose impasto-free brushwork, saturated emerald-and-sky palette; Gaelic sporting, fair, circus and West-of-Ireland crowd scenes)
 - Der Blaue Reiter (Munich Expressionism, Franz Marc / Kandinsky — bold cobalt-and-vermilion animals, arc-shaped landscapes)
 - Fauvism
 - Cubism

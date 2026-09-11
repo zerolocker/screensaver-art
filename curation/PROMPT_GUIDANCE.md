@@ -1657,4 +1657,69 @@ heavy recent Contemporary-illustration run):
   lithograph, a Chinese gongbi and a Spanish modernist mural — four different palettes and four
   different mover classes (combat / dance / child-play / stampede).
 
+### 2026-09-11 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across the four *favoured* wings (Contemporary / Modern / 19th Century /
+Renaissance & Baroque), **all intact-medium** (0 archaeological — within the ≤1 cap),
+bright/dense/colourful, with four *distinct* primary movers and four distinct
+registers/palettes:
+- **The Water Festival — Contemporary Illustration** (`Contemporary`, non-looping) — a
+  *water-fling/splash* mover: a Songkran street party where a woman flings a bowl of
+  water in a glittering arc and a soaked crowd splashes with bowls and water guns.
+  Painterly gouache-and-coloured-pencil register (explicitly NOT flat vector, to vary
+  the heavy recent flat-vector Contemporary run). **Pro** still, first-try pass. **Posted
+  to social** (step 8) — the round's standout feed clip: one obvious high-contrast
+  subject (the splashing woman) that reads at phone size, hyper-saturated tropical
+  colour, and a clean break from recent posts (a Spanish-modernist bull 09-10, before
+  that Contemporary illustration).
+- **The Hurling Match — Irish Expressionism** (`Modern`, non-looping) — a *leap-and-
+  strike-with-a-stick* mover: a Gaelic hurler leaps to strike the sliotar out of the air
+  with his hurley, players clashing, a flat-cap crowd ringing a green village pitch.
+  Vivid loose-brushed Jack B. Yeats register (new style added to
+  `ART_STYLES_FOR_INSPIRATION.md`). **Pro** still, first-try pass.
+- **The Fencing Bout — French Salle d'Armes** (`19th Century`, non-looping) — a *lunge*
+  mover: two **masked** fencers, the right driving a full deep lunge as the left parries
+  and recoils, in a bright airy academic-naturalist salle. **Pro** still.
+- **The Commedia dell'Arte — Venetian Rococo** (`Renaissance & Baroque`, non-looping) —
+  a *stage-caper* mover: Harlequin springs and capers on a trestle stage kicking a leg
+  high, Pantalone flings his arms in mock outrage, Columbina spins, Pulcinella tumbles,
+  a dense masked carnival crowd applauds below. Tiepolo/Longhi register (fits the
+  existing "Venetian Rococo Genre" style). **Pro** still, first-try pass — one of the
+  strongest frames of the batch.
+
+**What worked / reinforced:**
+- **All four stills passed the vision gate first try, and all four videos accepted first
+  try** — a clean first-try night on `gemini-3-pro-image` (no 503 wall tonight, unlike
+  09-08/09-09). Standing image rules kept producing bright, dense, edge-to-edge frames;
+  Veo drift stayed a mild zoom in every clip with the "on the spot / same size / same
+  place" + camera-lock + zoom/pan negative block — no morphing, popping, lost actors, or
+  count changes. The water-fling→cheer cycle, the hurler's leap-strike, the fencers'
+  lunge-and-parry exchange, and Harlequin's full caper all read as clean legible actions.
+- **Masking the principals dodges the face-morph rule cleanly.** Both fencers wear
+  wire-mesh masks and Harlequin a black half-mask, so the two clips with the most facial
+  risk (a two-person duel; a figure-dense stage) animated with zero uncanny drift — the
+  motion is body-action (lunge / caper), not expression. A reusable move for any
+  duel/performer subject: put the primary mover in a mask.
+- **`gemini-3-pro-image` summons a corner signature on "academic naturalism / oil on
+  canvas".** The fencing still (no artist named, just "academic-naturalist oil") came back
+  with a cursive signature on the static parquet floor, bottom-right
+  ([[curation-artist-name-summons-signature]] — the genre prior, not a named artist, is
+  enough). Patched deterministically rather than rerolling (the composition was otherwise
+  ideal): a **feathered horizontal-mirror patch** sourced from the clean floor *directly
+  left* of the signature at the same low y-band (a first attempt mirroring from *directly
+  above* dragged a spectator's black shoe down into the corner — the source region must be
+  chosen to contain only the same static texture). Kept the pre-patch original in the
+  scratchpad per [[curation-keep-rejected-renders]].
+- **Full-title scan keeps catching first-instinct collisions** ([[curation-check-full-title-list]]).
+  At 415 pieces my first four ideas were **all already present** — a Flemish Baroque boar
+  hunt (exact title match), an American-Scene high dive, a Joseon tug of war, and the
+  winter/skater corner is saturated (7 skater pieces, 2 Avercamp). Grepping subject + mover
+  across the whole gallery replaced all four; the batch above is genuinely absent.
+- **Favoured-wing repeats are fine when the mover and register differ.** Deliberately hit
+  all four favoured wings but with four unrelated mover classes (splash / stick-strike /
+  lunge / stage-caper) and four unrelated palettes (tropical / emerald pitch / cream-and-
+  steel salle / carnival Rococo) — the mover/register variety is the real rut-break, not
+  wing rotation (only ~15 wings for 4/night means repeats within 3 nights are unavoidable).
+
 <!-- Claude appends new rounds above this line. -->

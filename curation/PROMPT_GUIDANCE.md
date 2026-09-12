@@ -1722,4 +1722,59 @@ registers/palettes:
   steel salle / carnival Rococo) — the mover/register variety is the real rut-break, not
   wing rotation (only ~15 wings for 4/night means repeats within 3 nights are unavoidable).
 
+### 2026-09-12 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, **all intact-medium** (0 archaeological — within
+the ≤1 cap), bright/dense/colourful, with four *distinct* primary movers and four
+distinct registers/palettes:
+- **The Seesaw - Joseon Genre Painting** (`Chinese & Korean`, non-looping) — a fresh
+  *see-saw launch* mover: two women in bright hanbok ride a standing neolttwigi plank,
+  one flung high above the plank as the other lands, in a sunlit crowded courtyard
+  (rope swing, blossom tree, tiled gate). Fits the existing Joseon-genre style; chosen
+  over "The Dancing Boy" (a nearby Joseon-genre scene) because the launch mover is
+  wholly different. **Pro** still, first-try vision-gate pass.
+- **The Dandiya Dance - Rajasthani Folk Painting** (`South & Southeast Asian`,
+  non-looping) — a fresh *stick-strike + whirl* mover: a ring of Navratri dancers clash
+  dandiya sticks and spin flared mirror-work skirts, dhol/shehnai players, rangoli floor.
+  New style added to `ART_STYLES_FOR_INSPIRATION.md` (Nathdwara/Phad gouache folk).
+- **The Fire Brigade - Victorian Academic Realism** (`19th Century`, non-looping) — a
+  fresh *galloping-fire-engine* mover: dappled greys charge toward camera pulling a
+  scarlet-and-brass steam fire engine, firemen + dalmatian, waving street crowd. New
+  style added (Victorian Urban Academic Realism).
+- **The Street Food Stall - Contemporary Illustration** (`Contemporary`, non-looping) —
+  a fresh *flaming-wok-toss* mover: a cook tosses a stir-fry so noodles/prawns arc up in
+  a flare of flame and billow of steam, packed queue + diners. Painterly gouache register
+  (explicitly NOT flat vector, to vary the heavy recent flat-vector Contemporary run).
+  **Posted to social** (step 8) — the round's standout feed clip (see below).
+
+**What worked / reinforced:**
+- **All four videos accepted first try; Veo drift stayed a mild zoom/reframe** with the
+  "on the spot / same size / same place" + camera-lock + zoom/pan negative block — no
+  morphing, popping, lost actors, or count changes. The see-saw bounce (partners
+  correctly reversing up/down), the dandiya spin+clash, the fire-engine gallop, and the
+  wok-toss→flame→steam cycle all read as clean legible primary actions.
+- **A first-try night on `gemini-3-pro-image`** (no 503 wall, unlike 09-08/09-09). One
+  still reroll total — the dandiya first pass came back as generic **flat clip-art
+  illustration with a bare beige floor**; naming a *traditional Nathdwara gouache* register
+  ("hand-painted, softly textured brushwork, NOT flat digital vector") plus a
+  rangoli-covered floor ("no bare ground") fixed both the register and the density in one
+  reroll. Takeaway: when a bright-folk subject renders as clip-art, specify the *hand-
+  painted medium* and forbid flat vector; carpet any bare floor with pattern.
+- **"On the spot" tames the advancing charge again** (per 08-24/08-26/09-10). The
+  fire-engine greys start from a fairly *static standing pose* in the still yet Veo drove a
+  full canter cycle in place — so an advancing-locomotion mover does not need a mid-stride
+  still, only the on-the-spot/same-size phrasing.
+- **Full-title scan keeps catching first-instinct collisions** ([[curation-check-full-title-list]]).
+  At 419 pieces, grepping subject + mover across the whole gallery confirmed all four
+  above are genuinely absent (no neolttwigi/see-saw, no garba/dandiya, no fire-brigade, no
+  street-food-stall), while nearby scenes (The Dancing Boy; Holi/Diwali Rajput festivals;
+  Cavalry Charge / Lifeboat Launch galloping teams) exist — the mover/register is what
+  makes each distinct.
+- **Step 8 posting available again** — `UPLOADPOST_API_KEY` + `ZERNIO_API_KEY` are present
+  in `curation/.env` (they were absent on 09-08). Posted the Street Food Stall: one obvious
+  high-contrast focal action (flame + steam) that reads at phone size, hyper-saturated warm
+  colour, and a clean break from recent posts (Water Festival 09-11, a Spanish-modernist
+  bull 09-10).
+
 <!-- Claude appends new rounds above this line. -->

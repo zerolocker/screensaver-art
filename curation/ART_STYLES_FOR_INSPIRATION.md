@@ -69,6 +69,7 @@ When you add a new style, append it under the section it best fits.
 - Nordic Wildlife Painting (Bruno Liljefors — Swedish naturalist wildlife: geese landing, foxes, birds of prey set in bright marsh & forest)
 - Scottish Highland Romanticism (Landseer-style — red deer stags leaping the burn or standing in the glen, bright moorland of purple heather & golden bracken under blue-grey peaks)
 - Victorian Scottish Sporting/Genre Painting (bright detailed oil realism of a Highland Games gathering — caber toss, hammer throw, tug-o'-war, Highland dancers, a full-dress piper, kilted competitors in many clan tartans, a dense summer crowd, marquee tents and clan banners, green hills and a castle behind; luminous even daylight, dense colourful tartan)
+- Victorian Urban Academic Realism (bright, minutely-detailed oil realism of bustling 19th-c. civic street life — a horse-drawn steam fire engine charging to a fire, a market, a coaching inn, a railway platform; galloping greys, brass and scarlet, top-hatted crowds, gaslit stone shopfronts; luminous even daylight, dense figures and colour)
 - Macchiaioli
 - Tonalism
 - Academic art
@@ -235,6 +236,7 @@ is the **AI-cliché** test in `PROMPT_GUIDANCE.md` ("Brand & taste"), not recenc
 - Rajput Painting
 - Kishangarh Miniature (refined Rajput sub-school — luminous flat colour, fine gold detailing, delicate line, radiant skies; densely-peopled palace-town & rooftop scenes; e.g. a Makar Sankranti rooftop kite festival)
 - Pahari Miniature
+- Nathdwara / Phad Rajasthani Folk Painting (deep opaque hand-painted gouache on cloth — softly textured brushwork, glowing scarlet/saffron/magenta/emerald pigment, fine white & gold detailing; densely-packed festival scenes such as a Navratri garba & dandiya stick-dance in a decorated haveli courtyard, rangoli-covered floor, marigold garlands; painterly, NOT flat vector/clip-art)
 - Deccan Painting (Bijapur / Golconda)
 - Kerala Mural (South Indian temple-mural tradition — brilliant ochre/red/emerald/turmeric flat colour, confident outlines, densely-packed festival & mythological scenes; e.g. a snake-boat race on the backwaters)
 - Gond painting

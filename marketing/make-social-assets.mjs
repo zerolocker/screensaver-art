@@ -2,14 +2,19 @@
 // Marketing asset engine — turn a gallery piece into ready-to-post social clips.
 //
 // The nightly curation agent produces landscape (16:9) art and appends it to
-// gallery.json. Social feeds are vertical/square, so this script reframes a
-// piece into 9:16 (Reels/TikTok/Shorts) and 1:1 (feed) with a tasteful
-// blurred-fill background + a subtle wordmark, scores it with a music bed
-// written for that specific artwork, and writes starter per-platform captions.
+// gallery.json. Social feeds are vertical, so this script reframes a piece into
+// 9:16 (Instagram, TikTok, YouTube) and 2:3 (Pinterest): the art zoomed over a
+// blurred copy of itself, the piece's title in a pill just under it, and a music
+// bed written for that specific artwork. It writes the per-platform captions too.
 // The clip keeps the source's own length and plays exactly once — these are
 // authored pieces, and half of them are deliberately non-looping. Reuses art you
 // already generate: the marginal cost of a day's social content is ~one ffmpeg
 // run plus one Lyria call.
+//
+// There is no brand or marketing text in the clip (founder call, 2026-09-12): a
+// post that reads as an ad gets scrolled past, and words on screen pull attention
+// off the art. The title pill is the only text, and it mirrors the one the
+// screensaver itself shows. The caption carries the pitch (lib/captions.mjs).
 //
 // It also writes a `meta.json` next to each piece's clips: the hand-off to
 // `post-social.mjs`, which publishes them. That file is why the poster never has
@@ -21,51 +26,67 @@
 //     --music-prompt "$MUSIC_PROMPT"                              # score the one being posted
 //   node marketing/make-social-assets.mjs --title "Art Nouveau"
 //   node marketing/make-social-assets.mjs --src ./clip.mp4 --title "My Piece" --style "Baroque"
-//   node marketing/make-social-assets.mjs --title x --formats 9x16 --duration 15 --no-wordmark
+//   node marketing/make-social-assets.mjs --title x --formats 9x16 --duration 15
 //
 // Flags:
 //   --latest [N]     process the N newest gallery.json entries (default 4)
 //   --title <substr> process the gallery entry whose title contains <substr> (case-insensitive)
 //   --src <path|url> use this MP4 directly (skip gallery lookup); pair with --title/--style
-//   --style <text>   override the derived art style (used in captions + hashtags)
-//   --formats <list> comma list of 9x16,1x1 (default: both)
+//   --style <text>   override the derived art style (shown in the title pill + captions)
+//   --formats <list> comma list of 9x16,2x3 (default: both)
 //   --duration <sec> trim to at most N seconds (default: the source clip's own length)
 //   --music-prompt <text>  generate a bed from this prompt (Lyria) and score the clip with it;
 //                          also records it as `music_prompt` on the piece's gallery.json entry
 //   --audio <file|url>     score with an existing audio file instead of generating one
 //   --gain <dB>            bed level, negative = quieter (default: -9)
-//   --no-wordmark    don't burn the living-art-screensaver.com URL pill
 //   --out <dir>      output base dir (default: marketing/out)
 //
-// Requires: ffmpeg on PATH. No npm deps (Node ≥18 built-ins + fetch).
+// Requires: ffmpeg on PATH, and python3 with Pillow for the title pill (Pillow is
+// already a curation dependency; without it the title falls back to ffmpeg's own
+// square text box). No npm deps (Node ≥18 built-ins + fetch).
 
 import { spawnSync } from 'node:child_process'
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { captionsMarkdown } from './lib/captions.mjs'
+import { captionsMarkdown, titleLine } from './lib/captions.mjs'
 import { assetSlug, deriveMeta, galleryVideos, REPO_ROOT, webSlugForSrc } from './lib/pieces.mjs'
 import { DEFAULT_GAIN_DB, generateBed } from './lib/music.mjs'
 
-const __dirname = path.join(REPO_ROOT, 'marketing')
+/** Renders the title pill PNG; see the script for how it mirrors the screensaver's. */
+const TITLE_PILL = path.join(REPO_ROOT, 'marketing', 'lib', 'title_pill.py')
 
-// A pre-rendered "gentle" URL pill (frosted, mirrors the in-app title pill),
-// burned bottom-center as a subtle CTA back to the site — replaces the old
-// out-of-context "LIVING ART" wordmark. It's a committed PNG asset (rendered by
-// scripts/PIL into marketing/assets/) so this script stays dependency-free.
-// Skipped automatically if the asset is missing.
-const URL_PILL = path.join(__dirname, 'assets', 'url-pill.png')
-const HAS_PILL = existsSync(URL_PILL)
+/** Font for the fallback title, when the pill can't be rendered. Both ship with macOS. */
+const FALLBACK_FONT = ['/System/Library/Fonts/SFNS.ttf', '/System/Library/Fonts/Helvetica.ttc'].find(existsSync)
 
+const CANVAS_W = 1080
+
+/**
+ * One canvas per format. The poster sends 9:16 to Instagram, TikTok and YouTube,
+ * whose players are 9:16 (any other shape gets black bars), and 2:3 to Pinterest,
+ * whose recommended pin shape it is (a taller pin can be cut off in the feed).
+ */
 const FORMATS = {
-  '9x16': { w: 1080, h: 1920, pillPad: 150 },
-  '1x1': { w: 1080, h: 1080, pillPad: 70 },
+  '9x16': { w: CANVAS_W, h: 1920 },
+  '2x3': { w: CANVAS_W, h: 1620 },
 }
+
+/**
+ * How far past the canvas width the art is zoomed. At 1.5× the clip keeps the
+ * middle two-thirds of the piece and shows it half again as large. In a feed the
+ * width is fixed, so a letterbox never makes the art bigger; only cropping does.
+ * Founder call, 2026-09-12. The curation agent picks pieces whose subject survives
+ * the crop (AUTOMATED_CURATION.md step 8a).
+ */
+const ART_ZOOM = 1.5
+
+/** Space between the bottom of the art and the top of the title pill, in canvas px. */
+const TITLE_GAP = 20
 
 // ── arg parsing ─────────────────────────────────────────────────────────────
 function parseArgs(argv) {
   const a = {
-    formats: ['9x16', '1x1'], wordmark: true,
+    formats: Object.keys(FORMATS),
     gain: DEFAULT_GAIN_DB, out: path.join(REPO_ROOT, 'marketing', 'out'),
   }
   for (let i = 0; i < argv.length; i++) {
@@ -82,7 +103,6 @@ function parseArgs(argv) {
     else if (arg === '--music-prompt') a.musicPrompt = next()
     else if (arg === '--audio') a.audio = next()
     else if (arg === '--gain') a.gain = parseFloat(next())
-    else if (arg === '--no-wordmark') a.wordmark = false
     else if (arg === '--out') a.out = path.resolve(next())
     else if (arg === '--help' || arg === '-h') a.help = true
   }
@@ -128,38 +148,101 @@ function recordMusicPrompt(src, prompt) {
 }
 
 /**
- * How long the source clip actually is.
+ * How long the source clip is, and its frame size (the zoomed art's height
+ * follows from it).
  *
- * This is the clip's length, full stop. An earlier version looped the source to a
- * fixed 12s target, which meant every 8s piece silently replayed its first four
- * seconds — on pieces `gallery.json` explicitly marks `looping: false`, i.e. ones
- * authored *not* to repeat. The art decides the length; we don't pad it.
+ * The length is the clip's length, full stop. An earlier version looped the
+ * source to a fixed 12s target, which meant every 8s piece silently replayed its
+ * first four seconds — on pieces `gallery.json` explicitly marks `looping: false`,
+ * i.e. ones authored *not* to repeat. The art decides the length; we don't pad it.
  */
-function probeDuration(file) {
+function probeVideo(file) {
   const r = spawnSync('ffprobe', [
-    '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file,
+    '-v', 'error', '-select_streams', 'v:0',
+    '-show_entries', 'stream=width,height:format=duration', '-of', 'json', file,
   ], { encoding: 'utf8' })
-  const seconds = parseFloat((r.stdout || '').trim())
-  if (r.status !== 0 || !Number.isFinite(seconds) || seconds <= 0) {
-    throw new Error(`could not read the duration of ${path.basename(file)}`)
+  let info = {}
+  try { info = JSON.parse(r.stdout || '{}') } catch { /* reported below */ }
+  const duration = parseFloat(info.format?.duration)
+  const { width, height } = info.streams?.[0] ?? {}
+  if (r.status !== 0 || !(duration > 0) || !(width > 0) || !(height > 0)) {
+    throw new Error(`could not read the duration and frame size of ${path.basename(file)}`)
   }
-  return seconds
+  return { duration, width, height }
 }
 
-function buildFilter({ w, h, pill, pillPad, pillWidth, audio, audioIndex, gain, duration }) {
-  // Blurred, zoomed-in copy fills the frame; the art sits centered and whole on
-  // top — the standard "no black bars, art never cropped" reframe.
+const even = (n) => 2 * Math.round(n / 2)
+
+/**
+ * Where the zoomed art and its title sit on one canvas.
+ *
+ * The art is centred vertically and the title hangs just under it. On 9:16 that
+ * puts the title near the top of the area Instagram's caption covers; lifting the
+ * art would clear it, but the founder chose to see a real post first (2026-09-12).
+ */
+function layout({ w, h }, video) {
+  // Veo's clips carry ~3 near-black rows along the top and bottom edges, which the
+  // zoom would thicken into visible lines. Trim ~0.55% off each edge (4 rows of a
+  // 720p clip) before anything else sees the frame.
+  const edge = Math.ceil(video.height / 180)
+  const srcH = video.height - 2 * edge
+  const zoomW = even(w * ART_ZOOM)
+  const zoomH = even((zoomW * srcH) / video.width)
+  const artH = Math.min(zoomH, h)
+  const artY = even((h - artH) / 2)
+  return { edge, srcH, zoomW, zoomH, artH, artY, titleY: artY + artH + TITLE_GAP }
+}
+
+/**
+ * Render the title pill once per piece: both canvases are the same width, so one
+ * PNG serves every format. Returns null if python3 or Pillow isn't available, and
+ * the render falls back to ffmpeg's text box rather than dropping the title.
+ */
+function renderTitlePill(text, dir) {
+  const out = path.join(dir, 'title-pill.png')
+  const r = spawnSync('python3', [TITLE_PILL, '--text', text, '--out', out, '--frame-width', String(CANVAS_W)],
+    { encoding: 'utf8' })
+  if (r.status === 0 && existsSync(out)) {
+    try {
+      return { file: out, ...JSON.parse(r.stdout.trim().split('\n').pop()) }
+    } catch { /* unreadable geometry: use the fallback */ }
+  }
+  const why = r.error?.message || (r.stderr || '').trim().split('\n').pop() || `exit ${r.status}`
+  process.stderr.write(`  ⚠ title pill not rendered (${why}) — falling back to ffmpeg's text box\n`)
+  return null
+}
+
+/**
+ * The title without Pillow: ffmpeg's own text box. Square corners instead of the
+ * pill, but the title still ships. Nothing measures the text here, so the size
+ * comes from the character count (SF Pro averages ~0.55 em a character) to stay
+ * inside the pill's 85%-of-width cap.
+ */
+function titleDrawtext({ w, y, titleFile, titleText }) {
+  if (!FALLBACK_FONT) return null
+  const size = Math.max(20, Math.min(32, Math.floor((0.85 * w) / (titleText.length * 0.55))))
+  const pad = Math.round(size * 0.7)
+  return `drawtext=fontfile=${FALLBACK_FONT}:textfile=${titleFile}:fontsize=${size}:fontcolor=0xF5F5F5` +
+    `:box=1:boxcolor=0x141414@0.6:boxborderw=${pad}:x=(w-text_w)/2:y=${y + pad}`
+}
+
+function buildFilter({ w, h, lay, pill, titleFile, titleText, audio, audioIndex, gain, duration }) {
   const chain = [
-    `[0:v]split=2[bg][fg]`,
+    // Trim the clip's dark edge rows (see layout) before either copy is made.
+    `[0:v]crop=iw:${lay.srcH}:0:${lay.edge},split=2[bg][fg]`,
+    // A blurred, darkened copy of the clip fills the canvas…
     `[bg]scale=${w}:${h}:force_original_aspect_ratio=increase,crop=${w}:${h},gblur=sigma=26,eq=brightness=-0.12:saturation=1.08[bgb]`,
-    `[fg]scale=${w}:${h}:force_original_aspect_ratio=decrease[fgs]`,
-    `[bgb][fgs]overlay=(W-w)/2:(H-h)/2${pill ? '[base]' : ',format=yuv420p[outv]'}`,
+    // …and the art sits on it, zoomed and cropped to the canvas width (crop keeps the centre).
+    `[fg]scale=${lay.zoomW}:${lay.zoomH},crop=${w}:${lay.artH}[art]`,
+    `[bgb][art]overlay=0:${lay.artY}[base]`,
   ]
   if (pill) {
-    // Overlay the pre-rendered URL pill (input [1]), scaled to a share of the
-    // frame width and sat bottom-center as a gentle, persistent CTA.
-    chain.push(`[1:v]scale=${pillWidth}:-1[pill]`)
-    chain.push(`[base][pill]overlay=(W-w)/2:H-h-${pillPad},format=yuv420p[outv]`)
+    // The PNG carries a transparent margin for the pill's shadow; offset by it so
+    // the visible pill starts TITLE_GAP below the art.
+    chain.push(`[base][1:v]overlay=(W-w)/2:${lay.titleY - pill.margin},format=yuv420p[outv]`)
+  } else {
+    const text = titleDrawtext({ w, y: lay.titleY, titleFile, titleText })
+    chain.push(`[base]${text ? `${text},` : ''}format=yuv420p[outv]`)
   }
   if (audio) {
     // The bed is a ~30s take cut to the clip's length, so it only needs levelling
@@ -175,20 +258,18 @@ function buildFilter({ w, h, pill, pillPad, pillWidth, audio, audioIndex, gain, 
   return chain.join(';')
 }
 
-function renderFormat({ input, fmtKey, outFile, duration, wordmark, bed, gain }) {
+function renderFormat({ input, video, fmtKey, outFile, duration, pill, titleFile, titleText, bed, gain }) {
   const fmt = FORMATS[fmtKey]
-  if (!fmt) throw new Error(`unknown format ${fmtKey} (use 9x16 or 1x1)`)
-  const usePill = wordmark && HAS_PILL
-  const pillWidth = Math.round(fmt.w * 0.46)
-  // Input order decides the filter's stream indices: art, [pill], [bed].
-  const audioIndex = usePill ? 2 : 1
-  const filter = buildFilter({ ...fmt, pill: usePill, pillWidth, audio: !!bed, audioIndex, gain, duration })
+  const lay = layout(fmt, video)
+  // Input order decides the filter's stream indices: art, [title pill], [bed].
+  const audioIndex = pill ? 2 : 1
+  const filter = buildFilter({ ...fmt, lay, pill, titleFile, titleText, audio: !!bed, audioIndex, gain, duration })
   const args = [
     '-y', '-hide_banner', '-loglevel', 'error',
     // The art plays once, at its own length — no -stream_loop here. Only the
-    // still pill and the music bed repeat, and -t bounds both.
+    // still title pill and the music bed repeat, and -t bounds both.
     '-i', input,
-    ...(usePill ? ['-loop', '1', '-i', URL_PILL] : []),
+    ...(pill ? ['-loop', '1', '-i', pill.file] : []),
     ...(bed ? ['-stream_loop', '-1', '-i', bed] : []),
     '-filter_complex', filter,
     '-map', '[outv]',
@@ -208,12 +289,12 @@ async function main() {
   const a = parseArgs(process.argv.slice(2))
   if (a.help || (!a.src && !a.title && !a.latest)) {
     process.stdout.write('Usage: node marketing/make-social-assets.mjs [--latest N | --title <substr> | --src <path|url>]\n' +
-      '       [--style <text>] [--formats 9x16,1x1] [--duration <sec, trims>]\n' +
-      '       [--music-prompt <text> | --audio <file|url>] [--gain -9]\n' +
-      '       [--no-wordmark] [--out <dir>]\n')
+      '       [--style <text>] [--formats 9x16,2x3] [--duration <sec, trims>]\n' +
+      '       [--music-prompt <text> | --audio <file|url>] [--gain -9] [--out <dir>]\n')
     process.exit(a.help ? 0 : 1)
   }
-  if (a.wordmark && !HAS_PILL) process.stderr.write('  ⚠ marketing/assets/url-pill.png not found — rendering without the URL pill.\n')
+  const unknown = a.formats.filter((f) => !FORMATS[f])
+  if (unknown.length) throw new Error(`unknown format(s) ${unknown.join(', ')} (use ${Object.keys(FORMATS).join(', ')})`)
 
   // Build the work list of { entry-ish, src }.
   let jobs = []
@@ -268,17 +349,22 @@ async function main() {
         const input = await resolveSource(entry.src, tmp)
         // The source's own length is the clip's length. --duration only ever
         // trims: with no looping there is nothing to pad a longer target with.
-        const sourceDuration = probeDuration(input)
+        const video = probeVideo(input)
+        const sourceDuration = video.duration
         const duration = a.duration ? Math.min(a.duration, sourceDuration) : sourceDuration
         if (a.duration && a.duration > sourceDuration) {
           process.stderr.write(`  ⚠ --duration ${a.duration}s exceeds the source (${sourceDuration.toFixed(1)}s) — using the source length\n`)
         }
         process.stdout.write(`  ${duration.toFixed(1)}s${duration < sourceDuration ? ` (trimmed from ${sourceDuration.toFixed(1)}s)` : ''}\n`)
+        const titleText = titleLine(title, style)
+        const pill = renderTitlePill(titleText, tmp)
+        const titleFile = pill ? null : path.join(tmp, 'title.txt')
+        if (titleFile) writeFileSync(titleFile, titleText)
         const formats = {}
         for (const fmtKey of a.formats) {
           const name = `${slug}_${fmtKey}.mp4`
           const outFile = path.join(dir, name)
-          renderFormat({ input, fmtKey, outFile, duration, wordmark: a.wordmark, bed, gain: a.gain })
+          renderFormat({ input, video, fmtKey, outFile, duration, pill, titleFile, titleText, bed, gain: a.gain })
           formats[fmtKey] = name
           process.stdout.write(`  ✓ ${path.relative(REPO_ROOT, outFile)} (${(statSync(outFile).size / 1e6).toFixed(1)} MB)\n`)
         }

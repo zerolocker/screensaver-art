@@ -61,7 +61,7 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 | **Product Hunt launch** | ❌ **ran 2026-07-26 — flopped** | **5 upvotes, 2 comments, no badge, no measurable traffic.** Post-mortem → §4.2. Not re-runnable for months. |
 | **Show HN** | ❌ **dropped as a plan item** | Blocked at submission 2026-08-02 (HN not taking new Show HN posts). Copy stays loaded; **nothing may depend on it reopening.** |
 | Reddit (r/macapps + visual subs) | ⏭️ **never run** | Day-2 slot unused. Highest-fit free channel, ~20 min (`launch-kit.md` §3). |
-| **Daily social posting + aggregator** | ✅ **live 2026-09-07** | §4.1 + §11 (B) — `marketing/post-social.mjs`, hung off the nightly curation (`AUTOMATED_CURATION.md` step 8). One piece a night to **all four** channels, each linking to its own `/art/<slug>` + UTM. **Verified with real posts on IG / YT / TikTok / Pinterest.** **All four channels on Zernio since 2026-09-12** (upload-post dropped); 4 accounts ≈ $12/mo. |
+| **Daily social posting + aggregator** | ✅ **live 2026-09-07** | §4.1 + §11 (B) — `marketing/post-social.mjs`, hung off the nightly curation (`AUTOMATED_CURATION.md` step 8). One piece a night to **all four** channels: IG / YT / TikTok lead with one fixed caption (*Screensaver app with animated art - Link in bio*) and pins link to their own `/art/<slug>` + UTM (since 2026-09-12; before that every post carried its own link). **Verified with real posts on IG / YT / TikTok / Pinterest.** **All four channels on Zernio since 2026-09-12** (upload-post dropped); 4 accounts ≈ $12/mo. |
 | **Clip audio: Lyria music bed** | ✅ **live 2026-09-07, per-piece 2026-09-08** | §11.2 — `make-social-assets.mjs --music-prompt` scores the posted clip at −9 dB with music written for *that* artwork. The nightly agent writes the prompt (`PROMPT_GUIDANCE.md` → Music prompts); it is recorded as `music_prompt` in `gallery.json` and the MP3 is temp-only. The 5-bed shared library it replaced is deleted. |
 | Brand-name / on-page SEO basics | ✅ live | 2026-07-17 (PRs #68, #69): keyword title, shared meta description, JSON-LD. |
 | **Gallery landing pages** (`/gallery`, `/art/<slug>`, `/era/<tag>`) | ✅ **shipped 2026-08-03** | §4.3 — dropped then **reversed** the same day, justified as **social landing pages, not SEO**. 262 piece pages + 15 era wings + a 6-page index + a self-growing sitemap, all prerendered from `gallery.json`. `/art/*` is `noindex, follow` behind one constant (`INDEX_ART_PAGES`); `/gallery` + `/era/*` are indexable. `/style/<movement>` still deferred (203 labels, 158 singletons). **Ready for #1's posts.** |
@@ -77,7 +77,8 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 
 **One-liner:** foundation live, pricing closed, the pins have somewhere to land (283 gallery
 routes) — and **as of 2026-09-07 the art posts itself nightly to all four channels**. First
-real traffic should now arrive with per-channel UTMs, so the next thing this hub gains is
+real traffic should now arrive tagged by channel (pins through their own links; IG / YT /
+TikTok through their bio links, once those carry tags), so the next thing this hub gains is
 **data**: which of IG / YouTube / TikTok / Pinterest actually converts. Next: **directories →
 press/creators → Reddit.**
 
@@ -115,12 +116,15 @@ month. Go through the four accounts ([IG](https://www.instagram.com/living_art_s
   under a plaza of shrieking kids). If several misses, the fix is `PROMPT_GUIDANCE.md` →
   *Music prompts*, not the code. **Any singing at all is a bug** — the guards should make it
   impossible, so report it rather than shrugging.
-- **Clip length + framing** — each clip should be the piece's own length (~8s), playing once,
-  art never cropped.
-- **The captions haven't gone stale** — they come from variant pools, so check that a fortnight
-  doesn't read like the same three sentences. If it does, §11 (C)'s per-piece Gemini captions
-  is the upgrade.
-- **Every link resolves** to that piece's `/art/<slug>` page, not a 404 and not the home page.
+- **Clip length + framing** — each clip should be the piece's own length (~8s), playing once.
+  Since 2026-09-12 the art is zoomed 1.5× (sides cropped) with the piece's title in a pill under
+  it: **check whether the title looks misaligned, or sits under Instagram's caption.** The art
+  was deliberately left centred so real posts could answer that; lifting it is the fix if so.
+- **The fixed caption** — IG / TikTok / YouTube all lead with *Screensaver app with animated
+  art - Link in bio* (founder call, 2026-09-12). Is anyone asking what it is, or asking for other
+  platforms? The caption leaves out "Mac" on purpose so that interest can show up.
+- **Every pin's link resolves** to that piece's `/art/<slug>` page, not a 404 and not the home
+  page, and **the three bio links** (IG, TikTok, YouTube) reach the site.
 - **Piece selection** — is the agent picking pieces that work as a vertical phone clip, or
   defaulting to whatever is newest? Criteria are `AUTOMATED_CURATION.md` step 8a.
 - **Instagram + YouTube after the 2026-09-12 move to Zernio** — posts from before that date
@@ -141,13 +145,20 @@ Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batc
    drafts. **One feature ≈ months of our own posting.**
 3. **Reddit** (`launch-kit.md` §3) — ~20 min; the posting automation is live, so traffic now
    lands on a site that keeps earning.
-4. **Read the UTM data** (**2026-09-22**, with the post review above) — the four channels are
-   tagged `utm_source=<platform>&utm_medium=social&utm_campaign=daily`. First real evidence of
-   which converts; §4.1 deliberately ranks none of them until this exists.
+4. **Read the UTM data** (**2026-09-22**, with the post review above) — pins are tagged
+   `utm_source=pinterest&utm_medium=social&utm_campaign=daily`. IG / TikTok / YouTube captions
+   carry no link since 2026-09-12, so their traffic is only attributable through tagged bio links
+   (founder chore below). First real evidence of which converts; §4.1 deliberately ranks none of
+   them until this exists.
 
 ~~Wire the posting automation~~ ✅ **done 2026-09-07** — see the Status table and the activity log.
 
 ## Decisions needed from the founder
+- **Chore: the profile bio links** (founder is on it, 2026-09-12). IG / TikTok / YouTube captions
+  now say *Link in bio*, so the bio link is the whole funnel for those three. **TikTok has no bio
+  and no website link yet**, so its posts currently lead nowhere; add both. Then tag all three
+  bio links, e.g. `https://living-art-screensaver.com/?utm_source=tiktok&utm_medium=bio`, or the
+  2026-09-22 review can't tell those channels apart.
 - **Email-send path** — Supabase mailer / Resend / other. Blocks §4.6 + §9; only viable if the
   send automates off the nightly job.
 - **Was the PH launch ever *featured*?** (unfeatured ⇒ near-invisible, which changes how we read
@@ -165,6 +176,24 @@ Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batc
 ---
 
 ## Activity log (append-only — newest first)
+- **2026-09-12** — **Social clips: zoomed art, its title underneath, one fixed caption.** Founder
+  call after reviewing the first posts. **No brand or marketing text in the clip** (a post that
+  reads as an ad gets scrolled past, and words on screen pull attention off the art), so the URL
+  pill is gone. The art is now **zoomed 1.5×**, showing the middle two-thirds of each piece half
+  again as large (in a feed a letterbox alone never enlarges the art), with **the piece's title in
+  a pill under it**, mirroring the screensaver's own title pill. **Instagram, TikTok and YouTube
+  lead with one fixed caption, *Screensaver app with animated art - Link in bio***: short enough
+  for the line or two a phone shows, no URL because those three don't make caption links
+  clickable, and **no "Mac" on purpose**, so non-Mac interest shows up. The piece's name follows
+  behind "more", and TikTok adds two hashtags. **Pins still link to their own `/art/<slug>`** and
+  name the piece in their title, since that is what Pinterest search ranks. **Pinterest gets a
+  new 2:3 render; the other three keep 9:16** (their players letterbox anything else), and the
+  unused 1:1 render is dropped. The art is deliberately **not lifted**, though on 9:16 the title
+  may sit under Instagram's caption: the founder wants to see a real post first. The variant
+  caption pools are gone. YouTube Shorts are now filed under Film & Animation (Zernio's default
+  was People & Blogs), and the `/art/<slug>` prose stops calling every piece a loop: only pieces
+  authored to loop are described as one. New founder chore: TikTok's bio + website link, and
+  tags on the three bio links. _(This PR.)_
 - **2026-09-08** — **Music is now scored to the artwork, and the nightly agent owns both calls.**
   Founder review of the first clip killed the shared-bed design: a joyful, noisy summer plaza
   full of children in a splash fountain had been scored with *"solo felt piano in a large empty

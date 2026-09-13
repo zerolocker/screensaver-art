@@ -332,21 +332,24 @@ function variantIndex(slug: string, count: number): number {
  *
  * Every sentence is true, and the first one always says the art is AI-generated
  * — these are homages in the style of a movement, never the original works, and
- * the pages must never imply otherwise.
+ * the pages must never imply otherwise. That goes for the motion too: only a
+ * piece authored as a seamless loop (`looping: true`) is ever called a loop.
+ * Most pieces are made to play through once, and the screensaver moves on to the
+ * next piece rather than repeating one.
  *
  * This is honest and readable, but it is not art criticism. Richer per-piece
- * prose wants an offline pass that writes a `description` field into
- * `gallery.json` (data, not a build-time model call) — tracked as a follow-up.
+ * prose would need per-piece data, and that data does not go into
+ * `gallery.json` (founder, 2026-09-13).
  */
 export function pieceParagraphs(piece: CatalogPiece): string[] {
-  const { name, movement, era } = piece
+  const { name, movement, era, looping } = piece
   const style = movement || era
   const openers = [
-    `${name} is an AI-generated homage to ${style}, animated into a slow, near-silent loop. It hangs in the ${era} wing of the Living Art collection.`,
+    `${name} is an AI-generated homage to ${style}, ${looping ? 'animated into a seamless loop' : 'brought to life with animation'}. It hangs in the ${era} wing of the Living Art collection.`,
     `An AI-made piece in the manner of ${style}. ${name} began as a generated still and was then animated, so the scene keeps moving while your Mac sits idle. It belongs to the collection's ${era} wing.`,
-    `${name} borrows the palette and composition of ${style}. It is AI-generated art rather than a reproduction of any existing work, animated to drift gently and loop without an obvious seam. Filed under ${era}.`,
-    `Filed in the ${era} wing, ${name} is an AI homage to ${style} — a generated image, animated into a quiet scene that repeats for as long as your screen is idle.`,
-    `${name} takes its visual language from ${style}, one of the traditions in the collection's ${era} wing. Like every piece here it is AI-generated — not a photograph of an original artwork — and it has been animated into a loop built for an idle display.`,
+    `${name} borrows the palette and composition of ${style}. It is AI-generated art rather than a reproduction of any existing work, ${looping ? 'animated to loop without an obvious seam' : 'animated so the scene moves'}. Filed under ${era}.`,
+    `Filed in the ${era} wing, ${name} is an AI homage to ${style} — a generated image, animated into a scene that plays whenever your screen is idle.`,
+    `${name} takes its visual language from ${style}, one of the traditions in the collection's ${era} wing. Like every piece here it is AI-generated — not a photograph of an original artwork — and it has been ${looping ? 'animated into a seamless loop' : 'animated'} for an idle display.`,
   ]
 
   const added = formatMonth(piece.date)
@@ -360,5 +363,6 @@ export function pieceParagraphs(piece: CatalogPiece): string[] {
 /** ~150-character meta description / social summary for a piece. */
 export function pieceSummary(piece: CatalogPiece): string {
   const style = piece.movement || piece.era
-  return `${piece.name} — an AI-animated homage to ${style}, looping on your Mac's idle screen. Part of the Living Art Screensaver collection. Free to download.`
+  const motion = piece.looping ? 'looping seamlessly on' : 'playing on'
+  return `${piece.name} — an AI-animated homage to ${style}, ${motion} your Mac's idle screen. Part of the Living Art Screensaver collection. Free to download.`
 }

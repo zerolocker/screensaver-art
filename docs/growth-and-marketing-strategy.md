@@ -245,8 +245,8 @@ worth remembering:
 - **Descriptions are templated, not written, and not prompt dumps.** Built from title/movement/
   era/date plus 15 hand-written era paragraphs. The `image_prompt`/`video_prompt` fields are
   deliberately unused: they're machine instructions ("static camera", "no morphing") and 61
-  pieces have none. Good per-piece prose needs an offline pass writing a `description` field into
-  `gallery.json` — **data, not a build-time model call.** Still open.
+  pieces have none. Good per-piece prose would need per-piece data, and **not in `gallery.json`**
+  (founder, 2026-09-13: no new fields there). Still open, and low value while `/art/*` is `noindex`.
 
 **Still open:** the poster gap (77 pieces have no still anywhere, so their tiles render on a
 gradient — needs founder-approved stills on R2, not in git) and the per-piece prose above.
@@ -412,10 +412,10 @@ likely your highest-impact conversion lever *once traffic exists*:
 ## 11. Build vs. buy — the "agentic marketing engine"
 You can largely automate the content flywheel off your existing nightly pipeline.
 - **(A) Asset step — ✅ BUILT.** `marketing/make-social-assets.mjs` (+ `marketing/README.md`):
-  ffmpeg reframes each piece 16:9 → 9:16 + 1:1 (blurred-fill, never cropped) with a subtle
-  wordmark, keeps the source's own length, and writes per-platform starter captions. No npm deps. Run
-  `node marketing/make-social-assets.mjs --latest 4` after the nightly curation batch.
-  (Captions are template-based today; upgrading to Gemini is a noted easy win.)
+  ffmpeg reframes each piece 16:9 → 9:16 (IG / TikTok / YouTube) + 2:3 (Pinterest): the art
+  zoomed 1.5× over a blurred copy of itself, with the piece's title in a pill beneath and no
+  marketing text (2026-09-12). Keeps the source's own length and writes per-platform captions.
+  No npm deps. The nightly curation renders and posts one piece (`AUTOMATED_CURATION.md` step 8).
 - **(B) Distribution — BUY, and ✅ WIRED 2026-09-07.** `marketing/post-social.mjs` publishes one
   rendered piece a night to all four channels and hangs off the nightly curation run
   (`curation/AUTOMATED_CURATION.md` step 8). Verified with real posts on all four
@@ -425,11 +425,11 @@ You can largely automate the content flywheel off your existing nightly pipeline
   have to build. Instagram/YouTube/Pinterest add their own app review on top. Vendors holding
   their *own* audited client sidestep all of it; building the raw posting/OAuth layer = months
   of compliance for one app's marketing. Don't.
-- **(C) Agentic layer — optional BUILD, 90% covered cheaply.** Captions are now drawn from
-  variant pools keyed by a hash of the piece + platform (`marketing/lib/captions.mjs`):
-  deterministic, so a retry republishes byte-identical copy, but no two nights read alike —
-  which is the actual problem a daily cadence has with one fixed template. A nightly Gemini
-  call for genuinely per-piece copy remains the upgrade, now worth ~half a day, not one.
+- **(C) Agentic layer — not needed for captions (settled 2026-09-12).** The founder chose one
+  fixed caption for IG / TikTok / YouTube, *Screensaver app with animated art - Link in bio*,
+  with only the piece's name varying beneath it (`marketing/lib/captions.mjs`). The pitch lives
+  in that one line rather than in varied copy, so the variant pools that preceded it are gone,
+  and a per-piece Gemini caption is off the table unless the fixed line stops working.
 - **Total: ~3–4 days of build + $0/mo to start, ~$16–24/mo once IG + YT leave the free tier**,
   hanging off the nightly job → near-unattended daily multi-platform marketing.
 - **Keep a human in the loop ~2 min/day** (reply to comments, add a trending sound). The reason

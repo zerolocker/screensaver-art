@@ -121,27 +121,27 @@ cooperation from anyone.
 ## Posting (`post-social.mjs`)
 
 ```bash
-# preflight: keys, connected accounts, the Pinterest board. Posts nothing.
-bash curation/with-secrets.sh UPLOADPOST_API_KEY ZERNIO_API_KEY -- \
+# preflight: key, connected accounts, the Pinterest board. Posts nothing.
+bash curation/with-secrets.sh ZERNIO_API_KEY -- \
   node marketing/post-social.mjs --check
 
 # the nightly call (step 8 of curation/AUTOMATED_CURATION.md)
-bash curation/with-secrets.sh UPLOADPOST_API_KEY ZERNIO_API_KEY -- \
+bash curation/with-secrets.sh ZERNIO_API_KEY -- \
   node marketing/post-social.mjs --latest 4
 ```
 
-Two vendors, four channels — the split is strategy **§11.1**, and all four are equal
-priority:
-
-| Channel | Vendor | How the clip gets there |
-|---|---|---|
-| Instagram, YouTube | **upload-post** | one multipart `POST /api/upload`, both platforms in the same call |
-| TikTok, Pinterest | **Zernio** | presigned media upload, then one `POST /v1/posts` with `publishNow` |
+One vendor, four channels, all equal priority: **Zernio** posts to Instagram, YouTube,
+TikTok and Pinterest (strategy **§11.1**). The clip goes up once through Zernio's
+presigned media upload, then each channel gets its own `POST /v1/posts` with
+`publishNow`. That is one post per channel rather than one post for all four,
+because a payload that one platform rejects fails the whole request, and it must not
+take the other three down with it. (Until 2026-09-12, Instagram + YouTube went
+through upload-post.)
 
 ### Flags
 | Flag | Default | Meaning |
 |---|---|---|
-| `--check` | — | Preflight only: verify both keys, list connected accounts, resolve the board. |
+| `--check` | — | Preflight only: verify the key, list connected accounts, resolve the board. |
 | `--dry-run` | — | Build and validate everything, publish nothing (includes TikTok's own dry-run check). |
 | `--latest [N]` | 4 | Consider the N most recently rendered pieces. |
 | `--count <K>` | 1 | How many of them to actually post. |
@@ -150,8 +150,7 @@ priority:
 | `--format <fmt>` | `9x16` | Which rendered clip to post. |
 | `--force` | off | Post again even if the ledger says it already went out. |
 
-Env overrides: `UPLOADPOST_USER` (profile name — auto-detected when there is one
-profile) and `PINTEREST_BOARD` (a board **name** or id; defaults to *Daily Curation*,
+Env override: `PINTEREST_BOARD` (a board **name** or id; defaults to *Daily Curation*,
 falling back to the account default).
 
 ### The five things that make it safe to run unattended
@@ -165,11 +164,10 @@ falling back to the account default).
    rebuilt from the pushed `gallery.json`, so the poster polls it first and waits the
    deploy out rather than pinning a 404.
 3. **One piece a night, not four.** Four posts a day is a cadence nobody wants in a
-   feed, and it would burn upload-post's free monthly uploads in under a week. The
-   other three stay rendered for later nights.
+   feed. The other three stay rendered for later nights.
 4. **A ledger (`out/.posted.json`) plus an idempotency key.** Re-runs skip what already
-   went out; Zernio also gets an `x-request-id`, so a retried call resumes the original
-   post instead of creating a second one.
+   went out. Each post also carries an `x-request-id`, so a call retried within
+   Zernio's ~5-minute window returns the original post instead of creating a second one.
 5. **In-flight ≠ failed.** Zernio reports `pending`/`processing` while it is still
    working, and retries a platform that transiently errors — a real pin did exactly
    that and published a minute later. The poster waits for a terminal state and treats

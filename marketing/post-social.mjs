@@ -6,21 +6,23 @@
 // publishes it while nobody is awake. Founder time budget is ~0 h/week, so every
 // decision here favours "survives an unattended run" over "clever".
 //
-// Two vendors, four channels (strategy §11.1 — all four are equal priority):
-//   upload-post  →  Instagram, YouTube      (multipart POST, one call, both platforms)
-//   Zernio       →  TikTok, Pinterest       (upload the clip, then one JSON post)
-// We buy this rather than building it because TikTok restricts *unaudited* API
-// clients to private posting, and each vendor holds its own audited client (§11).
+// One vendor, four channels (strategy §11.1 — all four are equal priority):
+//   Zernio  →  Instagram, YouTube, TikTok, Pinterest
+// The clip is uploaded once, then published as one Zernio post per channel. We buy
+// this rather than building it because TikTok restricts *unaudited* API clients to
+// private posting, and Zernio holds an audited client (§11). Until 2026-09-12
+// Instagram + YouTube went through upload-post; consolidating onto Zernio is
+// cheaper at four accounts and leaves one API to keep working.
 //
 // Usage:
-//   bash curation/with-secrets.sh UPLOADPOST_API_KEY ZERNIO_API_KEY -- \
+//   bash curation/with-secrets.sh ZERNIO_API_KEY -- \
 //     node marketing/post-social.mjs --check          # preflight, posts nothing
 //
-//   bash curation/with-secrets.sh UPLOADPOST_API_KEY ZERNIO_API_KEY -- \
+//   bash curation/with-secrets.sh ZERNIO_API_KEY -- \
 //     node marketing/post-social.mjs --latest 4       # the nightly call
 //
 // Flags:
-//   --check           verify keys, accounts and the Pinterest board, then exit
+//   --check           verify the key, accounts and the Pinterest board, then exit
 //   --dry-run         do everything except publish (incl. TikTok's own dry-run check)
 //   --latest [N]      consider the N most recently rendered pieces (default 4)
 //   --count <K>       how many of them to actually post (default 1 — one piece a night)
@@ -30,19 +32,16 @@
 //   --force           post again even if the ledger says it already went out
 //   --out <dir>       where the rendered clips live (default: marketing/out)
 //
-// No npm deps (Node ≥18 built-ins + fetch + FormData).
+// No npm deps (Node ≥18 built-ins + fetch).
 
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { buildCaptions } from './lib/captions.mjs'
 import { REPO_ROOT } from './lib/pieces.mjs'
 
-const UPLOADPOST_BASE = 'https://api.upload-post.com/api'
 const ZERNIO_BASE = 'https://zernio.com/api/v1'
 
-/** Which vendor owns which channel. The split is §11.1's, not an accident. */
-const VENDOR = { instagram: 'upload-post', youtube: 'upload-post', tiktok: 'zernio', pinterest: 'zernio' }
-const ALL_CHANNELS = Object.keys(VENDOR)
+const ALL_CHANNELS = ['instagram', 'youtube', 'tiktok', 'pinterest']
 
 /**
  * The board pins land on. A *name*, not an id, on purpose: a board that gets
@@ -77,7 +76,7 @@ function parseArgs(argv) {
     else if (arg === '--format') a.format = next()
     else if (arg === '--channels') {
       a.channels = next().split(',').map((s) => s.trim().toLowerCase()).filter(Boolean)
-      const bad = a.channels.filter((c) => !VENDOR[c])
+      const bad = a.channels.filter((c) => !ALL_CHANNELS.includes(c))
       if (bad.length) die(`unknown channel(s): ${bad.join(', ')} (valid: ${ALL_CHANNELS.join(', ')})`)
     } else if (arg === '--out') a.out = path.resolve(next())
     else if (arg === '--help' || arg === '-h') a.help = true
@@ -99,7 +98,7 @@ const warn = (s) => process.stderr.write(`${s}\n`)
 /**
  * One fetch with retries. Only 429 and 5xx are retried — a 4xx is our bug or a
  * disconnected account, and hammering it just burns quota. Never logs a header:
- * the API keys must not reach stdout, a log file or a debug dump.
+ * the API key must not reach stdout, a log file or a debug dump.
  */
 async function request(url, init = {}, { retries = 2, label = 'request' } = {}) {
   let last
@@ -180,8 +179,8 @@ async function landingIsLive(url, { attempts = 6, waitMs = 30_000 } = {}) {
 // An unattended job gets re-run: by a retry, by a cron that overlapped, by a
 // human debugging at 1am. The ledger is what stops the same clip going out
 // twice. (Zernio also rejects duplicate content within 24h, and we send an
-// idempotency key — but upload-post has no such guard, so this file is the one
-// defence that covers all four channels.)
+// idempotency key — but that key only holds for ~5 minutes, so this file is the
+// defence that covers a re-run the next night.)
 
 const ledgerPath = (outDir) => path.join(outDir, '.posted.json')
 
@@ -200,123 +199,7 @@ function recordPost(outDir, ledger, slug, platform, entry) {
 
 const alreadyPosted = (ledger, slug, platform) => Boolean(ledger[slug]?.[platform]?.ok)
 
-// ── upload-post (Instagram + YouTube) ───────────────────────────────────────
-
-function uploadPostKey() {
-  const key = process.env.UPLOADPOST_API_KEY
-  if (!key) die('UPLOADPOST_API_KEY is not set — run this through curation/with-secrets.sh')
-  return key
-}
-
-const uploadPostAuth = () => ({ Authorization: `Apikey ${uploadPostKey()}` })
-
-async function uploadPostProfile() {
-  const { ok, body } = await request(`${UPLOADPOST_BASE}/uploadposts/users`, { headers: uploadPostAuth() },
-    { label: 'upload-post users' })
-  if (!ok || !body.success) throw new Error(`upload-post rejected the API key (${body.message || 'unknown error'})`)
-  const profiles = body.profiles || []
-  const wanted = process.env.UPLOADPOST_USER
-  const profile = wanted ? profiles.find((p) => p.username === wanted) : profiles[0]
-  if (!profile) {
-    throw new Error(wanted
-      ? `no upload-post profile named "${wanted}" (have: ${profiles.map((p) => p.username).join(', ') || 'none'})`
-      : 'upload-post has no profiles — create one and connect Instagram + YouTube')
-  }
-  // social_accounts holds "" for a platform that was never connected.
-  const connected = Object.entries(profile.social_accounts || {})
-    .filter(([, v]) => v && (typeof v === 'object' || String(v).length > 0))
-    .map(([k]) => k)
-  return { username: profile.username, connected, profile }
-}
-
-async function postViaUploadPost({ piece, captions, platforms, dryRun }) {
-  const { username, connected } = await uploadPostProfile()
-  const targets = platforms.filter((p) => connected.includes(p))
-  const missing = platforms.filter((p) => !connected.includes(p))
-  for (const p of missing) warn(`  ⚠ ${p}: not connected on upload-post profile "${username}" — skipped`)
-  if (targets.length === 0) return Object.fromEntries(missing.map((p) => [p, { ok: false, error: 'not connected' }]))
-
-  const form = new FormData()
-  form.append('user', username)
-  for (const p of targets) form.append('platform[]', p)
-  form.append('video', new Blob([readFileSync(piece.file)], { type: 'video/mp4' }), path.basename(piece.file))
-  // `title` is the cross-platform fallback and is required for YouTube.
-  form.append('title', captions.youtube.title)
-  if (targets.includes('instagram')) form.append('instagram_title', captions.instagram.text)
-  if (targets.includes('youtube')) {
-    form.append('youtube_title', captions.youtube.title)
-    form.append('youtube_description', captions.youtube.description)
-    form.append('privacyStatus', 'public')
-    form.append('selfDeclaredMadeForKids', 'false')
-    // The art *is* AI-generated. Disclose it on both platforms rather than
-    // waiting to be caught by their own detection.
-    form.append('containsSyntheticMedia', 'true')
-  }
-  form.append('is_ai_generated', 'true')
-  form.append('async_upload', 'false')
-
-  if (dryRun) {
-    log(`  [dry-run] upload-post → ${targets.join(', ')} as "${username}" (${(statSync(piece.file).size / 1e6).toFixed(1)} MB)`)
-    log(`            youtube_title: ${captions.youtube.title}`)
-    return Object.fromEntries(targets.map((p) => [p, { ok: true, dryRun: true }]))
-  }
-
-  const { status, body } = await request(`${UPLOADPOST_BASE}/upload`,
-    { method: 'POST', headers: uploadPostAuth(), body: form }, { label: 'upload-post upload' })
-
-  // An upload that runs long flips itself to async and hands back a request_id.
-  const results = body.request_id ? await pollUploadPost(body.request_id) : body.results
-  if (!results) {
-    const msg = body.message || body.error || `HTTP ${status}`
-    return Object.fromEntries(targets.map((p) => [p, { ok: false, error: msg }]))
-  }
-  // Sync returns an object keyed by platform; the status poll returns an array.
-  const byPlatform = Array.isArray(results)
-    ? Object.fromEntries(results.map((r) => [r.platform, r]))
-    : results
-  // The async status poll reports success but no permalink; history has it, keyed
-  // by the same request_id. Worth the extra call — a post nobody can find again
-  // is barely a post.
-  const links = body.request_id ? await uploadPostLinks(body.request_id) : {}
-  const out = {}
-  for (const p of targets) {
-    const r = byPlatform[p] || {}
-    const h = links[p] || {}
-    out[p] = {
-      ok: Boolean(r.success ?? h.success),
-      url: r.url || h.post_url || null,
-      id: r.post_id || r.publish_id || h.platform_post_id || null,
-      error: r.error || h.error_message || (r.success === false ? r.message : null) || null,
-    }
-  }
-  for (const p of missing) out[p] = { ok: false, error: 'not connected' }
-  if (body.usage) log(`  upload-post usage: ${body.usage.count}/${body.usage.limit} this cycle`)
-  return out
-}
-
-/** Permalinks for one upload, keyed by platform. Best-effort — never fatal. */
-async function uploadPostLinks(requestId) {
-  try {
-    const { body } = await request(`${UPLOADPOST_BASE}/uploadposts/history?request_id=${encodeURIComponent(requestId)}`,
-      { headers: uploadPostAuth() }, { label: 'upload-post history', retries: 1 })
-    return Object.fromEntries((body.history || []).map((h) => [h.platform, h]))
-  } catch {
-    return {}
-  }
-}
-
-async function pollUploadPost(requestId) {
-  log(`  upload-post switched to async (request ${requestId}) — polling…`)
-  for (let i = 0; i < 40; i++) {
-    await sleep(15_000)
-    const { body } = await request(`${UPLOADPOST_BASE}/uploadposts/status?request_id=${encodeURIComponent(requestId)}`,
-      { headers: uploadPostAuth() }, { label: 'upload-post status' })
-    if (body.status === 'completed') return body.results
-  }
-  throw new Error(`upload-post request ${requestId} did not complete within 10 minutes`)
-}
-
-// ── Zernio (TikTok + Pinterest) ─────────────────────────────────────────────
+// ── Zernio ──────────────────────────────────────────────────────────────────
 
 function zernioKey() {
   const key = process.env.ZERNIO_API_KEY
@@ -375,7 +258,41 @@ async function zernioUpload(file) {
   return body.publicUrl
 }
 
+/**
+ * One platform's entry in a post. `customContent` replaces the post's `content`
+ * for that platform — the caption on Instagram and TikTok, the video description
+ * on YouTube, the pin description on Pinterest.
+ *
+ * The art *is* AI-generated, so every platform that has a disclosure flag gets it
+ * set, rather than waiting to be caught by the platform's own detection.
+ */
 function zernioPlatformEntry(platform, accountId, captions, boardId) {
+  if (platform === 'instagram') {
+    return {
+      platform, accountId,
+      customContent: captions.instagram.text,
+      platformSpecificData: {
+        // A single video publishes as a Reel; this keeps it on the profile grid too.
+        shareToFeed: true,
+        thumbOffset: 1000,
+        isAiGenerated: true,
+      },
+    }
+  }
+  if (platform === 'youtube') {
+    return {
+      platform, accountId,
+      customContent: captions.youtube.description,
+      platformSpecificData: {
+        // Without this Zernio titles the video with the description's first line.
+        // (There is no Shorts flag: YouTube classifies a vertical clip ≤3 min itself.)
+        title: captions.youtube.title,
+        visibility: 'public',
+        madeForKids: false,
+        containsSyntheticMedia: true,
+      },
+    }
+  }
   if (platform === 'tiktok') {
     return {
       platform, accountId,
@@ -411,16 +328,20 @@ function zernioPlatformEntry(platform, accountId, captions, boardId) {
 async function postViaZernio({ piece, captions, platforms, dryRun }) {
   const accounts = await zernioAccounts()
   const targets = platforms.filter((p) => accounts[p])
-  const missing = platforms.filter((p) => !accounts[p])
-  for (const p of missing) warn(`  ⚠ ${p}: no active Zernio account — skipped`)
-  if (targets.length === 0) return Object.fromEntries(missing.map((p) => [p, { ok: false, error: 'not connected' }]))
+  const out = {}
+  for (const p of platforms.filter((p) => !accounts[p])) {
+    warn(`  ⚠ ${p}: no active Zernio account — skipped`)
+    out[p] = { ok: false, error: 'not connected' }
+  }
+  if (targets.length === 0) return out
 
   const boardId = targets.includes('pinterest') ? await pinterestBoardId(accounts.pinterest._id) : null
 
   if (dryRun) {
-    log(`  [dry-run] zernio → ${targets.join(', ')}${boardId ? ` (board ${boardId})` : ''}`)
+    log(`  [dry-run] zernio → ${targets.join(', ')} (${(statSync(piece.file).size / 1e6).toFixed(1)} MB)`)
     if (targets.includes('tiktok')) {
-      // TikTok's own preflight: can this account Direct Post right now?
+      // TikTok's own preflight: can this account Direct Post right now? (Zernio's
+      // dryRun is TikTok-only — the other three have nothing to ask in advance.)
       const { body } = await request(`${ZERNIO_BASE}/posts`, {
         method: 'POST',
         headers: { ...zernioAuth(), 'Content-Type': 'application/json' },
@@ -431,15 +352,32 @@ async function postViaZernio({ piece, captions, platforms, dryRun }) {
       }, { label: 'zernio tiktok dry-run' })
       log(`            tiktok can publish: ${body.canPublish} — ${body.tiktok?.[0]?.reason ?? 'no reason given'}`)
     }
-    log(`            pin link: ${captions.pinterest.link}`)
-    return Object.fromEntries(targets.map((p) => [p, { ok: true, dryRun: true }]))
+    if (targets.includes('youtube')) log(`            youtube title: ${captions.youtube.title}`)
+    if (targets.includes('pinterest')) log(`            pin link: ${captions.pinterest.link}${boardId ? ` (board ${boardId})` : ''}`)
+    for (const p of targets) out[p] = { ok: true, dryRun: true }
+    return out
   }
 
+  // One upload, then one post per platform rather than a single multi-platform
+  // post: a payload one platform rejects fails the whole request with a 400, and
+  // that must not take the other three channels down with it.
   const mediaUrl = await zernioUpload(piece.file)
+  const posted = await Promise.all(targets.map(async (p) => {
+    try {
+      return [p, await publishOne({ piece, captions, platform: p, account: accounts[p], boardId, mediaUrl })]
+    } catch (err) {
+      return [p, { ok: false, error: err.message }]
+    }
+  }))
+  return Object.assign(out, Object.fromEntries(posted))
+}
+
+async function publishOne({ piece, captions, platform, account, boardId, mediaUrl }) {
   const payload = {
-    content: captions.tiktok.text, // the fallback; each platform overrides it
     mediaItems: [{ type: 'video', url: mediaUrl, filename: path.basename(piece.file), mimeType: 'video/mp4' }],
-    platforms: targets.map((p) => zernioPlatformEntry(p, accounts[p]._id, captions, boardId)),
+    platforms: [zernioPlatformEntry(platform, account._id, captions, boardId)],
+    // A top-level field that only YouTube reads — and this post only targets YouTube.
+    ...(platform === 'youtube' ? { tags: captions.youtube.tags } : {}),
     publishNow: true,
     metadata: { source: 'post-social.mjs', assetSlug: piece.assetSlug, webSlug: piece.webSlug },
   }
@@ -448,51 +386,45 @@ async function postViaZernio({ piece, captions, platforms, dryRun }) {
     headers: {
       ...zernioAuth(),
       'Content-Type': 'application/json',
-      // Same clip + same night = same key, so a retried run resumes the original
-      // call instead of creating a second post.
-      'x-request-id': `lart-${piece.assetSlug}-${targets.join('-')}-${new Date().toISOString().slice(0, 10)}`,
+      // Same clip + same channel + same night = same key, so a retried call gets
+      // the original post back instead of creating a second one.
+      'x-request-id': `lart-${piece.assetSlug}-${platform}-${new Date().toISOString().slice(0, 10)}`,
     },
     body: JSON.stringify(payload),
-  }, { label: 'zernio posts' })
+  }, { label: `zernio ${platform} post` })
 
-  const out = Object.fromEntries(missing.map((p) => [p, { ok: false, error: 'not connected' }]))
   if (status === 409) {
     // Zernio already has this exact content on this account in the last 24h.
-    for (const p of targets) out[p] = { ok: false, error: `duplicate: ${body.error || 'already posted in the last 24h'}` }
-    return out
+    return { ok: false, error: `duplicate: ${body.error || 'already posted in the last 24h'}` }
   }
-  if (status >= 400) {
-    for (const p of targets) out[p] = { ok: false, error: body.error || `HTTP ${status}` }
-    return out
+  if (status >= 400) return { ok: false, error: body.error || `HTTP ${status}` }
+
+  // 207 is a 2xx but means the publish attempt failed or is still going — read
+  // the platform's own state rather than trusting the status code. A retry that
+  // matched the idempotency key comes back as 200 with `existingPost`.
+  const post = body.post || body.existingPost
+  const postId = post?._id || null
+  const e = await settleZernio(postId, post?.platforms?.[0] || {})
+  const inFlight = IN_FLIGHT.has(e.status)
+  if (inFlight) warn(`  … ${platform}: still ${e.status} on Zernio (it retries on its own)` +
+    (e.errorMessage ? ` — last error: ${e.errorMessage}` : ''))
+  return {
+    // An in-flight platform counts as sent: Zernio owns the retry from here, and
+    // calling it a failure would make the next run publish a duplicate.
+    ok: e.status === 'published' || inFlight,
+    pending: inFlight || undefined,
+    // TikTok's permalink lands on Zernio's record minutes after the post is
+    // already published, so a null url here is normal, not a problem. `postId`
+    // is the handle for looking it up later: GET /v1/posts/<postId>.
+    url: e.platformPostUrl || null,
+    id: e.platformPostId || null,
+    error: inFlight ? null : (e.errorMessage || (e.status !== 'published' ? `status: ${e.status ?? 'unknown'}` : null)),
+    postId,
   }
-  // 207 is a 2xx but means "some platform failed" — read the per-platform state
-  // rather than trusting the status code.
-  const postId = body.post?._id || null
-  const entries = await settleZernio(postId, body.post?.platforms || [], targets)
-  for (const p of targets) {
-    const e = entries.find((x) => x.platform === p) || {}
-    const inFlight = IN_FLIGHT.has(e.status)
-    out[p] = {
-      // An in-flight platform counts as sent: Zernio owns the retry from here,
-      // and calling it a failure would make the next run publish a duplicate.
-      ok: e.status === 'published' || inFlight,
-      pending: inFlight || undefined,
-      // TikTok's permalink lands on Zernio's record minutes after the post is
-      // already published, so a null url here is normal, not a problem. `postId`
-      // is the handle for looking it up later: GET /v1/posts/<postId>.
-      url: e.platformPostUrl || null,
-      id: e.platformPostId || null,
-      error: inFlight ? null : (e.errorMessage || (e.status && e.status !== 'published' ? `status: ${e.status}` : null)),
-      postId,
-    }
-    if (inFlight) warn(`  … ${p}: still ${e.status} on Zernio (it retries on its own)` +
-      (e.errorMessage ? ` — last error: ${e.errorMessage}` : ''))
-  }
-  return out
 }
 
 /**
- * Wait for each platform to reach a terminal state.
+ * Wait for the platform to reach a terminal state.
  *
  * Zernio's per-platform status is NOT settled when the create call returns:
  * `pending` / `processing` / `uploading` mean it is still working, and a
@@ -503,51 +435,39 @@ async function postViaZernio({ piece, captions, platforms, dryRun }) {
  */
 const IN_FLIGHT = new Set(['pending', 'processing', 'uploading'])
 
-async function settleZernio(postId, initial, targets) {
-  let entries = initial
-  if (!postId) return entries
-  for (let i = 0; i < 8; i++) {
-    const unsettled = targets.filter((p) => IN_FLIGHT.has(entries.find((e) => e.platform === p)?.status))
-    if (unsettled.length === 0) return entries
+async function settleZernio(postId, entry) {
+  for (let i = 0; i < 8 && postId && IN_FLIGHT.has(entry.status); i++) {
     await sleep(15_000)
     try {
       const { body } = await request(`${ZERNIO_BASE}/posts/${postId}`, { headers: zernioAuth() },
         { label: 'zernio post status', retries: 1 })
-      entries = (body.post || body).platforms || entries
+      entry = (body.post || body).platforms?.[0] || entry
     } catch {
-      return entries // the post exists; a failed status read shouldn't fail the run
+      break // the post exists; a failed status read shouldn't fail the run
     }
   }
-  return entries
+  return entry
 }
 
 // ── preflight ───────────────────────────────────────────────────────────────
 
 async function preflight(channels) {
-  let ok = true
-  if (channels.some((c) => VENDOR[c] === 'upload-post')) {
-    try {
-      const { username, connected } = await uploadPostProfile()
-      log(`upload-post ✓ profile "${username}" — connected: ${connected.join(', ') || 'nothing'}`)
-      for (const c of channels.filter((c) => VENDOR[c] === 'upload-post')) {
-        if (!connected.includes(c)) { warn(`  ✗ ${c} is not connected`); ok = false }
-      }
-    } catch (err) { warn(`upload-post ✗ ${err.message}`); ok = false }
+  try {
+    const accounts = await zernioAccounts()
+    log(`zernio ✓ accounts: ${Object.entries(accounts).map(([p, a]) => `${p} (${a.username})`).join(', ') || 'none'}`)
+    let ok = true
+    for (const c of channels) {
+      if (!accounts[c]) { warn(`  ✗ ${c} has no active account`); ok = false }
+    }
+    if (channels.includes('pinterest') && accounts.pinterest) {
+      const board = await pinterestBoardId(accounts.pinterest._id)
+      log(`  pinterest board: ${board || '(account default)'}`)
+    }
+    return ok
+  } catch (err) {
+    warn(`zernio ✗ ${err.message}`)
+    return false
   }
-  if (channels.some((c) => VENDOR[c] === 'zernio')) {
-    try {
-      const accounts = await zernioAccounts()
-      log(`zernio ✓ accounts: ${Object.entries(accounts).map(([p, a]) => `${p} (${a.username})`).join(', ') || 'none'}`)
-      for (const c of channels.filter((c) => VENDOR[c] === 'zernio')) {
-        if (!accounts[c]) { warn(`  ✗ ${c} has no active account`); ok = false }
-      }
-      if (accounts.pinterest) {
-        const board = await pinterestBoardId(accounts.pinterest._id)
-        log(`  pinterest board: ${board || '(account default)'}`)
-      }
-    } catch (err) { warn(`zernio ✗ ${err.message}`); ok = false }
-  }
-  return ok
 }
 
 // ── main ────────────────────────────────────────────────────────────────────
@@ -575,8 +495,7 @@ async function main() {
   if (a.slug && candidates.length === 0) die(`no rendered piece with assetSlug "${a.slug}" under ${a.out}`)
   if (!a.slug) {
     // One piece a night, newest first: a nightly batch of four posted in full
-    // would be four times the cadence anyone wants in a feed, and would burn
-    // upload-post's free monthly uploads in under a week.
+    // would be four times the cadence anyone wants in a feed.
     const pending = candidates.filter((p) => a.force || a.channels.some((c) => !alreadyPosted(ledger, p.assetSlug, c)))
     candidates = pending.slice(0, a.count)
   }
@@ -600,18 +519,12 @@ async function main() {
       continue
     }
 
-    const results = {}
-
-    for (const vendor of ['upload-post', 'zernio']) {
-      const platforms = todo.filter((c) => VENDOR[c] === vendor)
-      if (platforms.length === 0) continue
-      try {
-        const post = vendor === 'upload-post' ? postViaUploadPost : postViaZernio
-        Object.assign(results, await post({ piece, captions, platforms, dryRun: a.dryRun }))
-      } catch (err) {
-        // One vendor being down must not stop the other two channels.
-        for (const p of platforms) results[p] = { ok: false, error: err.message }
-      }
+    let results
+    try {
+      results = await postViaZernio({ piece, captions, platforms: todo, dryRun: a.dryRun })
+    } catch (err) {
+      // Zernio down, the key rejected, the upload failed: nothing went out.
+      results = Object.fromEntries(todo.map((p) => [p, { ok: false, error: err.message }]))
     }
 
     for (const [platform, r] of Object.entries(results)) {

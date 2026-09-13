@@ -15,10 +15,9 @@ if any is missing — so each call names exactly what it depends on:
   (see each skill's `SKILL.md`).
 - **`CLOUDFLARE_API_TOKEN`** — the R2 upload. `curation/publish-piece.mjs` (step 4)
   wraps itself in `with-secrets.sh`, so you never pass this one by hand.
-- **`UPLOADPOST_API_KEY` + `ZERNIO_API_KEY`** — the social posting in step 8. Passed
-  explicitly: `bash curation/with-secrets.sh UPLOADPOST_API_KEY ZERNIO_API_KEY -- node
-  marketing/post-social.mjs …`. Steps 1-7 don't need them, so a missing key costs the
-  night's posts, not the night's art.
+- **`ZERNIO_API_KEY`** — the social posting in step 8. Passed explicitly:
+  `bash curation/with-secrets.sh ZERNIO_API_KEY -- node marketing/post-social.mjs …`.
+  Steps 1-7 don't need it, so a missing key costs the night's posts, not the night's art.
 
 If a required secret is missing, **abort** and report it rather than proceeding.
 
@@ -85,14 +84,14 @@ You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't
     node marketing/make-social-assets.mjs --title "<the piece you picked>" \
       --music-prompt "$MUSIC_PROMPT"
 
-    bash curation/with-secrets.sh UPLOADPOST_API_KEY ZERNIO_API_KEY -- \
+    bash curation/with-secrets.sh ZERNIO_API_KEY -- \
       node marketing/post-social.mjs --slug <asset-slug-from-the-render>
     ```
     The first generates the music (one Lyria call), renders 9:16 + 1:1 clips with it mixed
     at −9 dB, writes `captions.md` + `meta.json`, and **records `music_prompt` on that
-    piece's `gallery.json` entry**. The second publishes it to all four channels —
-    Instagram + YouTube via upload-post, TikTok + Pinterest via Zernio — each post
-    linking to that piece's own `/art/<slug>` page. Details in
+    piece's `gallery.json` entry**. The second publishes it through Zernio to all four
+    channels (Instagram, YouTube, TikTok, Pinterest), each post linking to that piece's
+    own `/art/<slug>` page. Details in
     [`marketing/README.md`](../marketing/README.md).
 
     **8d. Commit the recorded prompt:**

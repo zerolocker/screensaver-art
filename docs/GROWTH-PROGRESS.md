@@ -61,7 +61,7 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 | **Product Hunt launch** | ❌ **ran 2026-07-26 — flopped** | **5 upvotes, 2 comments, no badge, no measurable traffic.** Post-mortem → §4.2. Not re-runnable for months. |
 | **Show HN** | ❌ **dropped as a plan item** | Blocked at submission 2026-08-02 (HN not taking new Show HN posts). Copy stays loaded; **nothing may depend on it reopening.** |
 | Reddit (r/macapps + visual subs) | ⏭️ **never run** | Day-2 slot unused. Highest-fit free channel, ~20 min (`launch-kit.md` §3). |
-| **Daily social posting + aggregator** | ✅ **live 2026-09-07** | §4.1 + §11 (B) — `marketing/post-social.mjs`, hung off the nightly curation (`AUTOMATED_CURATION.md` step 8). One piece a night to **all four** channels, each linking to its own `/art/<slug>` + UTM. **Verified with real posts on IG / YT / TikTok / Pinterest.** ⚠️ upload-post's free 10 uploads/mo covers ~5 days — IG + YT need the $24/mo plan to keep running. |
+| **Daily social posting + aggregator** | ✅ **live 2026-09-07** | §4.1 + §11 (B) — `marketing/post-social.mjs`, hung off the nightly curation (`AUTOMATED_CURATION.md` step 8). One piece a night to **all four** channels, each linking to its own `/art/<slug>` + UTM. **Verified with real posts on IG / YT / TikTok / Pinterest.** **All four channels on Zernio since 2026-09-12** (upload-post dropped); 4 accounts ≈ $12/mo. |
 | **Clip audio: Lyria music bed** | ✅ **live 2026-09-07, per-piece 2026-09-08** | §11.2 — `make-social-assets.mjs --music-prompt` scores the posted clip at −9 dB with music written for *that* artwork. The nightly agent writes the prompt (`PROMPT_GUIDANCE.md` → Music prompts); it is recorded as `music_prompt` in `gallery.json` and the MP3 is temp-only. The 5-bed shared library it replaced is deleted. |
 | Brand-name / on-page SEO basics | ✅ live | 2026-07-17 (PRs #68, #69): keyword title, shared meta description, JSON-LD. |
 | **Gallery landing pages** (`/gallery`, `/art/<slug>`, `/era/<tag>`) | ✅ **shipped 2026-08-03** | §4.3 — dropped then **reversed** the same day, justified as **social landing pages, not SEO**. 262 piece pages + 15 era wings + a 6-page index + a self-growing sitemap, all prerendered from `gallery.json`. `/art/*` is `noindex, follow` behind one constant (`INDEX_ART_PAGES`); `/gallery` + `/era/*` are indexable. `/style/<movement>` still deferred (203 labels, 158 singletons). **Ready for #1's posts.** |
@@ -88,16 +88,15 @@ press/creators → Reddit.**
 
 ## ✅ Founder setup — DONE (2026-08-23)
 
-Accounts created and connected; API keys in `curation/.env` as `UPLOADPOST_API_KEY` and
-`ZERNIO_API_KEY` (documented in `curation/.env.example`, reachable via
-`curation/with-secrets.sh`). **Zernio → TikTok publishes publicly** — verified by live test, so
-no channel is contingent. All four channels are equal priority.
+Accounts created and connected. **Since 2026-09-12 all four (IG / YT / TikTok / Pinterest) are
+connected on Zernio**, and the one API key is `ZERNIO_API_KEY` in `curation/.env` (documented in
+`curation/.env.example`, reachable via `curation/with-secrets.sh`). **Zernio → TikTok publishes
+publicly** — verified by live test, so no channel is contingent. All four channels are equal
+priority.
 
-**Backlog #1 shipped on top of this 2026-09-07.** One thing still needs the founder, and it is
-now a *billing* decision, not a setup chore: ⚠️ **upload-post's free tier is 10 uploads/month**,
-and one piece a night costs 2 (IG + YT), so **Instagram and YouTube stop publishing around day 6
-until the $24/mo ($16 annual) Basic plan is on.** TikTok + Pinterest stay free (Zernio's first 2
-accounts). If the nightly log starts reporting IG/YT failures, this is why.
+**Backlog #1 shipped on top of this 2026-09-07.** Billing is settled: the founder pays for Zernio
+(first 2 accounts free, then $6/mo each, so 4 accounts ≈ $12/mo, posts unmetered). upload-post is
+abandoned, and its `UPLOADPOST_API_KEY` is no longer read by anything.
 
 ## ⏰ Dated reminders
 | When | Who | What |
@@ -124,9 +123,10 @@ month. Go through the four accounts ([IG](https://www.instagram.com/living_art_s
 - **Every link resolves** to that piece's `/art/<slug>` page, not a 404 and not the home page.
 - **Piece selection** — is the agent picking pieces that work as a vertical phone clip, or
   defaulting to whatever is newest? Criteria are `AUTOMATED_CURATION.md` step 8a.
-- **⚠️ Did Instagram + YouTube stop around day 6?** upload-post's free tier is 10 uploads/month
-  and each night costs 2. If those two went quiet, that's the plan, not a bug — see the founder
-  note above.
+- **Instagram + YouTube after the 2026-09-12 move to Zernio** — posts from before that date
+  went through upload-post. Check that the later IG Reels carry the AI label, and that the
+  YouTube Shorts have a real title (not the caption's first line) plus the synthetic-media
+  disclosure.
 - **Anything the UTM data says** (backlog #4 lands the same week).
 
 Log what you find in the Activity log, and fold any prompt/criteria changes back into
@@ -150,9 +150,9 @@ Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batc
 ## Decisions needed from the founder
 - **Email-send path** — Supabase mailer / Resend / other. Blocks §4.6 + §9; only viable if the
   send automates off the nightly job.
-- **One batched chore** — create the upload-post + Zernio accounts, connect IG/YT/TikTok/
-  Pinterest; and check whether the PH launch was ever *featured* (unfeatured ⇒ near-invisible,
-  which changes how we read 5 upvotes).
+- **Was the PH launch ever *featured*?** (unfeatured ⇒ near-invisible, which changes how we read
+  5 upvotes). _(The social-account chore that used to share this line is done — all four channels
+  are on Zernio.)_
 - **Poster stills for 77 pieces** — approve generating first-frame stills and uploading them to
   **R2** (never git — `CLAUDE.md` → Repo rules), with the URL written into `gallery.json`'s `img`.
   Those 77 gallery tiles currently render on a colour gradient, and their social cards fall back
@@ -182,6 +182,17 @@ Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batc
   more than one piece matches, so that can't drift. Selection criteria, prompt rules, a worked
   example and the anti-patterns are in `curation/PROMPT_GUIDANCE.md` → *Music prompts*; the
   runbook is `AUTOMATED_CURATION.md` step 8. _(This PR.)_
+- **2026-09-12** — **Social posting consolidated onto Zernio; upload-post abandoned.** Founder
+  call: Zernio is paid now, and keeping upload-post for IG + YT cost more than moving those two
+  accounts onto Zernio (upload-post's free 10 uploads/mo covered ~5 nights; Basic is $24/mo,
+  while Zernio at 4 accounts is ≈ $12/mo with posts unmetered). All four accounts were already
+  connected on Zernio. `post-social.mjs` now runs on one key (`ZERNIO_API_KEY`) and one API. It
+  uploads the clip once, then makes **one Zernio post per channel** rather than a single
+  multi-platform post, so a payload one platform rejects can't fail the other three. That
+  per-channel isolation replaces the per-vendor isolation the split used to provide. The
+  AI-disclosure flags carried over (`isAiGenerated` on IG, `containsSyntheticMedia` on YT), and
+  YouTube Shorts now also get the caption module's tags. This was the "consolidate later" that
+  §11.1 planned for, and it came early because of price rather than channel count.
 - **2026-09-07** — **#1 shipped: the art now posts itself, nightly, to all four channels.**
   `marketing/post-social.mjs` glues the rendered clips to upload-post (Instagram + YouTube) and
   Zernio (TikTok + Pinterest) and hangs off the nightly curation as step 8. **Verified with real

@@ -499,34 +499,25 @@ it has just written the image and video prompts and looked at the still, so noth
 knows the piece as well. Rules + worked example + anti-patterns: `curation/PROMPT_GUIDANCE.md`
 → *Music prompts*; runbook: `curation/AUTOMATED_CURATION.md` step 8.
 
-### 11.1 Vendor decision (2026-08-02) — split across two, consolidate later
+### 11.1 Vendor decision — Zernio for all four channels (consolidated 2026-09-12)
 
 | Channel | Vendor | Cost at our footprint |
 |---|---|---|
-| Instagram Reels + YouTube Shorts | **upload-post** | free tier → $24/mo ($16 annual) |
-| TikTok + Pinterest | **Zernio** (ex-`getlate.dev`) | **$0** — first 2 accounts free, unlimited posts |
+| Instagram Reels · YouTube Shorts · TikTok · Pinterest | **Zernio** (ex-`getlate.dev`) | first 2 accounts free, then $6/mo each → **≈ $12/mo** for 4, posts unmetered |
 
+**How we got here.** The 2026-08-02 decision split the channels across two vendors, both
+starting free: upload-post for IG + YT, Zernio for TikTok + Pinterest. The plan was to learn
+which API earned its keep and **consolidate onto one later**. The trigger was expected to be
+channel count. In practice it was price. **On 2026-09-12 the founder chose to pay for Zernio and
+dropped upload-post**, because upload-post's free tier couldn't sustain IG + YT and its paid plan
+cost more than adding those two accounts to Zernio:
 
-**Rationale:** both have a free entry point, so we run them in parallel, learn which API and
-which channels actually earn their keep, and **consolidate onto one later** — the glue is a thin
-REST wrapper either way, so switching costs an afternoon. The split also lines up with each free
-tier: Zernio's 2 free accounts exactly cover TikTok + Pinterest (TikTok being the one channel
-upload-post gates behind a paid plan), while upload-post's free tier covers IG + YT.
-
-**What each free tier actually covers** — checked against the live accounts and each vendor's
-own docs on 2026-09-07, while wiring the poster:
-
-- **upload-post free = 10 uploads/month, 2 profiles, and no TikTok.** (A "profile" is one
-  account *per platform*, so our single profile carries IG + YT together; the free platform
-  list is Instagram, LinkedIn, YouTube, Facebook, X, Threads, Pinterest, Reddit, Bluesky.) At
-  one piece a night that is **two uploads a night → the free month is spent in five days**, so
-  ⚠️ **IG + YT go dark around day 6 until this converts to Basic, $24/mo ($16 annual, unlimited
-  uploads, 5 profiles, TikTok included).** This is the one recurring cost the plan has, and the
-  first thing to check if the posts stop.
-- **Zernio free = the first 2 connected accounts, unlimited posts, full API** — which is exactly
-  TikTok + Pinterest, so that half is durably $0. (The account is now on Zernio's usage-based
-  billing, `planName: "Usage-Based"`, with unlimited uploads/profiles and $5 of credit sitting
-  unused; at two accounts nothing is billable.) Paid accounts start at $6/mo each for 3-10.
+- **upload-post free = 10 uploads/month, 2 profiles, and no TikTok.** At one piece a night that
+  is two uploads a night (IG + YT), so the free month ran out in five days. Keeping it meant
+  Basic at $24/mo ($16 annual) for the same two channels.
+- **Zernio bills per connected account** (first 2 free, $6/mo each for 3-10, $3 for 11-100),
+  with unlimited posts and the full API. Moving IG + YT over costs ≈ $12/mo in total, on one
+  key, one API and one set of failure modes.
 - **Zernio posts publicly to TikTok — ✅ confirmed twice**: the founder's live test (2026-08-23)
   and the automation's own first post (2026-09-07). Its client is audited; nothing about the
   four-channel plan is contingent.
@@ -541,8 +532,8 @@ presigned-upload path (5 GB) instead.
 
 | Vendor | Entry price | Billing unit | TikTok public post | Verdict |
 |---|---|---|---|---|
-| **upload-post** | free (10 uploads/mo, no TikTok) → **$24/mo**, $16 annual, unlimited | **profile** = one account *per platform*; all platforms included | ✅ own audited client | **chosen** — IG + YT |
-| **Zernio** | **free** for 2 accounts → $6/mo each (3–10), $3 (11–100) | connected account | ✅ verified by live test | **chosen** — TikTok + Pinterest |
+| **Zernio** | **free** for 2 accounts → $6/mo each (3–10), $3 (11–100) | connected account | ✅ verified by live test | **chosen** — all four channels |
+| upload-post | free (10 uploads/mo, no TikTok) → **$24/mo**, $16 annual, unlimited | **profile** = one account *per platform*; all platforms included | ✅ own audited client | ❌ **dropped 2026-09-12** — ran IG + YT 09-07 → 09-12; free tier too small, paid plan dearer than 2 more Zernio accounts |
 | Blotato | $29/mo (20 accounts) | account | ✅ | ❌ API excluded from the 7-day trial |
 | Postiz | $29/mo hosted; free self-host | channel | ❌ BYO developer app | ❌ we'd inherit the audit |
 | Ayrshare | $149/mo (1 profile) | profile (≤13 networks) | ✅ | ❌ ~4× budget; built for multi-tenant SaaS |
@@ -661,8 +652,8 @@ once and never touched again.
 ## 17. Open decisions for the founder
 1. **Email infra:** Supabase/Resend/other? Blocks §4.6 + §9 — and the newsletter only clears the
    0 h/week bar if the send automates off the nightly job.
-2. **One batched chore:** create the upload-post + Zernio accounts and connect IG/YT/TikTok/
-   Pinterest, so an agent can finish the posting automation.
+2. ~~**One batched chore:** connect IG/YT/TikTok/Pinterest to the posting aggregator~~ ✅ done —
+   all four on Zernio (§11.1).
 3. **Was the PH launch ever *featured*?** — unfeatured is near-invisible; changes how the
    5-upvote result reads (§4.2).
 4. **Brand mark in art:** how visible? (virality vs. purity — §12.)

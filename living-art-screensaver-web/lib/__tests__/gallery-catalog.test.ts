@@ -134,6 +134,18 @@ describe('gallery catalog', () => {
     expect(summary.length).toBeLessThan(200)
   })
 
+  it('only calls a piece a loop when it is authored to loop', () => {
+    // Most pieces are made to play through once; the copy used to call every
+    // piece a seamless loop anyway.
+    const nonLooping = ALL_PIECES.filter((p) => !p.looping)
+    expect(nonLooping.length).toBeGreaterThan(0)
+    for (const piece of nonLooping) {
+      // Strip the name first: one piece is literally called "Geometric Loop".
+      expect(pieceParagraphs(piece)[0].replace(piece.name, '')).not.toMatch(/\bloop|repeats/i)
+      expect(pieceSummary(piece).replace(piece.name, '')).not.toMatch(/\bloop/i)
+    }
+  })
+
   it('relates pieces without linking a piece to itself', () => {
     for (const piece of ALL_PIECES.slice(0, 25)) {
       const related = relatedPieces(piece)

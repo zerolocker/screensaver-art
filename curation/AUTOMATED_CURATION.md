@@ -66,8 +66,9 @@ You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't
 
     **8a. Pick the one piece of the four to post.** Pick the one
     that will do best as a **vertical clip on a phone, seen for three seconds, muted**:
-    *   **One obvious subject** that survives being reframed to 9:16 and shrunk to phone
-        size. A piece whose appeal is fine detail across a wide composition loses it.
+    *   **One obvious subject in the middle two-thirds of the width.** The clip zooms the
+        art to 1.5× and crops the sides, then shows it on a phone. A piece whose appeal is
+        fine detail across a wide composition, or whose subject sits near an edge, loses it.
     *   **Colour and light that pop in a feed**, which is a brighter, higher-contrast bar
         than "looks good framed on a wall".
     *   **Something different from the last few nights.** `marketing/out/.posted.json`
@@ -87,11 +88,13 @@ You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't
     bash curation/with-secrets.sh ZERNIO_API_KEY -- \
       node marketing/post-social.mjs --slug <asset-slug-from-the-render>
     ```
-    The first generates the music (one Lyria call), renders 9:16 + 1:1 clips with it mixed
-    at −9 dB, writes `captions.md` + `meta.json`, and **records `music_prompt` on that
-    piece's `gallery.json` entry**. The second publishes it through Zernio to all four
-    channels (Instagram, YouTube, TikTok, Pinterest), each post linking to that piece's
-    own `/art/<slug>` page. Details in
+    The first generates the music (one Lyria call), renders a 9:16 clip (Instagram, TikTok,
+    YouTube) and a 2:3 clip (Pinterest) with the art zoomed, the piece's title in a pill
+    under it and the music mixed at −9 dB, writes `captions.md` + `meta.json`, and
+    **records `music_prompt` on that piece's `gallery.json` entry**. The second publishes it
+    through Zernio to all four channels: Instagram, TikTok and YouTube lead with the fixed
+    caption *Screensaver app with animated art - Link in bio*, and the pin links to that
+    piece's own `/art/<slug>` page. Details in
     [`marketing/README.md`](../marketing/README.md).
 
     **8d. Commit the recorded prompt:**
@@ -100,10 +103,11 @@ You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't
     ```
 
     Things to know:
-    *   **Order matters:** step 8 runs *after* step 7's push, because each post links to a
+    *   **Order matters:** step 8 runs *after* step 7's push, because the pin links to a
         landing page that only exists once Vercel has rebuilt from the new `gallery.json`.
-        The poster checks the page is live before publishing (a post's destination URL can
-        never be edited) and waits out the deploy.
+        The poster checks the page is live before pinning (a pin's destination URL can
+        never be edited) and waits out the deploy; the other three channels carry no link
+        and don't wait.
     *   **Only the posted piece gets scored**, so only it carries `music_prompt` — the
         other three stay silent and unposted. `make-social-assets.mjs` refuses
         `--music-prompt` when more than one piece matches, so this can't drift.

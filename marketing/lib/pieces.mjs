@@ -14,8 +14,6 @@ import { fileURLToPath } from 'node:url'
 
 export const REPO_ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 export const SITE_ORIGIN = 'https://living-art-screensaver.com'
-/** Bare domain for burning into copy (no scheme — it reads better in a caption). */
-export const SITE = 'livingartscreensaver.com'
 
 // ── slugs ───────────────────────────────────────────────────────────────────
 
@@ -53,9 +51,10 @@ export function webSlugForSrc(src) {
 }
 
 /**
- * Where a post sends people: the piece's own landing page, tagged so the UTM
- * data can settle which of the four channels actually converts (strategy §4.1 —
- * we have no data yet, so every channel is measured the same way).
+ * Where a pin sends people: the piece's own landing page, tagged with the channel
+ * so PostHog can attribute the traffic. Only pins carry a link: Instagram, TikTok
+ * and YouTube don't make caption links clickable, so those posts say "Link in bio"
+ * and the profile's own bio link does the job.
  */
 export function landingUrl(webSlug, platform) {
   if (!webSlug) return SITE_ORIGIN

@@ -8,11 +8,12 @@
 //
 // One vendor, four channels (strategy §11.1 — all four are equal priority):
 //   Zernio  →  Instagram, YouTube, TikTok, Pinterest
-// The clip is uploaded once, then published as one Zernio post per channel. We buy
-// this rather than building it because TikTok restricts *unaudited* API clients to
-// private posting, and Zernio holds an audited client (§11). Until 2026-09-12
-// Instagram + YouTube went through upload-post; consolidating onto Zernio is
-// cheaper at four accounts and leaves one API to keep working.
+// Each clip is uploaded once (the 9:16 serves three channels, the 2:3 the pin), then
+// published as one Zernio post per channel. We buy this rather than building it
+// because TikTok restricts *unaudited* API clients to private posting, and Zernio
+// holds an audited client (§11). Until 2026-09-12 Instagram + YouTube went through
+// upload-post; consolidating onto Zernio is cheaper at four accounts and leaves one
+// API to keep working.
 //
 // Usage:
 //   bash curation/with-secrets.sh ZERNIO_API_KEY -- \
@@ -28,7 +29,7 @@
 //   --count <K>       how many of them to actually post (default 1 — one piece a night)
 //   --slug <s>        post this specific rendered piece (its marketing/out/<slug> dir)
 //   --channels <list> comma list of instagram,youtube,tiktok,pinterest (default: all)
-//   --format <fmt>    which rendered clip to post (default: 9x16)
+//   --format <fmt>    post this rendered clip everywhere (default: 9x16, and 2x3 for Pinterest)
 //   --force           post again even if the ledger says it already went out
 //   --out <dir>       where the rendered clips live (default: marketing/out)
 //
@@ -42,6 +43,13 @@ import { REPO_ROOT } from './lib/pieces.mjs'
 const ZERNIO_BASE = 'https://zernio.com/api/v1'
 
 const ALL_CHANNELS = ['instagram', 'youtube', 'tiktok', 'pinterest']
+
+/**
+ * Which rendered clip each channel gets. Instagram, TikTok and YouTube play video
+ * in a 9:16 player, so any other shape gets black bars; 2:3 is Pinterest's
+ * recommended pin shape, and a taller pin can be cut off in its feed.
+ */
+const FORMAT_FOR = { instagram: '9x16', youtube: '9x16', tiktok: '9x16', pinterest: '2x3' }
 
 /**
  * The board pins land on. A *name*, not an id, on purpose: a board that gets
@@ -63,7 +71,7 @@ const ZERNIO_MAX_UPLOAD = 5 * 1024 * 1024 * 1024
 // ── args ────────────────────────────────────────────────────────────────────
 
 function parseArgs(argv) {
-  const a = { latest: 4, count: 1, channels: ALL_CHANNELS, format: '9x16', out: path.join(REPO_ROOT, 'marketing', 'out') }
+  const a = { latest: 4, count: 1, channels: ALL_CHANNELS, out: path.join(REPO_ROOT, 'marketing', 'out') }
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
     const next = () => argv[++i]
@@ -131,8 +139,8 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
 // ── the rendered pieces ─────────────────────────────────────────────────────
 
-/** Everything `make-social-assets.mjs` left behind, newest first. */
-function discover(outDir, format) {
+/** Everything `make-social-assets.mjs` left behind, newest first, with the clips that exist. */
+function discover(outDir) {
   if (!existsSync(outDir)) die(`no rendered clips at ${outDir} — run make-social-assets.mjs first`)
   const pieces = []
   for (const name of readdirSync(outDir)) {
@@ -140,9 +148,13 @@ function discover(outDir, format) {
     if (!existsSync(metaPath)) continue // hero/, launch-images/ and other hand-made dirs
     let meta
     try { meta = JSON.parse(readFileSync(metaPath, 'utf8')) } catch { warn(`  ⚠ unreadable ${metaPath}`); continue }
-    const file = meta.formats?.[format] && path.join(outDir, name, meta.formats[format])
-    if (!file || !existsSync(file)) continue
-    pieces.push({ ...meta, dir: path.join(outDir, name), file })
+    const clips = {}
+    for (const [format, file] of Object.entries(meta.formats ?? {})) {
+      const full = path.join(outDir, name, file)
+      if (existsSync(full)) clips[format] = full
+    }
+    if (Object.keys(clips).length === 0) continue
+    pieces.push({ ...meta, dir: path.join(outDir, name), clips })
   }
   // Gallery date first (that's the piece's identity), render time as the
   // tie-break for a night's four pieces, which all share a date.
@@ -151,12 +163,25 @@ function discover(outDir, format) {
 }
 
 /**
- * Refuse to publish a link that isn't live yet.
+ * The clip one channel gets: FORMAT_FOR's, or `--format` for every channel. A piece
+ * rendered before the 2:3 format existed pins its 9:16 clip instead, which
+ * Pinterest also accepts.
+ */
+function clipFor(piece, platform, override) {
+  const wanted = override || FORMAT_FOR[platform]
+  if (piece.clips[wanted]) return { format: wanted, file: piece.clips[wanted] }
+  if (!override && piece.clips['9x16']) return { format: '9x16', file: piece.clips['9x16'] }
+  return null
+}
+
+/**
+ * Refuse to pin a link that isn't live yet.
  *
  * The nightly order is: curation pushes gallery.json → Vercel rebuilds → the new
- * `/art/<slug>` page exists. Posting inside that build window would put a 404 in
- * a post whose destination URL can never be edited. So check first, and give the
- * deploy a couple of minutes to finish before giving up on the piece.
+ * `/art/<slug>` page exists. Pinning inside that build window would put a 404 in
+ * a pin whose destination URL can never be edited. So check first, and give the
+ * deploy a couple of minutes to finish before giving up on the pin. (Only the pin
+ * carries a link; the other channels don't wait on this.)
  */
 async function landingIsLive(url, { attempts = 6, waitMs = 30_000 } = {}) {
   for (let i = 0; i < attempts; i++) {
@@ -288,6 +313,8 @@ function zernioPlatformEntry(platform, accountId, captions, boardId) {
         // (There is no Shorts flag: YouTube classifies a vertical clip ≤3 min itself.)
         title: captions.youtube.title,
         visibility: 'public',
+        // Film & Animation. Zernio's default is "22", People & Blogs.
+        categoryId: '1',
         madeForKids: false,
         containsSyntheticMedia: true,
       },
@@ -325,20 +352,31 @@ function zernioPlatformEntry(platform, accountId, captions, boardId) {
   }
 }
 
-async function postViaZernio({ piece, captions, platforms, dryRun }) {
+const megabytes = (file) => `${(statSync(file).size / 1e6).toFixed(1)} MB`
+
+async function postViaZernio({ piece, captions, platforms, dryRun, format }) {
   const accounts = await zernioAccounts()
-  const targets = platforms.filter((p) => accounts[p])
   const out = {}
-  for (const p of platforms.filter((p) => !accounts[p])) {
-    warn(`  ⚠ ${p}: no active Zernio account — skipped`)
-    out[p] = { ok: false, error: 'not connected' }
+  const clips = {}
+  for (const p of platforms) {
+    const clip = accounts[p] && clipFor(piece, p, format)
+    if (!accounts[p]) {
+      warn(`  ⚠ ${p}: no active Zernio account — skipped`)
+      out[p] = { ok: false, error: 'not connected' }
+    } else if (!clip) {
+      warn(`  ⚠ ${p}: no ${format || FORMAT_FOR[p]} clip rendered for this piece — skipped`)
+      out[p] = { ok: false, error: `no ${format || FORMAT_FOR[p]} clip` }
+    } else {
+      clips[p] = clip
+    }
   }
+  const targets = platforms.filter((p) => clips[p])
   if (targets.length === 0) return out
 
   const boardId = targets.includes('pinterest') ? await pinterestBoardId(accounts.pinterest._id) : null
 
   if (dryRun) {
-    log(`  [dry-run] zernio → ${targets.join(', ')} (${(statSync(piece.file).size / 1e6).toFixed(1)} MB)`)
+    log(`  [dry-run] zernio → ${targets.map((p) => `${p} (${clips[p].format}, ${megabytes(clips[p].file)})`).join(', ')}`)
     if (targets.includes('tiktok')) {
       // TikTok's own preflight: can this account Direct Post right now? (Zernio's
       // dryRun is TikTok-only — the other three have nothing to ask in advance.)
@@ -354,27 +392,35 @@ async function postViaZernio({ piece, captions, platforms, dryRun }) {
     }
     if (targets.includes('youtube')) log(`            youtube title: ${captions.youtube.title}`)
     if (targets.includes('pinterest')) log(`            pin link: ${captions.pinterest.link}${boardId ? ` (board ${boardId})` : ''}`)
-    for (const p of targets) out[p] = { ok: true, dryRun: true }
+    for (const p of targets) out[p] = { ok: true, dryRun: true, format: clips[p].format }
     return out
   }
 
-  // One upload, then one post per platform rather than a single multi-platform
-  // post: a payload one platform rejects fails the whole request with a 400, and
-  // that must not take the other three channels down with it.
-  const mediaUrl = await zernioUpload(piece.file)
+  // Each distinct clip goes up once (the 9:16 is shared by three channels), then
+  // each channel gets its own post rather than one post for all: a payload one
+  // platform rejects fails the whole request with a 400, and that must not take
+  // the other channels down with it.
+  const uploads = new Map()
+  const upload = (file) => {
+    if (!uploads.has(file)) uploads.set(file, zernioUpload(file))
+    return uploads.get(file)
+  }
   const posted = await Promise.all(targets.map(async (p) => {
+    const { file, format: clipFormat } = clips[p]
     try {
-      return [p, await publishOne({ piece, captions, platform: p, account: accounts[p], boardId, mediaUrl })]
+      const mediaUrl = await upload(file)
+      const result = await publishOne({ piece, file, captions, platform: p, account: accounts[p], boardId, mediaUrl })
+      return [p, { ...result, format: clipFormat }]
     } catch (err) {
-      return [p, { ok: false, error: err.message }]
+      return [p, { ok: false, error: err.message, format: clipFormat }]
     }
   }))
   return Object.assign(out, Object.fromEntries(posted))
 }
 
-async function publishOne({ piece, captions, platform, account, boardId, mediaUrl }) {
+async function publishOne({ piece, file, captions, platform, account, boardId, mediaUrl }) {
   const payload = {
-    mediaItems: [{ type: 'video', url: mediaUrl, filename: path.basename(piece.file), mimeType: 'video/mp4' }],
+    mediaItems: [{ type: 'video', url: mediaUrl, filename: path.basename(file), mimeType: 'video/mp4' }],
     platforms: [zernioPlatformEntry(platform, account._id, captions, boardId)],
     // A top-level field that only YouTube reads — and this post only targets YouTube.
     ...(platform === 'youtube' ? { tags: captions.youtube.tags } : {}),
@@ -476,7 +522,7 @@ async function main() {
   const a = parseArgs(process.argv.slice(2))
   if (a.help) {
     log('usage: node marketing/post-social.mjs [--check|--dry-run] [--latest N] [--count K]\n' +
-        '       [--slug <s>] [--channels instagram,youtube,tiktok,pinterest] [--format 9x16]\n' +
+        '       [--slug <s>] [--channels instagram,youtube,tiktok,pinterest] [--format 9x16|2x3]\n' +
         '       [--force] [--out <dir>]')
     return
   }
@@ -488,8 +534,8 @@ async function main() {
   }
 
   const ledger = loadLedger(a.out)
-  const all = discover(a.out, a.format)
-  if (all.length === 0) die(`no rendered "${a.format}" clips with a meta.json under ${a.out}`)
+  const all = discover(a.out)
+  if (all.length === 0) die(`no rendered clips with a meta.json under ${a.out}`)
 
   let candidates = a.slug ? all.filter((p) => p.assetSlug === a.slug) : all.slice(0, a.latest)
   if (a.slug && candidates.length === 0) die(`no rendered piece with assetSlug "${a.slug}" under ${a.out}`)
@@ -508,23 +554,25 @@ async function main() {
     log(`\n▸ ${piece.title} [${piece.style}] → ${todo.join(', ') || '(nothing)'}` +
         (skipped.length ? `  (already posted: ${skipped.join(', ')})` : ''))
     if (todo.length === 0) continue
-    if (!piece.webSlug) warn('  ⚠ no gallery slug for this piece — links will point at the home page')
+    if (!piece.webSlug && todo.includes('pinterest')) warn('  ⚠ no gallery slug for this piece — the pin will link to the home page')
 
     const captions = buildCaptions({ title: piece.title, style: piece.style, webSlug: piece.webSlug })
+    const results = {}
 
-    if (piece.webSlug && !a.dryRun && !(await landingIsLive(captions.pinterest.link))) {
-      warn(`  ✗ ${captions.pinterest.link} is not live — skipping this piece rather than ` +
-           `publishing a link that 404s (a post's destination can't be edited afterwards)`)
-      failures++
-      continue
+    // Only the pin carries a link, so only the pin waits on the landing page.
+    if (todo.includes('pinterest') && piece.webSlug && !a.dryRun && !(await landingIsLive(captions.pinterest.link))) {
+      results.pinterest = { ok: false, error: `${captions.pinterest.link} is not live — not pinning a link that 404s ` +
+        `(a pin's destination can't be edited afterwards)` }
     }
 
-    let results
-    try {
-      results = await postViaZernio({ piece, captions, platforms: todo, dryRun: a.dryRun })
-    } catch (err) {
-      // Zernio down, the key rejected, the upload failed: nothing went out.
-      results = Object.fromEntries(todo.map((p) => [p, { ok: false, error: err.message }]))
+    const platforms = todo.filter((p) => !results[p])
+    if (platforms.length) {
+      try {
+        Object.assign(results, await postViaZernio({ piece, captions, platforms, dryRun: a.dryRun, format: a.format }))
+      } catch (err) {
+        // Zernio down or the key rejected: nothing went out.
+        for (const p of platforms) results[p] = { ok: false, error: err.message }
+      }
     }
 
     for (const [platform, r] of Object.entries(results)) {

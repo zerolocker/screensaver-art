@@ -1,133 +1,75 @@
 // Caption copy for the social clips — shared by the asset engine (which writes a
-// human-readable captions.md) and the poster (which sends the same strings to
-// the four platforms).
+// human-readable captions.md and burns the title pill) and the poster (which
+// sends the same strings to the four platforms).
 //
-// WHY THE VARIANT POOLS: this runs every night, forever. One fixed template per
-// platform would publish the same sentence 365 times a year on the same account,
-// which reads as spam to both people and platforms. So each line is drawn from a
-// small pool, keyed by a hash of the piece + platform: no randomness (a re-run
-// produces the identical caption, which keeps posting idempotent and lets a
-// failed post be retried byte-for-byte), but no two consecutive nights look
-// alike either. Upgrading these to a per-piece Gemini call is the "agentic
-// layer" in strategy §11 (C) — the pools are the cheap 90%.
+// ONE FIXED LINE, ON PURPOSE (founder call, 2026-09-12). Instagram, TikTok and
+// YouTube posts all lead with the same short sentence, CAPTION below. The clip
+// itself carries no marketing text — a post that reads as an ad gets scrolled
+// past, and words on screen pull attention off the art — so the caption is where
+// a post quietly says this is an app, not an account that shares daily art.
+//   - Short, because a phone shows a line or two before "more".
+//   - No URL, because those three platforms don't make caption links clickable.
+//     The profile's bio link does that job.
+//   - No "Mac", deliberately: interest from people on other platforms is a signal
+//     worth seeing.
+//
+// Behind "more", each post names its piece in the same words as the title pill,
+// so posts stay distinguishable to search. Repeating the first line nightly is
+// not a duplicate to Zernio, which fingerprints the text and the media together.
+//
+// Pinterest is the exception. A pin is itself a link, to the piece's own
+// /art/<slug> page, so it never says "Link in bio"; and its title names the
+// piece, because pin titles are what Pinterest search ranks.
+//
+// Everything is a pure function of the piece, so a retried post republishes
+// byte-identical copy.
 
-import { landingUrl, SITE } from './pieces.mjs'
+import { landingUrl } from './pieces.mjs'
 
-/** djb2 — the same tiny stable hash the cache layer uses. Deterministic picks. */
-function hash(str) {
-  let h = 5381
-  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) >>> 0
-  return h
-}
+/** What the app is, in as few words as a phone will show. */
+const PITCH = 'Screensaver app with animated art'
 
-const pick = (pool, key, salt) => pool[hash(`${key}::${salt}`) % pool.length]
+/** The first (on a phone, often the only visible) line of every IG / TikTok / YouTube post. */
+export const CAPTION = `${PITCH} - Link in bio`
 
-/** "Art Nouveau" -> "an Art Nouveau"; "Baroque" -> "a Baroque". */
-const article = (word) => (/^[aeiou]/i.test(word) ? 'an' : 'a')
-
-const HOOKS = [
-  (t, s) => `${t} — ${s}, brought to life.`,
-  (t, s) => `POV: your screensaver is ${article(s)} ${s} gallery.`,
-  (t, s) => `${t}. ${s}, and it moves.`,
-  (t, s) => `${article(s) === 'an' ? 'An' : 'A'} ${s} piece that doesn't sit still: ${t}.`,
-  (t, s) => `${t} — what ${s} looks like when it breathes.`,
-  (t) => `Nobody expects the screensaver to be the best thing on the desk. ${t}.`,
-]
-
-const BODIES = [
-  'A new curated piece arrives on your Mac every day.',
-  'This is a Mac screensaver. A different piece lands every day.',
-  'Your Mac, doing nothing, beautifully — a new work daily.',
-  'One new animated piece a day, playing when you step away.',
-]
-
-const CTAS = [
-  (url) => `Free to try on Mac → ${url}`,
-  (url) => `Turn your screensaver into a gallery → ${url}`,
-  (url) => `See it move on your own Mac → ${url}`,
-  (url) => `New art every day, free to start → ${url}`,
-]
-
-const BASE_TAGS = ['screensaver', 'livewallpaper', 'aiart', 'digitalart', 'macsetup', 'desksetup', 'aesthetic']
-const TAIL_TAGS = {
-  instagram: ['reels', 'artreel', 'interiordesign'],
-  tiktok: ['arttok', 'fyp', 'satisfying'],
-  youtube: ['shorts', 'aivideo'],
-  pinterest: ['wallpaper', 'aestheticwallpaper'],
-}
-
-const styleTag = (style) => style.toLowerCase().replace(/[^a-z0-9]+/g, '')
-
-function hashtags(style, platform) {
-  const tags = [...BASE_TAGS, styleTag(style), ...(TAIL_TAGS[platform] || [])]
-  return [...new Set(tags.filter(Boolean))].map((t) => `#${t}`).join(' ')
-}
+/** The piece as the title pill names it, e.g. "The Street Food Stall · Contemporary Illustration". */
+export const titleLine = (title, style) => `${title} · ${style}`
 
 const clamp = (s, n) => (s.length <= n ? s : `${s.slice(0, n - 1).trimEnd()}…`)
 
-/**
- * Every string the four platforms need for one piece.
- *
- * Each platform gets its OWN landing URL, differing only in `utm_source`, so
- * traffic can be attributed per channel. The destination is always the piece's
- * own `/art/<slug>` page — never the homepage — because that page shows this
- * exact clip and offers the download, and because a post's link can't be edited
- * after publishing.
- */
+/** Every string the four platforms need for one piece. */
 export function buildCaptions({ title, style, webSlug }) {
-  const key = webSlug || title
-  const hook = pick(HOOKS, key, 'hook')(title, style)
-  const body = pick(BODIES, key, 'body')
-
-  const forPlatform = (platform) => {
-    const url = landingUrl(webSlug, platform)
-    return { url, cta: pick(CTAS, key, `cta:${platform}`)(url), tags: hashtags(style, platform) }
-  }
-
-  const ig = forPlatform('instagram')
-  const tt = forPlatform('tiktok')
-  const yt = forPlatform('youtube')
-  const pin = forPlatform('pinterest')
-
+  const piece = titleLine(title, style)
   return {
-    instagram: {
-      // One field: IG's caption is the whole post.
-      text: `${hook}\n${body}\n${ig.cta}\n.\n${ig.tags}`,
-      url: ig.url,
-    },
-    tiktok: {
-      text: `${hook}\n${body}\n${tt.cta}\n${tt.tags}`,
-      url: tt.url,
-    },
+    instagram: { text: `${CAPTION}\n\n${piece}` },
+    // Two broad hashtags: TikTok's search leans on them more than the others' does.
+    tiktok: { text: `${CAPTION}\n\n${piece}\n#screensaver #animatedart` },
     youtube: {
-      // YouTube's title is a real title, not a caption — keep it under the 100
-      // char limit and put the sell in the description.
-      title: clamp(`${title} — ${style}, animated`, 90),
-      description: `${hook}\n\n${body}\n${yt.cta}\n\n${yt.tags}`,
-      tags: [styleTag(style), 'screensaver', 'aiart', 'macsetup', 'livewallpaper'].filter(Boolean),
-      url: yt.url,
+      // The Shorts player shows the title, so the fixed line goes there; the
+      // description (rarely seen, but searched) names the piece.
+      title: CAPTION,
+      description: piece,
+      // YouTube splits tags on commas and rejects angle brackets.
+      tags: ['screensaver app', 'animated art', style, title].map((t) => t.replace(/[,<>]/g, '').trim()).filter(Boolean),
     },
     pinterest: {
-      // Pin titles are searched; the link is the whole point of a pin.
-      title: clamp(`${title} — animated ${style} art for your Mac`, 100),
-      description: clamp(`${body} ${pin.cta}\n${pin.tags}`, 480),
-      link: pin.url,
-      url: pin.url,
+      title: clamp(`${PITCH}: ${title}`, 100),
+      description: `${piece}. Animated art from Living Art Screensaver.`,
+      // Tagged with the channel so PostHog can attribute pin traffic.
+      link: landingUrl(webSlug, 'pinterest'),
     },
   }
 }
 
-/** The human-facing starter file written next to the rendered clips. */
+/** The human-facing record written next to the rendered clips. */
 export function captionsMarkdown({ title, style, webSlug }) {
   const c = buildCaptions({ title, style, webSlug })
   const landing = webSlug ? `\`/art/${webSlug}\`` : 'the home page (no gallery entry for this source)'
   return `# Social captions — ${title}
 
 _These are exactly the strings \`post-social.mjs\` publishes, so what you read here
-is what went out. Each platform's link is the piece's own landing page (${landing})
-with its own \`utm_source\`, so the four channels can be told apart in PostHog.
-Copy is drawn from variant pools keyed by the piece — deterministic, but no two
-nights read alike. Site: ${SITE}._
+is what went out. Instagram, TikTok and YouTube lead with the same fixed line and
+leave the linking to the profile's bio; the pin links to ${landing}._
 
 ## Instagram Reels
 \`\`\`
@@ -141,6 +83,7 @@ ${c.tiktok.text}
 
 ## YouTube Shorts
 **Title:** \`${c.youtube.title}\`
+**Tags:** ${c.youtube.tags.join(', ')}
 \`\`\`
 ${c.youtube.description}
 \`\`\`

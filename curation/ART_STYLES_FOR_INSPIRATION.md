@@ -149,6 +149,7 @@ When you add a new style, append it under the section it best fits.
 - Afrofuturism
 - Ballets Russes / Léon Bakst (early-20th-c theatrical costume & set design — vivid, ornamental, decorative)
 - Spanish Modernist festival mural (mid-20th-c bold flattened planes of saturated colour with thick confident outlines, luminous and high-contrast — fiestas, processions, running of the bulls; a vivid public-mural register, bright even sunlight)
+- Modernist / Cubo-Futurist sporting oil (bold early-20th-c figurative sporting painting — flat saturated colour planes, strong confident dark outlines, dynamic angular geometry; stadium and match subjects — a rugby lineout/scrum, boxing, cycling, the crowd in tiered bright colour; legible, not abstract; bright even daylight)
 
 ## Contemporary & atmospheric genre looks (reopened 2026-07-25)
 

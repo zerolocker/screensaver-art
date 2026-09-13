@@ -1777,4 +1777,75 @@ distinct registers/palettes:
   colour, and a clean break from recent posts (Water Festival 09-11, a Spanish-modernist
   bull 09-10).
 
+### 2026-09-13 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, **all intact-medium** (0 archaeological — within
+the ≤1 cap), bright/dense/colourful, chosen to hit wings under-used the last week
+(Japanese, Medieval & Byzantine, Islamic) with four *different* mover classes:
+- **The Kabuki Stage — Edo Ukiyo-e** (`Japanese`, non-looping) — a *theatrical
+  sword-flourish* mover: an aragoto hero in red-white kumadori makeup sweeps his
+  katana into a thunderous mie power-pose on the spot, two antagonists recoiling,
+  in a dense yakusha-e triptych with a packed Edo audience. **Pro** still.
+- **The Jugglers — International Gothic** (`Medieval & Byzantine`, non-looping) — a
+  *juggle-cascade + dancing-bear* mover: two jugglers keep a cascade of clubs aloft
+  beside a rearing brown dancing bear, a tumbler and a piper, dense jewel-toned
+  Book-of-Hours fair. **Pro** still.
+- **The Elephant Fight — Mughal Miniature** (`Islamic`, non-looping) — an
+  *animal-combat* mover (genuinely unique in the gallery): two caparisoned war
+  elephants shove head-to-head, tusks locked, dust flying, mahouts rocking, emperor
+  in a jharokha, packed fort-wall crowd. **Pro** still.
+- **The Rugby Match — Modernist Sporting Oil** (`Modern`, non-looping) — a
+  *vertical-lift* mover: a hooped jumper hoisted high at a lineout catches the ball,
+  two bound packs heaving, packed 1920s stand; bold flat-plane Cubo-Futurist oil
+  (new style added to `ART_STYLES_FOR_INSPIRATION.md`). **Pro** still, one of the
+  strongest frames of the batch.
+
+**What worked / reinforced:**
+- **Clean first-try night on `gemini-3-pro-image`** (no 503 wall). All four stills
+  passed the vision gate; the standing image rules held (bright, dense, edge-to-edge;
+  full-bleed close-crop margin pre-empt; no museum/patina). Mover-type + under-used-wing
+  variety remains the cheap rut-break (per 09-02→09-12).
+- **Two of four VIDEOS needed a reroll — both classic Veo failure modes, both fixed:**
+  1. **Many identical airborne objects morph — the juggling cascade collapsed into a
+     floating face + an upside-down figure** at the hand-off (the [[curation-veo-camera-drift]]-
+     adjacent identity-morph). First video: an 8-club cascade turned to soup mid-clip.
+     **Fix that worked:** demote the cascade from focal mover, make the *dancing bear*
+     the clear focal motion, and describe the clubs as *"each a separate rigid turned-wood
+     skittle that spins slowly in place and stays well apart — never crossing, touching,
+     merging or changing into anything,"* with negatives *floating face / disembodied
+     head / clubs merging / clubs crossing*. Reroll read as clean juggling + bear + tumbler,
+     no faces. **Takeaway: for a juggling/many-small-identical-objects subject, don't ask
+     for a crossing cascade — hold the objects rigid and spinning-in-place, and lean the
+     clip on a different, low-risk focal mover.**
+  2. **A "lift/lineout" resolved into a maul + a camera pull-back, losing the hero, and
+     spawned a transient second ball.** First rugby video: the lifted jumper came down and
+     both packs collapsed into a central scrum by the end, camera zoomed out. **Fix that
+     worked:** instruct the jumper to *"stay held HIGH aloft for the whole shot with only a
+     small bob, never coming down,"* the packs to *"stay in their lineout positions and not
+     collapse together,"* single ball, and add negatives *jumper coming down / players
+     collapsing into a maul / scrum forming / second ball / camera zoom out*. Reroll kept
+     the hero moment to the end with one ball, only a mild zoom-out. **Takeaway: a
+     held-pose hero (a lift, a caught ball, a mie) needs an explicit "stays lifted/held the
+     whole shot" clause or Veo will resolve it to the *next* phase of play (set-down, maul).**
+- **Kabuki yakusha-e summons a title signboard + red artist seal + tiny censor marks**
+  (the [[curation-poster-summons-object]] / woodblock-text family), despite the standing
+  no-cartouche/seal clause. Both main text zones were static background → **feathered flat
+  fills** (sampled brown over the gold-kanji signboard; sampled tan over the red signature
+  cartouche) erased them cleanly; the extreme-corner seal ghost is where Veo's mild zoom
+  crops anyway. Rule of thumb holds: static-area text → patch, not reroll. Kept the
+  pre-patch original in the scratchpad ([[curation-keep-rejected-renders]]).
+- **International Gothic manuscript rendered a thin ruled border on ALL FOUR edges** even
+  with the full-bleed close-crop clause ([[curation-miniature-paper-border]]) — but uneven
+  (left ~36 px, right ~13 px). Since the clip is near-locked (Veo won't crop it), the clean
+  fix was a **uniform 42 px crop off every side + rescale to 16:9** (negligible ~2% stretch)
+  rather than four feathered patches. Takeaway: for a thin *uniform* manuscript border on a
+  locked-camera piece, crop+rescale beats patching; reserve edge-patches for thick/asymmetric
+  borders (the 09-07 hawking case).
+- **Elephant head-to-head clash animated cleanly with count pinned.** Two large animals
+  colliding is a merge risk; *"push against each other WITHOUT merging, each keeps its two
+  tusks, no extra trunk/tusks/legs/elephant"* + the standing on-the-spot/locked-camera block
+  gave a dramatic tusk-lock shove with intertwining (not merged) trunks and billowing dust,
+  a mild zoom-in that tightened it. A good template for a two-large-animal combat mover.
+
 <!-- Claude appends new rounds above this line. -->

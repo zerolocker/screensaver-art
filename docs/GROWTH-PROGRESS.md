@@ -61,7 +61,7 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 | **Product Hunt launch** | ❌ **ran 2026-07-26 — flopped** | **5 upvotes, 2 comments, no badge, no measurable traffic.** Post-mortem → §4.2. Not re-runnable for months. |
 | **Show HN** | ❌ **dropped as a plan item** | Blocked at submission 2026-08-02 (HN not taking new Show HN posts). Copy stays loaded; **nothing may depend on it reopening.** |
 | Reddit (r/macapps + visual subs) | ⏭️ **never run** | Day-2 slot unused. Highest-fit free channel, ~20 min (`launch-kit.md` §3). |
-| **Daily social posting + aggregator** | ✅ **live 2026-09-07** | §4.1 + §11 (B) — `marketing/post-social.mjs`, hung off the nightly curation (`AUTOMATED_CURATION.md` step 8). One piece a night to **all four** channels: IG / YT lead with one fixed caption (*Animated art screensaver app - Link in bio*; TikTok's ends *Link in comment and bio*) and pins link to their own `/art/<slug>` + UTM (since 2026-09-12; before that every post carried its own link). **Verified with real posts on IG / YT / TikTok / Pinterest.** **All four channels on Zernio since 2026-09-12** (upload-post dropped); 4 accounts ≈ $12/mo. **TikTok, whose profile can't carry a link, gets the site's address as a pinned comment under each video (2026-09-14).** |
+| **Daily social posting + aggregator** | ✅ **live 2026-09-07** | §4.1 + §11 (B) — `marketing/post-social.mjs`, hung off the nightly curation (`AUTOMATED_CURATION.md` step 8). One piece a night to **all four** channels: IG / YT lead with one fixed caption (*Animated art screensaver app - Link in bio*; TikTok's ends *Link in comment and bio*) and pins link to their own `/art/<slug>` + UTM (since 2026-09-12; before that every post carried its own link). **Verified with real posts on IG / YT / TikTok / Pinterest.** **All four channels on Zernio since 2026-09-12** (upload-post dropped); 4 accounts ≈ $12/mo. **TikTok, whose profile can't carry a link, gets the site's address as a pinned comment under each video (2026-09-14).** **Hashtags from each piece's movement + era on IG / TikTok / YouTube, and pin titles lead with the style (2026-09-14).** |
 | **Clip audio: Lyria music bed** | ✅ **live 2026-09-07, per-piece 2026-09-08** | §11.2 — `make-social-assets.mjs --music-prompt` scores the posted clip at −9 dB with music written for *that* artwork. The nightly agent writes the prompt (`PROMPT_GUIDANCE.md` → Music prompts); it is recorded as `music_prompt` in `gallery.json` and the MP3 is temp-only. The 5-bed shared library it replaced is deleted. |
 | Brand-name / on-page SEO basics | ✅ live | 2026-07-17 (PRs #68, #69): keyword title, shared meta description, JSON-LD. |
 | **Gallery landing pages** (`/gallery`, `/art/<slug>`, `/era/<tag>`) | ✅ **shipped 2026-08-03** | §4.3 — dropped then **reversed** the same day, justified as **social landing pages, not SEO**. 262 piece pages + 15 era wings + a 6-page index + a self-growing sitemap, all prerendered from `gallery.json`. `/art/*` is `noindex, follow` behind one constant (`INDEX_ART_PAGES`); `/gallery` + `/era/*` are indexable. `/style/<movement>` still deferred (203 labels, 158 singletons). **Ready for #1's posts.** |
@@ -125,6 +125,10 @@ month. Go through the four accounts ([IG](https://www.instagram.com/living_art_s
   and TikTok with *… - Link in comment and bio* (founder calls, 2026-09-12 and -14). Is anyone
   asking what it is, or asking for other platforms? The caption leaves out "Mac" on purpose so
   that interest can show up.
+- **Hashtags + pin wording** (2026-09-14) — spot-check that each post's hashtags fit its piece
+  (no `#chineseart` on a Korean painting) and that pin titles lead with the style. Pinterest had
+  **11 impressions from its first 15 pins**; if the style-first wording works, that is the number
+  that moves.
 - **Every pin's link resolves** to that piece's `/art/<slug>` page, not a 404 and not the home
   page, and **the IG + YouTube bio links** reach the site.
 - **TikTok's pinned comment** — every video since 2026-09-14 should open its comments on *Get
@@ -183,6 +187,18 @@ Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batc
 ---
 
 ## Activity log (append-only — newest first)
+- **2026-09-14** — **Per-piece hashtags, and pins lead with the style.** Baseline before the change
+  (Zernio, 2026-09-07 → 14): TikTok 8 posts / 1,235 views, IG 5 / 234, YouTube 6 / 151, Pinterest
+  15 pins / 11 impressions. IG posts had no hashtags, YouTube only hidden tags, TikTok two generic
+  ones. `marketing/lib/hashtags.mjs` now derives up to two per piece from its style and era tag
+  (`#ukiyoe #japaneseart`), after `#screensaver #animatedart`: four max on IG / TikTok, three in a
+  YouTube description. A tag must be **true of every piece it lands on** (so no era tag for
+  *Chinese & Korean*) and **have an audience**, checked against TikTok's own counts (under ~5M
+  views dropped; the art-specific form where the bare word is used for much else, e.g.
+  `#renaissanceart` over `#renaissance`). No `#art`: Instagram caps posts at five hashtags and
+  favours targeted ones. Pins get no hashtags; their title now leads with the style (*Animated
+  Ukiyo-e: Mount Fuji | Art screensaver app*) and the description names the art in words, since
+  Pinterest ranks text. At this volume the effect won't be readable for weeks. _(This PR.)_
 - **2026-09-14** — **TikTok gets its link as a pinned comment.** TikTok was the one channel whose
   posts led nowhere: captions say *Link in bio*, but the account can't switch to Business (the
   option isn't offered on web or mobile; *verified business account* is the ads flow that wants a

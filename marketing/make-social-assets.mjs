@@ -339,6 +339,8 @@ async function main() {
     let ok = 0
     for (const entry of jobs) {
       const { title, style } = deriveMeta(entry, a.style)
+      // The gallery tag ("Japanese", "Modern"…) the hashtags and the pin's wording build on.
+      const era = entry.tags?.[0] ?? null
       const slug = assetSlug(title) || 'piece'
       const webSlug = a.src && !entry.date ? null : webSlugForSrc(entry.src)
       const dir = path.join(a.out, slug)
@@ -368,7 +370,7 @@ async function main() {
           formats[fmtKey] = name
           process.stdout.write(`  ✓ ${path.relative(REPO_ROOT, outFile)} (${(statSync(outFile).size / 1e6).toFixed(1)} MB)\n`)
         }
-        writeFileSync(path.join(dir, 'captions.md'), captionsMarkdown({ title, style, webSlug }))
+        writeFileSync(path.join(dir, 'captions.md'), captionsMarkdown({ title, style, era, webSlug }))
         // The hand-off to post-social.mjs. Everything it needs to publish this
         // piece — above all `webSlug`, the permanent landing page — is recorded
         // here at render time, so the poster never re-derives it.
@@ -378,6 +380,7 @@ async function main() {
           webSlug,
           title,
           style,
+          era,
           galleryTitle: entry.title ?? null,
           src: entry.src,
           date: entry.date ?? null,

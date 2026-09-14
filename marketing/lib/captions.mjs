@@ -21,16 +21,25 @@
 // /art/<slug> page, so it never says "Link in bio"; and its title names the
 // piece, because pin titles are what Pinterest search ranks.
 //
+// TikTok also gets LINK_COMMENT, which the poster comments under each video and
+// pins. That account can't have a bio link (it has no Business switch, and a
+// personal account needs 1,000 followers), so its "Link in bio" points at
+// nothing and the pinned comment is where the address actually lives. Plain
+// text, because TikTok doesn't make URLs in comments clickable either.
+//
 // Everything is a pure function of the piece, so a retried post republishes
 // byte-identical copy.
 
-import { landingUrl } from './pieces.mjs'
+import { SITE_ORIGIN, landingUrl } from './pieces.mjs'
 
 /** What the app is, in as few words as a phone will show. */
 const PITCH = 'Animated art screensaver app'
 
 /** The first (on a phone, often the only visible) line of every IG / TikTok / YouTube post. */
 export const CAPTION = `${PITCH} - Link in bio`
+
+/** Pinned under every TikTok video. Verified visible to signed-out viewers, 2026-09-14. */
+const LINK_COMMENT = `Get the screensaver app: ${SITE_ORIGIN.replace(/^https?:\/\//, '')}`
 
 /** The piece as the title pill names it, e.g. "The Street Food Stall · Contemporary Illustration". */
 export const titleLine = (title, style) => `${title} · ${style}`
@@ -43,7 +52,7 @@ export function buildCaptions({ title, style, webSlug }) {
   return {
     instagram: { text: `${CAPTION}\n\n${piece}` },
     // Two broad hashtags: TikTok's search leans on them more than the others' does.
-    tiktok: { text: `${CAPTION}\n\n${piece}\n#screensaver #animatedart` },
+    tiktok: { text: `${CAPTION}\n\n${piece}\n#screensaver #animatedart`, linkComment: LINK_COMMENT },
     youtube: {
       // The Shorts player shows the title, so the fixed line goes there; the
       // description (rarely seen, but searched) names the piece.
@@ -69,7 +78,8 @@ export function captionsMarkdown({ title, style, webSlug }) {
 
 _These are exactly the strings \`post-social.mjs\` publishes, so what you read here
 is what went out. Instagram, TikTok and YouTube lead with the same fixed line and
-leave the linking to the profile's bio; the pin links to ${landing}._
+leave the linking to the profile's bio, or on TikTok to a pinned comment; the pin
+links to ${landing}._
 
 ## Instagram Reels
 \`\`\`
@@ -80,6 +90,7 @@ ${c.instagram.text}
 \`\`\`
 ${c.tiktok.text}
 \`\`\`
+**Pinned comment:** \`${c.tiktok.linkComment}\`
 
 ## YouTube Shorts
 **Title:** \`${c.youtube.title}\`

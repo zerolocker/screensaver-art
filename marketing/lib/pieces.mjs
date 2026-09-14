@@ -54,8 +54,9 @@ export function webSlugForSrc(src) {
  * Where a pin sends people: the piece's own landing page, tagged with the channel
  * so PostHog can attribute the traffic. Only pins carry a link: Instagram, TikTok
  * and YouTube don't make caption links clickable, so those posts say "Link in bio"
- * and the profile's own bio link does the job. TikTok's profile has no link, so its
- * videos get the address as a pinned comment instead (post-social.mjs).
+ * and the profile's own bio link does the job. TikTok's profile can't carry a link,
+ * so its posts say "Link in comment and bio" and get the address as a pinned
+ * comment (post-social.mjs).
  */
 export function landingUrl(webSlug, platform) {
   if (!webSlug) return SITE_ORIGIN

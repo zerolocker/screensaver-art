@@ -510,11 +510,11 @@ async function settleZernio(postId, entry) {
 
 // ── TikTok's link comment ───────────────────────────────────────────────────
 //
-// TikTok is the one channel with nowhere to put the site's address. The account
-// has no Business switch, and a personal account gets no bio link until 1,000
-// followers, so its "Link in bio" points at nothing. Instead each video gets a
-// comment carrying the address, pinned to the top. It is plain text, since TikTok
-// doesn't make URLs in comments clickable, but it sits where people read.
+// TikTok is the one channel with nowhere to put a clickable link. The account has
+// no Business switch, and a personal account gets no bio link until 1,000
+// followers. So each video gets a comment carrying the address, pinned to the top,
+// and its caption says "Link in comment and bio". The comment is plain text, since
+// TikTok doesn't make URLs in comments clickable, but it sits where people read.
 //
 // Comments need the account on Zernio's TikTok Business app connection (every
 // connection since 2026-09-10). One still on the old developer app gets

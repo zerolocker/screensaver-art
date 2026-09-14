@@ -426,7 +426,8 @@ You can largely automate the content flywheel off your existing nightly pipeline
   their *own* audited client sidestep all of it; building the raw posting/OAuth layer = months
   of compliance for one app's marketing. Don't.
 - **(C) Agentic layer — not needed for captions (settled 2026-09-12).** The founder chose one
-  fixed caption for IG / TikTok / YouTube, *Animated art screensaver app - Link in bio*,
+  fixed caption for IG / TikTok / YouTube, *Animated art screensaver app - Link in bio*
+  (TikTok's says *Link in comment and bio* since 2026-09-14, as its profile can't carry a link),
   with only the piece's name varying beneath it (`marketing/lib/captions.mjs`). The pitch lives
   in that one line rather than in varied copy, so the variant pools that preceded it are gone,
   and a per-piece Gemini caption is off the table unless the fixed line stops working.

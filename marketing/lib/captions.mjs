@@ -2,14 +2,15 @@
 // human-readable captions.md and burns the title pill) and the poster (which
 // sends the same strings to the four platforms).
 //
-// ONE FIXED LINE, ON PURPOSE (founder call, 2026-09-12). Instagram, TikTok and
-// YouTube posts all lead with the same short sentence, CAPTION below. The clip
+// ONE FIXED LINE, ON PURPOSE (founder call, 2026-09-12). Instagram and YouTube
+// posts lead with the same short sentence, CAPTION below, and TikTok with the
+// same pitch pointed at its pinned comment, TIKTOK_CAPTION. The clip
 // itself carries no marketing text — a post that reads as an ad gets scrolled
 // past, and words on screen pull attention off the art — so the caption is where
 // a post quietly says this is an app, not an account that shares daily art.
 //   - Short, because a phone shows a line or two before "more".
 //   - No URL, because those three platforms don't make caption links clickable.
-//     The profile's bio link does that job.
+//     The profile's bio link does that job, or on TikTok the pinned comment.
 //   - No "Mac", deliberately: interest from people on other platforms is a signal
 //     worth seeing.
 //
@@ -22,10 +23,10 @@
 // piece, because pin titles are what Pinterest search ranks.
 //
 // TikTok also gets LINK_COMMENT, which the poster comments under each video and
-// pins. That account can't have a bio link (it has no Business switch, and a
-// personal account needs 1,000 followers), so its "Link in bio" points at
-// nothing and the pinned comment is where the address actually lives. Plain
-// text, because TikTok doesn't make URLs in comments clickable either.
+// pins. That account can't have a clickable bio link (it has no Business switch,
+// and a personal account needs 1,000 followers), so its caption says "Link in
+// comment and bio" (founder call, 2026-09-14): the pinned comment carries the
+// address, and the bio carries it as plain text. TikTok makes neither clickable.
 //
 // Everything is a pure function of the piece, so a retried post republishes
 // byte-identical copy.
@@ -35,8 +36,11 @@ import { SITE_ORIGIN, landingUrl } from './pieces.mjs'
 /** What the app is, in as few words as a phone will show. */
 const PITCH = 'Animated art screensaver app'
 
-/** The first (on a phone, often the only visible) line of every IG / TikTok / YouTube post. */
+/** The first (on a phone, often the only visible) line of every IG / YouTube post. */
 export const CAPTION = `${PITCH} - Link in bio`
+
+/** TikTok's first line: its link lives in the pinned comment, and as plain text in the bio. */
+const TIKTOK_CAPTION = `${PITCH} - Link in comment and bio`
 
 /** Pinned under every TikTok video. Verified visible to signed-out viewers, 2026-09-14. */
 const LINK_COMMENT = `Get the screensaver app: ${SITE_ORIGIN.replace(/^https?:\/\//, '')}`
@@ -52,7 +56,7 @@ export function buildCaptions({ title, style, webSlug }) {
   return {
     instagram: { text: `${CAPTION}\n\n${piece}` },
     // Two broad hashtags: TikTok's search leans on them more than the others' does.
-    tiktok: { text: `${CAPTION}\n\n${piece}\n#screensaver #animatedart`, linkComment: LINK_COMMENT },
+    tiktok: { text: `${TIKTOK_CAPTION}\n\n${piece}\n#screensaver #animatedart`, linkComment: LINK_COMMENT },
     youtube: {
       // The Shorts player shows the title, so the fixed line goes there; the
       // description (rarely seen, but searched) names the piece.
@@ -77,9 +81,9 @@ export function captionsMarkdown({ title, style, webSlug }) {
   return `# Social captions — ${title}
 
 _These are exactly the strings \`post-social.mjs\` publishes, so what you read here
-is what went out. Instagram, TikTok and YouTube lead with the same fixed line and
-leave the linking to the profile's bio, or on TikTok to a pinned comment; the pin
-links to ${landing}._
+is what went out. Instagram and YouTube lead with the same fixed line and leave
+the linking to the profile's bio; TikTok's points at a pinned comment and the bio;
+the pin links to ${landing}._
 
 ## Instagram Reels
 \`\`\`

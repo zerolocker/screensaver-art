@@ -61,7 +61,7 @@ Legend: ✅ live · 🔨 built, not yet used · ⏭️ next · 🅿️ parked (n
 | **Product Hunt launch** | ❌ **ran 2026-07-26 — flopped** | **5 upvotes, 2 comments, no badge, no measurable traffic.** Post-mortem → §4.2. Not re-runnable for months. |
 | **Show HN** | ❌ **dropped as a plan item** | Blocked at submission 2026-08-02 (HN not taking new Show HN posts). Copy stays loaded; **nothing may depend on it reopening.** |
 | Reddit (r/macapps + visual subs) | ⏭️ **never run** | Day-2 slot unused. Highest-fit free channel, ~20 min (`launch-kit.md` §3). |
-| **Daily social posting + aggregator** | ✅ **live 2026-09-07** | §4.1 + §11 (B) — `marketing/post-social.mjs`, hung off the nightly curation (`AUTOMATED_CURATION.md` step 8). One piece a night to **all four** channels: IG / YT / TikTok lead with one fixed caption (*Animated art screensaver app - Link in bio*) and pins link to their own `/art/<slug>` + UTM (since 2026-09-12; before that every post carried its own link). **Verified with real posts on IG / YT / TikTok / Pinterest.** **All four channels on Zernio since 2026-09-12** (upload-post dropped); 4 accounts ≈ $12/mo. **TikTok, whose profile can't carry a link, gets the site's address as a pinned comment under each video (2026-09-14).** |
+| **Daily social posting + aggregator** | ✅ **live 2026-09-07** | §4.1 + §11 (B) — `marketing/post-social.mjs`, hung off the nightly curation (`AUTOMATED_CURATION.md` step 8). One piece a night to **all four** channels: IG / YT lead with one fixed caption (*Animated art screensaver app - Link in bio*; TikTok's ends *Link in comment and bio*) and pins link to their own `/art/<slug>` + UTM (since 2026-09-12; before that every post carried its own link). **Verified with real posts on IG / YT / TikTok / Pinterest.** **All four channels on Zernio since 2026-09-12** (upload-post dropped); 4 accounts ≈ $12/mo. **TikTok, whose profile can't carry a link, gets the site's address as a pinned comment under each video (2026-09-14).** |
 | **Clip audio: Lyria music bed** | ✅ **live 2026-09-07, per-piece 2026-09-08** | §11.2 — `make-social-assets.mjs --music-prompt` scores the posted clip at −9 dB with music written for *that* artwork. The nightly agent writes the prompt (`PROMPT_GUIDANCE.md` → Music prompts); it is recorded as `music_prompt` in `gallery.json` and the MP3 is temp-only. The 5-bed shared library it replaced is deleted. |
 | Brand-name / on-page SEO basics | ✅ live | 2026-07-17 (PRs #68, #69): keyword title, shared meta description, JSON-LD. |
 | **Gallery landing pages** (`/gallery`, `/art/<slug>`, `/era/<tag>`) | ✅ **shipped 2026-08-03** | §4.3 — dropped then **reversed** the same day, justified as **social landing pages, not SEO**. 262 piece pages + 15 era wings + a 6-page index + a self-growing sitemap, all prerendered from `gallery.json`. `/art/*` is `noindex, follow` behind one constant (`INDEX_ART_PAGES`); `/gallery` + `/era/*` are indexable. `/style/<movement>` still deferred (203 labels, 158 singletons). **Ready for #1's posts.** |
@@ -121,9 +121,10 @@ month. Go through the four accounts ([IG](https://www.instagram.com/living_art_s
   Since 2026-09-12 the art is zoomed 1.5× (sides cropped) with the piece's title in a pill under
   it: **check whether the title looks misaligned, or sits under Instagram's caption.** The art
   was deliberately left centred so real posts could answer that; lifting it is the fix if so.
-- **The fixed caption** — IG / TikTok / YouTube all lead with *Screensaver app with animated
-  art - Link in bio* (founder call, 2026-09-12). Is anyone asking what it is, or asking for other
-  platforms? The caption leaves out "Mac" on purpose so that interest can show up.
+- **The fixed caption** — IG / YouTube lead with *Animated art screensaver app - Link in bio*
+  and TikTok with *… - Link in comment and bio* (founder calls, 2026-09-12 and -14). Is anyone
+  asking what it is, or asking for other platforms? The caption leaves out "Mac" on purpose so
+  that interest can show up.
 - **Every pin's link resolves** to that piece's `/art/<slug>` page, not a 404 and not the home
   page, and **the IG + YouTube bio links** reach the site.
 - **TikTok's pinned comment** — every video since 2026-09-14 should open its comments on *Get
@@ -161,13 +162,10 @@ Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batc
 - **Chore: the profile bio links** (founder is on it, 2026-09-12). IG / YouTube captions say
   *Link in bio*, so the bio link is the whole funnel for those two. Tag both, e.g.
   `https://living-art-screensaver.com/?utm_source=instagram&utm_medium=bio`, or the 2026-09-22
-  review can't tell the channels apart. **TikTok can't have a bio link** (2026-09-14): the account
-  has no Business switch, and a personal account needs 1,000 followers. Its stand-in is the
-  pinned comment the poster adds under each video; a plain-text address in the bio is still
-  worth the minute.
-- **TikTok's caption still says *Link in bio*** (founder call). Its profile has no link, so the
-  line points at nothing; the address is in the pinned comment. Pick the replacement, e.g.
-  *Link in comments*.
+  review can't tell the channels apart. **TikTok can't have a clickable bio link** (2026-09-14):
+  the account has no Business switch, and a personal account needs 1,000 followers. Its caption
+  says *Link in comment and bio*, so **put `living-art-screensaver.com` in TikTok's bio as plain
+  text**; the pinned comment is automated.
 - **Email-send path** — Supabase mailer / Resend / other. Blocks §4.6 + §9; only viable if the
   send automates off the nightly job.
 - **Was the PH launch ever *featured*?** (unfeatured ⇒ near-invisible, which changes how we read
@@ -196,7 +194,8 @@ Ordered for **0 h/week**: runs-itself first, build-once second, human tasks batc
   (TikTok rejects a pin sent the instant the comment lands, so the poster retries), and the
   founder confirmed it visible signed out. Plain text, since TikTok comments aren't clickable. A
   failure warns and is kept on the ledger entry; it never fails the run, because the video is
-  already out. Open founder call: TikTok's caption wording. _(This PR.)_
+  already out. **TikTok's caption now ends *Link in comment and bio*** (founder call); IG / YouTube
+  keep *Link in bio*. _(This PR.)_
 - **2026-09-12** — **Social clips: zoomed art, its title underneath, one fixed caption.** Founder
   call after reviewing the first posts. **No brand or marketing text in the clip** (a post that
   reads as an ad gets scrolled past, and words on screen pull attention off the art), so the URL

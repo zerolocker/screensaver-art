@@ -182,7 +182,9 @@ falling back to the account default).
    build if the two ever disagree. **A pin's destination URL cannot be edited after
    publishing** — which is the whole reason none of this is improvised at post time.
    Instagram, TikTok and YouTube posts carry no link at all: their captions can't be
-   clicked, so they say *Link in bio* and the profile does the linking.
+   clicked, so Instagram and YouTube say *Link in bio* and the profile does the
+   linking. TikTok's profile can't carry a link, so it says *Link in comment and bio*
+   and gets the address as a pinned comment (see *Caption copy*).
 2. **It refuses to pin a dead link.** The landing page only exists once Vercel has
    rebuilt from the pushed `gallery.json`, so the poster polls it before pinning and
    waits the deploy out rather than pinning a 404. The other three channels don't wait.
@@ -205,15 +207,18 @@ ourselves. Spend the ~2 min/day replying to early comments instead.
 The copy lives in `lib/captions.mjs` and is shared: `captions.md` shows exactly what
 `post-social.mjs` will publish, so what you read is what went out.
 
-**Instagram, TikTok and YouTube lead with one fixed line** (founder call, 2026-09-12):
+**Instagram and YouTube lead with one fixed line** (founder call, 2026-09-12), and TikTok
+with the same pitch pointed at its pinned comment (founder call, 2026-09-14):
 
 ```
-Animated art screensaver app - Link in bio
+Animated art screensaver app - Link in bio               (Instagram, YouTube)
+Animated art screensaver app - Link in comment and bio   (TikTok)
 ```
 
 - **It says this is an app**, not an account that shares daily art, in the few words a
   phone shows before "more".
-- **No URL.** Those three platforms don't make caption links clickable; the bio link does.
+- **No URL.** Those three platforms don't make caption links clickable; the bio link
+  does, or on TikTok the pinned comment.
 - **No "Mac", on purpose.** Interest from people on other platforms is a signal worth
   seeing.
 
@@ -227,6 +232,24 @@ and the media together.
 title names the piece (*Animated art screensaver app: The Street Food Stall*),
 because pin titles are what Pinterest search ranks, and its link is the piece's
 `/art/<slug>` page.
+
+**TikTok also gets a pinned comment**, *Get the screensaver app:
+living-art-screensaver.com*, posted under each video once it is live (since 2026-09-14).
+The TikTok account can't have a bio link: it has no Business switch, and a personal
+account only gets one at 1,000 followers. So its caption says *Link in comment and
+bio*: the pinned comment carries the address, and the bio carries it as plain text
+(set by hand, once).
+
+- **Plain text, not a link.** TikTok doesn't make URLs in comments clickable. The
+  comment was checked by hand to be visible to signed-out viewers.
+- **Needs Zernio's TikTok Business app connection** (every connection since
+  2026-09-10). An account still on the old developer app gets
+  `400 PLATFORM_LIMITATION`; reconnecting it in Zernio moves it over.
+- **The pin is retried.** A pin sent the instant the comment lands fails, because
+  TikTok hasn't registered the comment yet, so the poster waits 15s between tries.
+- **A failure is a warning, never a failed run.** The video is already public, and
+  a post recorded as failed would be published again the next night. The error is
+  printed (`⚠ tiktok link comment`) and kept on the ledger entry as `linkComment`.
 
 Everything is a pure function of the piece, so a retried post republishes
 byte-identical copy.

@@ -92,9 +92,10 @@ You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't
     YouTube) and a 2:3 clip (Pinterest) with the art zoomed, the piece's title in a pill
     under it and the music mixed at −9 dB, writes `captions.md` + `meta.json`, and
     **records `music_prompt` on that piece's `gallery.json` entry**. The second publishes it
-    through Zernio to all four channels: Instagram, TikTok and YouTube lead with the fixed
-    caption *Animated art screensaver app - Link in bio*, and the pin links to that
-    piece's own `/art/<slug>` page. Details in
+    through Zernio to all four channels: Instagram and YouTube lead with the fixed caption
+    *Animated art screensaver app - Link in bio*, and the pin links to that piece's own
+    `/art/<slug>` page. TikTok, whose profile can't carry a link, says *Link in comment and
+    bio* instead and gets the site's address as a pinned comment under the video. Details in
     [`marketing/README.md`](../marketing/README.md).
 
     **8d. Commit the recorded prompt:**

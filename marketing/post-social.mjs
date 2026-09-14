@@ -15,6 +15,9 @@
 // upload-post; consolidating onto Zernio is cheaper at four accounts and leaves one
 // API to keep working.
 //
+// TikTok also gets the site's address as a pinned comment under each video,
+// because that account has no bio link (see "TikTok's link comment" below).
+//
 // Usage:
 //   bash curation/with-secrets.sh ZERNIO_API_KEY -- \
 //     node marketing/post-social.mjs --check          # preflight, posts nothing
@@ -389,6 +392,7 @@ async function postViaZernio({ piece, captions, platforms, dryRun, format }) {
         }),
       }, { label: 'zernio tiktok dry-run' })
       log(`            tiktok can publish: ${body.canPublish} — ${body.tiktok?.[0]?.reason ?? 'no reason given'}`)
+      log(`            tiktok pinned comment: ${captions.tiktok.linkComment}`)
     }
     if (targets.includes('youtube')) log(`            youtube title: ${captions.youtube.title}`)
     if (targets.includes('pinterest')) log(`            pin link: ${captions.pinterest.link}${boardId ? ` (board ${boardId})` : ''}`)
@@ -454,7 +458,7 @@ async function publishOne({ piece, file, captions, platform, account, boardId, m
   const inFlight = IN_FLIGHT.has(e.status)
   if (inFlight) warn(`  … ${platform}: still ${e.status} on Zernio (it retries on its own)` +
     (e.errorMessage ? ` — last error: ${e.errorMessage}` : ''))
-  return {
+  const result = {
     // An in-flight platform counts as sent: Zernio owns the retry from here, and
     // calling it a failure would make the next run publish a duplicate.
     ok: e.status === 'published' || inFlight,
@@ -467,6 +471,15 @@ async function publishOne({ piece, file, captions, platform, account, boardId, m
     error: inFlight ? null : (e.errorMessage || (e.status !== 'published' ? `status: ${e.status ?? 'unknown'}` : null)),
     postId,
   }
+  if (platform === 'tiktok' && (e.status === 'published' || inFlight)) {
+    // The comment's failure must never become the post's: the video is already
+    // out, and a post recorded as failed would be published again the next night.
+    result.linkComment = inFlight
+      ? { ok: false, error: 'the video was still publishing, so nothing was commented under it' }
+      : await pinLinkComment({ accountId: account._id, postId, videoId: e.platformPostId, message: captions.tiktok.linkComment })
+        .catch((err) => ({ ok: false, error: err.message }))
+  }
+  return result
 }
 
 /**
@@ -493,6 +506,73 @@ async function settleZernio(postId, entry) {
     }
   }
   return entry
+}
+
+// ── TikTok's link comment ───────────────────────────────────────────────────
+//
+// TikTok is the one channel with nowhere to put a clickable link. The account has
+// no Business switch, and a personal account gets no bio link until 1,000
+// followers. So each video gets a comment carrying the address, pinned to the top,
+// and its caption says "Link in comment and bio". The comment is plain text, since
+// TikTok doesn't make URLs in comments clickable, but it sits where people read.
+//
+// Comments need the account on Zernio's TikTok Business app connection (every
+// connection since 2026-09-10). One still on the old developer app gets
+// 400 PLATFORM_LIMITATION; reconnecting the account in Zernio moves it over.
+
+/** A real TikTok video id. Until TikTok reports it, Zernio holds a `v_pub_url~…` publish id. */
+const TIKTOK_VIDEO_ID = /^\d+$/
+
+/** The video id lands on Zernio's record minutes after the post publishes, so wait for it. */
+async function tiktokVideoId(postId, known, { attempts = 20, waitMs = 30_000 } = {}) {
+  if (TIKTOK_VIDEO_ID.test(known ?? '')) return known
+  for (let i = 0; i < attempts && postId; i++) {
+    await sleep(waitMs)
+    try {
+      const { body } = await request(`${ZERNIO_BASE}/posts/${postId}`, { headers: zernioAuth() },
+        { label: 'zernio post status', retries: 1 })
+      const id = (body.post || body).platforms?.[0]?.platformPostId
+      if (TIKTOK_VIDEO_ID.test(id ?? '')) return id
+    } catch {
+      // one failed read isn't a verdict; keep waiting
+    }
+  }
+  return null
+}
+
+async function pinLinkComment({ accountId, postId, videoId, message }) {
+  const id = await tiktokVideoId(postId, videoId)
+  if (!id) return { ok: false, error: 'TikTok never reported the video id, so nothing was commented' }
+
+  const comments = `${ZERNIO_BASE}/inbox/comments/${id}`
+  const { ok, status, body } = await request(comments, {
+    method: 'POST',
+    headers: {
+      ...zernioAuth(),
+      'Content-Type': 'application/json',
+      // One comment per video: a retried call within 24h replays the first instead.
+      'Idempotency-Key': `lart-link-comment-${id}`,
+    },
+    body: JSON.stringify({ accountId, message }),
+  }, { label: 'zernio tiktok comment' })
+  const commentId = body.data?.commentId
+  if (!ok || !commentId) return { ok: false, videoId: id, error: body.error || `HTTP ${status}` }
+
+  // A pin sent the instant the comment lands fails with a bare platform_error,
+  // because TikTok hasn't registered the comment yet. In the live test the same
+  // call succeeded ~30s later.
+  let error
+  for (let i = 0; i < 6; i++) {
+    await sleep(15_000)
+    const pin = await request(`${comments}/${commentId}/pin`, {
+      method: 'POST',
+      headers: { ...zernioAuth(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ accountId }),
+    }, { label: 'zernio tiktok pin', retries: 1 })
+    if (pin.ok && pin.body.pinned) return { ok: true, videoId: id, commentId }
+    error = pin.body.error || `HTTP ${pin.status}`
+  }
+  return { ok: false, videoId: id, commentId, error: `commented but not pinned: ${error}` }
 }
 
 // ── preflight ───────────────────────────────────────────────────────────────
@@ -579,6 +659,8 @@ async function main() {
       if (r.ok) log(`  ${r.pending ? '…' : '✓'} ${platform}${r.url ? ` → ${r.url}` : ''}` +
         `${r.dryRun ? ' (dry run)' : ''}${r.pending ? ' (queued at Zernio, publishing)' : ''}`)
       else { warn(`  ✗ ${platform}: ${r.error || 'failed'}`); failures++ }
+      if (r.linkComment?.ok) log('    ✓ link comment pinned')
+      else if (r.linkComment) warn(`    ⚠ tiktok link comment: ${r.linkComment.error}`)
       if (!a.dryRun) recordPost(a.out, ledger, piece.assetSlug, platform, r)
     }
   }

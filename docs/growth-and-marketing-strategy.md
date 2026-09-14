@@ -430,7 +430,9 @@ You can largely automate the content flywheel off your existing nightly pipeline
   (TikTok's says *Link in comment and bio* since 2026-09-14, as its profile can't carry a link),
   with only the piece's name varying beneath it (`marketing/lib/captions.mjs`). The pitch lives
   in that one line rather than in varied copy, so the variant pools that preceded it are gone,
-  and a per-piece Gemini caption is off the table unless the fixed line stops working.
+  and a per-piece Gemini caption is off the table unless the fixed line stops working. Hashtags do
+  vary per piece, but by rule rather than generation: its movement and era
+  (`marketing/lib/hashtags.mjs`, 2026-09-14).
 - **Total: ~3–4 days of build + $0/mo to start, ~$16–24/mo once IG + YT leave the free tier**,
   hanging off the nightly job → near-unattended daily multi-platform marketing.
 - **Keep a human in the loop ~2 min/day** (reply to comments, add a trending sound). The reason

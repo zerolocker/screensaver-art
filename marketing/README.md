@@ -17,6 +17,7 @@ once** — these are authored pieces, and many are deliberately non-looping.
 | `make-social-assets.mjs` | renders the clips + `captions.md` + `meta.json` |
 | `post-social.mjs` | publishes one rendered piece to all four channels |
 | `lib/captions.mjs` | the caption copy, shared by both |
+| `lib/hashtags.mjs` | each piece's hashtags + search phrase, from its style and era |
 | `lib/title_pill.py` | renders the title pill burned under the art (Pillow) |
 | `lib/music.mjs` | generates the per-piece bed (one Lyria call, via the `lyria-music-gen` skill) |
 
@@ -223,15 +224,35 @@ Animated art screensaver app - Link in comment and bio   (TikTok)
   seeing.
 
 Under it, after a blank line, each post names its piece in the same words as the title
-pill, so posts stay distinguishable to search. TikTok adds `#screensaver #animatedart`.
+pill, so posts stay distinguishable to search, followed by its hashtags (below).
 On YouTube the fixed line is the title and the piece's name is the description. A
 caption repeated every night isn't a duplicate to Zernio, which fingerprints the text
 and the media together.
 
-**Pinterest is different:** a pin is itself a link, so it never says "Link in bio". Its
-title names the piece (*Animated art screensaver app: The Street Food Stall*),
-because pin titles are what Pinterest search ranks, and its link is the piece's
-`/art/<slug>` page.
+**Pinterest is different:** a pin is itself a link, so it never says "Link in bio", and
+its link is the piece's `/art/<slug>` page. Pinterest search ranks the words in a pin, and
+people search a style (*ukiyo-e*), not a piece's name. So since 2026-09-14 the title leads
+with the style (*Animated Ukiyo-e: Mount Fuji | Art screensaver app*), the description
+names the art in plain words (*Japanese art, gently animated for your screensaver…*), and
+pins carry no hashtags.
+
+**Hashtags come from the piece** (`lib/hashtags.mjs`, since 2026-09-14). Instagram and
+TikTok posts carry `#screensaver #animatedart`, then up to two of the piece's own: one for
+its movement or country, one for its era. *Mount Fuji · Ukiyo-e* gets
+`#screensaver #animatedart #ukiyoe #japaneseart`. A YouTube description gets three, the
+piece's own first, because YouTube shows up to three beside the title.
+
+- **True of the piece.** An era gets a hashtag only if it fits every style filed under it.
+  *Chinese & Korean* has none (`#chineseart` is wrong on a Joseon painting), so those
+  pieces take theirs from the style.
+- **Has an audience.** Most styles are used once, so only well-known movements, schools
+  and countries map to a tag. Each tag was checked against TikTok's own counts: tags under
+  ~5M views were dropped, and where the bare word is used for much else the art-specific
+  form wins (`#renaissanceart` over `#renaissance`, `#cyberpunkart` over `#cyberpunk`).
+- **Few, on purpose.** Instagram caps a post at five hashtags and says a few targeted ones
+  beat generic ones, so there is no `#art`.
+- **The era comes from `meta.json`** (`era`, written at render time), or from
+  `gallery.json` for clips rendered before that field existed.
 
 **TikTok also gets a pinned comment**, *Get the screensaver app:
 living-art-screensaver.com*, posted under each video once it is live (since 2026-09-14).

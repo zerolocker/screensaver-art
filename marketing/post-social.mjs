@@ -41,7 +41,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { buildCaptions } from './lib/captions.mjs'
-import { REPO_ROOT } from './lib/pieces.mjs'
+import { REPO_ROOT, loadGallery } from './lib/pieces.mjs'
 
 const ZERNIO_BASE = 'https://zernio.com/api/v1'
 
@@ -175,6 +175,15 @@ function clipFor(piece, platform, override) {
   if (piece.clips[wanted]) return { format: wanted, file: piece.clips[wanted] }
   if (!override && piece.clips['9x16']) return { format: '9x16', file: piece.clips['9x16'] }
   return null
+}
+
+/**
+ * A piece's gallery tag, which its hashtags and pin wording build on. Clips
+ * rendered before meta.json recorded `era` (2026-09-14) look it up in gallery.json.
+ */
+function eraOf(piece) {
+  if (piece.era !== undefined) return piece.era
+  return loadGallery().find((e) => e.src === piece.src)?.tags?.[0] ?? null
 }
 
 /**
@@ -636,7 +645,7 @@ async function main() {
     if (todo.length === 0) continue
     if (!piece.webSlug && todo.includes('pinterest')) warn('  ⚠ no gallery slug for this piece — the pin will link to the home page')
 
-    const captions = buildCaptions({ title: piece.title, style: piece.style, webSlug: piece.webSlug })
+    const captions = buildCaptions({ title: piece.title, style: piece.style, era: eraOf(piece), webSlug: piece.webSlug })
     const results = {}
 
     // Only the pin carries a link, so only the pin waits on the landing page.

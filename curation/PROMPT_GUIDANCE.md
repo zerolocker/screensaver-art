@@ -1848,4 +1848,59 @@ the ≤1 cap), bright/dense/colourful, chosen to hit wings under-used the last w
   gave a dramatic tusk-lock shove with intertwining (not merged) trunks and billowing dust,
   a mild zoom-in that tightened it. A good template for a two-large-animal combat mover.
 
+### 2026-09-14 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, **all intact-medium** (0 archaeological — within
+the ≤1 cap), bright/dense/colourful, with four *distinct* primary movers and four
+distinct registers/palettes:
+- **The Flag-Throwers — Italian Renaissance Pageant** (`Renaissance & Baroque`,
+  non-looping) — a *flag-toss* mover: sbandieratori hurl huge heraldic banners spinning
+  up into a blue sky, the central thrower catching and flourishing his. Bright Quattrocento
+  tempera-and-gold processional register (new style added). **Pro** still, first-try pass.
+  **Posted to social** (step 8) — the round's standout feed clip (one obvious high-contrast
+  central subject reaching up, jewel colour, dramatic).
+- **The Human Tower (Castellers) — Contemporary Catalan Illustration** (`Contemporary`,
+  non-looping) — a *human-tower-crown* mover: the enxaneta scrambles to the top and throws
+  a fist up; the tower stays rock-steady. Painterly gouache-and-coloured-pencil (NOT flat
+  vector). **Pro** still, first-try pass.
+- **The Spice Market — Modern Indian Painting** (`South & Southeast Asian`, non-looping) —
+  a *spice-pour + sack-heave* mover: a merchant pours a bright orange spice stream onto a
+  mound while a porter hoists a jute sack. Hyper-saturated folk-modern Indian gouache (new
+  style added), chosen partly to satisfy the palette/density floor. **Pro** still.
+- **The Diving Lido — Mid-Century Modernism** (`Modern`, non-looping) — a *dive + splash*
+  mover: a diver arcs off the board and knifes into a crowded turquoise lido, splash
+  blooming. Flat mid-century-modernist planes (existing style). **Pro** still.
+
+**What worked / reinforced:**
+- **Full-title scan is now essential, not optional** ([[curation-check-full-title-list]]).
+  At 427 pieces **every one of my ~8 first-instinct ideas was already present** — carousel
+  (×3), grape harvest (exact), cheese market (exact), lion/dragon dance, dyers, barn raising,
+  Highland Games, and flamenco. Grepping subject+mover across the whole gallery is what found
+  the four genuinely-absent pieces above. Budget for it: expect first instincts to collide.
+- **All 4 stills passed the vision gate; 3 of 4 videos accepted first try.** Standing image
+  rules kept producing bright, dense, edge-to-edge frames. The flag-toss followed the 09-13
+  juggling lesson (flags kept *"large, separate, rigid, never crossing/merging,"* focal on one
+  central thrower) → no morph, no floating faces. The castell held first try with the
+  held-pose logic (*"tower stays standing, never collapses,"* enxaneta *"throws one arm up and
+  holds"*).
+- **Static-area faux-text → patch, not reroll (reinforced).** The Spice Market still came back
+  clean except a small pinned wall-notice covered in illegible pseudo-writing
+  ([[curation-poster-summons-object]] text family). Patched it out rather than reroll the
+  otherwise-excellent dense frame. **Tool takeaway:** for a flat/painterly wall, a **solid
+  median-wall-colour feathered fill** (sample several clean wall points, take the median, fill
+  the bbox, feather the mask, then one wider Gaussian-blur blend pass) works; a first attempt
+  **mirror-tiling** a clean strip *dragged a dark vertical shadow* from the source into the
+  patch and looked worse — don't mirror-tile a wall that has directional shading. Pre-patch
+  original kept in the scratchpad ([[curation-keep-rejected-renders]]).
+- **Bright flat styles: forbid the underwater black silhouette on a dive/swim subject.** The
+  Diving Lido's only reroll: after the dive Veo rendered the submerged swimmer as a heavy
+  near-**black silhouette** gliding underwater — jarring in a flat, evenly-lit mid-century
+  palette, and it was the *lingering final frame* (bad on a screensaver crossfade). Reroll fix
+  that worked: instruct the diver to *"surface and swim away as a bright clearly-coloured
+  figure"* + negatives *black silhouette / dark underwater shape / no figure turns into a dark
+  shape*. Reroll gave a clean bright splash-and-surface ending. **Takeaway: for any dive/pool
+  subject in a bright flat register, pre-empt the dark submerged shape and have the swimmer
+  surface — Veo's default underwater figure is a near-black blob.** Reject kept in scratchpad.
+
 <!-- Claude appends new rounds above this line. -->

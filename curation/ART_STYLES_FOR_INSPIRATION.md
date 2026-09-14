@@ -89,6 +89,7 @@ When you add a new style, append it under the section it best fits.
 - American Realism (Thomas Eakins / Winslow Homer — sober figurative realism: rowing crews, sport, coastal and everyday American life)
 - Italian Divisionism (Segantini / Pellizza da Volpedo — Neo-Impressionist painting built from separated threads of pure complementary colour; Alpine pastoral and rural-labour subjects, brilliant clear mountain light)
 - Flemish Renaissance (Pieter Bruegel the Elder — densely-composed peasant village life: kermis fairs, maypole and wedding dances, seasonal labour under bright even daylight)
+- Italian Quattrocento Civic-Festival / Processional Painting (Gozzoli / Carpaccio idiom — bright tempera-and-gold panel processions and piazza pageants: flag-throwers/sbandieratori tossing heraldic banners, the Palio, guild parades, drummers and trumpeters; densely-packed jewel-toned crowds against Renaissance loggias and palazzi, viewed straight-on)
 - Spanish Romanticism (Goya's Tauromaquia / Eugenio Lucas — sunlit bullring corridas, festivals and majas; loose confident brushwork, saturated vermilion-and-gold palette)
 - Belle Époque café-concert / colour-lithograph illustration (1890s Montmartre — Chéret / Toulouse-Lautrec register: bold flat areas of saturated colour and clean confident outlines; cabaret and can-can stage scenes, packed audiences, footlit theatre interiors. Say "illustration/painting", never "poster", and forbid text — see the poster-summons-object rule)
 
@@ -174,6 +175,7 @@ is the **AI-cliché** test in `PROMPT_GUIDANCE.md` ("Brand & taste"), not recenc
 - Contemporary Flat Vector Illustration (modern editorial / travel-poster look — bold clean shapes, subtle grain & gradients, saturated colour planes; e.g. a balloon festival, a busy harbour)
 - Mid-century Wildlife / National-Park Gouache Illustration (bright naturalist poster-gouache — a breaching whale, wheeling gulls, animals set in luminous flat-planed land- and seascapes; full-bleed, no lettering)
 - Contemporary Outdoor-Adventure Illustration (bold saturated painterly sports scenes — whitewater rafting, climbing, kayaking, skiing — with dynamic action, spray/dust and vivid landscape colour)
+- Contemporary European Folk-Festival Illustration (bold painterly gouache-and-coloured-pencil — densely-packed European festival scenes such as a Catalan castell/human tower, sbandieratori, a village fête or running of the bulls; hand-painted texture, saturated colour to all four edges, NOT flat vector)
 
 ## Techniques, media & cross-cutting visual styles
 
@@ -240,6 +242,7 @@ is the **AI-cliché** test in `PROMPT_GUIDANCE.md` ("Brand & taste"), not recenc
 - Nathdwara / Phad Rajasthani Folk Painting (deep opaque hand-painted gouache on cloth — softly textured brushwork, glowing scarlet/saffron/magenta/emerald pigment, fine white & gold detailing; densely-packed festival scenes such as a Navratri garba & dandiya stick-dance in a decorated haveli courtyard, rangoli-covered floor, marigold garlands; painterly, NOT flat vector/clip-art)
 - Deccan Painting (Bijapur / Golconda)
 - Kerala Mural (South Indian temple-mural tradition — brilliant ochre/red/emerald/turmeric flat colour, confident outlines, densely-packed festival & mythological scenes; e.g. a snake-boat race on the backwaters)
+- Modern Indian Bazaar Painting (bright folk-modern hand-painted gouache — densely-packed Indian street-market/spice-bazaar scenes: towering mounds of coloured spice, saris and turbans, brass scales, hanging chillies and garlic, temple spires; hyper-saturated edge-to-edge, painterly NOT flat vector)
 - Gond painting
 - Gandharan Buddhist sculpture
 - Gupta Empire Mathura Sculpture

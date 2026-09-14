@@ -27,7 +27,7 @@
 import { landingUrl } from './pieces.mjs'
 
 /** What the app is, in as few words as a phone will show. */
-const PITCH = 'Screensaver app with animated art'
+const PITCH = 'Animated art screensaver app'
 
 /** The first (on a phone, often the only visible) line of every IG / TikTok / YouTube post. */
 export const CAPTION = `${PITCH} - Link in bio`

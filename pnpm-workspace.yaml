@@ -2,3 +2,8 @@ packages:
   - "packages/*"
   - "living-art-screensaver-web"
   - "electron-app"
+allowBuilds:
+  core-js: false
+  electron: true
+  esbuild: true
+  sharp: true

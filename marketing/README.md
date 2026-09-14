@@ -208,7 +208,7 @@ The copy lives in `lib/captions.mjs` and is shared: `captions.md` shows exactly 
 **Instagram, TikTok and YouTube lead with one fixed line** (founder call, 2026-09-12):
 
 ```
-Screensaver app with animated art - Link in bio
+Animated art screensaver app - Link in bio
 ```
 
 - **It says this is an app**, not an account that shares daily art, in the few words a
@@ -224,7 +224,7 @@ caption repeated every night isn't a duplicate to Zernio, which fingerprints the
 and the media together.
 
 **Pinterest is different:** a pin is itself a link, so it never says "Link in bio". Its
-title names the piece (*Screensaver app with animated art: The Street Food Stall*),
+title names the piece (*Animated art screensaver app: The Street Food Stall*),
 because pin titles are what Pinterest search ranks, and its link is the piece's
 `/art/<slug>` page.
 

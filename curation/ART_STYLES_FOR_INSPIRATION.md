@@ -201,6 +201,8 @@ is the **AI-cliché** test in `PROMPT_GUIDANCE.md` ("Brand & taste"), not recenc
 - Haitian Naïve Painting (flat bright folk-art, densely-packed Caribbean market & celebration scenes)
 - Contemporary West African Narrative Painting (modern Nigerian/Ghanaian festival painting — bold saturated opaque colour, confident dark outlines, richly patterned wax-print cloth; densely-packed village festivals, masquerade dances, drummers and markets; painterly, NOT flat-vector)
 - Papua New Guinea Highlands Festival Painting (contemporary Melanesian folk painting — bold flat brightly-outlined figures, brilliant tropical colour; sing-sing gatherings of plumed dancers in towering bird-of-paradise headdresses, face-paint, grass skirts, kundu drummers; densely-packed edge-to-edge)
+- Contemporary Afro-Brazilian Narrative Painting (bold saturated hand-painted scenes of Bahian life — capoeira rodas, samba, candomblé festivals, fishermen; warm painterly brushwork, confident modelling, colourful Pelourinho colonial facades and palms; one clear focal action, densely-composed edge-to-edge, NOT flat vector)
+- Modern Indonesian Folk-Modern Painting (bright souvenir-register Indonesian/SE-Asian acrylic painting — hyper-saturated tropical colour, confident glossy modelling; densely-packed village & festival scenes such as a Pacu Jawi bull race in a flooded paddy, market or harbour; emerald paddies, coconut palms, crowds in sarongs, edge-to-edge, NOT flat vector)
 - Dunhuang Mogao Cave Mural
 - Sumi-e Ink Wash
 - Balinese Kamasan Painting (earth pigment on cloth, Bali)

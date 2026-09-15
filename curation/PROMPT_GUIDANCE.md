@@ -1903,4 +1903,57 @@ distinct registers/palettes:
   subject in a bright flat register, pre-empt the dark submerged shape and have the swimmer
   surface — Veo's default underwater figure is a near-black blob.** Reject kept in scratchpad.
 
+### 2026-09-15 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, **all intact-medium** (0 archaeological — within
+the ≤1 cap), bright/dense/colourful, with four *distinct* primary movers, chosen to
+break a recent animal-heavy streak in the wings and to spread across regions:
+- **The Farmers' Band (Korean Pungmul)** — `Chinese & Korean`, non-looping — a
+  *ribbon-spin* mover: a sangmo hat-spinner whirls one long white paper streamer in
+  a continuous overhead loop, drummers/gong players striking around him, dense
+  hanbok crowd. Bright Joseon-minhwa folk register.
+- **The Buffalo Race (Pacu Jawi)** — `South & Southeast Asian`, non-looping — a
+  *charging-animal + mud-spray* mover: a pair of racing bulls barrel head-on through
+  a flooded paddy, jockey dragged behind gripping the tails. Hyper-saturated
+  Indonesian folk-modern painting (new style added to inspiration). The night's
+  standout frame.
+- **The Tango** — `Modern`, non-looping — a *partnered-dance* mover: an Art Deco
+  Buenos Aires couple sweep through a turn → back-bend dip → rise into embrace, the
+  scarlet skirt swirling; orquesta típica and other couples behind.
+- **The Capoeira Roda** — `Contemporary`, non-looping — an *acrobatic-kick* mover: a
+  high meia-lua sweep over a ducking partner, flowing into the ginga, inside a
+  clapping ring with a berimbau/pandeiro/atabaque bateria in a sunlit Pelourinho
+  square. Hand-painted contemporary Afro-Brazilian register (new style added).
+  **Posted to social** (step 8) — picked to break the recent animal-heavy post
+  streak (sheepdog / running-of-bulls / elephants), with a clear central duel and
+  pastel-Bahia colour that pops muted at phone size.
+
+**What worked / reinforced:**
+- **Cleanest night in a while: all 4 stills passed the vision gate first try, and
+  all 4 videos accepted first try** on `gemini-3-pro-image` + Veo. Standing image
+  rules held (bright, dense, edge-to-edge; positive full-bleed / freshly-made
+  phrasing; full negative block incl. no-text, no-border). Veo drift stayed a mild
+  zoom in every clip with the on-the-spot / same-size / same-place + locked-camera +
+  zoom/pan negative block.
+- **Full-title scan still essential** ([[curation-check-full-title-list]]). At 431
+  pieces, ~all my first-instinct picks collided (Sorolla beach-haul, Futurist
+  cyclists/peloton, Ferris-wheel fair, glassblowers, skaters all already present);
+  grepping subject+mover across the whole gallery is what found the four genuinely
+  absent pieces. Budget for it.
+- **Flowing-cloth movers: hold them as ONE continuous piece** (per the 09-13
+  juggling / 09-14 flag lesson, applied to a long ribbon and a swirling skirt). The
+  pungmul sangmo streamer resolved into one clean spinning white loop and the tango
+  skirt billowed as one mass — no split/multiply — because both were prompted as a
+  single continuous piece that "never splits, multiplies or turns into anything."
+- **Two-large-animals-charging: pin count + on-the-spot.** The Pacu Jawi pair stayed
+  exactly two distinct bulls (each two horns / four legs, no merge) charging in place
+  with an explosive mud fan, only a mild residual zoom — same recipe as the 09-13
+  elephant clash and the advancing-charge notes (08-24/08-26/09-10).
+- **Held-pose kick → let it complete and flow into the next beat** (per the 09-13
+  held-pose lesson). Rather than freeze the capoeira kick mid-air (which Veo would
+  resolve to a landing anyway), the prompt had the leg finish its arc and both
+  players flow into the ginga — gave a clean, legible full capoeira exchange with no
+  limb tangle (pinned "exactly two arms and two legs each, no merging").
+
 <!-- Claude appends new rounds above this line. -->

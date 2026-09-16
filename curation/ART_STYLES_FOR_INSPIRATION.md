@@ -44,6 +44,7 @@ When you add a new style, append it under the section it best fits.
 - Tudor Portrait Miniature
 - Dutch Golden Age
 - Dutch Golden Age Winter Landscape (Avercamp — ice-skating genre scenes)
+- Dutch Golden Age Marine (Van de Velde — harbours, ship launches, fleets; luminous silvery-blue marine daylight)
 - Baroque
 - Baroque Oil Painting
 - Flemish Baroque Still Life (Snyders / Beuckelaer — abundant market & larder scenes: heaped fish, game and fruit on a broad table, a fishwife or cook, a dog reaching up; bright window light, rich saturated colour)
@@ -82,6 +83,7 @@ When you add a new style, append it under the section it best fits.
 - American Impressionism (Childe Hassam / The Ten — sunlit New England summers, regattas, gardens and flag-hung streets; sparkling broken colour, high-key luminous palette)
 - Spanish Luminism (Sorolla — sun-drenched beach & garden scenes, dazzling coastal light)
 - Post-Impressionism
+- Provençal Post-Impressionism (bold saturated complementary colour; lavender/wheat fields, mas farmhouses, cypress under bright southern light)
 - Symbolism
 - Art Nouveau
 - Peredvizhniki / The Wanderers (Russian realist landscape, Levitan / Savrasov)
@@ -283,6 +285,7 @@ is the **AI-cliché** test in `PROMPT_GUIDANCE.md` ("Brand & taste"), not recenc
 - Ethiopian Illuminated Manuscript
 - Lalibela Rock-Hewn Church Architecture
 - Māori Whakairo Carving
+- Contemporary Māori / Aotearoa Painting (bold-outlined saturated register — kapa haka, poi, marae, wharenui carving)
 - Aboriginal Australian Bark Painting
 - Aboriginal Rock Art (Kakadu / Arnhem Land)
 - Sepik River Carving

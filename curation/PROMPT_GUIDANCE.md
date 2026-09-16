@@ -1956,4 +1956,76 @@ break a recent animal-heavy streak in the wings and to spread across regions:
   players flow into the ginga — gave a clean, legible full capoeira exchange with no
   limb tangle (pinned "exactly two arms and two legs each, no merging").
 
+### 2026-09-16 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, **all intact-medium** (0 archaeological — within
+the ≤1 cap), bright/dense/colourful, with four *distinct* primary movers, chosen to
+spread across wings under-used the last four nights (S&SE Asian / Contemporary /
+Modern were all hammered ×3) and to vary the mover class away from the recent
+dance/sport streak:
+- **The Poi Dance — Contemporary Māori Painting** (`Arts of Africa & Oceania`, the
+  sparsest wing, non-looping) — a *poi-spin* mover: a front row of women swing long
+  white poi in synchronized arcs while a row of men perform the haka (stamp +
+  thigh-slap) before a carved red wharenui. Bold-outlined saturated Aotearoa register
+  (new style added). **Pro** still, first-try vision-gate pass. **Posted to social**
+  (step 8) — see 8-note below.
+- **The Lavender Harvest — Provençal Post-Impressionism** (`19th Century`,
+  non-looping) — a *sickle-cut + bundle* mover: harvesters cut and bind purple
+  lavender sheaves and load a donkey cart, violet rows to the horizon, mas + cypress.
+  **Pro** still (signature patched — see below).
+- **The Rice Planting Festival — Shin-hanga** (`Japanese`, non-looping) — a
+  *synchronized-planting* mover: a long row of red-and-white saotome bend and press
+  seedlings into a mirror-bright flooded paddy (splashes + reflections), a taiko
+  drummer strikes on the bund, a garlanded sacred ox is led. Luminous full-colour
+  woodblock register. **Pro** still, first-try pass — the strongest frame of the batch.
+- **The Ship Launch — Dutch Golden Age Marine** (`Renaissance & Baroque`,
+  non-looping) — a *ship-launch + splash* mover: a newly-built three-master slides
+  stern-first into a sunlit harbour throwing a great sheet of spray, dressed with
+  signal flags, a cheering quay crowd, a cannon salute, Dutch town skyline. **Pro**
+  still (new style added), first-try pass.
+
+**What worked / reinforced:**
+- **Clean night on `gemini-3-pro-image` + Veo**: all 4 stills passed the vision gate
+  first try, all 4 videos accepted first try. Standing image rules held (bright,
+  dense, edge-to-edge; positive full-bleed close-crop + margin/canvas-edge pre-empt;
+  freshly-made phrasing; full no-text/no-border/no-museum block). Veo drift stayed a
+  mild zoom in every clip with the on-the-spot / same-size / same-place + locked-camera
+  + zoom/pan negative block — no morphing, popping, lost actors, or count changes.
+- **Tethered/flowing objects held as single continuous pieces** (per 09-13/09-14/09-15):
+  each poi stayed one white ball-on-a-cord tracing a clean arc ("never splits,
+  multiplies, tangles or turns into anything") — no cascade-soup.
+- **A moving vehicle that can't stay "on the spot" → let it settle/traverse, pin the
+  rigid form.** The ship was near-launched in the still, so the clip had it *settle
+  into the water and rock* (spray billowing then falling, bow-wave rolling) rather than
+  keep sliding — hull/three masts/rigging pinned rigid ("holding form and count, never
+  bending or multiplying"), only a mild zoom-out that read as the wave spreading. Same
+  family as the 09-02 coaster note (fast vehicle → traverse/settle, don't fight it).
+- **Water-reflection scenes animate cleanly when reflections are named as reflections.**
+  The otaue paddy's coloured reflections and concentric ripples shimmered as water
+  without spawning extra figures ("reflections shimmer gently … reflections turning
+  into extra figures" in the negatives + "keep exact count"). A good template for any
+  still-water piece with mirrored figures.
+- **Provençal oil summoned the standard corner signature** ([[curation-artist-name-summons-signature]]),
+  an orange cursive squiggle on the foreground lavender (a busy, static, non-mover
+  zone). **Feathered horizontal-mirror patch** from the clean lavender directly to its
+  left (same y-band), through a Gaussian-blurred mask — erased it with no seam; Veo's
+  mild zoom crops that corner anyway. Pre-patch original kept in the scratchpad
+  ([[curation-keep-rejected-renders]]). Rule of thumb holds: corner signature on a
+  static area → patch, not reroll.
+- **Full-title scan remains essential** ([[curation-check-full-title-list]]). At 435
+  pieces my first instincts collided repeatedly: hashigo-nori/firemen's ladder stunt is
+  already covered by *Firemen's New Year Festival - Ukiyo-e* (07-28, same dezomeshiki
+  ladder acrobatics — a near-exact dup avoided only by grepping the prompt text, not
+  just titles); polo (Timurid), the stag/boar hunt, skittles, kermis, wedding dance,
+  and both winter/skating clusters were all taken. Grepping subject + mover + a few
+  synonyms across the whole gallery is what found the four genuinely-absent pieces.
+
+**Step 8 (social) — posted The Poi Dance.** Picked as the best muted-phone clip of the
+four: one obvious high-contrast central action (whirling white poi against bold red
+carving), saturated colour, and a clean break from the recent post streak (Capoeira
+09-15, animal-heavy before that). `UPLOADPOST_API_KEY` + `ZERNIO_API_KEY` both present;
+expect Instagram + YouTube to 429 on the upload-post monthly cap (10/10, resets ~09-2X
+— [[curation-uploadpost-monthly-cap]]) while TikTok + Pinterest post via Zernio.
+
 <!-- Claude appends new rounds above this line. -->

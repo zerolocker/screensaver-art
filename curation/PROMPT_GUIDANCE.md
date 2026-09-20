@@ -2028,4 +2028,66 @@ carving), saturated colour, and a clean break from the recent post streak (Capoe
 expect Instagram + YouTube to 429 on the upload-post monthly cap (10/10, resets ~09-2X
 — [[curation-uploadpost-monthly-cap]]) while TikTok + Pinterest post via Zernio.
 
+### 2026-09-20 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, **all intact-medium** (0 archaeological — within
+the ≤1 cap), bright/dense/colourful, with four *distinct* mover classes, chosen to
+step outside the recent dance/sport/animal streak and to feed the thinner wings
+(`Medieval & Byzantine`, `Islamic`) that hadn't been touched the last two nights:
+- **The Castle Siege — International Gothic** (`Medieval & Byzantine`, non-looping) —
+  a *ballistic/mechanical* mover: a wooden trebuchet's long counterweight arm sweeps
+  through one complete throw (stone visibly airborne mid-clip) while a knight climbs
+  a scaling ladder and heraldic banners ripple. Limbourg-esque gold-and-blue
+  illuminated panel, dense armoured crowd. Strong first-try frame (luma 126, low but
+  fine — gold ground reads bright).
+- **The Carpet Weavers — Persian Miniature** (`Islamic`, non-looping) — a *craft /
+  repetitive-hands* mover: a row of weavers raises hands to a great upright loom in
+  unison tying knots, one drawing the beating-comb down, a huge half-finished
+  crimson/sapphire carpet filling the frame, bright tiled courtyard + fountain behind.
+- **The Paragliders — Contemporary Illustration** (`Contemporary`, non-looping) — a
+  *flight* mover: four vivid striped canopies glide and bank over a sunlit green
+  coastline while a foreground launcher's canopy inflates and lifts off the grass.
+  Clean flat-vector, high chroma. **Posted to social** (step 8) — see note below.
+- **The Ice Harvest — Russian Realism** (`19th Century`, non-looping) — a
+  *sawing + hauling* mover: two peasants work a long two-handled ice-saw in rhythm
+  while a horse drags a sledge of glassy ice blocks. Peredvizhniki winter genre,
+  luma 191 (brightest of the batch); a distinct subject/labour vs. the many skating
+  leisure scenes, not a duplicate.
+
+**What worked / reinforced:**
+- **Clean night on `gemini-3-pro-image` + Veo: all 4 stills passed the vision gate
+  first try, all 4 videos accepted first try.** Standing image rules held (bright,
+  dense, edge-to-edge; positive full-bleed close-crop; freshly-made phrasing; full
+  no-text / no-border / no-museum block). Veo drift stayed a mild zoom in every clip
+  with the on-the-spot / same-size / same-place + locked-camera + zoom/pan negative
+  block — no morphing, popping, lost actors, or count changes.
+- **A rigid machine is an ideal mover — hold it, let it complete one cycle.** The
+  trebuchet (a rigid wooden frame) gave the cleanest action of the batch: prompted as
+  "one clear complete throw … then settling back," the counterweight arm swung through
+  a full arc with the stone genuinely airborne mid-clip, the frame holding its exact
+  shape. Same family as the loom/reeling-wheel and mill movers — machines translate/
+  rotate without an identity to violate, so they dodge the morph risk that faces/hands
+  carry. Reach for a mechanical focal action when a wing's scene offers one.
+- **Full-title + prompt-text scan still essential** ([[curation-check-full-title-list]]).
+  At 439 pieces most first instincts collided (a Persian carpet *bazaar* and Ming silk
+  *weavers* both exist — a carpet-*knotting loom* is distinct; skating/troika/snowfall
+  fill the winter shelf, so ice-*harvesting* labour was the fresh winter angle). Grep
+  subject + mover + synonyms across title AND prompt text, not titles alone.
+- **Thin cream side-margins on a paper-medium miniature are low-risk.** The carpet-
+  weaver still came back with faint ~3% cream vertical bands at the left/right edges
+  despite the no-margin block; Veo's mild zoom crops them and they never read as a
+  border. Not worth a reroll when the scene otherwise bleeds edge to edge — but keep
+  the full-bleed / no-paper-margin phrasing (it kept them thin).
+
+**Step 8 (social) — posted The Paragliders.** Picked as the best muted-phone clip of
+the four: one obvious high-contrast central action (rainbow canopies gliding + a
+canopy inflating against blue sky), saturated colour that pops muted, subjects in the
+middle two-thirds, and a clean break from the recent post streak (Poi Dance 09-16,
+Capoeira 09-15, animal-heavy before). The Castle Siege and Ice Harvest are dense/
+wide-composition (detail lost when cropped to vertical); the carpet's knot-tying mover
+is too subtle at phone size. `ZERNIO_API_KEY` + `UPLOADPOST_API_KEY` both present;
+expect Instagram + YouTube to 429 on the upload-post monthly cap
+([[curation-uploadpost-monthly-cap]]) while TikTok + Pinterest post via Zernio.
+
 <!-- Claude appends new rounds above this line. -->

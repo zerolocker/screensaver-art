@@ -58,6 +58,7 @@ When you add a new style, append it under the section it best fits.
 - Venetian Rococo Genre (18th-c. everyday-life scenes — Pietro Longhi, Gabriel Bella; e.g. a Murano glassworks, a masked ridotto)
 - Hudson River School
 - American Luminism (Fitz Henry Lane, Martin Johnson Heade — glassy still light on rivers, harbours & marine scenes; clean tonal atmosphere)
+- American Genre Painting (mid-19th-c everyday rural life — Eastman Johnson, William Sidney Mount, George Caleb Bingham: warm sunlit farm and small-town scenes — husking bees, cider pressing, markets, barn dances; densely-peopled, luminous storytelling realism)
 - Heidelberg School (Australian Impressionism — Streeton, Roberts)
 - Barbizon School
 - Hague School (Dutch tonal landscape — Weissenbruch, Mauve, Gabriël)

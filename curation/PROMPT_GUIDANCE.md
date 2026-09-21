@@ -2090,4 +2090,70 @@ is too subtle at phone size. `ZERNIO_API_KEY` + `UPLOADPOST_API_KEY` both presen
 expect Instagram + YouTube to 429 on the upload-post monthly cap
 ([[curation-uploadpost-monthly-cap]]) while TikTok + Pinterest post via Zernio.
 
+### 2026-09-21 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, **all intact-medium** (0 archaeological — within
+the ≤1 cap), bright/dense/colourful, with four *distinct* mover classes, chosen to
+spread across wings and vary the mover away from a pure dance/sport streak:
+- **The Snake Charmer — Kishangarh Miniature** (`South & Southeast Asian`, non-looping)
+  — an *animal-rise* mover: a single king cobra rears and sways from its basket as the
+  charmer plays the pungi, dense jewel-toned bazaar crowd. First-try still + video; the
+  cobra held one shape/count (pinned "one cobra only, never multiplying/splitting"),
+  mild zoom-in only.
+- **The Cheese Rolling — Contemporary Illustration** (`Contemporary`, non-looping) — a
+  *crowd-tumble-downhill* mover: a golden cheese wheel bounds down a steep green hill,
+  a pack of runners sprinting/tumbling after it. Clean flat-vector, high chroma.
+  **Posted to social** (step 8) — the round's best muted-phone clip (one obvious
+  central action, comedic, saturated). Still needed a **text patch** (see below).
+- **The Cider Mill — American Genre Painting** (`19th Century`, non-looping) — a
+  *press-crank + fluid-pour* mover: two farmers heave the wooden press bars while
+  golden cider streams into a tub, a horse works the apple-grinder, autumn cider-bee
+  crowd. Bright warm daylight. New style added to inspiration (Eastman-Johnson/Bingham
+  register). Standard oil-genre corner **signature patched** ([[curation-artist-name-summons-signature]]).
+- **The Kantō Festival — Shin-hanga** (`Japanese`, non-looping) — a *held-balance +
+  sway* mover: a performer balances a very tall bamboo pole strung with rows of
+  red-and-white lanterns, the pole arcing overhead, taiko drummer striking, dense
+  yukata crowd. **Two rerolls** (see below).
+
+**What worked / reinforced:**
+- **3 of 4 stills + all 4 videos landed with only minor patching; standing rules held**
+  (bright, dense, edge-to-edge; positive full-bleed/freshly-made phrasing; on-the-spot /
+  locked-camera + zoom/pan negative block → mild zoom only, no morph/pop/lost actors).
+- **A rising cobra animates cleanly with count pinned** — same recipe as the elephant/
+  bull two-large-animal clashes: name it "one … only, never multiplying, splitting,
+  morphing" and it rears/sways keeping its exact painted shape. A good template for a
+  single-animal focal mover (snake, bird, fish) that would otherwise be morph-risky.
+- **Static-area faux-text/signature → patch, not reroll (reinforced).** The cheese-rolling
+  still baked "MARSHAL" onto two white marshal shirts ([[curation-poster-summons-object]]
+  text family); the cider still got the standard oil corner signature. Both are flat/
+  static zones: whiten-to-shirt-colour and feathered mirror-from-adjacent-clean-grass
+  erased them. **Tool note:** on a *flat solid* field (a white shirt), a solid opaque
+  fill of the field colour is seamless; on a *shaded/curved* surface (a drum body, an
+  oil sky), a solid fill reads as a visible block — copy-from-adjacent (mirror/flip a
+  clean neighbouring strip through a Gaussian-blurred mask) is the only clean option,
+  and a global blur "to hide the seam" makes a worse smooth-rectangle. **Always save the
+  pre-patch still to the scratchpad *before the first patch*** ([[curation-keep-rejected-renders]])
+  — I overwrote a clean Kantō reroll and had to regenerate to recover a clean base.
+- **NEW reject family — a named Japanese *print* style ("Shin-hanga woodblock print")
+  summons the whole printed-paper object.** The first Kantō still came back as an
+  authentic hanga sheet: thick cream **paper margin / deckle border on all four sides**,
+  a **red artist's seal**, and **kanji everywhere** (banners, happi coats, fans). Same
+  family as [[curation-poster-summons-object]] — the *medium word* ("print"/"woodblock
+  print") drags in the sheet, the seal, and the lettering, exactly as "poster" drags in
+  the desk + title text and "frame" drew a frame. Too many text zones to patch → reroll.
+  **Fix that worked:** call it "a bright festival **illustration** in a woodblock-*inspired*
+  style" (never "print"), and add the explicit block *"the illustrated scene fills the
+  image edge to edge; it is NOT a printed sheet — no paper margin, no deckle edge, no
+  border, no key-block outline, no publisher mark, no artist seal, no stamp; every coat,
+  yukata, fan, lantern, banner and sign is completely plain — solid colours or simple
+  patterns only, no text, no kanji, no Japanese characters, no crest, no emblem."* The
+  reroll dropped the border/seal and nearly all kanji (one drummer-happi crest + a tiny
+  wall sign remained → patched). **Takeaway for any woodblock/ukiyo-e/shin-hanga pick:
+  say "illustration in the woodblock style", forbid the printed-sheet object + seal, and
+  demand plain/blank banners, clothing and signs with an explicit no-kanji clause.**
+- **`gemini-3-pro-image` clean, no 503 wall.** upload-post monthly cap had **reset** —
+  all four social channels (Instagram, YouTube, TikTok, Pinterest) posted for the first
+  time in weeks ([[curation-uploadpost-monthly-cap]]).
+
 <!-- Claude appends new rounds above this line. -->

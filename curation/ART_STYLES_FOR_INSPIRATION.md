@@ -262,6 +262,7 @@ is the **AI-cliché** test in `PROMPT_GUIDANCE.md` ("Brand & taste"), not recenc
 - Rattanakosin Temple Mural (Thai)
 - Contemporary Thai Folk Painting (bright naïve genre style — richly saturated flat acrylic colour, confident outlines, dense edge-to-edge composition; canal/floating-market, festival and rice-country scenes packed with people, boats, fruit and temple spires; brighter and denser than the muted Vietnamese silk register)
 - Vietnamese Silk Painting (tranh lụa — Nguyễn Phan Chánh, Lê Phổ)
+- Vietnamese Water-Puppet Folk Illustration (bright glossy lacquer/folk register — bold black outlines, hyper-saturated red/gold/green; múa rối nước scenes of lacquered wooden dragon/phoenix/farmer/duck puppets performing on a green pond before a tiled water-pavilion with a reed screen, dense village crowd on the bank; cheerful, edge-to-edge, brighter and flatter than the muted Vietnamese silk register)
 - Islamic geometric art
 - Fatimid Rock Crystal Carving
 - Persian Safavid Miniature
@@ -293,6 +294,7 @@ is the **AI-cliché** test in `PROMPT_GUIDANCE.md` ("Brand & taste"), not recenc
 - Rapa Nui (Easter Island) Moai
 - Celtic Knotwork
 - Indigenous art traditions
+- North American Plains Ethnographic Genre Painting (George Catlin / Seth Eastman register — luminous 19th-c. open-air oil of Native American life & games: a Choctaw stickball match, buffalo hunt or village dance, painted bodies, feathered regalia, breechcloths, prairie and vast bright sky; dense, full polychrome, intact-medium)
 - Folk art
 - Outsider art
 - Naïve art

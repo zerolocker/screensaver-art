@@ -2156,4 +2156,96 @@ spread across wings and vary the mover away from a pure dance/sport streak:
   all four social channels (Instagram, YouTube, TikTok, Pinterest) posted for the first
   time in weeks ([[curation-uploadpost-monthly-cap]]).
 
+### 2026-09-22 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, **all intact-medium** (0 archaeological — within
+the ≤1 cap), bright/dense/colourful, four *distinct* mover classes, chosen to fill a
+0-recent wing (`Arts of the Americas`) and vary the mover away from the recent
+dance/animal streak:
+- **The Ball-Play — American Frontier Genre Painting** (`Arts of the Americas`,
+  non-looping) — a *scramble-for-an-airborne-ball* mover: a cluster of Choctaw
+  stickball players leap with netted sticks reaching for one small ball, dense
+  scrimmage + big-sky prairie crowd. Catlin/Eastman ethnographic-oil register (new
+  style added). Fills the sparsest wing with a non-archaeological piece. First-try
+  still (corner signature patched — see below); first-try video, mild zoom only.
+- **The Curling Match — Victorian Scottish Genre Painting** (`19th Century`,
+  non-looping) — a *stone-slide + brooms-sweeping* mover: two sweepers brush ahead of
+  a gliding granite stone, releaser follows through, skip's broom raised, kilted loch
+  crowd. **Still rerolled once** — first render was a canvas-on-an-easel (see below).
+- **The Water Puppets — Vietnamese Folk Painting** (`South & Southeast Asian`,
+  non-looping) — a *puppets-dancing-on-water* mover: a lacquered dragon rears/spouts,
+  phoenix flaps, fisherman nets fish puppets, ducks bob, splashes fly, village crowd
+  claps. Bright glossy bold-outline folk/lacquer register (new style added). Rigid
+  wooden puppets = low morph. **Posted to social** (step 8). First-try still + video.
+- **The Ticker-Tape Parade — American Scene Painting** (`Modern`, non-looping) — a
+  *confetti-blizzard + cheering-crowd + rolling-car* mover: a 1920s NYC parade, white
+  ticker-tape pouring down a sunlit Art Deco canyon, hats/arms thrown up, open car
+  advancing. High-key first-try still. **Video needed a Veo retry** (see below).
+
+**What worked / reinforced:**
+- **Full-title + prompt-text scan is now the gating step, not a formality**
+  ([[curation-check-full-title-list]]). At 447 pieces **every** first-instinct pick
+  collided — sumo (`The Sumo Bout` exists), basketball (`Rooftop Basketball`), dragon
+  boat (×2), commedia, trapeze, skatepark, surf, fencing, wrestling, archery, ski jump,
+  grand prix, speedway all present. Grepping subject+mover+synonyms across title AND
+  prompt text found the four genuinely-absent picks. Budget a full grep pass up front.
+- **A 0-recent wing is the cheapest rut-break.** `Arts of the Americas` had gone
+  untouched for weeks and is mostly archaeological; a Catlin-register Choctaw
+  stickball oil filled it with a bright, dense, intact-medium piece — proof the thin
+  wings can be fed without dropping into the patina/decay register.
+- **Rigid-object movers stay clean** (per the trebuchet/loom/flag lessons): the wooden
+  water-puppet dragon reared and spouted keeping one exact carved shape; the granite
+  curling stone glided as one; the confetti storm is pure elemental garnish riding on
+  top of a real crowd+car action, never the only motion.
+- **RECURRENCE — a "genre oil painting" still can render as a canvas propped on a
+  studio easel** ([[curation-oil-painting-easel]]). The first curling still came back
+  as a framed canvas on a wooden easel against a dark studio, **despite** the standing
+  *"no easel, no studio"* negatives — the negatives alone don't hold when the prompt
+  leads with *"a Victorian genre oil painting of…"* (the medium noun summons the
+  object). **Fix that worked (reroll):** lead with the *scene*, not the artefact —
+  *"A bright winter scene of a curling match, rendered in the manner of 19th-c. Scottish
+  genre painting. This is a full-bleed edge-to-edge view: the loch, ice, figures and
+  sky completely fill the entire image and extend to all four edges, with nothing
+  around them."* — plus expanded negatives *no canvas, no canvas edges, not a painting
+  propped on an easel, no wooden picture frame, no wall behind the scene, no dark
+  background border*. Reroll was clean full-bleed. **Takeaway: for any "oil/genre
+  painting" pick, open with the depicted scene + an explicit "fills the entire image,
+  nothing around it" clause; don't rely on trailing no-easel negatives.**
+- **NEW tooling gotcha — Veo `generated_videos` can come back `None` transiently; it is
+  NOT a content block, and the skill has no retry for it.** The ticker-tape video
+  failed **three times** in a row via `veo3-video-gen`'s `generate.py` with
+  `TypeError: 'NoneType' object is not subscriptable` at `op.response.generated_videos[0]`.
+  A one-off probe (same model/image/prompt) that printed the RAI fields showed
+  `rai_media_filtered_count = None` and returned a valid video — i.e. **no filter
+  reason; it was a transient empty response**, and the failures clustered by bad luck.
+  The skill only retries on `APIError`, not on an empty `generated_videos`, so it kept
+  surfacing the crash. **Fix:** a self-contained generate-and-save script with a retry
+  loop (up to 5×) on empty `generated_videos` got the clip first try. **Takeaway: an
+  empty `generated_videos` is almost always transient — retry it (don't assume an RAI
+  block, and don't reroll the still) — and the skill would benefit from a built-in
+  retry on the empty case.** ([[curation-veo-empty-response-transient]])
+- **Catlin/ethnographic-oil summons the standard corner signature**
+  ([[curation-artist-name-summons-signature]]) even with **no artist named** + a
+  no-signature negative — the *genre* ("19th-c. genre oil") is enough. It landed on the
+  flat tan foreground (a static, Veo-cropped corner); a feathered horizontal-mirror
+  fill from clean ground just left of it erased it. First patch was too soft (feather
+  inset + heavy blur left the core semi-transparent, signature still readable); the
+  fix was a near-opaque core (small inset, light blur). Pre-patch original kept in the
+  scratchpad ([[curation-keep-rejected-renders]]).
+- **Bold-outline folk illustration is a legitimate, animation-friendly register.** The
+  water-puppet still read a touch cartoon-flat, but the subject is unique, dense, and
+  hyper-saturated, and the flat rigid shapes animated cleanly (dragon/phoenix/ducks
+  held form, fish-puppet splashes are on-theme for múa rối nước). Accepted over a
+  reroll; it made the strongest muted-phone social clip of the batch.
+
+**Step 8 (social) — posted The Water Puppets.** Best muted-phone clip of the four:
+one obvious high-contrast central action (a golden-red dragon rearing + spouting on
+green water), saturated colour that pops muted, subject in the middle two-thirds, and
+a clean break from the recent post streak (Cheese Rolling 09-21, Paragliders 09-20,
+Poi Dance 09-16). The stickball is wide (detail lost cropped vertical), curling is
+wide + subtle, ticker-tape whites-out with confetti. All four channels posted
+(Instagram, YouTube, TikTok + pinned link comment, Pinterest) — upload-post cap still
+clear ([[curation-uploadpost-monthly-cap]]).
+
 <!-- Claude appends new rounds above this line. -->

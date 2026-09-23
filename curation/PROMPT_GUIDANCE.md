@@ -2248,4 +2248,74 @@ wide + subtle, ticker-tape whites-out with confetti. All four channels posted
 (Instagram, YouTube, TikTok + pinned link comment, Pinterest) — upload-post cap still
 clear ([[curation-uploadpost-monthly-cap]]).
 
+### 2026-09-23 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, **all intact-medium** (0 archaeological — within
+the ≤1 cap), bright/dense/colourful, four *distinct* mover classes, chosen to break
+the recent dance/animal streak with a "games & spectacles" set:
+- **The Bobsled — Art Deco** (`Modern`, non-looping) — a *sled-hurtle* mover: a
+  four-man bobsled rockets down a banked ice chute, crystalline spray fanning off
+  the runners, speed-lines streaming, alpine crowd on the banking. Clean streamlined
+  Deco geometry, luma 180. First-try still + video. **Posted to social** (step 8).
+- **The Kitesurfers — Contemporary Illustration** (`Contemporary`, non-looping) — a
+  *water-carve* mover: three riders skim and carve turquoise sea under big arced
+  red/yellow/blue kites, throwing fans of white spray. Clean flat-vector, high chroma,
+  luma 181. First-try still + video; count held (3 riders / 3 kites).
+- **Calcio Storico — Italian Renaissance** (`Renaissance & Baroque`, non-looping) — a
+  *ball-scrum* mover: costumed red/blue teams grapple over the ball in a sunlit
+  Piazza-Santa-Croce-style square, one runner breaking free with the ball raised,
+  packed period crowd + plain banners. **Still rerolled once** — first render was a
+  mural on an interior wall (see below).
+- **Carp Leaping the Dragon Gate — Ming Folk Painting** (`Chinese & Korean`,
+  non-looping) — a *leaping-fish + cascade* mover: four orange-gold carp vault out of
+  a foaming white cataract over dark ornamental rocks, peach blossoms drifting. Bold
+  Ming folk outline, luma 186 (brightest). First-try still + video; count held (4).
+
+**What worked / reinforced:**
+- **Full-title + prompt-text grep is the gating step at 451 pieces**
+  ([[curation-check-full-title-list]]). **Every** first-instinct pick collided —
+  hunt (×6), polo (Timurid), high dive / diving lido, marching band / drum major,
+  circus + bareback rider (The Circus Ring), fire brigade (Victorian), cuju ≈ kemari
+  (The Kemari Match), velodrome ≈ The Sprint / Coastal Peloton, nongak (Korean
+  Pungmul) — all present. Grepping subject+mover+synonyms across title AND prompt
+  text found four genuinely-absent picks. Budget a full grep pass up front; expect
+  ~3 rounds of it before four land.
+- **3 of 4 stills + all 4 videos landed first try; standing rules held** (bright
+  luma 125–186 all ≥ the "too-dark" floor, dense, edge-to-edge; positive full-bleed /
+  freshly-made phrasing; on-the-spot / same-size / locked-camera + zoom/pan negative
+  block → mild drift only, no morph/pop/lost actors). **Advancing movers held size**
+  via "same place / same size within the frame": the bobsled hurtling and the
+  kitesurfers carving both stayed centred and same-scale instead of running away in a
+  zoom (same recipe as the marathon/cavalry advancing movers).
+- **RECURRENCE — "in the manner of Renaissance painting" summons a mural-on-a-wall**
+  ([[curation-oil-painting-easel]], wall variant). The first calcio still rendered the
+  scene as a **fresco painted on an interior room wall** — a white ceiling strip along
+  the top, the room's side walls receding at left/right, and a grey floor **baseboard/
+  skirting** across the bottom, so the piazza did *not* reach the edges. Same family as
+  the easel failure: the phrase *"rendered in the manner of 16th-c. Italian Renaissance
+  painting"* (Renaissance → fresco → wall) summoned the wall/room, and the trailing
+  full-bleed clause didn't hold against it. **Fix that worked (reroll):** lead with the
+  *scene* ("A bright daytime scene of calcio storico … in a sun-filled piazza"), state
+  a *direct immersive view that runs off all four edges*, and add an explicit block —
+  *"NOT a mural or fresco painted on a wall, and NOT a framed picture: no interior
+  room, no ceiling, no floor, no baseboard or skirting, no wall behind or around the
+  scene, no border/mat/frame/canvas edges, not on an easel."* Reroll was clean
+  full-bleed. **Takeaway: for any "oil/genre/Renaissance/fresco painting" pick, open
+  with the depicted scene + "fills the entire image, nothing around it", and pre-empt
+  BOTH the easel object *and* the mural-on-a-wall (room/ceiling/floor/skirting) — the
+  medium noun summons whichever surface the style lives on.** Pre-patch reject kept in
+  the scratchpad ([[curation-keep-rejected-renders]]).
+- **`gemini-3-pro-image` clean, no 503 wall; upload-post cap reset again.** All four
+  social channels (Instagram, YouTube, TikTok + pinned link comment, Pinterest)
+  posted for The Bobsled ([[curation-uploadpost-monthly-cap]]).
+
+**Step 8 (social) — posted The Bobsled.** Best muted-phone clip of the four: **one
+obvious central subject** (the sled sweeping down the chute) in the middle two-thirds,
+a strong high-contrast red/cream/blue Deco graphic that pops muted, clear motion
+(spray + speed-lines), and a clean break from the recent post streak (Water Puppets
+09-22, Cheese Rolling 09-21, Paragliders 09-20, Poi Dance 09-16). The kitesurfers and
+carp spread their subjects across the full width (outer subject lost to the vertical
+side-crop); calcio is a wide dense scrum (detail lost cropped vertical).
+
 <!-- Claude appends new rounds above this line. -->

@@ -2318,4 +2318,90 @@ a strong high-contrast red/cream/blue Deco graphic that pops muted, clear motion
 carp spread their subjects across the full width (outer subject lost to the vertical
 side-crop); calcio is a wide dense scrum (detail lost cropped vertical).
 
+
+### 2026-09-24 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, **all intact-medium** (0 archaeological — within
+the ≤1 cap), bright/dense/colourful, four *distinct* mover classes, deliberately
+chosen to **break the recent sports/games streak** (bobsled, kitesurfers, calcio,
+curling, cheese-rolling, ball-play…) with a work / animal / vehicle / birds set:
+- **The Beekeepers — English Rural Naturalism** (`19th Century`, non-looping) — a
+  *human-work + insect-haze* mover: a beekeeper turns a golden honeycomb frame to
+  inspect it while a helper puffs a copper smoker, a soft haze of bees drifting, a
+  dense cottage flower-garden. Bright plein-air daylight. First-try still (corner
+  **signature patched** — see below); first-try video, mild zoom only.
+- **The Snow Monkeys — Shin-hanga** (`Japanese`, non-looping) — an *animal-in-water*
+  mover: a central Japanese macaque wades through a steaming turquoise onsen, steam
+  rising, snow drifting, a dozen others soaking, warm red faces against white snow.
+  **Posted to social** (step 8). First-try still + video, count held (8).
+- **The Iceboat — American Scene Painting** (`Modern`, non-looping) — a *wind-driven
+  vehicle* mover: a red-and-white ice-yacht skims a frozen lake throwing a fan of ice
+  crystals, crew leaning out, crisp Regionalist graphic. Advancing-mover-held-in-place
+  recipe. First-try still + video (both corners clean, no patch).
+- **The Pigeon Fliers — Mughal Miniature** (`South & Southeast Asian`, non-looping) —
+  a *birds-in-flight* mover (top of the preference list): a rooftop kabootar-baazi
+  flier swings a flag-tipped pole as a flock of pigeons wheels up over a dense
+  jewel-toned haveli city. First-try still + video.
+
+**What worked / reinforced:**
+- **Full-title + prompt-text grep is the gating step at 455 pieces**
+  ([[curation-check-full-title-list]]). **Every** first-instinct pick collided —
+  lion dance, dragon dance, regatta (×5), fauvism (×4), carousel (×4), hot-air
+  balloon (×2), windmill (×5), glassblowers of Murano, dyers' courtyard, troika,
+  skaters, blacksmith, grape harvest, waterwheel, cattle drive, shearing, tightrope,
+  rapids/rafting all present. Grepping subject+mover+synonyms across title AND prompt
+  text over ~3 passes found four genuinely-absent picks (beekeepers, snow-monkey
+  onsen, iceboat, rooftop pigeon-fliers). Budget several grep passes up front.
+- **3 of 4 stills + all 4 videos landed first try; standing rules held** (bright,
+  dense, edge-to-edge; positive full-bleed / freshly-made phrasing; on-the-spot /
+  same-size / locked-camera + zoom/pan negative block → mild drift only, no
+  morph/pop/lost actors). Advancing mover (iceboat) held size via "same place / same
+  size within the frame".
+- **Two "medium-noun summons the object" guards both held on first try this round:**
+  - **Shin-hanga print-object guard** ([[curation-print-style-summons-paper-and-kanji]]):
+    calling it "a bright illustration in the **Shin-hanga woodblock style**" (never
+    "print") + the explicit no-printed-sheet / no-deckle / no-seal / no-kanji block
+    gave a clean full-bleed snow-monkey scene — no paper margin, no red seal, no
+    Japanese characters. No reroll needed (contrast the two Kantō rerolls on 09-21).
+  - **Miniature-border guard**: a Mughal *miniature* would normally render small
+    inside a decorative gold-ruled margin (the 06-28 Safavid/Mughal reject). Leading
+    with "full-bleed edge-to-edge view … fill the entire image" + an explicit
+    no-border / no-margin / no-gold-rule / no-cartouche / no-Nastaliq-script / no-seal
+    block produced a clean full-bleed, borderless, text-free miniature first try.
+- **Oil/genre-easel guard held again** ([[curation-oil-painting-easel]]): the iceboat
+  "**in the manner of** American Scene painting" opened with the *scene* ("A crisp
+  bright winter scene of an ice-yacht skimming a frozen lake…") + "fills the entire
+  image … nothing around them" + the full no-easel / no-canvas-edges / no-wall block →
+  clean full-bleed, no easel, no framed-canvas, no studio wall. Both bottom corners
+  were clean ice (no signature) — the American-Scene/Regionalist-oil signature
+  ([[curation-artist-name-summons-signature]]) did **not** land this time, unlike the
+  beekeepers below.
+- **Oil-genre corner signature — patch, not reroll (reinforced)** on the beekeepers.
+  A cursive corner signature landed on the bottom-right foliage. Foliage is a
+  *shaded/curved* surface, so a solid fill would block-out; the clean fix was a
+  feathered **copy-from-above** (a clean foliage strip pasted down through a
+  Gaussian-blurred near-opaque mask). Pre-patch still saved to the scratchpad first
+  ([[curation-keep-rejected-renders]]). A faint rectangular seam remains but is
+  negligible in the busy far corner at full-screen.
+- **A wheeling bird flock animates cleanly when kept non-looping** (the 07-19
+  prescription for independent creatures): the ~18-pigeon flock circled and banked as
+  a cohesive swirl, a few birds landing on the parapet, with no ugly popping — count
+  "roughly held" reads as natural pigeon behaviour rather than the seam-pop a loop
+  would force. Pinning "hold their exact painted shapes and roughly their number, no
+  birds popping in or vanishing" was enough.
+- **`gemini-3-pro-image` clean, no 503 wall.**
+
+**Step 8 (social) — posted The Snow Monkeys.** Best muted-phone clip of the four:
+**one dead-centre subject** (the wading macaque) in the middle two-thirds, warm
+pink-red faces popping against turquoise water and white snow (high contrast muted),
+clear motion (wade + ripples + steam + drifting snow), and an **animal** — a clean
+break from the recent post streak (Bobsled 09-23 vehicle, Water Puppets 09-22,
+Cheese Rolling 09-21, Paragliders 09-20). The iceboat, beekeepers and pigeon-fliers
+all spread their subjects across the width (outer subject lost to the vertical
+side-crop). Instagram, YouTube and TikTok (+ pinned link comment) posted first try;
+Pinterest queued at Zernio and published once the Vercel deploy of the new
+`/art/the-snow-monkeys` page went live ([[curation-uploadpost-monthly-cap]] cap
+still clear).
+
 <!-- Claude appends new rounds above this line. -->

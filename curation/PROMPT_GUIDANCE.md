@@ -2404,4 +2404,91 @@ Pinterest queued at Zernio and published once the Vercel deploy of the new
 `/art/the-snow-monkeys` page went live ([[curation-uploadpost-monthly-cap]] cap
 still clear).
 
+### 2026-09-25 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, **all intact-medium** (0 archaeological — within
+the ≤1 cap), bright/dense/colourful, four *distinct* mover classes, deliberately
+chosen to **break the recent sports/games/animal streak** (bobsled, kitesurfers,
+calcio, curling, cheese-rolling, snow-monkeys, pigeon-fliers…) with a
+work / festival-crowd / party-game / stage-performer set:
+- **The Coppersmiths' Souk — Orientalist Painting** (`Islamic`, non-looping) — a
+  *human-work (hammering)* mover: a seated coppersmith rhythmically hammers a big
+  brass tray on his anvil while a second craftsman burnishes a copper kettle, dense
+  glittering copper/brass souk, bright lane behind. Fills the under-used `Islamic`
+  wing. First-try still (corner **signature patched** — see below); first-try video,
+  mild zoom only.
+- **The Flower Battle — Belle Époque Impressionism** (`19th Century`, non-looping) —
+  a *crowd-toss + rolling-carriage + petal-fall* mover: a Riviera Bataille de Fleurs,
+  a woman in a flower-covered landau flings a bouquet, crowds hurl flowers, garlanded
+  horses draw the carriage forward. High-key luma 158. **Video rerolled once** (dress
+  colour drift — see below).
+- **The Piñata — Mexican Folk Painting** (`Modern`, non-looping) — a *swing/impact*
+  mover: a blindfolded child swings a stick at a big rainbow star piñata swinging on
+  a rope, a crowd of children cheering, papel picado overhead. Hyper-saturated, one
+  central action. First-try still + video (no signature — folk register). Best
+  muted-phone clip of the batch; **posted to social** (step 8) → see note.
+- **The Peking Opera — Chinese Folk Painting** (`Chinese & Korean`, non-looping) — a
+  *solo-performer flourish* mover: a warrior-general brandishes a tasselled spear in a
+  wide stance, back-banners and pheasant plumes swaying, flanked by two water-sleeve
+  performers, golden dragon curtain. First-try still + video, moderate push-in.
+
+**What worked / reinforced:**
+- **Full-title + prompt-text grep is the gating step at 459 pieces**
+  ([[curation-check-full-title-list]]). ~2 passes: fish market (exists, Flemish),
+  floating market (exists, Thai), kite festival (×2), ferris wheel / roller coaster,
+  cormorant, tea harvest, cheese/river market, garden swing (Rococo), tempest/ship
+  storm — all present. Grepping subject+mover+synonyms across title AND prompt text
+  found four genuinely-absent picks; a 0/near-0-recent wing (`Islamic`, 20 pieces) is
+  again the cheapest rut-break, filled with a bright intact-medium coppersmith souk.
+- **3 of 4 stills + 3 of 4 videos landed first try; standing rules held** (bright
+  luma 108–158, all ≥ the too-dark floor; positive full-bleed / freshly-made phrasing;
+  on-the-spot / same-size / locked-camera + zoom/pan negative block → mild-to-moderate
+  zoom only, no morph/pop/lost actors). Note the souk at **luma 109** is the lower end
+  (dark wood + copper) but everything reads clearly (glowing copper, legible faces,
+  bright daylit lane) — acceptable, but a warm-interior scene runs ~25 below the norm.
+- **NEW mover-drift note — a garment can shift hue over a Veo clip.** The first flower-
+  battle video had the central woman's dress drift **cream → pink** across ~8 s. Not a
+  morph/pop, but a visible identity drift a reviewer would read as "AI slop." **Fix
+  that worked (one reroll):** name the colour and lock it explicitly — *"her long pale
+  cream-and-white dress stays exactly the same colour and shape throughout — it does
+  not change colour"* + per-person *"keeps their exact painted clothing colours"* +
+  negatives *"dress changing colour, clothing changing colour, colour shifting"*. The
+  reroll held the colour. **Takeaway: for a hero figure in a distinctively-coloured
+  garment, state the colour and add an explicit no-colour-change clause; cheap insurance.**
+- **Orientalist genre oil summons the standard corner signature**
+  ([[curation-artist-name-summons-signature]]) even with a no-signature negative and no
+  artist named — the *genre* is enough (same as the Catlin/beekeeper cases). It landed
+  on dark stall wood (a shaded, low-detail field). **Patched, not rerolled** — pre-patch
+  saved first ([[curation-keep-rejected-renders]]). Tool note: with **no numpy/cv2 on
+  this machine**, a pure-Pillow **masked normalized-blur inpaint** is the reliable
+  eraser for thin strokes on a low-frequency field: build a colour mask of the strokes,
+  dilate it, zero those pixels, then `filled = GaussianBlur(colour·(1−mask)) /
+  GaussianBlur(1−mask)` at a large radius (~40px), composite through a feathered mask.
+  **Do it in ONE pass — no feed-back loop:** an iterative feedback version blew the
+  normalization up to clipped-white smears (worse than the signature). Works on both
+  dark wood (souk) and pale pastel (the flower-battle brown signature on a white dress).
+- **Folk-painting registers don't summon the signature or the print-sheet** when
+  guarded. The Mexican folk piñata and the Chinese opera painting both came back clean
+  — no corner signature (unlike the oil genres). The opera guard held on first try:
+  calling it "a vivid **Chinese folk-painting**" (never "woodblock print") + the full
+  no-printed-sheet / no-deckle / no-seal / no-Chinese-characters block gave a borderless,
+  caption-free stage scene ([[curation-print-style-summons-paper-and-kanji]]). The one
+  residual was a **decorative 壽 longevity roundel** woven into the furniture
+  scrollwork — legitimate stage-set ornament (not a caption/seal), left as-is. The
+  Mexican folk guard held too: leading with the depicted courtyard + the mural-on-a-wall /
+  framed-canvas negative block gave a clean full-bleed fiesta, no wall/ceiling/skirting
+  ([[curation-oil-painting-easel]]).
+- **`gemini-3-pro-image` clean, no 503 wall.**
+
+**Step 8 (social) — posted The Piñata.** Best muted-phone clip of the four: **one
+obvious central action** (the blindfolded boy swinging at the star piñata) in the
+middle two-thirds, a **hyper-saturated rainbow** on blue sky that pops hard when
+muted, clear comedic motion (the piñata swinging on its rope + kids cheering), and a
+clean break from the recent post streak (Snow Monkeys 09-24 animal, Bobsled 09-23
+vehicle, Water Puppets 09-22, Cheese Rolling 09-21). The Peking Opera was the runner-up
+(a tall dead-centre figure, also ideal for the vertical crop); the coppersmith souk and
+flower battle both spread their subjects across the width (outer detail lost to the
+vertical side-crop). See [[curation-uploadpost-monthly-cap]] for channel-cap status.
+
 <!-- Claude appends new rounds above this line. -->

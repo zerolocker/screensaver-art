@@ -202,6 +202,7 @@ is the **AI-cliché** test in `PROMPT_GUIDANCE.md` ("Brand & taste"), not recenc
 
 - Chinese ink painting
 - Haitian Naïve Painting (flat bright folk-art, densely-packed Caribbean market & celebration scenes)
+- Mexican Folk Painting (bright, saturated naïve village-fiesta scenes — piñatas, dances, papel picado bunting, adobe courtyards with geraniums; bold clean colour, densely-composed edge-to-edge; open with the depicted scene and forbid the mural-on-a-wall / framed-canvas object)
 - Contemporary West African Narrative Painting (modern Nigerian/Ghanaian festival painting — bold saturated opaque colour, confident dark outlines, richly patterned wax-print cloth; densely-packed village festivals, masquerade dances, drummers and markets; painterly, NOT flat-vector)
 - Papua New Guinea Highlands Festival Painting (contemporary Melanesian folk painting — bold flat brightly-outlined figures, brilliant tropical colour; sing-sing gatherings of plumed dancers in towering bird-of-paradise headdresses, face-paint, grass skirts, kundu drummers; densely-packed edge-to-edge)
 - Contemporary Afro-Brazilian Narrative Painting (bold saturated hand-painted scenes of Bahian life — capoeira rodas, samba, candomblé festivals, fishermen; warm painterly brushwork, confident modelling, colourful Pelourinho colonial facades and palms; one clear focal action, densely-composed edge-to-edge, NOT flat vector)
@@ -223,6 +224,7 @@ is the **AI-cliché** test in `PROMPT_GUIDANCE.md` ("Brand & taste"), not recenc
 - Kano School Ink Painting
 - Lingnan School (early-20th-c Chinese — Gao Jianfu, ink-and-colour realism)
 - Chinese New Year folk woodblock print / nianhua (Suzhou Taohuawu, Yangliuqing — flat brilliant vermilion/green/gold, densely-packed festive scenes with bold black outlines)
+- Chinese Opera Figure Painting (vivid folk-painting register of Peking/Cantonese-opera stage roles — dazzling embroidered brocade armour, four back-banners, pheasant-tail plumes, painted-face masks and long white water-sleeves; bold saturated colour, ornate, densely-composed; describe as an "illustration/painting" and forbid the printed-sheet object, seal and characters)
 - Ukiyo-e
 - Ukiyo-e Japanese woodblock print
 - Musha-e (Edo warrior woodblock print — Kuniyoshi / Yoshitoshi; bold black key-lines and flat brilliant colour, dynamic samurai/horseback action, densely-composed)

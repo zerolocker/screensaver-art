@@ -2491,4 +2491,77 @@ vehicle, Water Puppets 09-22, Cheese Rolling 09-21). The Peking Opera was the ru
 flower battle both spread their subjects across the width (outer detail lost to the
 vertical side-crop). See [[curation-uploadpost-monthly-cap]] for channel-cap status.
 
+### 2026-09-26 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, **all intact-medium** (0 archaeological — within
+the ≤1 cap), bright/dense/colourful, four *distinct* mover classes, deliberately
+chosen to **break the recent sports/games/festival/work streak** (bobsled,
+kitesurfers, calcio, curling, cheese-rolling, snow-monkeys, piñata, coppersmiths…)
+with a music / bird-flight / machine / cloth-in-wind set:
+- **The Steel Band — Trinidad Carnival Illustration** (`Contemporary`, non-looping) —
+  a *music/rhythm* mover: a central pannist strikes his chrome steel pan with mallets
+  on the beat, a sequined dancer turns on the spot, fellow pannists tap and the bunting
+  flutters. New style added (Caribbean carnival illustration). Hyper-saturated,
+  dead-centre focal, luma 164. First-try still + video. **Posted to social** (step 8).
+- **Swans Taking Flight — Nihonga** (`Japanese`, non-looping) — a *bird-in-flight*
+  mover (top of the preference list): a central white swan runs across the water beating
+  its wings and lifts off in a fan of spray, two more beat behind it, others paddle
+  below. Elegant gofun-white Nihonga, luma 209 (brightest). First-try still + video;
+  count held. Clean takeoff, no seam-pop (non-looping per the independent-creatures rule).
+- **The Tugboat — Precisionism** (`Modern`, non-looping) — a *machine + churning-water*
+  mover: a stout harbour tug steams on the spot hauling a great liner in, throwing a
+  building white bow-wave, smoke billowing, gulls wheeling, geometric skyline behind.
+  Advancing-mover-held-in-place recipe. Luma 165. First-try still + video.
+- **The Washerwomen — Mediterranean Impressionism** (`19th Century`, non-looping) — a
+  *cloth-in-wind* mover: on a sun-filled rooftop a woman pegs a big billowing white sheet
+  as the whole line of linen and bright clothes flaps and bellies in the wind, women lift
+  baskets, a cat watches. Sorolla-register luminism, luma 153. First-try still (corner
+  **signature patched** — see below); first-try video.
+
+**What worked / reinforced:**
+- **Full-title + prompt-text grep is the gating step at 463 pieces**
+  ([[curation-check-full-title-list]]). ~3 passes: every first-instinct pick collided —
+  joust (×2), wine-treading (`Treading the Grapes` exists), tornado (`Tornado over the
+  Plains`), tiger (`Tiger and Magpie` Joseon minhwa), haymakers, paddle-steamer, steam
+  train, flamenco, penny-farthing≈`The Sprint`/`Coastal Peloton`, airship (×2 steampunk)
+  — all present. Grepping subject+mover+synonyms across title AND prompt text found four
+  genuinely-absent picks (steel band, swans, tugboat-as-hero, washerwomen; all 0 direct
+  hits). Budget several grep passes up front.
+- **4 of 4 stills + 4 of 4 videos landed first try; standing rules held** (bright luma
+  153–209, all well above the too-dark floor; positive full-bleed / freshly-made phrasing;
+  on-the-spot / same-size / locked-camera + zoom/pan negative block → mild drift only, no
+  morph/pop/lost actors). Advancing movers (swan takeoff, tug) held size via "same place /
+  same size within the frame".
+- **Oil/Impressionist-genre corner signature — patch, not reroll (reinforced)**
+  ([[curation-artist-name-summons-signature]]). The washerwomen still baked a small cursive
+  red signature onto the ochre wall (bottom-left) despite the no-signature negative — the
+  *genre* (19th-c. genre oil/Impressionism) is enough, same as the Catlin/beekeeper/
+  Orientalist cases. It sat on a low-frequency ochre-wall field between the green shutter
+  and the white cloth, so the **single-pass pure-Pillow masked normalized-blur inpaint**
+  ([[curation-pillow-masked-blur-inpaint]]) erased it cleanly (redness = R−G mask at the
+  80th percentile, MaxFilter(7) dilate, GaussianBlur(44) normalized fill, 2.5px feather).
+  Pre-patch original saved to the scratchpad first ([[curation-keep-rejected-renders]]).
+- **Two "medium-noun summons the object" guards held on first try:** the Nihonga swans
+  used "a bright illustration in the **Nihonga style**" + no-seal/no-kanji/no-screen-edges
+  block → clean full-bleed, no red seal, no characters, no folding-screen hinges
+  ([[curation-print-style-summons-paper-and-kanji]]); the Precisionist tug and the
+  Impressionist washerwomen both opened with the *scene* + "fills the entire image, nothing
+  around it" + the no-easel/no-canvas-edges/no-wall block → no easel, no framed-canvas, no
+  mural-on-a-wall ([[curation-oil-painting-easel]]). Tug hulls stayed plain (positive
+  "completely plain and unmarked … no names, numbers or letters" per the racing/vehicle
+  text lesson).
+- **`gemini-3-pro-image` clean, no 503 wall.**
+
+**Step 8 (social) — posted The Steel Band.** Best muted-phone clip of the four: a
+**hyper-saturated rainbow** carnival that pops hard muted, one **dead-centre action**
+(the pannist striking his steel pan) in the middle two-thirds, clear motion (drumming +
+a turning dancer), and a clean break from the recent post streak (Piñata 09-25, Snow
+Monkeys 09-24, Bobsled 09-23) as the first Caribbean carnival piece. The swans are pale/
+high-key (softer muted contrast) with subjects spread; the tug is a strong graphic but
+another machine so soon after the bobsled; the washerwomen spread across the width.
+Instagram, YouTube and Pinterest posted; TikTok posted but the pinned link-comment was
+skipped (TikTok didn't report the video id this time). [[curation-uploadpost-monthly-cap]]
+cap still clear.
+
 <!-- Claude appends new rounds above this line. -->

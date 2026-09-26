@@ -202,6 +202,7 @@ is the **AI-cliché** test in `PROMPT_GUIDANCE.md` ("Brand & taste"), not recenc
 
 - Chinese ink painting
 - Haitian Naïve Painting (flat bright folk-art, densely-packed Caribbean market & celebration scenes)
+- Trinidad Carnival / Steel-Band Illustration (contemporary Caribbean editorial illustration — clean flat-vector shapes, bold outlines, hyper-saturated tropical colour; pannists at chrome steel pans, feathered masquerade dancers, pastel colonial streets and bunting; one clear focal player/dancer, densely-composed edge-to-edge. Say "illustration", never "poster", and forbid text)
 - Mexican Folk Painting (bright, saturated naïve village-fiesta scenes — piñatas, dances, papel picado bunting, adobe courtyards with geraniums; bold clean colour, densely-composed edge-to-edge; open with the depicted scene and forbid the mural-on-a-wall / framed-canvas object)
 - Contemporary West African Narrative Painting (modern Nigerian/Ghanaian festival painting — bold saturated opaque colour, confident dark outlines, richly patterned wax-print cloth; densely-packed village festivals, masquerade dances, drummers and markets; painterly, NOT flat-vector)
 - Papua New Guinea Highlands Festival Painting (contemporary Melanesian folk painting — bold flat brightly-outlined figures, brilliant tropical colour; sing-sing gatherings of plumed dancers in towering bird-of-paradise headdresses, face-paint, grass skirts, kundu drummers; densely-packed edge-to-edge)

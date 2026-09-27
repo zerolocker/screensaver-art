@@ -2564,4 +2564,82 @@ Instagram, YouTube and Pinterest posted; TikTok posted but the pinned link-comme
 skipped (TikTok didn't report the video id this time). [[curation-uploadpost-monthly-cap]]
 cap still clear.
 
+### 2026-09-27 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, four *distinct* mover classes, deliberately
+chosen to **break the recent streak** (steel band 09-26 music, piñata 09-25 game,
+snow monkeys 09-24 animal, bobsled 09-23 vehicle). **This round spent the one
+allowed archaeological slot** (a Minoan fresco) — the first in the recent all-
+intact-medium run — and it came back bright and clean, so the cap is a floor to
+*use*, not avoid:
+- **The Bull-Leapers — Minoan Fresco** (`Greek & Roman`, non-looping, **archaeological
+  1/4**) — the ideal *acrobatic-vault* mover: a leaper handsprings clean over a
+  charging bull, two attendants bracing/catching. Fills the rare Aegean corner of
+  `Greek & Roman` (Minoan frescoes existed — Spring Fresco, Jumping Dolphins — but no
+  bull-leaping). First-try still + video; the full vault cycle read perfectly.
+- **The Whalers — American Marine Painting** (`Modern`, non-looping) — a *hunt/
+  harpoon-throw + whale-dive* mover: a Benton-register Regionalist marine, a Nantucket
+  longboat crew rowing hard alongside a spouting sperm whale, harpooner poised. Bright
+  open-ocean daylight. First-try still + video (whale spout→fluke-up dive→surface).
+- **The Hula Dancers — Contemporary Hawaiian Painting** (`Arts of Africa & Oceania`,
+  non-looping) — a *dance-sway* mover: a flat-vector island illustration, a row of five
+  hula dancers swaying in unison with a seated ipu drummer. Hyper-saturated tropical
+  colour, luma very high. New style added; fills the under-used `Arts of Africa &
+  Oceania` wing. First-try still + video. **Posted to social** (step 8).
+- **The Ama Divers — Shin-hanga** (`Japanese`, non-looping) — a *dive* mover: a woman
+  diver plunges head-first off a boat into a turquoise bay, a second surfaces with her
+  basket by the floating barrel, a third swims below. Bright coastal daylight. First-try
+  still + video (clean plunge, no morph/pop).
+
+**What worked / reinforced:**
+- **Full-title + prompt-text grep is the gating step, now at 467 pieces**
+  ([[curation-check-full-title-list]]). The gallery is *extremely* dense: **every**
+  first-instinct pick collided — canoe/paddling/regatta (×7+), elephant procession
+  (×4), fencing/duel (`The Fencing Bout`), potter's wheel (`The Village Potters`),
+  capoeira, caber/Highland Games, rodeo, polo, wrestling (×2), see-saw, tug-of-war,
+  snake charmer, acrobat/trapeze/juggler, sheepdog, glassblower (Murano), flower/spice/
+  fish markets, whale-as-wildlife (`Breaching Whale`) all present. Budget **4+ grep
+  passes**; the genuine gaps this round were narrow (ama pearl divers, hula, a whaling
+  *longboat* scene as distinct from the wildlife whale, and Minoan *bull-leaping*).
+  Grepping a **rare wing** (`Arts of Africa & Oceania`) is again the cheapest rut-break.
+- **4/4 stills + 4/4 videos landed first try; standing rules held** (bright, dense,
+  edge-to-edge; positive full-bleed / freshly-made phrasing; on-the-spot / same-size /
+  locked-camera + zoom/pan negative block → mild-to-moderate zoom only, no morph/pop/
+  lost actors). Advancing/vaulting movers (bull-leap vault, whale dive, ama plunge) all
+  held size within the frame.
+- **The archaeological slot is safe when the freshness rules are actually applied.** A
+  "Minoan fresco" prior normally summons cracks/patina (the 07-25 lesson), but leading
+  with the *depicted scene* + "freshly painted, pigments brilliant and unfaded, the
+  painted surface perfectly smooth, clean and unbroken … glowing as on the day it was
+  finished" + bright even daylight gave a pristine, high-key fresco — no cracks, no
+  worn plaster, no dug-up look. **Do not name surface condition even to negate it.**
+- **An authentic integral border ≠ the banned picture-frame.** The Minoan rosette +
+  running-wave bands are part of the fresco composition (as on the real Toreador
+  Fresco), fill the frame edge-to-edge, and the scene is dense — this did **not** trip
+  the "no painted border / small-painting-in-a-mat" failure (06-28). The border failure
+  is about a small artwork floating inside empty margins, not a decorative band that is
+  itself part of an edge-to-edge composition.
+- **No corner signature this round — the register decides.** None of the four (Minoan
+  fresco, Regionalist marine, flat-vector Hawaiian, Shin-hanga line) summoned the oil-
+  genre cursive corner signature ([[curation-artist-name-summons-signature]]); that
+  failure is specific to 19th-c./genre *oil* registers (Catlin/beekeeper/Orientalist/
+  washerwomen). Fresco, flat-vector and woodblock registers stay clean.
+- **Guards held first-try:** Shin-hanga print-object guard ([[curation-print-style-summons-paper-and-kanji]])
+  — "illustration in the Shin-hanga woodblock style" + no-seal/no-kanji/no-paper-margin
+  block gave a clean borderless, character-free ama scene; the marine hull stayed plain
+  (positive "completely plain and unmarked" per the racing/vehicle text lesson).
+- **`gemini-3-pro-image` clean, no 503 wall.**
+
+**Step 8 (social) — posted The Hula Dancers.** Best muted-phone clip of the four: one
+obvious central subject (the yellow-skirt lead dancer) in the middle two-thirds, hyper-
+saturated tropical colour that pops hard muted, clear synchronized dance motion, and a
+clean **dance** category break from the recent streak (music/game/animal/vehicle). The
+flat-illustration faces are intentionally featureless, which removed the uncanny-face
+animation risk entirely. The whalers (whale in the right third), ama divers (main diver
+right) and bull-leapers (leaper+bull wide) all spread subjects across the width, losing
+outer detail to the vertical side-crop. **All four channels posted, and the TikTok
+link-comment pinned this time** (contrast 09-26, where TikTok didn't report the video
+id). [[curation-uploadpost-monthly-cap]] cap still clear.
+
 <!-- Claude appends new rounds above this line. -->

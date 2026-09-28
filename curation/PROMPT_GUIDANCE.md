@@ -2642,4 +2642,92 @@ outer detail to the vertical side-crop. **All four channels posted, and the TikT
 link-comment pinned this time** (contrast 09-26, where TikTok didn't report the video
 id). [[curation-uploadpost-monthly-cap]] cap still clear.
 
+### 2026-09-28 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, four *distinct* mover classes, deliberately
+chosen to **break the recent streak** (hula 09-27 dance, steel band 09-26 music,
+piñata 09-25 game, snow monkeys 09-24 animal). **All intact-medium** (0
+archaeological — within the ≤1 cap), leaning bright/dense/colourful, two gap-wing
+picks (`South & Southeast Asian`, `Islamic`) + two favoured wings (`Modern`,
+`Contemporary`):
+- **The Temple Chariot Festival — South Indian Painting** (`South & Southeast
+  Asian`, non-looping) — a *haul/pull* mover: a dense crowd hauls a towering
+  garlanded temple car (ratha) forward on thick coir ropes, priests showering
+  petals, drummers alongside. New style added (Tanjore/Mysore devotional). **Still
+  rerolled once** (gilt frame + shop-sign text — see below). First-try video.
+- **The Lumberjacks — American Regionalism** (`Modern`, non-looping) — a *two-man
+  saw* mover: two Benton-register loggers work a crosscut saw across a pine, chips
+  flying. First-try still; **video rerolled once** (lost-actor + tree fully felled —
+  see below).
+- **The Camel Race — Persian Miniature** (`Islamic`, non-looping) — a *gallop*
+  mover: three tall camels race neck-and-neck, riders raising whips, jewel-toned
+  Safavid crowd + striped tents. Fills the under-used `Islamic` wing; densely
+  composed to beat the flat-miniature "visually thin" risk. First-try still + video.
+- **The Beer Garden — Contemporary Illustration** (`Contemporary`, non-looping) — a
+  *serve/toast* mover: a dead-centre dirndl server strides with a fistful of frothing
+  steins as the tables toast. Flat-vector, hyper-saturated, luma 144. First-try
+  still + video. **Posted to social** (step 8).
+
+**What worked / reinforced:**
+- **Full-title + prompt-text grep is the gating step at 471 pieces**
+  ([[curation-check-full-title-list]]). 3 of my first 4 instincts collided in TITLES:
+  ice-skaters (×2 Dutch + Speed Skaters Art Deco), carousel (×3), balloon ascension
+  (×2). Further collisions: lion/dragon dance, horse race/steeplechase/racecourse,
+  castle siege (Int'l Gothic), running-of-the-bulls, cattle drive, ferris wheel,
+  windmills (×5). Genuine gaps found by grepping subject+mover+synonyms: temple
+  chariot/ratha (0), lumberjack/logging/crosscut (0), camel *race* (camel prompt-only,
+  no title), beer/oktoberfest/stein (0). Budget several grep passes; a gap wing
+  (`Islamic`) is again the cheapest rut-break.
+- **NEW still reject — "Tanjore/Mysore painting" summons a gilt picture-frame.** The
+  first temple-chariot still rendered the scene as a *framed canvas* — a gold
+  ornamental frame moulding running down the left edge — **and** baked pseudo-Tamil
+  script onto shop signboards in the mid-left background. Same family as the
+  museum-object / no-painted-border failures (06-28): the *medium noun* "Tanjore
+  painting" carries the ornate gilt frame as its prior (real Tanjore paintings are
+  famous for them), and a "temple street" drags in shop signs with script. **Reroll
+  fix that worked (one reroll):** lead with the *scene* ("A grand South Indian temple
+  chariot festival on a sunlit street, in a devotional folk-illustration style"),
+  say positively "the painting is NOT framed: no gold/gilded frame, no picture frame,
+  no ornamental border, nothing around the edges," push buildings to "plain painted
+  temple-town walls … no shops, no signboards, no writing on any wall," and forbid
+  Tamil/Sanskrit/any characters. Clean, brighter (luma 137→148), no frame, no text.
+  Added to [[curation-print-style-summons-paper-and-kanji]] / the no-frame rule; new
+  ART_STYLES entry carries the frame warning inline.
+- **NEW video reject — a toned-down "topple" ran to a full fell + lost the second
+  actor.** The first lumberjacks clip: the men sawed, then Veo **fully felled the
+  tree and cleared it out of frame**, and the *second lumberjack vanished* — the last
+  ~2 s were one man alone by a bare stump (count change / lost-actor, a flagged
+  failure). Root cause: "begins to lean and topple" reads to Veo as "complete the
+  fell and tidy the scene." **Reroll fix that worked (one reroll):** demote the topple
+  to "the pine only shudders and leans a little but stays firmly standing and rooted
+  the whole time," pin both actors ("both men stay exactly in place … sawing
+  continuously … neither leaves the frame; the tree does not fall over and nothing
+  disappears"), and add per-clip negatives *a person leaving the frame, figure
+  disappearing, the tree falling over/out of frame, empty scene*. The continuous
+  two-man saw stroke is itself the legible mover — no need for the tree to fall.
+  **Takeaway: for a felling/collapsing/"toppling" subject, cap the motion at "begins
+  to lean, stays standing" and explicitly forbid the actor(s) and the object leaving
+  frame — Veo will otherwise finish the action and empty the scene.**
+- **3/4 stills + 3/4 videos landed first try; standing rules held** (bright luma
+  105–148, all ≥ the too-dark floor; positive full-bleed / freshly-made phrasing;
+  on-the-spot / same-size / locked-camera + zoom/pan negative block → mild-to-moderate
+  drift only on the accepted clips, no morph/pop). The camel-race miniature beat the
+  "visually thin" trap by dense composition (crowd both sides, tents, flowering
+  ground); the Regionalist lumberjacks summoned **no** corner signature (that failure
+  stays specific to 19th-c genre *oil*, per [[curation-artist-name-summons-signature]]).
+- **`gemini-3-pro-image` clean, no 503 wall.**
+
+**Step 8 (social) — posted The Beer Garden.** Best muted-phone clip of the four: one
+**dead-centre subject** (the dirndl server with a fistful of steins) in the middle
+two-thirds, **hyper-saturated flat-vector** colour (golden beer, blue-and-white
+bunting, red-and-white tent) that pops hard muted, clear toast motion, and a fresh
+**beer-garden** category break from the recent post streak (dance/music/game/animal).
+The chariot (hero off-centre-right), lumberjacks (two men spanning the width) and
+camel race (racing line spread + leftward drift) all lose outer detail to the
+vertical side-crop. Instagram, YouTube and TikTok posted (TikTok link-comment
+pinned); Pinterest queued at Zernio and retrying on its own. Note: Instagram + YouTube
+posted fine via **Zernio** — the [[curation-uploadpost-monthly-cap]] 10/month cap is
+an *upload-post* limit and did not bite this flow.
+
 <!-- Claude appends new rounds above this line. -->

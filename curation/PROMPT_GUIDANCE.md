@@ -2730,4 +2730,70 @@ pinned); Pinterest queued at Zernio and retrying on its own. Note: Instagram + Y
 posted fine via **Zernio** — the [[curation-uploadpost-monthly-cap]] 10/month cap is
 an *upload-post* limit and did not bite this flow.
 
+### 2026-10-01 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, four distinct mover classes and four distinct
+domains (wildlife / festival-crowd / genteel leisure / food-craft), deliberately
+spread to **break the recent sports/games/festival streak** and vary domain.
+**All intact-medium** (0 archaeological — within the ≤1 cap), bright/dense/colourful:
+- **The Cheetah Chase — Tingatinga Painting** (`Arts of Africa & Oceania`,
+  non-looping) — an *animal-sprint* mover: a black-spotted cheetah sprints after a
+  bounding Thomson's gazelle across a hyper-saturated edge-to-edge Serengeti. Fills
+  the under-used gap wing (only the Flamingo Lake was there before). First-try still
+  + video; count held at exactly two, mild zoom only.
+- **La Tomatina — Contemporary Spanish Illustration** (`Contemporary`, non-looping)
+  — a *festival-throw* mover: a dead-centre reveller hurls a fistful of red tomato
+  pulp as a packed crowd pelt each other, whole tomatoes arcing through the air.
+  Flat-vector, hyper-red, high luma. First-try still + video. **Posted to social**
+  (step 8).
+- **The Croquet Match — Impressionism** (`19th Century`, non-looping) — a
+  *leisure-sport* mover: a woman in white completes her mallet swing and the red
+  ball rolls to the hoop, watchers swaying. Bright high-key Impressionist garden.
+  First-try video; **still signature-patched** (see below).
+- **The Noodle Pullers — Modern Chinese Painting** (`Chinese & Korean`,
+  non-looping) — a *food-craft* mover: a dead-centre lamian chef stretches a long
+  rope of dough wide between his hands, steam + red lanterns + diners. First-try
+  still + video.
+
+**What worked / reinforced:**
+- **Full-title + prompt-text grep is the gating step at 475 pieces**
+  ([[curation-check-full-title-list]]). Many first-instinct picks collided; the
+  genuine 0-hit gaps were cheetah-*chase* (cheetah appears only as prey in a
+  Safavid hunt), La Tomatina/tomato (0), croquet (0), and a noodle-*pulling* scene
+  (noodle only in the Street Food Stall prompt). A gap wing (`Arts of Africa &
+  Oceania`) was again the cheapest rut-break.
+- **4/4 stills + 4/4 videos accepted** (one still patched, not rerolled). Standing
+  rules held: bright/dense/edge-to-edge, positive full-bleed/freshly-made phrasing,
+  on-the-spot/same-size/locked-camera + zoom/pan negative block → mild zoom only, no
+  morph/pop/lost actors. Animal count pinned (cheetah+gazelle = 2); the Tomatina
+  crowd churned naturally without identity drift on the hero.
+- **Impressionist oil genre summoned the corner signature again**
+  ([[curation-artist-name-summons-signature]]) — a red cursive "Claude Monet" baked
+  into the croquet lawn's bottom-right despite the no-signature negative and **no
+  artist named**; the 19th-c genre-*oil* / Impressionism register alone is enough
+  (the Catlin / beekeeper / Orientalist / washerwomen family). It sat on a
+  low-frequency green-lawn field, so the single-pass pure-Pillow masked
+  normalized-blur inpaint ([[curation-pillow-masked-blur-inpaint]]) erased it
+  cleanly — redness = R−(G+B)/2 mask **restricted to a bounding box** so it couldn't
+  touch the red ball / flowers / sash elsewhere, MaxFilter(9) dilate,
+  GaussianBlur(46) normalized fill, 3px feather. Pre-patch original saved first
+  ([[curation-keep-rejected-renders]]).
+- **Guards held first-try:** the Tingatinga and flat-vector registers summoned no
+  signature; the Modern-Chinese noodle piece's seal/character guard held — its only
+  script-like mark was a decorative geometric meander band on a bowl rim
+  (legitimate pottery ornament, left as-is, same call as the 壽 roundel)
+  ([[curation-print-style-summons-paper-and-kanji]]).
+- **`gemini-3-pro-image` clean, no 503 wall.**
+
+**Step 8 (social) — posted La Tomatina.** Best muted-phone clip of the four: one
+dead-centre subject (the reveller mid-throw) in the middle two-thirds, hyper-
+saturated red splatter that pops hard muted, clear dynamic motion (throw + flying
+tomatoes + cheering crowd), and a fresh festival-tomato-fight category break from
+the recent post streak (beer garden 09-28, hula 09-27, steel band 09-26, piñata
+09-25). The cheetah+gazelle and croquet both spread subjects across the width
+(outer detail lost to the vertical side-crop); the noodle shop is warm but
+softer-contrast. All four channels posted (Instagram, YouTube, Pinterest), TikTok
+link-comment pinned.
+
 <!-- Claude appends new rounds above this line. -->

@@ -2796,4 +2796,76 @@ the recent post streak (beer garden 09-28, hula 09-27, steel band 09-26, piñata
 softer-contrast. All four channels posted (Instagram, YouTube, Pinterest), TikTok
 link-comment pinned.
 
+### 2026-10-02 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, four distinct mover classes (work / sport /
+dance / machine) and four distinct domains, deliberately spread to **break the
+recent festival/food/leisure streak** (La Tomatina 10-01, croquet 10-01, beer
+garden 09-28). **All intact-medium** (0 archaeological — within the ≤1 cap),
+bright/dense/colourful:
+- **The Salt Harvesters — Contemporary Illustration** (`Contemporary`,
+  non-looping) — a *human-work (raking)* mover: a worker rakes glittering salt
+  into a growing white cone while a second carries twin baskets along the dividers,
+  across a jewel-toned geometric patchwork of rose/turquoise/gold salt pans.
+  Flat-vector, hyper-saturated, luma 174 (brightest). First-try still + video (mild
+  push-in only).
+- **Sepak Takraw — Southeast Asian Illustration** (`South & Southeast Asian`,
+  non-looping) — a *sport (acrobatic kick)* mover: a central player arches
+  upside-down in mid-air and whips his foot over to strike the golden rattan ball
+  in an overhead scissor-kick. Bold-outline comic register, dead-centre focal, luma
+  138. First-try still + video. **Posted to social** (step 8).
+- **The Cossack Dance — Ukrainian Folk Painting** (`19th Century`, non-looping) —
+  a *dance (prisyadka)* mover: the lead dancer drops into a deep squat-kick while a
+  second leaps with arms crossed, a bandura player and a ring of clapping villagers
+  around them, sunlit thatched-cottage square. New style added. First-try still
+  (no signature this round) + video; the squat→rise→squat cycle read perfectly.
+- **The Wing-Walker — American Scene Painting** (`Modern`, non-looping) — a
+  *machine + performer* mover: a yellow-and-red biplane banks across a clear sky
+  with a wing-walker balanced on the top wing, red scarf streaming, crowd waving
+  below. Crisp Precisionist register, luma 129. First-try still + video (plane held
+  size/place, mild zoom only).
+
+**What worked / reinforced:**
+- **Full-title + prompt-text grep is the gating step, now at 479 pieces**
+  ([[curation-check-full-title-list]]). The gallery is *saturated*: **all four**
+  first-instinct picks collided — Dutch-marine *naval battle* (23 ship pieces,
+  Man-of-War / Ship Launch / Sunset Galleon all present), Book-of-Hours *harvest*
+  (Treading the Grapes + 15 harvest pieces), *Tango — Art Deco* (exact title
+  exists), and *high-dive / diving-lido* (×4). Further collisions on the second
+  pass: masquerade (The Masquerade + Commedia), castellers (The Human Tower),
+  can-can (The Cabaret Can-Can), kabuki (The Kabuki Stage), lifeboat (×2), fire
+  brigade, rodeo, lion/dragon dance, circus/trapeze/tightrope/stilt, blacksmith.
+  **Budget 3+ grep passes.** The genuine 0-hit gaps this round were *salt pans*,
+  *sepak takraw*, *Cossack/hopak dance*, and a *wing-walker/barnstorm air show*
+  (only "The Aviator over Paris" existed, a distinct subject). At this density the
+  reliable play is a fresh **subject/sport/craft the gallery hasn't named yet**,
+  not a fresh style.
+- **4/4 stills + 4/4 videos landed first try; standing rules held** — bright
+  (luma 129–174, all well above the too-dark floor), dense, edge-to-edge; positive
+  full-bleed / freshly-made phrasing; on-the-spot / same-size / locked-camera +
+  zoom/pan negative block → mild push-in only, no morph/pop/lost actors. Advancing/
+  airborne movers (the takraw kick, the banking biplane) held size within the frame.
+- **No corner signature this round — the register decides (reinforced).** The
+  Cossack piece is a 19th-c genre *oil*, the register that normally bakes the
+  cursive corner signature ([[curation-artist-name-summons-signature]]), yet it
+  came back clean (corners checked: plain sunlit field, no mark). The flat-vector
+  (salt, takraw) and Precisionist (wing-walker) registers stayed clean as expected.
+  So the oil-signature failure is *probable*, not *guaranteed* — still budget a
+  patch, but it did not fire here.
+- **`gemini-3-pro-image` clean, no 503 wall.**
+
+**Step 8 (social) — posted Sepak Takraw.** Best muted-phone clip of the four: one
+**dead-centre spectacular action** (the inverted overhead scissor-kick) in the
+middle two-thirds, golden ball against blue sky, **hyper-saturated bold-outline
+colour** that pops hard muted, and a fresh **sport** category break from the recent
+post streak (La Tomatina 10-01, beer garden 09-28, hula 09-27, steel band 09-26).
+The opening ~2 s holds the kick dead-centre (the player lands and the rally resets
+after, fine for a 3-s muted view). The salt pans spread subjects across the grid,
+the Cossack's two hero dancers straddle the centre, and the wing-walker's plane
+spans the width — all weaker vertical crops. Instagram, YouTube and TikTok posted
+(TikTok link-comment pinned); Pinterest queued at Zernio and retrying on its own
+while the new `/art/sepak-takraw` page finishes deploying.
+[[curation-uploadpost-monthly-cap]] cap not a factor (Zernio flow).
+
 <!-- Claude appends new rounds above this line. -->

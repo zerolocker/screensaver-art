@@ -2868,4 +2868,92 @@ spans the width — all weaker vertical crops. Instagram, YouTube and TikTok pos
 while the new `/art/sepak-takraw` page finishes deploying.
 [[curation-uploadpost-monthly-cap]] cap not a factor (Zernio flow).
 
+### 2026-10-03 — nightly generation round (4 pieces added)
+
+Not a human-review round; no removals. Recording the batch for continuity. Four
+pieces across four distinct wings, four distinct mover classes (locomotion /
+wildlife / dance / labour) and four distinct domains, deliberately spread to
+**break the recent sport/festival/food streak** (Sepak Takraw 10-02, La Tomatina
+10-01, Beer Garden 09-28). **All intact-medium** (0 archaeological — within the ≤1
+cap), bright/dense/colourful:
+- **The Rickshaw Runners — Nihonga** (`Japanese`, non-looping) — a *locomotion
+  (run + wheels)* mover: a Meiji-Tokyo jinrikisha puller runs on the spot pulling
+  his rickshaw, spoked wheels turning, two more running behind, down a blossom-lined
+  street. **Still rerolled once** (pervasive baked text — see below). First-try
+  video (mild push-in only), luma 175.
+- **The Wild Horses — Romantic Animalier** (`19th Century`, non-looping) — a
+  *wildlife gallop* mover: a herd of ~7 white Camargue horses gallops straight at
+  the viewer through a sunlit marsh throwing silver spray, no riders. First-try
+  video, count held, no morph/pop. **Still signature clone-patched** (see below).
+- **The Tarantella — Contemporary Illustration** (`Contemporary`, non-looping) — a
+  *folk-dance* mover: a dead-centre couple whirls, the woman's red-and-white striped
+  skirt flaring into a full fan at mid-clip and settling, partner shaking a raised
+  tambourine, a clapping ring + accordion. Flat-vector, hyper-saturated, luma 151.
+  First-try still + video. **Posted to social** (step 8).
+- **The Wine Press — Flemish Baroque** (`Renaissance & Baroque`, non-looping) — a
+  *human-labour (lever/screw)* mover: two workers haul the long beam-press lever
+  down, turning the screw, as purple must pours into the vat and a woman tips a
+  basket of grapes; sunlit farmyard courtyard. First-try still + video; luma 114.
+
+**What worked / reinforced:**
+- **Full-title + prompt-text grep is the gating step at 483 pieces**
+  ([[curation-check-full-title-list]]). At this density nearly every first-instinct
+  pick collided (falconry, kite festival, printing press, watermill, cable car,
+  cider mill, paddle steamer, troika all present). Genuine 0-hit gaps found by
+  grepping subject+mover+synonyms across title AND prompt: *rickshaw*, *Camargue/
+  wild-horse herd (no riders)*, *tarantella*, *screw/beam wine press* (distinct from
+  the foot-treading `Treading the Grapes`). Budget several grep passes.
+- **4/4 videos landed first try; standing rules held** — mild zoom/push-in only, no
+  morph/pop/lost actors, with the on-the-spot / same-size / same-place + locked-camera
+  + zoom/pan negative block. Advancing movers (running puller, galloping herd) held
+  size via "run/gallop in place, staying the same size within the frame". The
+  wine-press must *over*-filled the vat and pooled on the stones by ~7 s — plausible
+  fluid, not a defect (no morph/pop), accepted without a reroll.
+- **NEW still reject — a Meiji/Nihonga street scene bakes in signboards, kanji AND
+  coat lettering.** The first rickshaw still rendered legible shop signboards
+  (東京書店 etc.), character-covered lanterns, and **kanji on the back of the central
+  puller's happi coat** — despite the standard no-kanji/no-text clause. A busy
+  *street* summons signage the way "Tanjore painting" summons a gilt frame. Too much
+  to patch (spread across signs + lanterns + clothing), so **reroll, not patch**.
+  Fix that worked (one reroll): remove shop signs entirely from the prompt (replace
+  with "plain solid-colour cloth curtains and plain unmarked round paper lanterns"),
+  make the happi coat "completely blank, no markings", and lead the negatives with
+  **"ABSOLUTELY NO TEXT of any kind … every lantern, curtain, coat and wall is plain,
+  blank and unmarked."** Clean, text-free, luma 175. Extends
+  [[curation-print-style-summons-paper-and-kanji]] — the trigger is the *busy street
+  setting* as much as the style noun, and it lands on clothing too, not just signs.
+- **NEW patch technique — clone-fill beats masked-blur for a LIGHT, low-contrast
+  signature.** The Camargue oil baked a pale-grey cursive signature (bottom-right,
+  on bright sparkling water) — the expected 19th-c genre-*oil* failure
+  ([[curation-artist-name-summons-signature]]). The usual single-pass masked
+  normalized-blur ([[curation-pillow-masked-blur-inpaint]]) **failed twice here**:
+  the ink is only mid-grey against bright water, so a median-relative dark-threshold
+  either left ghost strokes (too conservative) or smeared a visible soft rectangle
+  (too broad). **What worked: clone-fill** — copy a same-height water band shifted
+  ~0.34·W to the left (so the horizontal ripple pattern matches) over the signature
+  bbox, composited through a feathered rounded-rect alpha (solid centre, ~18 px
+  ramped edges, GaussianBlur(10)). Signature gone, water texture preserved, only a
+  faint corner seam. **Rule of thumb: masked-blur for dark ink on a low-frequency
+  field; clone-from-adjacent for light/low-contrast ink or busy texture.** Pre-patch
+  original saved to the scratchpad first ([[curation-keep-rejected-renders]]).
+- **Guards held first-try:** the Flemish-Baroque wine press summoned **no** corner
+  signature this round (corners checked clean), consistent with "the oil-signature
+  failure is probable, not guaranteed"; its courtyard stayed bright (no dim-cellar/
+  candlelight — the explicit "bright outdoor daylight only, no cellar/lamps" clause
+  held, luma 114). The Tarantella's flat-vector register summoned no signature/text;
+  its faces are intentionally featureless, removing the uncanny-face animation risk.
+- **`gemini-3-pro-image` clean, no 503 wall.**
+
+**Step 8 (social) — posted The Tarantella.** Best muted-phone clip of the four: one
+**dead-centre action** (the whirling dancer, skirt flaring into a bold red-and-white
+fan) in the middle two-thirds, **hyper-saturated flat-vector colour** (blue sea,
+magenta bougainvillea, rainbow bunting) that pops hard muted, clear dance motion,
+and a fresh **dance** category break from the recent sport/festival post streak
+(Sepak Takraw 10-02, La Tomatina 10-01, Beer Garden 09-28). The wild horses are
+high-key/pale and spread across the full width (lost to the vertical side-crop); the
+wine press spreads subjects and is warmer/softer-contrast; the rickshaw is pale with
+a thinner central subject. All four channels posted (Instagram, YouTube, TikTok with
+link-comment pinned, Pinterest). [[curation-uploadpost-monthly-cap]] not a factor
+(Zernio flow).
+
 <!-- Claude appends new rounds above this line. -->

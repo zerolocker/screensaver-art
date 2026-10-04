@@ -245,14 +245,14 @@ worth remembering:
 - **Descriptions are templated, not written, and not prompt dumps.** Built from title/movement/
   era/date plus 15 hand-written era paragraphs. The `image_prompt`/`video_prompt` fields are
   deliberately unused: they're machine instructions ("static camera", "no morphing") and 61
-  pieces have none. Good per-piece prose would need per-piece data, and **not in `gallery.json`**
-  (founder, 2026-09-13: no new fields there). Still open, and low value while `/art/*` is `noindex`.
-  **Exception (founder, 2026-10):** real public-domain paintings carry **provenance fields**
-  (`source: "real_artwork"`, `artist`, `artist_dates`, `original_title`, `original_date`,
-  `museum`, `credit_line`, `source_url`, `license`), and their `/art/<slug>` prose is templated
-  from them: it credits the painter and the museum and says only the motion is AI, because the
-  AI pieces' "not a reproduction of any existing work" line would be false there. Still no other
-  new fields (captions, descriptions, marketing copy).
+  pieces have none. Good per-piece prose needs per-piece data. The 2026-09-13 "no new fields in
+  `gallery.json`" rule was **lifted by the founder on 2026-10-03**, so per-piece data may now live
+  there. Real public-domain paintings already carry **provenance fields** (`source:
+  "real_artwork"`, `artist`, `artist_dates`, `original_title`, `original_date`, `museum`,
+  `credit_line`, `source_url`, `license`). Their `/art/<slug>` prose is templated from those
+  fields: it credits the painter and the museum and says only the motion is AI, because the AI
+  pieces' "not a reproduction of any existing work" line would be false there. Per-piece prose for
+  the AI pieces is still open, and low value while `/art/*` is `noindex`.
 
 **Still open:** the poster gap (77 pieces have no still anywhere, so their tiles render on a
 gradient — needs founder-approved stills on R2, not in git) and the per-piece prose above.

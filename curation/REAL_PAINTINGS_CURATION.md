@@ -9,9 +9,8 @@ brought to life. Nothing is generated except the motion.
 > drove no site visits. A painting people already know stops the scroll, and its name and
 > painter are what people search for. So this mode leads with **famous works first**.
 
-Instructions assume the git repo is the current working directory. Read
-[`curation/REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md) before writing any video prompt. It holds
-the rules learned from animating real paint. Where it conflicts with `PROMPT_GUIDANCE.md`, it wins.
+Instructions assume the git repo is the current working directory. The fixed video prompt and
+the review checklist are in [`curation/REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md).
 
 ## Prerequisites
 
@@ -43,8 +42,9 @@ do pass.
 ## Steps
 
 1. **Context.** Read the repo-root `README.md`, [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md),
-   and from [`PROMPT_GUIDANCE.md`](PROMPT_GUIDANCE.md) the **Hard rules** (motion only),
-   **Gallery tags** and **Music prompts** sections.
+   and the **Gallery tags** and **Music prompts** sections of
+   [`PROMPT_GUIDANCE.md`](PROMPT_GUIDANCE.md). Its other rules are for writing AI image and video
+   prompts, and this mode writes none.
 
 2. **Find candidates.**
    ```bash
@@ -54,24 +54,18 @@ do pass.
    already know a famous eligible work, `--ids aic:<id>` fetches and clears that one painting.
    Everything in the output has passed the gate and isn't already in `gallery.json`.
 
-3. **Pick four.** In order of priority:
+3. **Pick four.**
    - **Recognizable first.** Prefer the works most people would recognize: a high
      `fame.wikipedia_langs`, plus your own judgement of what a general audience knows. Each
      painting is used once, ever.
-   - **It must be able to move honestly** without leaving the painting
-     ([`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md) → *Motion that keeps the painting*). Say
-     the clip in one sentence first: *"<actor> <does what>, in place."* If you can't, pick
-     another painting.
+   - **Something in it can move**: people, animals, water, sky, smoke, cloth.
    - **Variety:** spread artists, eras, wings and subjects. Look at the last ~12 real-art
      entries in `gallery.json` (`source: "real_artwork"`). Never two works by the same painter
      in one night.
-   - **Skip single-face portraits** as the main subject: faces are where real paint goes
-     uncanny.
-   - **Skip nudity, graphic violence and death scenes**, however famous the work (e.g. Courbet's
-     *Woman with a Parrot*, Goodridge's *Beauty Revealed*). Pieces get posted to social
-     platforms, and a screensaver plays on screens other people can see. Omni's safety filter
-     also refuses death scenes: it blocked David's *The Death of Socrates* outright, even with a
-     one-line prompt.
+   - **Skip nudity and graphic violence**, however famous the work (e.g. Courbet's *Woman with a
+     Parrot*). Pieces get posted to social platforms, and a screensaver plays on screens other
+     people can see.
+   - If Omni's safety filter refuses a painting, take the next pick.
 
 4. **Frame each pick on the dark wall.**
    ```bash
@@ -82,27 +76,23 @@ do pass.
    wall; never cropped, never extended) and `gallery/<stem>.provenance.json`. **Look at the
    still.** If the download is soft, discoloured or a detail crop, pick another painting.
 
-5. **Animate with Gemini Omni** (the `omni-video-gen` skill). Write the video prompt per
-   [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md), then:
+5. **Animate with Gemini Omni** (the `omni-video-gen` skill), using the fixed prompt from
+   [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md):
    ```bash
+   VID_PROMPT="Animate this; keep the camera still."
    bash curation/with-secrets.sh GEMINI_API_KEY -- \
      python .claude/skills/omni-video-gen/scripts/generate.py \
        --prompt "$VID_PROMPT" --image gallery/<stem>_4k.webp --resolution 1080p \
        --out gallery/<stem>_animated.mp4
    ```
-   For a loop, pass the still twice (`--image … --image …`), say so in the prompt, and name
-   the output `_looping.mp4`. The guidance says when looping helps. Omni replaced Veo on
-   2026-10-04: in a side-by-side on the same four paintings, it invented and dropped far fewer
-   objects. Omni takes **no negative prompt**, so every "don't" goes in the prompt itself.
-   - **Fixing a near-miss:** instead of rerolling from scratch, you can edit the result with
-     `--edit gallery/<stem>_animated.mp4.json --prompt "<what to fix>"`, e.g. "keep the
-     sky's original brushstrokes".
+   Don't edit the prompt per painting. If Omni's safety filter refuses a painting, take the next
+   pick.
 
 6. **Fidelity gate: review the clip before publishing.** Extract the first, middle and last
    frames and check them against the guidance's *Fidelity checklist*. Compare **fixed
    landmarks** (a lamppost, a wall edge, the signature, the frame border) across the frames
-   before you describe how anything moved. Reroll once with a tightened prompt if it fails.
-   If the reroll fails too, drop the painting and take the next pick.
+   before you describe how anything moved. Reroll once (same prompt) if it fails. If the
+   reroll fails too, drop the painting and take the next pick.
 
 7. **Publish.**
    ```bash
@@ -135,6 +125,6 @@ do pass.
 11. **No round log.** The batch is recorded in the step-9 commit message: list each piece, and
     add a line for anything that was rerolled or dropped, and why. Don't append to the round log in
     `PROMPT_GUIDANCE.md`; it belongs to the human review loop. If a night teaches a genuinely new
-    lesson about animating real paint, fold it into the rules in
-    [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md) (*Motion that keeps the painting* or the
-    *Fidelity checklist*) and commit that with the batch. Never write a narrative entry.
+    lesson about animating real paint, add it as a rule in
+    [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md) and commit that with the batch. Never write a
+    narrative entry.

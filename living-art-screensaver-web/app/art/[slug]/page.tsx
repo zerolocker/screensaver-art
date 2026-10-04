@@ -32,10 +32,13 @@ import { greenGlow } from '@/lib/brand'
  * lib/gallery-catalog.ts for why that is a hard requirement and how it's held.
  */
 
-export const dynamicParams = false
-
+// Rendered on first visit, then cached for the life of the deployment — the
+// data is the `gallery.json` baked into the build, so a cached page can't go
+// stale. Prerendering all of them instead would put one page per piece into
+// every deployment, a cost that grows with the catalog and is paid on each
+// nightly curation push. An unknown slug hits `notFound()` below.
 export function generateStaticParams() {
-  return ALL_PIECES.map((piece) => ({ slug: piece.slug }))
+  return []
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

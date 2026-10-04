@@ -8,11 +8,13 @@
  * a Mac download. Search traffic is a free option on top, not the goal. See
  * docs/growth-and-marketing-strategy.md §4.3.
  *
- * `gallery.json` is imported statically, so the pages are generated at build
- * time and served as static HTML — the fastest thing we can hand a visitor
- * arriving from a pin. The nightly curation job pushes `gallery.json` to
- * `master`, and a push to `master` auto-deploys the site (CLAUDE.md → Website),
- * so the route list and the sitemap grow themselves without any extra step.
+ * `gallery.json` is imported statically, so each deployment carries a fixed
+ * snapshot of the catalog. `/art/<slug>` and `/era/<tag>` render on first visit
+ * and are then served from cache as static HTML — the fastest thing we can hand
+ * a visitor arriving from a pin, without prerendering one page per piece into
+ * every deployment. The nightly curation job pushes `gallery.json` to `master`,
+ * and a push to `master` auto-deploys the site (CLAUDE.md → Website), so the
+ * routes and the sitemap grow themselves without any extra step.
  * (The Electron app still reads /api/gallery off the GitHub API — that path is
  * deliberately deploy-independent and is not touched here.)
  */

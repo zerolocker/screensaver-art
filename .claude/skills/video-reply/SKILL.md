@@ -19,10 +19,16 @@ now on"), and drop it for any message where they say a video isn't needed.
 
 ## Steps
 
+Building the video (spec, renders, contact sheets, layout fixes) is noisy, so it
+stays out of the main conversation where possible. The main agent writes only the
+script; a sub-agent builds the video from it.
+
 1. **Do the work.** Finish it, or get to a natural stopping point such as a question
    only the user can answer. Then compose the reply.
-2. **Script the reply** as you would have said it in text, restructured for
-   listening:
+2. **Write the script**: the narration beats, verbatim, plus a one-line intent for
+   each slide (template, the on-screen keywords or data, and any asset paths such as
+   images or clips). Format: [Script format](#script-format-hand-off) below. Script
+   it as you would have said it in text, restructured for listening:
    - **Lead with the answer or outcome**, then what you did and found, then anything
      that needs the user (decisions, blockers), and end with the next step or ask.
    - **Report faithfully**: failures, skipped steps, open risks and uncertainty go in
@@ -38,23 +44,65 @@ now on"), and drop it for any message where they say a video isn't needed.
      `pipeline`. Old vs new → `compare`. Status → `checklist`.
    - Write for the ear: say identifiers in words ("the gallery file") and show
      the exact name on screen in `` `code` ``.
-3. **Write the spec** to `llm-video-replies/NN-<slug>.yaml`, where `NN` is the
-   next unused two-digit number in that folder. The format is below.
-4. **Render** it to `NN-<slug>.mp4` beside the spec (command below). Use
-   `--preview` first when the spec has custom `html` or dense slides.
-5. **QA**: read the contact sheet, fix any clipping or bad reveals, and re-render.
-   Re-renders are cheap because audio is cached.
-6. **Send** the MP4 to the user with whatever file-sharing mechanism your
+3. **Build the video.** If your environment supports sub-agents, hand the script to
+   one, with the path to this file and the [build steps](#build-steps) below. It
+   returns only `path · duration · size`, plus any warnings it couldn't resolve.
+   If sub-agents aren't available, do the build steps yourself.
+4. **Send** the MP4 to the user with whatever file-sharing mechanism your
    environment has (or give them its path). The caption is one line: the title and
    the duration. Keep it under 30 MB so it can be delivered to a phone.
-7. **Text reply: one line at most**, pointing at the video. The exception is
+5. **Text reply: one line at most**, pointing at the video. The exception is
    anything the user must copy or click, which goes in text below that line because
    nobody can copy from a video: commands, URLs, PR links, file paths.
 
-**If the renderer itself breaks** (a tool bug, not a typo in your spec), don't debug
-it in this conversation. Hand the error and the spec path to a separate agent or
-sub-task if your environment supports one, so the debugging doesn't fill the main
-context. If it can't be fixed quickly, reply in text and say the video failed.
+### Build steps
+
+Done by the sub-agent, or by the main agent when there is none.
+
+1. **Write the spec** to `llm-video-replies/NN-<slug>.yaml`, where `NN` is the
+   next unused two-digit number in that folder. The format is
+   [below](#spec-format-yaml).
+2. **Render** it to `NN-<slug>.mp4` beside the spec ([command](#render-command)).
+   Use `--preview` first when the spec has custom `html` or dense slides.
+3. **QA**: read the contact sheet, fix any clipping or bad reveals, and re-render.
+   Re-renders are cheap because audio is cached.
+4. **Return** `path · duration · size`, plus any warnings you couldn't resolve.
+   Nothing else.
+
+**Keep the narration verbatim.** The builder may split a beat so a reveal lands as
+it's spoken, or smooth wording for speech (spelling out a number, say). It must not
+add claims, facts, or reassurance that aren't in the script. Layout problems are
+fixed by cutting on-screen words, never narration.
+
+**If the renderer itself breaks** (a tool bug, not a typo in the spec), don't debug
+it in the main conversation. A build sub-agent may try a quick fix; otherwise hand
+the error and the spec path to a separate sub-agent if your environment supports
+one. If it can't be fixed quickly, reply in text and say the video failed.
+
+### Script format (hand-off)
+
+A title and a scene list of `template / on-screen / say:` entries. On-screen is the
+slide's keywords or data, not the narration. `say:` is the verbatim narration, one
+line per beat (each beat reveals the next item).
+
+```yaml
+title: Sync bug fixed
+scenes:
+  - template: title
+    on-screen: Sync bug fixed · subtitle "ships in the next release"
+    say:
+      - Good news. The sync bug is fixed, and it ships in the next release.
+  - template: checklist
+    on-screen: Pinned the cache key (done) · Added a test (done) · Fresh install checked (done)
+    say:
+      - The app re-downloaded everything after an update, so I pinned the cache key.
+      - I added a test for it,
+      - and checked it on a fresh install.
+  - template: images
+    on-screen: llm-video-replies/assets/sync-log.png, caption "No re-downloads after the update"
+    say:
+      - Here's the sync log after an update. Nothing gets downloaded again.
+```
 
 ## Render command
 
@@ -84,9 +132,11 @@ specs, and `.cache/` (TTS audio, downloaded images, build files).
 ## Spec format (YAML)
 
 Top level: `title` (MP4 title + default footer), `footer`, `scenes`, and optional
-`voice` (default `Vindemiatrix`), `model` (default `gemini-3.1-flash-tts-preview`;
-falls back to `gemini-2.5-pro-preview-tts`), `style` (voice direction prepended to
-each beat), `accent` (hex), `pad` (seconds after each beat, default 0.25), `speed` (pitch-preserving speech tempo, default 1.12 — the voice reads slowly at 1.0).
+`voice` (default `Sulafat`), `model` (default `gemini-3.8-flash-tts`; falls back to
+`gemini-3.1-flash-tts-preview`), `style` (delivery direction; each model
+has a tuned default. For `gemini-3.8-*` models it is a short phrase like `friendly,
+warm and engaging`, sent as speech metadata; for older models it is prose prepended
+to each beat), `accent` (hex), `pad` (seconds after each beat, default 0.25), `speed` (pitch-preserving speech tempo, default 1.12 — the voice reads slowly at 1.0).
 
 Each scene: `template`, its fields, optional `kicker` (small accent caps line) and
 `say:` — the narration, a list of **beats**. Beat 1 shows the slide's fixed parts
@@ -152,11 +202,24 @@ Complete worked example covering every template: [`examples/demo.yaml`](examples
 
 ## Notes
 
-- TTS: `gemini-3.1-flash-tts-preview` + `Vindemiatrix` won blind listening
-  comparisons (judged by Gemini pro) against `gemini-2.5-pro-preview-tts` (stiffer)
-  and `gemini-3.8-flash-tts` (**reads the style direction aloud and drops
-  sentences — don't use it**). Each new clip gets a duration sanity check and a
-  transcription check (re-synthesised once on mismatch; warns if still off).
+- TTS: `gemini-3.8-flash-tts` + `Sulafat` is the default. In blind listening tests
+  judged by Gemini Pro, it beat the previous default (`gemini-3.1-flash-tts-preview`
+  + `Vindemiatrix`) in 9 of 12 comparisons. Across voices, 3.8 and 3.1 came out
+  about even (3.8 won 10 of 18), but 3.8 lost every round with `Vindemiatrix`, so
+  the voice changed with the model. `gemini-3.8-flash-lite-tts` is a little faster
+  and close behind. 3.1 is the fallback; `gemini-2.5-pro-preview-tts` sounded
+  stiffer than both.
+- 3.8 models go through the Interactions API and read the text **strictly as a
+  verbatim transcript**: any direction placed in the text gets spoken. `tts.py` sends
+  the `style` as speech metadata instead, so keep narration pure speech. An earlier
+  note here said 3.8 "reads the style direction aloud and drops sentences". That was
+  the old call path prepending the style to the text. Invoked correctly, 3.8 passed
+  the transcription check on every demo beat. Style matters for 3.8: with no style
+  it sounds flat, and `friendly, warm and engaging` tested best.
+- Each new clip gets a duration sanity check and a transcription check
+  (re-synthesised once on mismatch; warns if still off). The transcriber
+  occasionally truncates a long clip, so a rare false "missing speech" retry is
+  expected.
 - `video` clips are always **muted** (narration is the only audio), normalised to
   1080p30 whatever their fps/size/rotation, letterboxed (never cropped), and play
   continuously across the scene's beats: looped by default when the narration runs
@@ -166,5 +229,6 @@ Complete worked example covering every template: [`examples/demo.yaml`](examples
   96k, loudness-normalised to −16 LUFS, burned-in captions — plays in
   QuickTime and on phones. Keep the file **under 30 MB** so it can be delivered
   to a phone (≈15 MB for 4 min at these settings).
-- Needs Google Chrome, ffmpeg, Python with `google-genai`, `PyYAML`, `Pillow`.
+- Needs Google Chrome, ffmpeg, Python with `google-genai` ≥ 2.25 (the Interactions
+  API, for 3.8 models), `PyYAML`, `Pillow`.
   Fonts are macOS system fonts (New York, Avenir Next) — no network fonts.

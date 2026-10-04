@@ -8,11 +8,9 @@ import os
 
 import yaml
 
-DEFAULT_MODEL = "gemini-3.1-flash-tts-preview"
-FALLBACK_MODEL = "gemini-2.5-pro-preview-tts"
-DEFAULT_VOICE = "Vindemiatrix"
-DEFAULT_STYLE = ("Read this as a calm, friendly narrator explaining something to a "
-                 "colleague: warm, clear and brisk, conversational, never salesy.")
+DEFAULT_MODEL = "gemini-3.8-flash-tts"
+FALLBACK_MODEL = "gemini-3.1-flash-tts-preview"
+DEFAULT_VOICE = "Sulafat"
 DEFAULT_ACCENT = "#e4a853"
 
 # template -> (required fields, optional fields, list field to count, soft max items)
@@ -84,7 +82,8 @@ def load(path):
         "voice": data.get("voice") or DEFAULT_VOICE,
         "model": data.get("model") or DEFAULT_MODEL,
         "fallback_model": data.get("fallback_model", FALLBACK_MODEL),
-        "style": DEFAULT_STYLE if data.get("style") is None else str(data["style"]).strip(),
+        # None = the TTS default for each model's invocation path (tts.style_for)
+        "style": None if data.get("style") is None else str(data["style"]).strip(),
         "accent": data.get("accent") or DEFAULT_ACCENT,
         "pad": float(data.get("pad", 0.25)),
         "speed": float(data.get("speed", 1.12)),

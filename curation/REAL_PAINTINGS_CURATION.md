@@ -2,7 +2,7 @@
 
 The runbook when `curation/CURATION_MODE` is `real-paintings`. Each night, add **four famous public-domain paintings, animated with Gemini Omni**. Only the motion is generated. Famous works come first, because people recognize them and search for them by name.
 
-Run every command from the repo root. Read [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md) before writing any video prompt; where it conflicts with `PROMPT_GUIDANCE.md`, it wins.
+Run every command from the repo root. The fixed video prompt and the review checklist are in [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md).
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ The museum APIs need no keys. If one is down, use the others; if all are down, a
 
 ## Steps
 
-1. **Context.** Read the repo-root `README.md`, `REAL_ART_GUIDANCE.md`, and these sections of `PROMPT_GUIDANCE.md`: the motion rules under *Hard rules*, *Gallery tags*, and *Music prompts*.
+1. **Context.** Read the repo-root `README.md`, `REAL_ART_GUIDANCE.md`, and the *Gallery tags* and *Music prompts* sections of `PROMPT_GUIDANCE.md`. Its other rules are for writing AI image and video prompts, and this mode writes none.
 
 2. **Find candidates.**
    ```bash
@@ -30,12 +30,12 @@ The museum APIs need no keys. If one is down, use the others; if all are down, a
    ```
    Add `--query "<theme>"` for variety. `--ids aic:<id>` checks one specific work. Everything in the output has passed the gate and isn't in `gallery.json` yet.
 
-3. **Pick four**, in this order of priority:
+3. **Pick four.**
    - **Recognizable.** Prefer works a general audience knows: a high `fame.wikipedia_langs`, plus your own judgement. Each painting is used once.
-   - **It can move without leaving the painting** (see *Motion that keeps the painting* in the guidance). Say the clip in one sentence first: "<actor> <does what>, in place." If you can't, pick another.
+   - **Something in it can move**: people, animals, water, sky, smoke, cloth.
    - **Variety.** Spread artists, eras, wings and subjects. Check the last ~12 entries with `source: "real_artwork"`. Never two works by one painter in a night.
-   - **No single-face portraits** as the main subject. Faces are where real paint looks uncanny.
-   - **No nudity, graphic violence or death scenes**, however famous. Pieces are posted to social media and play on screens others can see, and Omni's safety filter refuses death scenes anyway.
+   - **No nudity or graphic violence**, however famous. Pieces are posted to social media and play on screens others can see.
+   - If Omni's safety filter refuses a painting, take the next pick.
 
 4. **Frame each pick on a dark wall.**
    ```bash
@@ -44,18 +44,17 @@ The museum APIs need no keys. If one is down, use the others; if all are down, a
    ```
    This writes `gallery/<stem>_4k.webp` (the whole painting, centred on a 3840×2160 near-black wall, never cropped or extended) and `gallery/<stem>.provenance.json`. **Look at the still.** If it's soft, discoloured or a detail crop, pick another painting.
 
-5. **Animate with Omni** (the `omni-video-gen` skill), with a prompt written per the guidance:
+5. **Animate with Omni** (the `omni-video-gen` skill), using the fixed prompt from the guidance:
    ```bash
+   VID_PROMPT="Animate this; keep the camera still."
    bash curation/with-secrets.sh GEMINI_API_KEY -- \
      python .claude/skills/omni-video-gen/scripts/generate.py \
        --prompt "$VID_PROMPT" --image gallery/<stem>_4k.webp --resolution 1080p \
        --out gallery/<stem>_animated.mp4
    ```
-   - For a loop, pass the still twice (`--image … --image …`), say so in the prompt, and name the output `_looping.mp4`.
-   - Omni has no negative prompt, so put every "don't" in the prompt itself.
-   - To fix a near-miss, edit it instead of starting over: `--edit gallery/<stem>_animated.mp4.json --prompt "keep the sky's original brushstrokes"`.
+   Don't change the prompt per painting.
 
-6. **Check the clip before publishing.** Pull the first, middle and last frames and go through the guidance's *Fidelity checklist*. Compare fixed landmarks (a lamppost, a wall edge, the signature, the painting's border) across the frames before you describe how anything moved. If it fails, reroll once with a tighter prompt. If that fails too, drop the painting and take the next pick.
+6. **Check the clip before publishing.** Pull the first, middle and last frames and go through the guidance's *Fidelity checklist*. Compare fixed landmarks (a lamppost, a wall edge, the signature, the painting's border) across the frames before you describe how anything moved. If it fails, reroll once with the same prompt. If that fails too, drop the painting and take the next pick.
 
 7. **Publish.**
    ```bash
@@ -77,4 +76,4 @@ The museum APIs need no keys. If one is down, use the others; if all are down, a
 
 10. **Post one to social.** Follow step 8 of [`AUTOMATED_CURATION.md`](AUTOMATED_CURATION.md), except in 8a **post the most recognizable painting** of the four. Captions credit the painter automatically. Write music that belongs to the painting's own time and place.
 
-11. **Lessons.** If a night teaches something genuinely new about animating real paint, add it as a rule in `REAL_ART_GUIDANCE.md` (*Motion that keeps the painting* or the *Fidelity checklist*) and commit it with the batch. Don't write a narrative log.
+11. **Lessons.** If a night teaches something genuinely new about animating real paint, add it as a rule in `REAL_ART_GUIDANCE.md` and commit it with the batch. Don't write a narrative log.

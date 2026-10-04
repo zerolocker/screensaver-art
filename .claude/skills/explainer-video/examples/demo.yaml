@@ -1,0 +1,150 @@
+# Demo spec — exercises every template. Render:
+#   bash curation/with-secrets.sh GEMINI_API_KEY -- python3 \
+#     .claude/skills/explainer-video/scripts/render.py \
+#     .claude/skills/explainer-video/examples/demo.yaml --out .claude/video-replies/demo.mp4
+title: How new art reaches you        # footer text + MP4 title
+footer: Living Art · Explainer
+# voice: Vindemiatrix                  # defaults; override per video if needed
+# model: gemini-3.1-flash-tts-preview
+# style: "Read this as a calm, friendly narrator…"
+# accent: "#e4a853"
+
+scenes:
+  - template: title
+    kicker: Living Art Screensaver
+    title: How a new artwork reaches your screen
+    subtitle: From the nightly studio to your idle Mac
+    say:
+      - Here's how new art reaches your screen.
+
+  - template: pipeline
+    heading: Every night, four steps
+    steps:
+      - {text: Curate, note: pick one strong still}
+      - {text: Animate, note: Veo 3.1 adds motion}
+      - {text: Publish, note: R2 + gallery.json}
+      - {text: Sync, note: your app pulls it in}
+    say:                                  # one beat per step; the active step glows
+      - Each night we pick a still,
+      - Veo animates it,
+      - we publish it,
+      - and your app syncs it.
+
+  - template: images
+    heading: Last night's additions
+    images:
+      - src: https://screensaver-assets.living-art-asset.com/gallery/wine_press_2k.webp
+        caption: "**The Wine Press** — Flemish Baroque"
+      - src: https://screensaver-assets.living-art-asset.com/gallery/tarantella_2k.webp
+        caption: "**The Tarantella** — contemporary illustration"
+    say:
+      - Like last night's wine press,
+      - and this tarantella.
+
+  - template: video                       # plays muted; loops if the narration outlasts it (loop: false freezes)
+    src: https://screensaver-assets.living-art-asset.com/gallery/wine_press_animated.mp4
+    caption: "**The Wine Press** — as it plays on your screen"
+    say:
+      - And here's the wine press, in motion.
+
+  - template: stats
+    heading: The gallery today
+    items:
+      - {value: "487", label: pieces and counting}
+      - {value: "50", label: free forever}
+      - {value: "$0.99", label: a month for the rest, note: billed quarterly}
+    say:
+      - We're at four eighty-seven pieces.
+      - Fifty are free,
+      - the rest, ninety-nine cents a month.
+
+  - template: steps
+    heading: Why it plays offline
+    items:
+      - Downloads each piece once
+      - Scrambles it on disk
+      - {text: Plays from the local cache, note: no network at wake-up}
+    say:
+      - Each piece downloads once, gets scrambled on disk, and plays offline.
+
+  - template: compare
+    heading: Streaming vs. a local cache
+    left: {tag: Before, title: Stream on wake, items: [Needs a connection, Buffers before playing]}
+    right: {tag: Now, title: Local cache, items: [Works offline, Starts instantly]}
+    winner: right
+    say:
+      - Streaming used to buffer on every wake.
+      - The local cache just starts.
+
+  - template: decision
+    kicker: Open question
+    question: Which plan should new users see first?
+    options:
+      - {text: Monthly, note: "$0.99 a month, billed quarterly"}
+      - {text: Lifetime, note: "$15.99 once — no renewals", recommended: true}
+    say:
+      - Should new users see monthly first,
+      - or lifetime?
+      - I'd lead with lifetime.
+
+  - template: checklist
+    heading: Release checklist
+    items:
+      - {text: Signed and notarized, status: done}
+      - {text: Screensaver re-registers on update, status: done}
+      - {text: Website download link, status: doing}
+      - {text: Windows build, status: todo}
+    say:
+      - Signing's done, the site link is close, Windows is next.
+
+  - template: timeline
+    heading: This week
+    items:
+      - {when: Monday, text: Lifetime plan goes live}
+      - {when: Wednesday, text: Auto-update ships}
+      - {when: Friday, text: First Pinterest test}
+    say:
+      - Lifetime launches Monday,
+      - auto-update on Wednesday,
+      - and Pinterest on Friday.
+
+  - template: html                        # escape hatch: raw HTML/CSS; .reveal elements stage in order
+    heading: The free tier at a glance
+    html: |
+      <div class="donut-row">
+        <div class="donut">
+          <svg viewBox="0 0 400 400">
+            <circle cx="200" cy="200" r="160" fill="none" stroke="rgba(245,239,230,.12)" stroke-width="40"/>
+            <circle class="reveal" cx="200" cy="200" r="160" fill="none" stroke="var(--accent)" stroke-width="40"
+                    stroke-dasharray="103.2 1005.3" transform="rotate(-90 200 200)"/>
+          </svg>
+          <div class="mid"><div class="big">1 in 10</div><div class="small">pieces free</div></div>
+        </div>
+        <div class="legend reveal">
+          <div><i class="sw on"></i><span><b>50</b> free, spread across every era</span></div>
+          <div><i class="sw"></i><span>437 for subscribers</span></div>
+        </div>
+      </div>
+    css: |
+      .donut-row { display: flex; align-items: center; justify-content: center; gap: 110px; }
+      .donut { position: relative; width: 470px; height: 470px; }
+      .donut svg { width: 100%; height: 100%; }
+      .donut .mid { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      .donut .big { font: 400 92px/1 var(--serif); color: var(--ink); }
+      .donut .small { font-size: 32px; color: var(--ink2); margin-top: 14px; }
+      .legend { display: flex; flex-direction: column; gap: 34px; font-size: 46px; max-width: 760px; }
+      .legend div { display: flex; align-items: center; gap: 26px; }
+      .legend .sw { width: 30px; height: 30px; border-radius: 8px; background: rgba(245,239,230,.16); flex: none; }
+      .legend .sw.on { background: var(--accent); }
+    say:
+      - About one piece in ten is free,
+      - spread across every era.
+
+  - template: bullets
+    heading: Recap
+    items:
+      - New art every night
+      - Plays offline, from a local cache
+      - Fifty pieces free, the rest from **$0.99**
+    say:
+      - That's the loop. Questions? Just reply.

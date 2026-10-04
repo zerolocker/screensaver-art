@@ -76,12 +76,45 @@ export function galleryVideos(gallery = loadGallery()) {
 }
 
 /**
+ * Provenance of a real public-domain artwork (`source: "real_artwork"` — see
+ * `ArtItem` in packages/constants), or null for an AI-generated piece (no
+ * `source`). Recorded in meta.json at render time so the poster never has to
+ * look it up again.
+ */
+export function artworkOf(entry) {
+  if (entry?.source !== 'real_artwork') return null
+  return {
+    artist: entry.artist ?? '',
+    artistDates: entry.artist_dates ?? '',
+    originalTitle: entry.original_title ?? '',
+    originalDate: entry.original_date ?? '',
+    museum: entry.museum ?? '',
+    creditLine: entry.credit_line ?? '',
+    sourceUrl: entry.source_url ?? '',
+    license: entry.license ?? '',
+  }
+}
+
+/**
  * Best-effort split of the authored title format
  * `"<Name> - <Movement> (AI Animated)"` into a display name and a style label.
  * Falls back to the whole title + the first tag, so a stray format can't break a
  * render (same contract as the website's parseTitle).
+ *
+ * A real artwork's title is `"<Painting> - <Artist> (AI Animated)"`: the "style"
+ * is the artist, and it's split on the *known* artist, because a painting's own
+ * title can contain " - " (falling back to `original_title` if off-format).
  */
 export function deriveMeta(entry, styleOverride) {
+  const artwork = artworkOf(entry)
+  if (artwork) {
+    const suffix = ` - ${artwork.artist} (AI Animated)`
+    const raw = (entry.title || '').trim()
+    const title = artwork.artist && raw.endsWith(suffix)
+      ? raw.slice(0, -suffix.length).trim()
+      : artwork.originalTitle || raw.replace(/\s*\(AI Animated\)\s*/i, '').trim() || 'Living Art'
+    return { title, style: styleOverride || artwork.artist || (entry.tags && entry.tags[0]) || 'classic art' }
+  }
   const raw = entry.title || 'Living Art'
   const noSuffix = raw.replace(/\s*\(AI Animated\)\s*/i, '').trim()
   let style = styleOverride

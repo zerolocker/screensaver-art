@@ -17,7 +17,14 @@
  * deliberately deploy-independent and is not touched here.)
  */
 
-import { FREE_ITEM_COUNT, isItemFree, tagsOf, orderTags, type ArtItem } from '@screensaver-art/constants'
+import {
+  FREE_ITEM_COUNT,
+  isItemFree,
+  isRealArtwork,
+  tagsOf,
+  orderTags,
+  type ArtItem,
+} from '@screensaver-art/constants'
 import rawGallery from '../../gallery.json'
 import { poster as gradientPoster } from './gallery-showcase'
 import { ERA_COPY, type EraCopy } from './era-copy'
@@ -42,7 +49,7 @@ import { ERA_COPY, type EraCopy } from './era-copy'
 export const INDEX_ART_PAGES = false
 
 /** Raw `gallery.json` entry — a superset of the client-facing `ArtItem`. */
-interface RawItem extends ArtItem {
+export interface RawItem extends ArtItem {
   /**
    * Website-only image derivatives on R2 — deliberately NOT part of the shared
    * `ArtItem`, because the Electron app and screensaver never read them.
@@ -63,13 +70,44 @@ interface RawItem extends ArtItem {
   looping?: boolean
 }
 
+/**
+ * Provenance of a real, public-domain artwork (`source: "real_artwork"` in
+ * gallery.json) — who made it, when, and where the original is. Required keys
+ * are guaranteed by curation/publish-piece.mjs; optional ones are '' if absent.
+ */
+export interface Artwork {
+  artist: string
+  /** "1848–1894", or '' */
+  artistDates: string
+  originalTitle: string
+  /** The work's own date ("1877", "c. 1660"), or '' — not when it joined the gallery. */
+  originalDate: string
+  museum: string
+  /** The museum's credit line ("Charles H. and Mary F. S. Worcester Collection"), or '' */
+  creditLine: string
+  /** The museum's object page. */
+  sourceUrl: string
+  /** "Public Domain" | "CC0" */
+  license: string
+}
+
 export interface CatalogPiece {
   /** URL slug — `/art/<slug>`. Permanent; see `slugForSrc`. */
   slug: string
   /** Display name, e.g. "Woman and Flora" (title minus the style + suffix). */
   name: string
-  /** Art-movement label from the title, e.g. "Art Nouveau". 203 distinct values. */
+  /**
+   * Art-movement label from the title, e.g. "Art Nouveau". 203 distinct values.
+   * '' on a real artwork, whose title names the artist in that slot instead.
+   */
   movement: string
+  /**
+   * The line shown under the name — the movement for an AI piece, the artist
+   * for a real artwork. What tiles, the placard and headers display.
+   */
+  subtitle: string
+  /** Set only on a real public-domain artwork; null on AI-generated pieces (the default). */
+  artwork: Artwork | null
   /** Full title as stored in gallery.json. */
   title: string
   /** MP4 on the R2 custom domain. */
@@ -144,9 +182,9 @@ export function slugForEra(era: string): string {
 // ---------------------------------------------------------------------------
 
 /**
- * Every gallery title is authored as `"<Name> - <Movement> (AI Animated)"` (all
- * 262 match today, and a test asserts the split keeps working). Splitting it
- * gives the display name and the movement label without a second data field.
+ * Every AI gallery title is authored as `"<Name> - <Movement> (AI Animated)"`
+ * (all 262 match today, and a test asserts the split keeps working). Splitting
+ * it gives the display name and the movement label without a second data field.
  * Anything that doesn't match falls back to the whole title as the name and no
  * movement, so a stray format can never break a page.
  */
@@ -156,6 +194,33 @@ export function parseTitle(title: string): { name: string; movement: string } {
   const m = TITLE_RE.exec(title)
   if (!m) return { name: title.replace(/\s*\(AI Animated\)\s*$/, '').trim(), movement: '' }
   return { name: m[1].trim(), movement: m[2].trim() }
+}
+
+/**
+ * A real artwork's title puts the artist where an AI piece puts the movement:
+ * `"Paris Street; Rainy Day - Gustave Caillebotte (AI Animated)"`. Split on the
+ * *known* artist rather than the first " - " (a painting's own title can contain
+ * one), and fall back to `original_title` if the title was hand-edited off-format.
+ */
+export function parseArtworkTitle(title: string, artwork: Pick<Artwork, 'artist' | 'originalTitle'>): string {
+  const suffix = ` - ${artwork.artist} (AI Animated)`
+  if (artwork.artist && title.trim().endsWith(suffix)) return title.trim().slice(0, -suffix.length).trim()
+  return artwork.originalTitle || parseTitle(title).name
+}
+
+/** Provenance for a real artwork, or null for an AI-generated piece (no `source`). */
+function artworkOf(item: RawItem): Artwork | null {
+  if (!isRealArtwork(item)) return null
+  return {
+    artist: item.artist ?? '',
+    artistDates: item.artist_dates ?? '',
+    originalTitle: item.original_title ?? '',
+    originalDate: item.original_date ?? '',
+    museum: item.museum ?? '',
+    creditLine: item.credit_line ?? '',
+    sourceUrl: item.source_url ?? '',
+    license: item.license ?? '',
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -189,13 +254,19 @@ function postersFor(item: RawItem) {
 // The catalog
 // ---------------------------------------------------------------------------
 
-function toPiece(item: RawItem): CatalogPiece {
-  const { name, movement } = parseTitle(item.title)
+/** One gallery.json entry → its landing-page view. Exported for tests. */
+export function toPiece(item: RawItem): CatalogPiece {
+  const artwork = artworkOf(item)
+  const { name, movement } = artwork
+    ? { name: parseArtworkTitle(item.title, artwork), movement: '' }
+    : parseTitle(item.title)
   const era = tagsOf(item)[0]
   return {
     slug: slugForSrc(item.src),
     name,
     movement,
+    subtitle: artwork ? artwork.artist : movement,
+    artwork,
     title: item.title,
     src: item.src,
     ...postersFor(item),
@@ -257,14 +328,16 @@ function eraCopy(era: string): EraCopy {
 }
 
 /**
- * Internal links out of a piece page: the rest of its era first (that's the
- * strongest relation and the surface we want crawled/clicked), topped up with
- * pieces that share the exact movement label. Deterministic, so the rendered
+ * Internal links out of a piece page: pieces that share the exact movement label
+ * (or, for a real artwork, the same artist) first, topped up with the rest of
+ * its era — the surface we want crawled/clicked. Deterministic, so the rendered
  * HTML is stable between builds.
  */
 export function relatedPieces(piece: CatalogPiece, limit = 8): CatalogPiece[] {
-  const sameMovement = piece.movement
-    ? ALL_PIECES.filter((p) => p.slug !== piece.slug && p.movement === piece.movement)
+  const sameMovement = piece.subtitle
+    ? ALL_PIECES.filter(
+        (p) => p.slug !== piece.slug && p.subtitle === piece.subtitle && !p.artwork === !piece.artwork,
+      )
     : []
   const sameEra = ALL_PIECES.filter(
     (p) => p.slug !== piece.slug && p.era === piece.era && !sameMovement.some((m) => m.slug === p.slug),
@@ -323,34 +396,44 @@ function variantIndex(slug: string, count: number): number {
 /**
  * The per-piece prose.
  *
- * Written from structured fields only — name, movement, era, date, free flag —
- * with five sentence shapes selected deterministically per slug, plus the
- * hand-written era paragraph. Deliberately NOT derived from the `image_prompt` /
- * `video_prompt` fields: those are machine instructions ("static camera", "no
- * morphing", "keeps its exact painted shape"), 61 pieces don't have them at all,
- * and dumping them would make 262 pages that read like a config file.
+ * Written from structured fields only — name, movement, era, date, free flag,
+ * and for a real artwork its provenance — with a few sentence shapes selected
+ * deterministically per slug, plus the hand-written era paragraph. Deliberately
+ * NOT derived from the `image_prompt` / `video_prompt` fields: those are machine
+ * instructions ("static camera", "no morphing", "keeps its exact painted
+ * shape"), 61 pieces don't have them at all, and dumping them would make 262
+ * pages that read like a config file.
  *
- * Every sentence is true, and the first one always says the art is AI-generated
- * — these are homages in the style of a movement, never the original works, and
- * the pages must never imply otherwise. That goes for the motion too: only a
- * piece authored as a seamless loop (`looping: true`) is ever called a loop.
- * Most pieces are made to play through once, and the screensaver moves on to the
- * next piece rather than repeating one.
+ * Every sentence is true, and the first one always says what the art is:
+ *  - An AI piece (the default: no `source`) is AI-generated homage in the style
+ *    of a movement, never an original work, and the page must never imply
+ *    otherwise.
+ *  - A real artwork (`source: "real_artwork"`) is the opposite case, where
+ *    "AI-generated, not a reproduction" would be false. Its opener credits the
+ *    artist (with their dates), the work's date and the museum, says the image
+ *    is public domain, and says the motion was added with AI.
+ * That goes for the motion too: only a piece authored as a seamless loop
+ * (`looping: true`) is ever called a loop. Most pieces are made to play through
+ * once, and the screensaver moves on to the next piece rather than repeating one.
  *
  * This is honest and readable, but it is not art criticism. Richer per-piece
- * prose would need per-piece data, and that data does not go into
- * `gallery.json` (founder, 2026-09-13).
+ * prose would need per-piece data. The only per-piece data `gallery.json` takes
+ * is a real artwork's provenance (founder: no other new fields, 2026-09-13;
+ * provenance allowed, 2026-10).
  */
 export function pieceParagraphs(piece: CatalogPiece): string[] {
   const { name, movement, era, looping } = piece
   const style = movement || era
-  const openers = [
-    `${name} is an AI-generated homage to ${style}, ${looping ? 'animated into a seamless loop' : 'brought to life with animation'}. It hangs in the ${era} wing of the Living Art collection.`,
-    `An AI-made piece in the manner of ${style}. ${name} began as a generated still and was then animated, so the scene keeps moving while your Mac sits idle. It belongs to the collection's ${era} wing.`,
-    `${name} borrows the palette and composition of ${style}. It is AI-generated art rather than a reproduction of any existing work, ${looping ? 'animated to loop without an obvious seam' : 'animated so the scene moves'}. Filed under ${era}.`,
-    `Filed in the ${era} wing, ${name} is an AI homage to ${style} — a generated image, animated into a scene that plays whenever your screen is idle.`,
-    `${name} takes its visual language from ${style}, one of the traditions in the collection's ${era} wing. Like every piece here it is AI-generated — not a photograph of an original artwork — and it has been ${looping ? 'animated into a seamless loop' : 'animated'} for an idle display.`,
-  ]
+  const openers = piece.artwork
+    ? artworkOpeners(piece, piece.artwork)
+    : [
+        `${name} is an AI-generated homage to ${style}, ${looping ? 'animated into a seamless loop' : 'brought to life with animation'}. It hangs in the ${era} wing of the Living Art collection.`,
+        `An AI-made piece in the manner of ${style}. ${name} began as a generated still and was then animated, so the scene keeps moving while your Mac sits idle. It belongs to the collection's ${era} wing.`,
+        `${name} borrows the palette and composition of ${style}. It is AI-generated art rather than a reproduction of any existing work, ${looping ? 'animated to loop without an obvious seam' : 'animated so the scene moves'}. Filed under ${era}.`,
+        `Filed in the ${era} wing, ${name} is an AI homage to ${style} — a generated image, animated into a scene that plays whenever your screen is idle.`,
+        // Not "like every piece here": the collection also holds real artworks.
+        `${name} takes its visual language from ${style}, one of the traditions in the collection's ${era} wing. It is AI-generated — not a photograph of an original artwork — and it has been ${looping ? 'animated into a seamless loop' : 'animated'} for an idle display.`,
+      ]
 
   const added = formatMonth(piece.date)
   const closing = piece.free
@@ -360,8 +443,64 @@ export function pieceParagraphs(piece: CatalogPiece): string[] {
   return [openers[variantIndex(piece.slug, openers.length)], eraCopy(era).blurb, closing]
 }
 
+/** " (1848–1894)" or '' — the artist's life dates, ready to follow their name. */
+function lifeDates(artwork: Artwork): string {
+  return artwork.artistDates ? ` (${artwork.artistDates})` : ''
+}
+
+/** "in 1877" / "c. 1660" (already reads as a time) / '' when unknown. */
+function when(artwork: Artwork): string {
+  const d = artwork.originalDate
+  if (!d) return ''
+  return /^\d/.test(d) ? `in ${d}` : d
+}
+
+/** "the Art Institute of Chicago" — without doubling an institution's own "The". */
+export function theMuseum(museum: string): string {
+  return /^the\s/i.test(museum) ? museum.replace(/^The\s/, 'the ') : `the ${museum}`
+}
+
+/** "in the public domain", noting a CC0 release. */
+function publicDomain(artwork: Artwork): string {
+  return artwork.license === 'CC0' ? 'in the public domain (CC0)' : 'in the public domain'
+}
+
+/**
+ * Openers for a real artwork. Each credits the artist (and their dates), the
+ * work's date and the museum, says the image is public domain, and says the
+ * motion is AI — never that the art itself is generated.
+ */
+function artworkOpeners(piece: CatalogPiece, artwork: Artwork): string[] {
+  const { name, era, looping } = piece
+  const by = `${artwork.artist}${lifeDates(artwork)}`
+  const made = when(artwork) ? `, made ${when(artwork)}` : ''
+  const museum = theMuseum(artwork.museum)
+  const loop = looping ? ', as a seamless loop' : ''
+  return [
+    `${name} is a real artwork by ${by}${made}. The original is in the collection of ${museum}, and its image is ${publicDomain(artwork)}. The motion was added with AI${loop}, so the scene moves while your Mac sits idle. It hangs in the ${era} wing of the Living Art collection.`,
+    `${by} made ${name}${when(artwork) ? ` ${when(artwork)}` : ''}, and the original belongs to ${museum}. This clip starts from the museum's image of that real work, which is ${publicDomain(artwork)}; the motion was added with AI${loop}. Filed under ${era}.`,
+    `Filed in the ${era} wing, ${name} is a genuine work by ${by}${made}, from the collection of ${museum}. Its image is ${publicDomain(artwork)}, and the motion was added with AI ${looping ? 'as a seamless loop ' : ''}for an idle display.`,
+  ]
+}
+
+/**
+ * The visible credit under a real artwork:
+ * "Gustave Caillebotte (1848–1894), Paris Street; Rainy Day, 1877. Art Institute
+ * of Chicago, Charles H. and Mary F. S. Worcester Collection. Public domain."
+ */
+export function artworkCredit(artwork: Artwork): string {
+  const work = [artwork.originalTitle, artwork.originalDate].filter(Boolean).join(', ')
+  const museum = [artwork.museum, artwork.creditLine].filter(Boolean).join(', ')
+  return `${artwork.artist}${lifeDates(artwork)}, ${work}. ${museum}. ${artwork.license === 'CC0' ? 'CC0 (public domain)' : 'Public domain'}.`
+}
+
 /** ~150-character meta description / social summary for a piece. */
 export function pieceSummary(piece: CatalogPiece): string {
+  if (piece.artwork) {
+    const { artist, originalDate, museum } = piece.artwork
+    const motion = piece.looping ? 'animated with AI into a seamless loop for' : 'animated with AI for'
+    return `${piece.name}${originalDate ? ` (${originalDate})` : ''} by ${artist}, from ${theMuseum(museum)} — the real public-domain work, ${motion} your Mac's idle screen.`
+  }
   const style = piece.movement || piece.era
   const motion = piece.looping ? 'looping seamlessly on' : 'playing on'
   return `${piece.name} — an AI-animated homage to ${style}, ${motion} your Mac's idle screen. Part of the Living Art Screensaver collection. Free to download.`

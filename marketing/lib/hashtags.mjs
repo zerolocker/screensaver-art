@@ -1,5 +1,7 @@
 // Hashtags and search phrases for a piece, derived from its style and its
-// gallery era tag. Used by lib/captions.mjs; nothing is stored per piece.
+// gallery era tag (or, for a real public-domain artwork, from its artist — see
+// "Real public-domain artworks" below). Used by lib/captions.mjs; nothing is
+// stored per piece.
 //
 // Two rules keep every tag honest:
 //   - It must be true of the piece. An era only gets a hashtag when it fits every
@@ -7,12 +9,13 @@
 //     wrong on a Joseon painting; those pieces get theirs from the style instead.
 //   - It must have an audience, about the right thing. Most styles are used once
 //     ("Modernist Sporting Oil"), so only well-known movements, schools and
-//     countries map to a tag. Every tag here was checked against TikTok's own
-//     counts (2026-09-14): under ~5M views was dropped, and where the bare word is
-//     used for much else the art-specific form wins (#renaissanceart, not
-//     #renaissance; #cyberpunkart, not the game-heavy #cyberpunk).
+//     countries map to a tag. Every style/era tag here was checked against
+//     TikTok's own counts (2026-09-14; the artist tags below were not): under
+//     ~5M views was dropped, and where the bare word is used for much else the
+//     art-specific form wins (#renaissanceart, not #renaissance; #cyberpunkart,
+//     not the game-heavy #cyberpunk).
 //
-// Pure data and two pure functions, no deps.
+// Pure data and a few pure functions, no deps.
 
 /** Era tag → the hashtag and search phrase that are true of every piece under it. */
 const ERA = {
@@ -99,6 +102,121 @@ const STYLE = [
 ]
 
 const styleRule = (style) => STYLE.find(([re]) => re.test(style ?? ''))?.[1] ?? {}
+
+// ── Real public-domain artworks ─────────────────────────────────────────────
+//
+// A real painting's title names its artist where an AI piece names a style, so
+// its hashtags come from the artist instead: the artist, their movement, then
+// two art-history tags. Same two rules as above:
+//   - True of the piece. The movement is only claimed for artists listed here,
+//     and only one they're squarely filed under (Manet, Sargent, Whistler… sit
+//     between movements, so they get their era's tag instead). #famouspaintings
+//     is only claimed for the famous names in this list: curation prefers a
+//     master's *lesser-known* work, but the painter is famous.
+//   - An audience, about the right thing: the tag people actually use for that
+//     artist (#claudemonet, since #monet is a common name; #jmwturner, never
+//     #turner). These are NOT yet checked against TikTok's counts the way the
+//     tables above were — do that before relying on them.
+// Anyone not listed gets a full-name tag (#jeanbaptisteoudry): unambiguous, so
+// it's at least about the right person. Every artist listed died before 1955,
+// so their work can be public domain at all. Patterns use full names where a
+// surname alone is shared (Rex Whistler, Yasuo Kuniyoshi, Rembrandt Peale…).
+
+/** Artist (matched against the provenance `artist`) → short name, hashtag, movement. */
+const ARTISTS = [
+  // Impressionism
+  [/caillebotte/i, { name: 'Caillebotte', tag: '#caillebotte', movement: 'Impressionism' }],
+  [/claude monet/i, { name: 'Monet', tag: '#claudemonet', movement: 'Impressionism' }],
+  [/renoir/i, { name: 'Renoir', tag: '#renoir', movement: 'Impressionism' }],
+  [/pissarro/i, { name: 'Pissarro', tag: '#pissarro', movement: 'Impressionism' }],
+  [/sisley/i, { name: 'Sisley', tag: '#alfredsisley', movement: 'Impressionism' }],
+  [/morisot/i, { name: 'Morisot', tag: '#berthemorisot', movement: 'Impressionism' }],
+  [/cassatt/i, { name: 'Cassatt', tag: '#marycassatt', movement: 'Impressionism' }],
+  [/degas/i, { name: 'Degas', tag: '#degas', movement: 'Impressionism' }],
+  [/\bmanet\b/i, { name: 'Manet', tag: '#manet' }],
+  // Post-Impressionism and Pointillism
+  [/van gogh/i, { name: 'Van Gogh', tag: '#vangogh', movement: 'Post-Impressionism' }],
+  [/gauguin/i, { name: 'Gauguin', tag: '#gauguin', movement: 'Post-Impressionism' }],
+  [/c[ée]zanne/i, { name: 'Cézanne', tag: '#cezanne', movement: 'Post-Impressionism' }],
+  [/toulouse-?lautrec/i, { name: 'Toulouse-Lautrec', tag: '#toulouselautrec', movement: 'Post-Impressionism' }],
+  [/seurat/i, { name: 'Seurat', tag: '#seurat', movement: 'Pointillism' }],
+  [/signac/i, { name: 'Signac', tag: '#paulsignac', movement: 'Pointillism' }],
+  // Romanticism and the landscape schools
+  [/joseph mallord william turner|j\.\s*m\.\s*w\.\s*turner/i, { name: 'Turner', tag: '#jmwturner', movement: 'Romanticism' }],
+  [/john constable/i, { name: 'Constable', tag: '#johnconstable', movement: 'Romanticism' }],
+  [/caspar david friedrich/i, { name: 'Friedrich', tag: '#caspardavidfriedrich', movement: 'Romanticism' }],
+  [/\bgoya\b/i, { name: 'Goya', tag: '#goya', movement: 'Romanticism' }],
+  [/bierstadt/i, { name: 'Bierstadt', tag: '#albertbierstadt', movement: 'Hudson River School' }],
+  [/thomas cole/i, { name: 'Thomas Cole', tag: '#thomascole', movement: 'Hudson River School' }],
+  [/frederic edwin church/i, { name: 'Church', tag: '#fredericedwinchurch', movement: 'Hudson River School' }],
+  [/john singer sargent/i, { name: 'Sargent', tag: '#johnsingersargent' }],
+  [/james (abbott )?mcneill whistler/i, { name: 'Whistler', tag: '#whistler' }],
+  [/winslow homer/i, { name: 'Winslow Homer', tag: '#winslowhomer' }],
+  [/sorolla/i, { name: 'Sorolla', tag: '#sorolla' }],
+  // Art Nouveau, Symbolism, Expressionism
+  [/mucha/i, { name: 'Mucha', tag: '#alphonsemucha', movement: 'Art Nouveau' }],
+  [/klimt/i, { name: 'Klimt', tag: '#klimt', movement: 'Art Nouveau' }],
+  [/edvard munch/i, { name: 'Munch', tag: '#edvardmunch', movement: 'Expressionism' }],
+  // Japan
+  [/hokusai/i, { name: 'Hokusai', tag: '#hokusai', movement: 'Ukiyo-e' }],
+  [/hiroshige/i, { name: 'Hiroshige', tag: '#hiroshige', movement: 'Ukiyo-e' }],
+  [/utamaro/i, { name: 'Utamaro', tag: '#utamaro', movement: 'Ukiyo-e' }],
+  [/utagawa kuniyoshi/i, { name: 'Kuniyoshi', tag: '#kuniyoshi', movement: 'Ukiyo-e' }],
+  // Old Masters
+  [/vermeer/i, { name: 'Vermeer', tag: '#vermeer', movement: 'Dutch Golden Age' }],
+  [/rembrandt (harmensz\.? )?van rijn|^rembrandt$/i, { name: 'Rembrandt', tag: '#rembrandt', movement: 'Dutch Golden Age' }],
+  [/caravaggio/i, { name: 'Caravaggio', tag: '#caravaggio', movement: 'Baroque' }],
+  [/rubens/i, { name: 'Rubens', tag: '#rubens', movement: 'Baroque' }],
+  [/vel[áa]zquez/i, { name: 'Velázquez', tag: '#velazquez', movement: 'Baroque' }],
+  [/fragonard/i, { name: 'Fragonard', tag: '#fragonard', movement: 'Rococo' }],
+  [/watteau/i, { name: 'Watteau', tag: '#watteau', movement: 'Rococo' }],
+  [/pieter bruegh?el/i, { name: 'Bruegel', tag: '#bruegel', movement: 'Renaissance' }],
+  [/bosch/i, { name: 'Bosch', tag: '#hieronymusbosch', movement: 'Renaissance' }],
+  [/botticelli/i, { name: 'Botticelli', tag: '#botticelli', movement: 'Renaissance' }],
+  [/d[üu]rer/i, { name: 'Dürer', tag: '#albrechtdurer', movement: 'Renaissance' }],
+  [/titian|tiziano/i, { name: 'Titian', tag: '#titian', movement: 'Renaissance' }],
+]
+
+/** "Unknown artist", "Anonymous", "Unidentified Artist"… — nobody to credit by name. */
+const isAnonymous = (artist) => !artist || /^(unknown|anonymous|unidentified)\b/i.test(artist.trim())
+
+const artistRule = (artist) => ARTISTS.find(([re]) => re.test(artist ?? ''))?.[1] ?? null
+
+/** "Gustave Caillebotte" → "#gustavecaillebotte": accents dropped, letters and digits only. */
+const nameTag = (artist) => {
+  const t = artist.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '')
+  return t.length >= 3 && t.length <= 24 ? `#${t}` : null
+}
+
+/**
+ * The name a caption calls the artist by ("Caillebotte", "Van Gogh"), or null
+ * for an anonymous work. Unlisted artists go by their full name.
+ */
+export function artistShortName(artist) {
+  if (isAnonymous(artist)) return null
+  return artistRule(artist)?.name ?? artist.trim()
+}
+
+/** The artist's movement as a style label ("Impressionism"), or null if we don't claim one. */
+export function artistMovement(artist) {
+  return isAnonymous(artist) ? null : artistRule(artist)?.movement ?? null
+}
+
+/**
+ * A real artwork's own hashtags, most specific first: the artist, their movement
+ * (or, if we don't claim one, their era's tag), #arthistory, then
+ * #famouspaintings for the famous names above. Callers cap the list per platform.
+ */
+export function artworkHashtags({ artist, era }) {
+  const known = isAnonymous(artist) ? null : artistRule(artist)
+  const movementTag = known?.movement ? styleRule(known.movement).tag : null
+  return [...new Set([
+    isAnonymous(artist) ? null : known?.tag ?? nameTag(artist),
+    movementTag ?? ERA[era]?.tag,
+    '#arthistory',
+    known ? '#famouspaintings' : null,
+  ].filter(Boolean))]
+}
 
 /** The piece's own hashtags, most specific first: its style's, then its era's. */
 export function pieceHashtags({ style, era }) {

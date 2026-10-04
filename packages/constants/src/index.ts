@@ -5,8 +5,12 @@
 // the Electron app (main + renderer), and node test environments.
 
 // Gallery data — item shape, API contract, tag vocabulary + helpers, free tier.
-export type { ArtItem, GalleryApiResponse } from './gallery'
+export type { ArtItem, ArtSource, ArtLicense, GalleryApiResponse } from './gallery'
 export {
+  ART_LICENSES,
+  PROVENANCE_FIELDS,
+  REQUIRED_PROVENANCE_FIELDS,
+  isRealArtwork,
   FREE_ITEM_COUNT,
   UNDATED_FALLBACK,
   MISC_TAG,

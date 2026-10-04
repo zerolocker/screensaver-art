@@ -7,9 +7,11 @@
  * each with a written headline and paragraph, each listing ~17 pieces. It is
  * also reused as the middle paragraph of every `/art/<slug>` page.
  *
- * Every blurb describes the *historical* tradition the pieces borrow from, and
- * the piece pages are explicit that the art itself is AI-generated homage — we
- * never imply these are the original works.
+ * Every blurb describes the *historical* tradition, not the pieces' origin: a
+ * wing can hold both AI-generated homages and real public-domain artworks
+ * (`source: "real_artwork"`), and the blurb is reused on both kinds of piece
+ * page. So a blurb must never say the pieces are AI-made, or that they're
+ * originals — the piece page's own opener and disclosure say which it is.
  *
  * Keys must match `TAG_ORDER` exactly; a test asserts full coverage so a new
  * tag can't ship with a missing wing.

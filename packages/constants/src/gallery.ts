@@ -3,9 +3,9 @@
 // shared by the website, the Electron app (main + renderer), and the backend.
 
 // Shape of a gallery item as served by /api/gallery (the route passes through
-// the raw gallery.json entry, so `date` and `tags` ride along when present).
-// Curation-only fields like image_prompt/video_prompt are intentionally
-// omitted — clients never read them.
+// the raw gallery.json entry, so `date`, `tags` and any provenance fields ride
+// along when present). Curation-only fields like image_prompt/video_prompt are
+// intentionally omitted — clients never read them.
 export interface ArtItem {
   src: string
   title: string
@@ -23,6 +23,61 @@ export interface ArtItem {
   // locked pieces while browsing, which is the core upsell surface. See
   // `isItemLocked` for the gating rule.
   free?: boolean
+
+  // ---- Provenance — only on animated REAL paintings ------------------------
+  // Most pieces are AI-generated stills in the style of a movement; those carry
+  // none of the fields below. A real, public-domain painting (sourced per
+  // curation/REAL_PAINTINGS_CURATION.md and animated with AI) carries all of
+  // them, with `source: 'real_artwork'`. A missing `source` means AI-generated —
+  // test with `isRealArtwork`, never by sniffing the title. Required on a real
+  // artwork (curation/publish-piece.mjs --provenance enforces it): source,
+  // artist, original_title, museum, source_url, license. The rest are optional.
+  source?: ArtSource
+  artist?: string // "Gustave Caillebotte"
+  artist_dates?: string // "1848–1894"
+  original_title?: string // "Paris Street; Rainy Day"
+  original_date?: string // "1877" — the painting's date, not when it joined the gallery
+  museum?: string // "Art Institute of Chicago"
+  credit_line?: string // "Charles H. and Mary F. S. Worcester Collection"
+  source_url?: string // the museum's object page
+  license?: ArtLicense
+}
+
+/** Where a piece's still came from. Absent = AI-generated (every piece before real art). */
+export type ArtSource = 'real_artwork'
+
+/** The only licences a real artwork may carry — anything weaker is rejected at curation. */
+export type ArtLicense = 'Public Domain' | 'CC0'
+
+export const ART_LICENSES: readonly ArtLicense[] = ['Public Domain', 'CC0']
+
+/** The provenance keys a real-artwork entry carries, in gallery.json order. */
+export const PROVENANCE_FIELDS = [
+  'source',
+  'artist',
+  'artist_dates',
+  'original_title',
+  'original_date',
+  'museum',
+  'credit_line',
+  'source_url',
+  'license',
+] as const
+
+/** Provenance keys that must be present (non-empty) on every real-artwork entry. */
+export const REQUIRED_PROVENANCE_FIELDS = [
+  'source',
+  'artist',
+  'original_title',
+  'museum',
+  'source_url',
+  'license',
+] as const
+
+// A real, human-made painting (public domain) animated with AI — as opposed to
+// an AI-generated still. Pieces without a `source` are AI-generated.
+export function isRealArtwork(item: ArtItem): boolean {
+  return item.source === 'real_artwork'
 }
 
 // The /api/gallery response contract — produced by the website's route handler

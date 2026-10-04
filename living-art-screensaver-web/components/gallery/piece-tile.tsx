@@ -183,7 +183,7 @@ export function PieceTile({ piece, priority = false, aspect = '16 / 10' }: Piece
         // it tells the optimizer which variant to serve at each breakpoint.
         <Image
           src={piece.thumbUrl}
-          alt={`${piece.name} — ${piece.movement || piece.era}`}
+          alt={`${piece.name} — ${piece.subtitle || piece.era}`}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
           priority={priority}
@@ -213,7 +213,7 @@ export function PieceTile({ piece, priority = false, aspect = '16 / 10' }: Piece
       <span className="absolute inset-x-0 bottom-0 flex flex-col gap-px p-[11px]">
         <span className="truncate text-[13.5px] font-semibold tracking-[0.2px] text-white">{piece.name}</span>
         <span className="truncate font-mono text-[10.5px] tracking-[0.5px] text-white/60">
-          {piece.movement || piece.era}
+          {piece.subtitle || piece.era}
         </span>
       </span>
       <span

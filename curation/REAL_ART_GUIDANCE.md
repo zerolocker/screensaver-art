@@ -20,7 +20,7 @@ the picture is a real painter's composition, and **the motion has to happen insi
   rain, a carriage wheel, distant walkers.
 - **The target sits between them**: real, legible action that happens *in place*.
 
-## What the first dry run showed (2026-10-03, four famous works)
+## What the first dry run showed (2026-10-03, four famous works, Veo)
 
 - **Bruegel, *The Harvesters*: passed.** Mid-size figures each did an action that repeats on the
   spot: the reapers swung their scythes and the group under the tree ate. The prompt said "every
@@ -65,19 +65,25 @@ the picture is a real painter's composition, and **the motion has to happen insi
 *These rules come from two pilots and one four-painting dry run. When a night or a founder review shows a
 genuinely new pattern, fold it into this list as a rule. Don't keep a narrative log.*
 
-## Video prompt template
+## Video prompt template (Gemini Omni)
 
-> A locked-off, perfectly still shot of *&lt;title&gt;* (&lt;year&gt;) by &lt;artist&gt;, a real
-> &lt;medium&gt; hanging on a dark wall. The painting's composition, brushwork and colours stay
-> exactly as painted, and the frame never moves. **&lt;Primary mover: a concrete actor doing a
-> legible action, in place&gt;.** &lt;One or two secondary motions&gt;. &lt;The large figures keep
-> their painted positions while they …&gt;. The dark wall around the painting stays empty and
-> black.
+> This image is a photograph of a real &lt;medium&gt;, *&lt;title&gt;* (&lt;year&gt;) by &lt;artist&gt;,
+> hanging on a dark wall. The video begins exactly on this image. It is one continuous,
+> locked-off shot: the camera never moves, and the painting's composition, colours, brushwork
+> and the empty black wall around it stay exactly as they are. **&lt;Primary mover: a concrete
+> actor doing a legible action, in place&gt;.** &lt;One or two secondary motions&gt;. &lt;The large
+> figures keep their painted positions while they …&gt;. No new people, animals or objects
+> appear, and nothing is redrawn. No scene cuts, no music, no dialogue. 8 seconds long.
 
-Negative prompt (start from this and add scene-specific risks):
-`camera movement, zoom, pan, dolly, push-in, figures walking toward the camera, new people, new
-animals, new objects, morphing, melting faces, distorted hands, extra limbs, smooth photographic
-look, text, anything appearing on the dark wall`
+For a loop, pass the still twice and replace the opening with: "The video begins exactly on
+the first image and ends exactly on the second, identical image, so it loops seamlessly."
+
+Omni takes no negative prompt, so the "don'ts" live in the last two sentences. The model
+itself is chosen in [`REAL_PAINTINGS_CURATION.md`](REAL_PAINTINGS_CURATION.md) step 5.
+
+*Open question (2026-10-04):* the founder is comparing this detailed prompt with the one-line
+"Animate this; keep the camera still." on ten more paintings. Update this section with the
+winner.
 
 ## Fidelity checklist (step 6 of the runbook)
 

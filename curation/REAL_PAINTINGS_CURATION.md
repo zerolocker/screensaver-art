@@ -2,7 +2,7 @@
 
 The nightly runbook when `curation/CURATION_MODE` is **`real-paintings`** (see Step 0 of
 [`AUTOMATED_CURATION.md`](AUTOMATED_CURATION.md)). Each night it adds **four real,
-public-domain paintings, animated with Veo**: real masterpieces with recognizable names,
+public-domain paintings, animated with Gemini Omni**: real masterpieces with recognizable names,
 brought to life. Nothing is generated except the motion.
 
 > **Why this mode exists (2026-10-03):** four weeks of nightly social posts of AI-generated art
@@ -16,7 +16,7 @@ the rules learned from animating real paint. Where it conflicts with `PROMPT_GUI
 ## Prerequisites
 
 Same secrets and wrapper as [`AUTOMATED_CURATION.md`](AUTOMATED_CURATION.md#prerequisites--credentials):
-`GEMINI_API_KEY` (Veo, plus Lyria for the social clip), `CLOUDFLARE_API_TOKEN` (R2, used inside
+`GEMINI_API_KEY` (Omni, plus Lyria for the social clip), `CLOUDFLARE_API_TOKEN` (R2, used inside
 `publish-piece.mjs`), and `ZERNIO_API_KEY` (social). **No image generation**: `nano-banana-pro` is
 not used. Needs `node` ≥ 18 and `ffmpeg`. The museum APIs need no keys. If a museum API is down,
 use the others. If **all** are down, abort and report. **Never fall back to an image from
@@ -80,16 +80,21 @@ do pass.
    wall; never cropped, never extended) and `gallery/<stem>.provenance.json`. **Look at the
    still.** If the download is soft, discoloured or a detail crop, pick another painting.
 
-5. **Animate.** Write the video prompt per [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md), then:
+5. **Animate with Gemini Omni** (the `omni-video-gen` skill). Write the video prompt per
+   [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md), then:
    ```bash
    bash curation/with-secrets.sh GEMINI_API_KEY -- \
-     python .claude/skills/veo3-video-gen/scripts/generate.py \
-       --prompt "$VID_PROMPT" --negative-prompt "$NEG_PROMPT" \
-       --first-frame gallery/<stem>_4k.webp --resolution 1080p \
+     python .claude/skills/omni-video-gen/scripts/generate.py \
+       --prompt "$VID_PROMPT" --image gallery/<stem>_4k.webp --resolution 1080p \
        --out gallery/<stem>_animated.mp4
    ```
-   For a loop, also pass `--last-frame gallery/<stem>_4k.webp` and name the output
-   `_looping.mp4`. The guidance says when looping helps.
+   For a loop, pass the still twice (`--image … --image …`), say so in the prompt, and name
+   the output `_looping.mp4`. The guidance says when looping helps. Omni replaced Veo on
+   2026-10-04: in a side-by-side on the same four paintings, it invented and dropped far fewer
+   objects. Omni takes **no negative prompt**, so every "don't" goes in the prompt itself.
+   - **Fixing a near-miss:** instead of rerolling from scratch, you can edit the result with
+     `--edit gallery/<stem>_animated.mp4.json --prompt "<what to fix>"`, e.g. "keep the
+     sky's original brushstrokes".
 
 6. **Fidelity gate: review the clip before publishing.** Extract the first, middle and last
    frames and check them against the guidance's *Fidelity checklist*. Compare **fixed

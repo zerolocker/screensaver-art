@@ -20,6 +20,19 @@ the picture is a real painter's composition, and **the motion has to happen insi
   rain, a carriage wheel, distant walkers.
 - **The target sits between them**: real, legible action that happens *in place*.
 
+## What the first dry run showed (2026-10-03, four famous works)
+
+- **Bruegel, *The Harvesters*: passed.** Mid-size figures each did an action that repeats on the
+  spot: the reapers swung their scythes and the group under the tree ate. The prompt said "every
+  figure stays in its painted place". The composition held for all 8 s.
+- **Hokusai, *The Great Wave*: partial.** Pinned loop. The wave curled and churned well and the
+  clip returned to the print, but mid-clip one boat vanished and another came back larger, with a
+  crew drawn in a different, modern style. Asking small crews to *act* invites Veo to redraw them.
+- **Seurat, *Grande Jatte*: failed.** Naming the tiny leashed monkey made Veo invent a new,
+  prominent monkey mid-lawn. The foreground dog walked across the grass, and a shawl flared out.
+- **El Greco, *View of Toledo*: failed.** Non-looping. When the sky *is* the subject, "storm
+  clouds churn" repainted the sky bright and redrew the hills into a new valley.
+
 ## Motion that keeps the painting
 
 1. **Prefer actions that complete in place**: a gesture, a dancer's sway, a rower's stroke, a
@@ -37,12 +50,19 @@ the picture is a real painter's composition, and **the motion has to happen insi
 6. **The dark wall stays empty.** Nothing may appear in the black margins around the painting.
 7. **The paint stays paint.** Brushwork, palette and texture stay as painted. Motion must not
    smooth the canvas into a photo or make the brushstrokes swim.
-8. **Loop or not:** pinning both ends (`--last-frame` = the still) guarantees the painting is
+8. **Only name movers that are clearly visible at screen size.** Naming a tiny detail (Seurat's
+   monkey) makes Veo invent a big new one.
+9. **Let small background crews and figures ride along as painted.** Don't give them actions; they
+   get redrawn in another style (Hokusai's boats).
+10. **When the sky or weather is the subject, pin both ends** and ask for slow drift that keeps the
+    clouds' painted shapes and palette. Non-looping "churning" repainted El Greco's sky and hills.
+    *(This fix is untested: its reroll hit the Veo quota.)*
+11. **Loop or not:** pinning both ends (`--last-frame` = the still) guarantees the painting is
    intact at the seam, but it damps motion. Use it where the motion is naturally cyclical (sea,
    wind, rain, sails, a dance that returns). For a scene with a real action, go non-looping and
    rely on rules 1–4.
 
-*These rules come from two pilots on one painting. When a night or a founder review shows a
+*These rules come from two pilots and one four-painting dry run. When a night or a founder review shows a
 genuinely new pattern, fold it into this list as a rule. Don't keep a narrative log.*
 
 ## Video prompt template

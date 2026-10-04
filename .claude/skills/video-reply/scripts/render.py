@@ -3,7 +3,7 @@
 
   bash curation/with-secrets.sh GEMINI_API_KEY -- \
     python3 .claude/skills/video-reply/scripts/render.py SPEC.yaml \
-      --out .claude/video-replies/NAME.mp4
+      --out llm-video-replies/NAME.mp4
 
   # layout-only check (no API key, no audio, ~5 s): slide PNGs + contact sheet
   python3 .claude/skills/video-reply/scripts/render.py SPEC.yaml --preview
@@ -31,8 +31,8 @@ from media import kenburns, prepare_clip, probe_video, resolve  # noqa: E402
 from spec import SpecError, beat_states, load  # noqa: E402
 from templates import scene_html  # noqa: E402
 
-DOT_CLAUDE = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
-REPLIES = os.path.join(DOT_CLAUDE, "video-replies")
+REPO_ROOT = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))
+REPLIES = os.path.join(REPO_ROOT, "llm-video-replies")
 CACHE = os.environ.get("EXPLAINER_CACHE") or os.path.join(REPLIES, ".cache")
 
 
@@ -47,7 +47,7 @@ def fmt_t(t):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("spec")
-    ap.add_argument("--out", help="output .mp4 (default .claude/video-replies/<spec name>.mp4)")
+    ap.add_argument("--out", help="output .mp4 (default llm-video-replies/<spec name>.mp4)")
     ap.add_argument("--preview", action="store_true", help="slides + contact sheet only (no TTS/video)")
     ap.add_argument("--burn-captions", action=argparse.BooleanOptionalAction, default=True,
                     help="burn captions into the picture (default; --no-burn-captions for a soft track only)")

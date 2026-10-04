@@ -1,7 +1,7 @@
 # Demo spec — exercises every template. Render:
 #   bash curation/with-secrets.sh GEMINI_API_KEY -- python3 \
 #     .claude/skills/video-reply/scripts/render.py \
-#     .claude/skills/video-reply/examples/demo.yaml --out .claude/video-replies/demo.mp4
+#     .claude/skills/video-reply/examples/demo.yaml --out llm-video-replies/demo.mp4
 title: How new art reaches you        # footer text + MP4 title
 footer: Living Art · Explainer
 # voice: Vindemiatrix                  # defaults; override per video if needed

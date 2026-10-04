@@ -67,9 +67,11 @@ do pass.
      in one night.
    - **Skip single-face portraits** as the main subject: faces are where real paint goes
      uncanny.
-   - **Skip nudity and graphic violence**, however famous the work (e.g. Courbet's *Woman with a
-     Parrot*, Goodridge's *Beauty Revealed*). Pieces get posted to social platforms, and a
-     screensaver plays on screens other people can see.
+   - **Skip nudity, graphic violence and death scenes**, however famous the work (e.g. Courbet's
+     *Woman with a Parrot*, Goodridge's *Beauty Revealed*). Pieces get posted to social
+     platforms, and a screensaver plays on screens other people can see. Omni's safety filter
+     also refuses death scenes: it blocked David's *The Death of Socrates* outright, even with a
+     one-line prompt.
 
 4. **Frame each pick on the dark wall.**
    ```bash

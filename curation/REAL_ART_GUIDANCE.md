@@ -19,9 +19,9 @@ composition more tightly but moved stiffly. Before that, Omni beat Veo because i
 and drops far fewer objects.
 
 **Known weak spot: paintings that don't fill a 16:9 frame.** Omni only outputs 16:9 or 9:16.
-With the one-liner, a painting framed on the dark wall sometimes has the wall painted over, or is
-redrawn into a full-frame scene (seen on Seurat's *Grande Jatte* and El Greco's *View of
-Toledo*). Sending the raw painting doesn't help: Omni crops it to fill the frame and then redraws
+With the one-liner, a painting framed on the dark wall often has the wall painted over, or is
+redrawn into a full-frame scene (Seurat's *Grande Jatte*, El Greco's *View of Toledo* and Vermeer's
+*Young Woman with a Water Pitcher*; Caillebotte's *Paris Street* kept its wall). Sending the raw painting doesn't help: Omni crops it to fill the frame and then redraws
 it. The fidelity check below is what catches this, so drop a piece that fails.
 
 ## Fidelity checklist (step 6 of the runbook)

@@ -37,6 +37,14 @@ You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't
 
 ## Steps to execute
 
+> **Do NOT append to the round log in `curation/PROMPT_GUIDANCE.md`.** That log is for
+> the human review loop (`/curate-gallery`) only. This nightly run records its batch in
+> the git commit messages (steps 7 and 8d), nothing more. The only files you edit are
+> `gallery.json` (step 4), `curation/ART_STYLES_FOR_INSPIRATION.md` if you used a new
+> style (step 6), and — only when you discover a genuinely new reject/fix pattern — the
+> **Hard rules** section of `PROMPT_GUIDANCE.md` (plus your memory). Don't open a
+> round-log entry to narrate the night's batch.
+
 1.  **Gain Context:** Read the repo-root `README.md`.
 
 2.  **Still Image Generation:**

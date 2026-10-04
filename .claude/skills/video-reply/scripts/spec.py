@@ -1,4 +1,4 @@
-"""Load + validate an explainer-video spec (YAML or JSON) into a normalized dict.
+"""Load + validate an video-reply spec (YAML or JSON) into a normalized dict.
 
 Validation happens before any API call, so a typo costs nothing. Hard errors
 raise SpecError; soft problems (too many items, unknown keys) become warnings.

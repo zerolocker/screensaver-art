@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""explainer-video — render a YAML/JSON video brief into a narrated slideshow MP4.
+"""video-reply — render a YAML/JSON video brief into a narrated slideshow MP4.
 
   bash curation/with-secrets.sh GEMINI_API_KEY -- \
-    python3 .claude/skills/explainer-video/scripts/render.py SPEC.yaml \
+    python3 .claude/skills/video-reply/scripts/render.py SPEC.yaml \
       --out .claude/video-replies/NAME.mp4
 
   # layout-only check (no API key, no audio, ~5 s): slide PNGs + contact sheet
-  python3 .claude/skills/explainer-video/scripts/render.py SPEC.yaml --preview
+  python3 .claude/skills/video-reply/scripts/render.py SPEC.yaml --preview
 
 Pipeline: validate spec -> TTS per beat (parallel, cached) while headless Chrome
 renders one PNG per beat -> sample-exact narration track -> ffmpeg (crossfades,

@@ -1,30 +1,83 @@
 ---
-name: explainer-video
-description: Turn a short video brief (a YAML spec of scenes + narration beats) into a narrated slideshow MP4 — animated-infographic slides (title, bullets/steps, stats, pipeline, compare, images with Ken Burns, decision, checklist, timeline, raw HTML) with Gemini TTS voiceover, burned-in captions and a QA contact sheet. Use this skill whenever the user wants a reply, explanation, update, or summary delivered as a video, an explainer/narrated slideshow, or a "video instead of text" — even if they don't say "explainer".
+name: video-reply
+description: Reply to the user with a narrated video instead of text. Invoke as `/video-reply <message>` — Claude does whatever the message asks as usual, then delivers its answer as a short infographic slideshow MP4 (slides, Gemini TTS voiceover, burned-in captions) instead of writing it out. Also use whenever the user asks for an answer, update, plan, or explanation "as a video" / "in a video", or has asked for every reply to be a video.
+argument-hint: <your message>
 ---
 
-# explainer-video
+# video-reply
 
-One command renders a spec end-to-end (TTS per beat in parallel, slides in
-headless Chrome, ffmpeg assembly, contact sheet):
+**The request:** $ARGUMENTS
+
+(If that is empty, the request is the user's latest message.) Treat it exactly like
+a normal message: do the work it asks for (read, run, edit, research, spawn
+agents) the same way you would otherwise. **Only the reply changes**: the answer you
+would have written as text is delivered as a video.
+
+This applies to the reply to the message that invoked the skill. Keep replying with
+videos on later turns only if the user has asked for that ("reply with videos from
+now on"), and drop it for any message where they say a video isn't needed.
+
+## Steps
+
+1. **Do the work.** Finish it, or get to a natural stopping point such as a question
+   only the user can answer. Then compose the reply.
+2. **Script the reply** as you would have said it in text, restructured for
+   listening:
+   - **Lead with the answer or outcome**, then what you did and found, then anything
+     that needs the user (decisions, blockers), and end with the next step or ask.
+   - **Report faithfully**: failures, skipped steps, open risks and uncertainty go in
+     the video exactly as they would in text. A video is not a reason to sound
+     more confident.
+   - **Size it to the content**: a quick answer is 20–60 s (50–150 words); a plan or
+     report is 1.5–3 min (225–450 words). Never over 4 min. Words set the length:
+     about 150 words per minute.
+   - **Show, don't just tell**: put real artifacts on screen whenever they exist,
+     such as screenshots, generated images, video frames or clips, charts, before/after
+     comparisons. That's where a video beats text.
+   - Decisions → `decision` cards with your recommendation marked. Processes →
+     `pipeline`. Old vs new → `compare`. Status → `checklist`.
+   - Write for the ear: say identifiers in words ("the gallery file") and show
+     the exact name on screen in `` `code` ``.
+3. **Write the spec** to `.claude/video-replies/NN-<slug>.yaml`, where `NN` is the
+   next unused two-digit number in that folder. The format is below.
+4. **Render** it to `NN-<slug>.mp4` beside the spec (command below). Use
+   `--preview` first when the spec has custom `html` or dense slides.
+5. **QA**: read the contact sheet, fix any clipping or bad reveals, and re-render.
+   Re-renders are cheap because audio is cached.
+6. **Send** the MP4 with `SendUserFile` (`display: "render"`). The caption is one
+   line: the title and the duration. Keep the file under 30 MB.
+7. **Text reply: one line at most**, pointing at the video. The exception is
+   anything the user must copy or click, which goes in text below that line because
+   nobody can copy from a video: commands, URLs, PR links, file paths.
+
+**If the renderer itself breaks** (a tool bug, not a typo in your spec), don't debug
+it in this conversation. Hand the error and the spec path to a subagent to fix, so
+the debugging doesn't fill the main context. If it can't be fixed quickly, reply in
+text and say the video failed.
+
+## Render command
+
+One command renders a spec end-to-end: TTS for each beat in parallel, slides in
+headless Chrome, assembly with ffmpeg, and a contact sheet.
 
 ```bash
 bash curation/with-secrets.sh GEMINI_API_KEY -- python3 \
-  .claude/skills/explainer-video/scripts/render.py SPEC.yaml --out .claude/video-replies/NAME.mp4
+  .claude/skills/video-reply/scripts/render.py .claude/video-replies/NN-slug.yaml \
+  --out .claude/video-replies/NN-slug.mp4
 ```
 
-It prints `video:`, `duration:` and `contact sheet:` paths on stdout (warnings on
-stderr). Write specs to `.claude/video-replies/` too — the whole folder is
-gitignored (renders, specs, `.cache/` with TTS audio, downloaded images, build files).
+It prints the `video:`, `duration:` and `contact sheet:` paths on stdout, with
+warnings on stderr. The whole `.claude/video-replies/` folder is gitignored: renders,
+specs, and `.cache/` (TTS audio, downloaded images, build files).
 
-- `--preview` — slides + `NAME.preview.png` only: no API key, no audio, ~5 s. Use
-  it to iterate on layout before spending TTS.
-- Captions are **burned into the picture by default** (the layout reserves room for
-  them) — most players hide a soft subtitle track, so it went unseen.
+- `--preview` renders the slides and `NAME.preview.png` only, with no API key and no
+  audio, in about 5 s. Use it to fix layout before spending TTS.
+- Captions are **burned into the picture by default**, and the layout reserves room
+  for them. Most players hide a soft subtitle track, so it went unseen.
   `--no-burn-captions` falls back to the soft `mov_text` track only.
-- `--no-subs`, `--no-verify` (skip transcription check), `--refresh-audio`.
-- Re-renders are cheap: audio is cached by hash(text, voice, model, style) and
-  Ken Burns clips by image+size+duration — edit visuals freely, only changed
+- `--no-subs`, `--no-verify` (skip the transcription check), `--refresh-audio`.
+- Re-renders are cheap. Audio is cached by hash(text, voice, model, style) and Ken
+  Burns clips by image, size and duration, so edit visuals freely; only changed
   narration costs API calls.
 
 ## Spec format (YAML)
@@ -74,7 +127,7 @@ Complete worked example covering every template: [`examples/demo.yaml`](examples
 
 ## Authoring guidance
 
-- **1.5–3 min total** (~150 words/min ≈ 225–450 words). Budget words, not
+- **Length follows the words** (~150 words/min — see step 2 for targets). Budget words, not
   scenes: 717 words rendered to 5:22, so cut hard before rendering. One idea per scene;
   ≤ ~5 elements per slide (the validator warns above that).
 - **Narration is conversational** — write it to be heard: short sentences,

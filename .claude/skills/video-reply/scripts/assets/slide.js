@@ -1,4 +1,4 @@
-// explainer-video slide runtime: auto-fit text, lay out galleries, audit overflow,
+// video-reply slide runtime: auto-fit text, lay out galleries, audit overflow,
 // and switch reveal state per beat. Driven over CDP by render.py:
 //   await window.evInit()        -> {units, warnings, frames}
 //   await window.evShow(v, cur)  -> sets which units are visible / current

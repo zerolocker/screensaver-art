@@ -34,5 +34,4 @@ ds-bundle/
 .design-sync/node_modules
 living-art-screensaver-web/.lart-ds-synth/
 
-# video-reply skill output: rendered reply videos, contact sheets, TTS/image cache, build files
-/.claude/video-replies/
+/llm-video-replies/

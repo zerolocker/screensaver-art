@@ -1,17 +1,17 @@
 ---
 name: video-reply
-description: Reply to the user with a narrated video instead of text. Invoke as `/video-reply <message>` — Claude does whatever the message asks as usual, then delivers its answer as a short infographic slideshow MP4 (slides, Gemini TTS voiceover, burned-in captions) instead of writing it out. Also use whenever the user asks for an answer, update, plan, or explanation "as a video" / "in a video", or has asked for every reply to be a video.
+description: Reply to the user with a narrated video instead of text. Invoke as `/video-reply <message>` — the assistant does whatever the message asks as usual, then delivers its answer as a short infographic slideshow MP4 (slides, Gemini TTS voiceover, burned-in captions) instead of writing it out. Also use whenever the user asks for an answer, update, plan, or explanation "as a video" / "in a video", or has asked for every reply to be a video.
 argument-hint: <your message>
 ---
 
 # video-reply
 
-**The request:** $ARGUMENTS
+**The request:** $ARGUMENTS — if that placeholder wasn't filled in, the request is
+the user's latest message.
 
-(If that is empty, the request is the user's latest message.) Treat it exactly like
-a normal message: do the work it asks for (read, run, edit, research, spawn
-agents) the same way you would otherwise. **Only the reply changes**: the answer you
-would have written as text is delivered as a video.
+Treat it exactly like a normal message: do the work it asks for (read, run, edit,
+research, spawn agents) the same way you would otherwise. **Only the reply
+changes**: the answer you would have written as text is delivered as a video.
 
 This applies to the reply to the message that invoked the skill. Keep replying with
 videos on later turns only if the user has asked for that ("reply with videos from
@@ -38,22 +38,23 @@ now on"), and drop it for any message where they say a video isn't needed.
      `pipeline`. Old vs new → `compare`. Status → `checklist`.
    - Write for the ear: say identifiers in words ("the gallery file") and show
      the exact name on screen in `` `code` ``.
-3. **Write the spec** to `.claude/video-replies/NN-<slug>.yaml`, where `NN` is the
+3. **Write the spec** to `llm-video-replies/NN-<slug>.yaml`, where `NN` is the
    next unused two-digit number in that folder. The format is below.
 4. **Render** it to `NN-<slug>.mp4` beside the spec (command below). Use
    `--preview` first when the spec has custom `html` or dense slides.
 5. **QA**: read the contact sheet, fix any clipping or bad reveals, and re-render.
    Re-renders are cheap because audio is cached.
-6. **Send** the MP4 with `SendUserFile` (`display: "render"`). The caption is one
-   line: the title and the duration. Keep the file under 30 MB.
+6. **Send** the MP4 to the user with whatever file-sharing mechanism your
+   environment has (or give them its path). The caption is one line: the title and
+   the duration. Keep it under 30 MB so it can be delivered to a phone.
 7. **Text reply: one line at most**, pointing at the video. The exception is
    anything the user must copy or click, which goes in text below that line because
    nobody can copy from a video: commands, URLs, PR links, file paths.
 
 **If the renderer itself breaks** (a tool bug, not a typo in your spec), don't debug
-it in this conversation. Hand the error and the spec path to a subagent to fix, so
-the debugging doesn't fill the main context. If it can't be fixed quickly, reply in
-text and say the video failed.
+it in this conversation. Hand the error and the spec path to a separate agent or
+sub-task if your environment supports one, so the debugging doesn't fill the main
+context. If it can't be fixed quickly, reply in text and say the video failed.
 
 ## Render command
 
@@ -62,12 +63,12 @@ headless Chrome, assembly with ffmpeg, and a contact sheet.
 
 ```bash
 bash curation/with-secrets.sh GEMINI_API_KEY -- python3 \
-  .claude/skills/video-reply/scripts/render.py .claude/video-replies/NN-slug.yaml \
-  --out .claude/video-replies/NN-slug.mp4
+  .claude/skills/video-reply/scripts/render.py llm-video-replies/NN-slug.yaml \
+  --out llm-video-replies/NN-slug.mp4
 ```
 
 It prints the `video:`, `duration:` and `contact sheet:` paths on stdout, with
-warnings on stderr. The whole `.claude/video-replies/` folder is gitignored: renders,
+warnings on stderr. The whole `llm-video-replies/` folder is gitignored: renders,
 specs, and `.cache/` (TTS audio, downloaded images, build files).
 
 - `--preview` renders the slides and `NAME.preview.png` only, with no API key and no
@@ -147,7 +148,7 @@ Complete worked example covering every template: [`examples/demo.yaml`](examples
    labelled `scene.beat  time` + narration). Check for clipped/overlapping text,
    empty-looking slides, wrong reveal order, images that read badly.
 2. Fix the spec, re-run (cached audio makes this fast). Full-res slide PNGs live
-   in `.claude/video-replies/.cache/build/<name>/frames/` if a detail needs a zoom.
+   in `llm-video-replies/.cache/build/<name>/frames/` if a detail needs a zoom.
 
 ## Notes
 
@@ -163,7 +164,7 @@ Complete worked example covering every template: [`examples/demo.yaml`](examples
   progress bar and caption on a gradient over the clip.
 - Output: 1920×1080 30 fps H.264 (yuv420p, faststart, CRF 30 `stillimage`) + AAC
   96k, loudness-normalised to −16 LUFS, burned-in captions — plays in
-  QuickTime and on phones. Keep the file **under 30 MB**: that's the limit for
-  delivering it to the user's phone (≈15 MB for 4 min at these settings).
+  QuickTime and on phones. Keep the file **under 30 MB** so it can be delivered
+  to a phone (≈15 MB for 4 min at these settings).
 - Needs Google Chrome, ffmpeg, Python with `google-genai`, `PyYAML`, `Pillow`.
   Fonts are macOS system fonts (New York, Avenir Next) — no network fonts.

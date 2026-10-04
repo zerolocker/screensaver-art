@@ -228,8 +228,9 @@ R2 with the URL in `gallery.json`, and that's a founder-approved step, not an ag
 **Success metric: social → site UTM clicks, not search rankings.** Sequencing: **build the
 destinations before the first pins go out** — pins can't be re-pointed later.
 
-**What shipped (2026-08-03).** 283 new static routes: 262 `/art/<slug>`, 15 `/era/<tag>`, and a
-6-page `/gallery` index, all prerendered from `gallery.json` at build time — so the nightly
+**What shipped (2026-08-03).** 283 new routes: 262 `/art/<slug>`, 15 `/era/<tag>`, and a
+6-page `/gallery` index, all built from `gallery.json` (piece and era pages render on first
+visit and are cached, rather than prerendered into every deploy) — so the nightly
 curation push to `master` grows the routes *and* the sitemap with no extra step. Three calls
 worth remembering:
 

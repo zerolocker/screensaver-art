@@ -27,10 +27,9 @@ import { SITE_OG_IMAGE, SITE_URL } from '@/lib/seo'
  * (docs/growth-and-marketing-strategy.md §4.3).
  */
 
-export const dynamicParams = false
-
+// Rendered on first visit and cached, like `/art/<slug>` (see there).
 export function generateStaticParams() {
-  return ALL_ERAS.map((era) => ({ era: era.slug }))
+  return []
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ era: string }> }): Promise<Metadata> {

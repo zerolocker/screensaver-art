@@ -42,8 +42,8 @@ the picture is a real painter's composition, and **the motion has to happen insi
    wind, rain, sails, a dance that returns). For a scene with a real action, go non-looping and
    rely on rules 1–4.
 
-*These rules come from two pilots on one painting. Refine them from each night's results and
-from the founder's flags.*
+*These rules come from two pilots on one painting. When a night or a founder review shows a
+genuinely new pattern, fold it into this list as a rule. Don't keep a narrative log.*
 
 ## Video prompt template
 
@@ -80,8 +80,3 @@ Pull the first, middle and last frames, e.g.
 | Render in-situ, edge to edge; never as a museum object or "in a frame" | The painting hangs on a **dark wall**: whole, never cropped, never extended. |
 | A slow camera push or pan is fine | **Locked camera.** |
 | Image-prompt rules (patina, aging, era anchoring…) | Not applicable: there is no image prompt. |
-
-## Round log (newest first)
-
-Each night appends an entry: what was picked and why, what rerolled or dropped and why, and any
-new lesson.

@@ -112,7 +112,8 @@ do pass.
 
 9. **Commit and push.**
    ```bash
-   git add gallery.json && git commit -m "AUTO_CURATION (real art): Added [Artist — Title, …]" && git push
+   git add gallery.json && git commit -m "AUTO_CURATION (real art): Added [Artist — Title, …]" \
+     -m "<one line per piece: why it was picked; any reroll/drop and why>" && git push
    ```
 
 10. **Post one to social.** Follow step 8 of [`AUTOMATED_CURATION.md`](AUTOMATED_CURATION.md)
@@ -121,7 +122,9 @@ do pass.
     automatically for real-art entries. The music prompt should belong to the painting's own
     time and place.
 
-11. **Round log.** Append a dated entry to the *Round log* at the bottom of
-    [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md). Cover what you picked and why, what
-    rerolled or dropped and why, and any new lesson about animating real paint. Commit it as
-    `AUTO_CURATION (real art): round log for YYYY-MM-DD` and push.
+11. **No round log.** The batch is recorded in the step-9 commit message: list each piece, and
+    add a line for anything that was rerolled or dropped, and why. Don't append to the round log in
+    `PROMPT_GUIDANCE.md`; it belongs to the human review loop. If a night teaches a genuinely new
+    lesson about animating real paint, fold it into the rules in
+    [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md) (*Motion that keeps the painting* or the
+    *Fidelity checklist*) and commit that with the batch. Never write a narrative entry.

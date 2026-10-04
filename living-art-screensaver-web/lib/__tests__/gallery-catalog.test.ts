@@ -22,10 +22,8 @@ import {
 import { ERA_COPY } from '@/lib/era-copy'
 
 /**
- * These run against the real gallery.json, so they're the guard rail on the
- * assumptions the landing pages make about curation's output. The slug tests in
- * particular are load-bearing: a duplicate or changed slug 404s pins that are
- * already live and cannot be re-pointed.
+ * Runs against the real gallery.json. The slug tests matter most: a duplicate
+ * or changed slug breaks posted pins, which can't be edited.
  */
 describe('gallery catalog', () => {
   it('derives a unique slug for every piece', () => {
@@ -43,8 +41,7 @@ describe('gallery catalog', () => {
   })
 
   it('derives the slug from the R2 key only — never from the title or catalog position', () => {
-    // Same key ⇒ same slug regardless of anything else about the item, which is
-    // what makes an already-published /art/<slug> URL permanent.
+    // Same key, same slug, whatever else changes.
     expect(slugForSrc('https://cdn.example.com/gallery/edo_sumie_animated.mp4')).toBe('edo-sumie-animated')
     expect(slugForSrc('/gallery/Edo_Sumie_Animated.MP4')).toBe('edo-sumie-animated')
     for (const piece of ALL_PIECES) expect(slugForSrc(piece.src)).toBe(piece.slug)
@@ -61,7 +58,7 @@ describe('gallery catalog', () => {
       name: 'Woman and Flora',
       movement: 'Art Nouveau',
     })
-    // A title that doesn't match still yields a usable name, never a crash.
+    // An off-format title still gives a name.
     expect(parseTitle('Untitled')).toEqual({ name: 'Untitled', movement: '' })
   })
 
@@ -110,16 +107,13 @@ describe('gallery catalog', () => {
   })
 
   it('writes prose that never dumps a generation prompt', () => {
-    // The prompts are machine instructions ("static camera", "no morphing") and
-    // 61 pieces don't have them at all — the pages must not read like a config
-    // file, so nothing derived from them may reach the copy.
+    // The prompts read like machine instructions and must not reach the copy.
     const promptTells = /static camera|no morphing|keeps its exact|masterpiece, high quality|seamless(ly)? loop\b.*prompt/i
     for (const piece of ALL_PIECES.slice(0, 40)) {
       const text = pieceParagraphs(piece).join(' ')
       expect(text).not.toMatch(promptTells)
       expect(text.length).toBeGreaterThan(200)
-      // Honesty rule: every AI piece page states the art is AI-generated; a real
-      // artwork's page must say the opposite (see the real-artwork suite below).
+      // Every AI piece says it's AI-generated (real artworks: see below).
       if (piece.artwork) expect(text).not.toMatch(/AI[- ]generated|homage/i)
       else expect(text).toMatch(/\bAI[- ](generated|made|animated|homage)/i)
       expect(text).toContain(piece.name)
@@ -128,8 +122,7 @@ describe('gallery catalog', () => {
   })
 
   it('gives adjacent pieces different opening sentences', () => {
-    // Five deterministic sentence shapes — enough that a grid of related pieces
-    // doesn't read as 8 copies of one template.
+    // Enough variety that related pieces don't read as one template.
     const openers = new Set(ALL_PIECES.slice(0, 30).map((p) => pieceParagraphs(p)[0].replace(p.name, '')))
     expect(openers.size).toBeGreaterThan(1)
   })
@@ -143,12 +136,11 @@ describe('gallery catalog', () => {
   })
 
   it('only calls a piece a loop when it is authored to loop', () => {
-    // Most pieces are made to play through once; the copy used to call every
-    // piece a seamless loop anyway.
+    // Only looping pieces are called loops.
     const nonLooping = ALL_PIECES.filter((p) => !p.looping)
     expect(nonLooping.length).toBeGreaterThan(0)
     for (const piece of nonLooping) {
-      // Strip the name first: one piece is literally called "Geometric Loop".
+      // Strip the name: one piece is called "Geometric Loop".
       expect(pieceParagraphs(piece)[0].replace(piece.name, '')).not.toMatch(/\bloop|repeats/i)
       expect(pieceSummary(piece).replace(piece.name, '')).not.toMatch(/\bloop/i)
     }
@@ -166,7 +158,7 @@ describe('gallery catalog', () => {
 
   it('always has something to paint behind a clip', () => {
     for (const piece of ALL_PIECES) {
-      // The gradient is the floor: pieces with no poster still render.
+      // Every piece has a gradient to fall back on.
       expect(piece.gradient).toMatch(/^radial-gradient/)
       if (piece.posterUrl) expect(piece.posterUrl).toMatch(/^(https:\/\/|\/posters\/)/)
     }
@@ -174,9 +166,8 @@ describe('gallery catalog', () => {
 })
 
 /**
- * Real public-domain artworks (`source: "real_artwork"`). Synthetic entries, so
- * this holds before the first one lands in gallery.json. The rule they guard:
- * the AI pieces' "AI-generated, not a reproduction" copy would be FALSE here.
+ * Real artworks, using synthetic entries. Their copy must not claim to be
+ * AI-generated, as the AI pieces' copy does.
  */
 describe('real artworks', () => {
   const real = (over: Partial<RawItem> = {}): RawItem => ({
@@ -205,14 +196,14 @@ describe('real artworks', () => {
     expect(piece.subtitle).toBe('Gustave Caillebotte')
     expect(piece.movement).toBe('')
     expect(piece.artwork).toMatchObject({ artist: 'Gustave Caillebotte', museum: 'Art Institute of Chicago' })
-    // The slug rule is untouched: still the R2 key.
+    // Still slugged from the R2 key.
     expect(piece.slug).toBe('paris-street-rainy-day-animated')
   })
 
   it('splits on the known artist, so a " - " inside the painting title survives', () => {
     const artwork = { artist: 'Claude Monet', originalTitle: 'Waterloo Bridge - Sun' }
     expect(parseArtworkTitle('Waterloo Bridge - Sun - Claude Monet (AI Animated)', artwork)).toBe('Waterloo Bridge - Sun')
-    // Off-format title → the provenance's own title, never a crash.
+    // An off-format title falls back to the provenance title.
     expect(parseArtworkTitle('Something else entirely', artwork)).toBe('Waterloo Bridge - Sun')
   })
 
@@ -224,7 +215,7 @@ describe('real artworks', () => {
   })
 
   it('writes true prose: credits artist, dates, year and museum; public domain; motion by AI', () => {
-    // Every opener variant: sweep slugs until each shape has been seen.
+    // Sweep slugs until every opener has been seen.
     const openers = new Set<string>()
     for (let i = 0; i < 40; i++) {
       const piece = toPiece(real({ src: `https://x/gallery/p${i}_animated.mp4` }))

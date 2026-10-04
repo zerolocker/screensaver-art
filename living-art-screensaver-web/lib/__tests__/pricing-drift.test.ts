@@ -2,24 +2,11 @@ import { describe, it, expect } from 'vitest'
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import Stripe from 'stripe'
-// The shared display pricing lives in the pure-data @screensaver-art/constants
-// package (no React, safe to import in a node test env).
 import { PRICING } from '@screensaver-art/constants'
 
-// Drift guard: the price we *display* (PRICING, compiled into the website and
-// the Electron app) must equal the price Stripe actually *charges* (the catalog
-// Price referenced by STRIPE_PRICE_ID). These live in two places on purpose —
-// Stripe can't hold the promo/regular/end-date framing — so this test is the
-// thing that stops them silently drifting apart. See docs/stripe-webhooks.md.
-//
-// Billing is batched (monthly headline, charged once every billingPeriodMonths
-// months to cut Stripe's per-transaction fee), so the Stripe Price carries the
-// *quarterly* amount (billedAmount) on a `month` interval with interval_count = 3.
-//
-// It runs against whichever Stripe mode the env points at:
-//   - locally: loads .env.local (test key + test Price)
-//   - CI: set STRIPE_SECRET_KEY + STRIPE_PRICE_ID as secrets to activate it
-// If neither is configured it skips (so it never blocks contributors w/o keys).
+// The displayed price (PRICING) must match what Stripe charges. See
+// docs/stripe-webhooks.md. Uses .env.local locally and secrets in CI; skips
+// without keys.
 
 function loadEnvLocal() {
   const envPath = resolve(process.cwd(), '.env.local')
@@ -56,8 +43,7 @@ function intervalWord(interval: string): string {
 }
 
 describe('pricing drift: displayed PRICING vs Stripe catalog Price', () => {
-  // Offline invariant: the per-month headline times the billing period must equal
-  // the amount we actually batch into one charge. Guards the "$0.99/mo" framing.
+  // Monthly price × billing period = the amount charged.
   it('billedAmount equals promoPrice × billingPeriodMonths', () => {
     expect(displayPriceToCents(PRICING.billedAmount)).toBe(
       displayPriceToCents(PRICING.promoPrice) * PRICING.billingPeriodMonths,
@@ -70,12 +56,9 @@ describe('pricing drift: displayed PRICING vs Stripe catalog Price', () => {
       const stripe = new Stripe(secretKey!)
       const price = await stripe.prices.retrieve(priceId!)
 
-      // Active, recurring price (not archived, not one-time).
       expect(price.active).toBe(true)
       expect(price.type).toBe('recurring')
 
-      // Amount the user is charged == the batched amount we advertise, billed
-      // once every billingPeriodMonths months.
       expect(price.unit_amount).toBe(displayPriceToCents(PRICING.billedAmount))
       expect(price.currency).toBe('usd')
       expect(price.recurring?.interval).toBe(intervalWord(PRICING.interval))
@@ -84,8 +67,7 @@ describe('pricing drift: displayed PRICING vs Stripe catalog Price', () => {
     20_000,
   )
 
-  // Same guard for the one-time "Own it forever" Price: what we display as
-  // PRICING.lifetimePrice must be what STRIPE_LIFETIME_PRICE_ID charges.
+  // The same check for the lifetime Price.
   it.runIf(lifetimeConfigured)(
     'PRICING.lifetimePrice matches the Stripe lifetime Price (one-time)',
     async () => {
@@ -103,7 +85,7 @@ describe('pricing drift: displayed PRICING vs Stripe catalog Price', () => {
   it.skipIf(configured && lifetimeConfigured)(
     'skipped: STRIPE_SECRET_KEY / STRIPE_PRICE_ID / STRIPE_LIFETIME_PRICE_ID not fully set',
     () => {
-      // Intentionally empty — this branch only documents why a guard is inactive.
+      // Empty: only records why the check is off.
       expect(true).toBe(true)
     },
   )

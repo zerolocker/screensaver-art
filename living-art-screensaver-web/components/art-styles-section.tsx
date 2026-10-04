@@ -5,9 +5,7 @@ import { ReelPlayer } from "@/components/marketing/reel-player"
 import { movements, poster, posterImage, pieceLabel } from "@/lib/gallery-showcase"
 import { greenGlow } from "@/lib/brand"
 
-// Minimum ACTUAL playback per piece before the featured display auto-advances
-// (rotation additionally waits for the next piece to be buffered — see
-// ReelPlayer — so slow networks watch a looping clip, not a loading poster).
+// Minimum actual playback per piece before the featured display advances.
 const AUTO_ADVANCE_DWELL_MS = 6500
 
 const rowBase: CSSProperties = {
@@ -30,8 +28,7 @@ const thumbIdle: CSSProperties = {
   ...thumbBase, border: 0, outline: "1px solid rgba(255,255,255,0.1)", opacity: 0.62, transition: "opacity .2s",
 }
 
-// Compact movement pills for the mobile picker (a horizontal, scrollable
-// counterpart to the desktop vertical list; both drive the same mvIdx).
+// The mobile movement picker: a scrolling row of pills.
 const chipBase: CSSProperties = {
   flex: "none", display: "inline-flex", flexDirection: "column", gap: "2px",
   padding: "9px 15px", borderRadius: "12px", cursor: "pointer", textAlign: "left",
@@ -51,7 +48,6 @@ export function ArtStylesSection() {
   const pIdx = ((pieceIdx % pieces.length) + pieces.length) % pieces.length
   const feat = pieces[pIdx]
 
-  // Keep the active movement pill centered in the mobile picker as it changes.
   useEffect(() => {
     const strip = chipStripRef.current
     const active = strip?.querySelector<HTMLElement>('[data-active="true"]')
@@ -60,9 +56,7 @@ export function ArtStylesSection() {
     const activeRect = active.getBoundingClientRect()
     const delta =
       activeRect.left - stripRect.left + strip.scrollLeft + activeRect.width / 2 - strip.clientWidth / 2
-    // Only adjusts the strip's own horizontal scroll (never the page). Direct
-    // assignment rather than scrollTo({behavior:"smooth"}), which silently no-ops
-    // on older iOS Safari.
+    // Scroll the strip, not the page. Smooth scrollTo does nothing on older iOS Safari.
     strip.scrollLeft = delta
   }, [mvIdx])
 
@@ -88,15 +82,10 @@ export function ArtStylesSection() {
           </p>
         </div>
 
-        {/* One column below lg (movement picker lives inside the featured column
-            as a horizontal strip); two columns at lg+ (vertical list | featured).
-            The grid, list, and picker all flip together at lg so the picker is
-            never shown alongside a two-column layout, and the vertical list is
-            never stacked above the monitor. */}
+        {/* Two columns at lg (list | featured); below that, one column with the
+            pill picker. Everything switches together at lg. */}
         <div className="grid grid-cols-1 items-start gap-[40px] lg:grid-cols-2">
-          {/* Movement list (desktop — vertical). On mobile it's replaced by the
-              horizontal pill picker inside the featured column, so the monitor
-              and the movement selector stay on-screen together. */}
+          {/* Movement list (desktop). */}
           <div className="hidden min-w-0 flex-col gap-[9px] lg:flex">
             {movements.map((m, i) => {
               const active = i === mvIdx
@@ -130,9 +119,7 @@ export function ArtStylesSection() {
             onMouseLeave={() => setHovering(false)}
             className="flex min-w-0 flex-col gap-[18px]"
           >
-            {/* Movement picker (mobile only) — a horizontal, scrollable strip of
-                pills that sits right above the monitor so tapping a movement and
-                seeing it come alive happens on one screen. */}
+            {/* Movement picker (mobile), just above the monitor. */}
             <div
               ref={chipStripRef}
               className="lart-no-scrollbar -mx-[30px] flex gap-[9px] overflow-x-auto px-[30px] lg:hidden"
@@ -180,8 +167,7 @@ export function ArtStylesSection() {
                   className="relative w-full overflow-hidden rounded-[7px]"
                   style={{ aspectRatio: "16 / 9", background: poster(feat), boxShadow: "inset 0 0 0 1px #000, inset 0 0 60px rgba(0,0,0,0.5)" }}
                 >
-                  {/* Keyed by movement so switching movements resets the reel.
-                      Auto-advance is readiness-gated; clicks jump immediately. */}
+                  {/* Keyed by movement, so switching resets the reel. */}
                   <ReelPlayer
                     key={mv.name}
                     pieces={pieces}
@@ -243,8 +229,7 @@ export function ArtStylesSection() {
               {pieces.map((p, i) => (
                 <button key={p.src} onClick={() => setPieceIdx(i)} aria-label={p.name} style={i === pIdx ? thumbActive : thumbIdle}>
                   <span className="absolute inset-0" style={{ background: poster(p) }} />
-                  {/* Static first-frame poster — a hard byte guarantee, unlike
-                      the old preload="metadata" video tiles. */}
+                  {/* A still, not a video, to keep bytes down. */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={posterImage(p)}

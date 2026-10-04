@@ -1,9 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { obfuscate, obfuscateChunk, filenameForUrl, MAGIC, KEY } from './obfuscation'
 
-// The obfuscation logic is mirrored byte-for-byte in screensaver/Constants.swift
-// + screensaver/CachedGallery.swift. If any of these tests start failing,
-// audit both sides — they MUST stay in sync or the screensaver can't decrypt.
+// Mirrored in screensaver-macos/ScreensaverArtExtension/{Constants,CachedGallery}.swift.
+// If these fail, check both sides: a mismatch means the screensaver can't decrypt.
 
 describe('obfuscate', () => {
   it('prepends the LARTV001 magic header', () => {
@@ -52,10 +51,7 @@ describe('obfuscate', () => {
 })
 
 describe('obfuscateChunk', () => {
-  // The streaming download path obfuscates chunk-by-chunk as bytes arrive off
-  // the network. The result MUST be byte-identical to obfuscate(wholeBuffer)
-  // no matter where the chunk boundaries happen to fall — otherwise a video
-  // would decrypt to garbage depending on the user's network packetisation.
+  // Chunked output must equal obfuscate(wholeBuffer) wherever the chunks split.
   function streamObfuscate(plain: Buffer, chunkSizes: number[]): Buffer {
     const parts: Buffer[] = [MAGIC]
     let offset = 0
@@ -101,8 +97,7 @@ describe('filenameForUrl', () => {
   })
 
   it('matches the Swift djb2-127 implementation for a known input', () => {
-    // This exact value was produced by the Swift code in screensaver/CachedGallery.swift
-    // running over the same input string. Locking it in keeps the two sides honest.
+    // The value the Swift code produces for the same input.
     expect(filenameForUrl('https://example.com/foo.mp4')).toBe('fe20cbeaf403f1e3.bin')
   })
 

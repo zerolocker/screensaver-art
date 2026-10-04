@@ -1,10 +1,7 @@
-// @screensaver-art/constants — pure-data shared constants, configs, and types.
-//
-// No React, no Node APIs, no runtime dependencies, so this barrel is safe to
-// import from anywhere: the Next.js website (client + server routes + edge),
-// the Electron app (main + renderer), and node test environments.
+// Shared constants and types. No React, Node APIs or dependencies, so it can be
+// imported anywhere.
 
-// Gallery data — item shape, API contract, tag vocabulary + helpers, free tier.
+// Gallery
 export type { ArtItem, ArtSource, ArtLicense, GalleryApiResponse } from './gallery'
 export {
   ART_LICENSES,
@@ -22,7 +19,6 @@ export {
   isItemLocked,
 } from './gallery'
 
-// Pricing — the displayed price/cadence/promo framing (not what Stripe charges),
-// the paid-plan vocabulary, and the single full-access rule.
+// Pricing and access
 export { PRICING, isSubscriptionActive } from './pricing'
 export type { PaidPlan, SubscriptionAccess } from './pricing'

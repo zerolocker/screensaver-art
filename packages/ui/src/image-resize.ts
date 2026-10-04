@@ -1,11 +1,6 @@
-// Client-side image downsampler shared by the Electron renderer and the website
-// (both are Chromium, so the canvas + toBlob('image/webp') path works in both).
-//
-// Feedback submissions embed the image as base64 inside a single JSON object that
-// must fit the Supabase bucket's 1 MB per-file cap. base64 inflates bytes by ~33%,
-// so we keep the raw webp comfortably under `maxBytes` (default 500 KB → ~680 KB
-// base64), leaving headroom for the rest of the JSON. The encode loop *guarantees*
-// the result fits the budget before it is ever handed back.
+// Shrinks an image for feedback, in the app and the website. The image goes into
+// a JSON file capped at 1 MB, and base64 adds ~33%, so the WebP must fit
+// `maxBytes` (500 KB by default). The result is guaranteed to fit.
 
 export interface ResizedImage {
   /** `data:image/webp;base64,…` — ready to embed in the feedback JSON. */
@@ -65,10 +60,7 @@ function blobToDataUrl(blob: Blob): Promise<string> {
   })
 }
 
-/**
- * Downsample + re-encode an image file to webp, guaranteed to fit `maxBytes`.
- * Throws a user-friendly Error if the file isn't a decodable image.
- */
+/** Re-encode as WebP within `maxBytes`. Throws a readable Error for a non-image. */
 export async function resizeImageToWebp(file: File, opts: ResizeOptions = {}): Promise<ResizedImage> {
   const maxLongSide = opts.maxLongSide ?? 1024
   const startQuality = opts.quality ?? 0.8
@@ -99,7 +91,7 @@ export async function resizeImageToWebp(file: File, opts: ResizeOptions = {}): P
       ;({ width, height } = scaledSize(width, height, nextLong))
     }
 
-    // Floor reached — return the smallest we produced (still the best effort).
+    // At the floor: return the smallest result.
     if (!best) throw new Error('Could not process the image.')
     return { dataUrl: await blobToDataUrl(best), bytes: best.size, width, height }
   } finally {

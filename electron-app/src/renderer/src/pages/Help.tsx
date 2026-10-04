@@ -9,10 +9,8 @@ import {
 } from '@screensaver-art/ui'
 import { useFeedback } from '../lib/useFeedback'
 
-// "Help" tab — feedback + diagnostics. Sending feedback always attaches a debug
-// snapshot (app version, system info, screensaver install state, recent logs), so
-// this doubles as the "something's broken" channel. Lives in its own tab (below
-// Gallery and Account) so it's easy to find.
+// The Help tab. Feedback always includes diagnostics, so it doubles as the
+// "something's broken" channel.
 export function HelpPage() {
   const { submitFeedback } = useFeedback()
   const [appVersion, setAppVersion] = useState<string | null>(null)

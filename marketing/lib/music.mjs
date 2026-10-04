@@ -1,19 +1,6 @@
-// The per-piece music bed — one Lyria call, scored to the art it sits under.
-//
-// WHY PER PIECE, NOT A SHARED LIBRARY: an earlier version reused five generic
-// ambient beds across every clip, on the theory that nobody notices the bed
-// varying nightly. True, but it misses the thing that *is* noticed — a bright,
-// noisy plaza full of children playing in a fountain scored with a slow, tender
-// solo piano reads as a mistake, because the music contradicts the picture.
-// Music that matches the era, mood and energy of the art is worth one API call a
-// night; music that doesn't is worth less than silence.
-//
-// The **prompt** is the durable artifact, not the MP3: it is written back to the
-// piece's `gallery.json` entry as `music_prompt` (a curation-only field, like
-// `image_prompt` and `video_prompt`), so the score is reproducible from the
-// catalog. The audio itself is scratch — generated into a temp dir, muxed into
-// the clips, and deleted. Nothing is committed and nothing is uploaded
-// (`CLAUDE.md` → Repo rules).
+// Generates a piece's music with one Lyria call. Music is written per piece
+// because music that clashes with the picture is worse than none. Only the
+// prompt is kept (as `music_prompt` in gallery.json); the MP3 is temporary.
 
 import { spawnSync } from 'node:child_process'
 import { existsSync, statSync } from 'node:fs'
@@ -23,16 +10,12 @@ import { REPO_ROOT } from './pieces.mjs'
 const SKILL = path.join(REPO_ROOT, '.claude/skills/lyria-music-gen/scripts/generate.py')
 const WITH_SECRETS = path.join(REPO_ROOT, 'curation/with-secrets.sh')
 
-/**
- * Bed level in dB. Negative = quieter than the source. −9 dB puts the music
- * clearly under the art rather than over it (strategy §11.2: the picture leads).
- */
+/** Music level in dB: well under the art. */
 export const DEFAULT_GAIN_DB = -9
 
 /**
- * Lyria writes and performs lyrics unless told not to, and a sung bed under the
- * art is unusable. The skill checks the *result* too and exits non-zero if it
- * hears lyrics — this is the cheaper check, before a paid call.
+ * Lyria sings unless told not to. The skill also rejects a sung result; this
+ * check is the cheap one, before the paid call.
  */
 export function assertInstrumental(prompt) {
   if (!/instrumental/i.test(prompt)) {
@@ -44,12 +27,8 @@ export function assertInstrumental(prompt) {
 }
 
 /**
- * One prompt in, one MP3 out (~30s, which we loop to clip length).
- *
- * Runs the `lyria-music-gen` skill through the secrets wrapper, exactly as the
- * curation steps do, so GEMINI_API_KEY is verified by name and never passed by
- * hand. A non-zero exit also means "Lyria sang" — the skill writes the audio
- * anyway so the paid call isn't wasted, but we refuse to use it.
+ * One prompt in, one ~30s MP3 out, via the `lyria-music-gen` skill and the
+ * secrets wrapper. A non-zero exit can mean Lyria sang; the file is then refused.
  */
 export function generateBed({ prompt, outFile, model = 'clip' }) {
   assertInstrumental(prompt)

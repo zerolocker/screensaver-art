@@ -1,108 +1,50 @@
-# Real-Art Guidance: animating real paintings
+# Animating real paintings
 
-Rules for the video prompt and the review in
-[`REAL_PAINTINGS_CURATION.md`](REAL_PAINTINGS_CURATION.md). They sit **on top of** the motion
-rules in [`PROMPT_GUIDANCE.md`](PROMPT_GUIDANCE.md) (primary mover, preference order, no
-morph/melt verbs). Where the two disagree, **this file wins**.
+Rules for the video prompt and the review in [`REAL_PAINTINGS_CURATION.md`](REAL_PAINTINGS_CURATION.md). They add to the motion rules in [`PROMPT_GUIDANCE.md`](PROMPT_GUIDANCE.md) (primary mover, preference order, no morph verbs). Where the two disagree, this file wins.
 
-The difference in one line: in AI mode we invent the picture, so motion can go anywhere. Here
-the picture is a real painter's composition, and **the motion has to happen inside it**.
-
-## What the pilots showed (2026-10-03, Caillebotte, *Paris Street; Rainy Day*)
-
-- **Pilot 1** was non-looping. The prompt asked the foreground couple and the man on the right
-  to walk forward, plus rain, distant walkers and a carriage. **The camera stayed locked**, but
-  the *figures* rewrote the picture: the couple strolled toward the viewer and took over the
-  left half, the man on the right walked off into the street, and a carriage drove into the
-  gap. Each motion was plausible; by second 8 it was no longer Caillebotte's composition.
-- **Pilot 2** pinned the first and last frame to the painting and told the foreground figures to
-  stay put. The composition held and it looped seamlessly, but **the motion was too quiet**:
-  rain, a carriage wheel, distant walkers.
-- **The target sits between them**: real, legible action that happens *in place*.
-
-## What the first dry run showed (2026-10-03, four famous works, Veo)
-
-- **Bruegel, *The Harvesters*: passed.** Mid-size figures each did an action that repeats on the
-  spot: the reapers swung their scythes and the group under the tree ate. The prompt said "every
-  figure stays in its painted place". The composition held for all 8 s.
-- **Hokusai, *The Great Wave*: partial.** Pinned loop. The wave curled and churned well and the
-  clip returned to the print, but mid-clip one boat vanished and another came back larger, with a
-  crew drawn in a different, modern style. Asking small crews to *act* invites Veo to redraw them.
-- **Seurat, *Grande Jatte*: failed.** Naming the tiny leashed monkey made Veo invent a new,
-  prominent monkey mid-lawn. The foreground dog walked across the grass, and a shawl flared out.
-- **El Greco, *View of Toledo*: failed.** Non-looping. When the sky *is* the subject, "storm
-  clouds churn" repainted the sky bright and redrew the hills into a new valley.
+The key difference: in AI mode we invent the picture, so motion can go anywhere. Here the composition is a real painter's, so **the motion has to happen inside it**. Early tests showed both failure modes. When figures walked freely, the painting was gone by second 8. When everything was pinned in place, the clip was too quiet. The target is real, visible action that happens in place.
 
 ## Motion that keeps the painting
 
-1. **Prefer actions that complete in place**: a gesture, a dancer's sway, a rower's stroke, a
-   worker's tool cycle, an animal grazing or tossing its head, sails filling, boats rocking,
-   waves breaking, trees and cloth in wind, rain, smoke, birds crossing the sky.
-2. **Large foreground figures keep their painted positions.** They *are* the composition. They
-   may gesture, turn, shift their weight or sway, but they never walk toward or away from the
-   viewer or across the picture.
-3. **Locomotion is for small or mid-distance figures only**, and mostly sideways. A distant
-   crowd can mill about and a far-off boat can sail across.
-4. **Nothing new enters.** Animate only what the painter put there: no new people, animals,
-   vehicles or objects. Name the specific things you want to move.
-5. **The camera is locked.** No push-in, pan or zoom: the painting is the frame. This overrides
-   the AI guidance that allows a slow push.
-6. **The dark wall stays empty.** Nothing may appear in the black margins around the painting.
-7. **The paint stays paint.** Brushwork, palette and texture stay as painted. Motion must not
-   smooth the canvas into a photo or make the brushstrokes swim.
-8. **Only name movers that are clearly visible at screen size.** Naming a tiny detail (Seurat's
-   monkey) makes Veo invent a big new one.
-9. **Let small background crews and figures ride along as painted.** Don't give them actions; they
-   get redrawn in another style (Hokusai's boats).
-10. **When the sky or weather is the subject, pin both ends** and ask for slow drift that keeps the
-    clouds' painted shapes and palette. Non-looping "churning" repainted El Greco's sky and hills.
-    *(This fix is untested: its reroll hit the Veo quota.)*
-11. **Loop or not:** pinning both ends (`--last-frame` = the still) guarantees the painting is
-   intact at the seam, but it damps motion. Use it where the motion is naturally cyclical (sea,
-   wind, rain, sails, a dance that returns). For a scene with a real action, go non-looping and
-   rely on rules 1–4.
+1. **Prefer actions that complete in place:** a gesture, a dancer's sway, a rower's stroke, a worker's tool swing, an animal grazing or tossing its head, sails filling, boats rocking, waves breaking, trees and cloth in wind, rain, smoke, birds crossing the sky.
+2. **Large foreground figures keep their painted positions.** They are the composition. They may gesture, turn, shift their weight or sway, but never walk toward or away from the viewer or across the picture.
+3. **Only small or distant figures may travel**, mostly sideways. A far-off crowd can mill about; a distant boat can sail across.
+4. **Nothing new enters.** Animate only what the painter put there. Name the specific things you want to move.
+5. **The camera is locked.** No push-in, pan or zoom. This overrides the AI guidance that allows a slow push.
+6. **The dark wall stays empty.** Nothing may appear in the black margins.
+7. **The paint stays paint.** Brushwork, palette and texture stay as painted. Motion must not smooth the canvas into a photo or make the brushstrokes swim.
+8. **Only name movers that are clearly visible at screen size.** Naming a tiny detail (Seurat's leashed monkey) made the model invent a big new one.
+9. **Leave small background figures alone.** Asking small boat crews to act got them redrawn in a different style.
+10. **When the sky or weather is the subject, pin both ends** and ask for slow drift that keeps the clouds' painted shapes and colours. Unpinned "churning clouds" repainted El Greco's sky and hills. (Untested fix.)
+11. **Loop or not.** Pinning both ends keeps the painting intact at the seam but damps motion. Use it where the motion is naturally cyclical (sea, wind, rain, sails, a dance that returns). For a real action, go non-looping and rely on rules 1–4.
 
-*These rules come from two pilots and one four-painting dry run. When a night or a founder review shows a
-genuinely new pattern, fold it into this list as a rule. Don't keep a narrative log.*
+When a night or a founder review shows a new pattern, add a rule here.
 
-## Video prompt template (Gemini Omni)
+## Video prompt template (Omni)
 
-> This image is a photograph of a real &lt;medium&gt;, *&lt;title&gt;* (&lt;year&gt;) by &lt;artist&gt;,
-> hanging on a dark wall. The video begins exactly on this image. It is one continuous,
-> locked-off shot: the camera never moves, and the painting's composition, colours, brushwork
-> and the empty black wall around it stay exactly as they are. **&lt;Primary mover: a concrete
-> actor doing a legible action, in place&gt;.** &lt;One or two secondary motions&gt;. &lt;The large
-> figures keep their painted positions while they …&gt;. No new people, animals or objects
-> appear, and nothing is redrawn. No scene cuts, no music, no dialogue. 8 seconds long.
+> This image is a photograph of a real &lt;medium&gt;, *&lt;title&gt;* (&lt;year&gt;) by &lt;artist&gt;, hanging on a dark wall. The video begins exactly on this image. It is one continuous, locked-off shot: the camera never moves, and the painting's composition, colours, brushwork and the empty black wall around it stay exactly as they are. **&lt;Primary mover: a concrete actor doing a visible action, in place&gt;.** &lt;One or two secondary motions&gt;. &lt;The large figures keep their painted positions while they …&gt;. No new people, animals or objects appear, and nothing is redrawn. No scene cuts, no music, no dialogue. 8 seconds long.
 
-For a loop, pass the still twice and replace the opening with: "The video begins exactly on
-the first image and ends exactly on the second, identical image, so it loops seamlessly."
+For a loop, pass the still twice and open with: "The video begins exactly on the first image and ends exactly on the second, identical image, so it loops seamlessly."
 
-Omni takes no negative prompt, so the "don'ts" live in the last two sentences. The model
-itself is chosen in [`REAL_PAINTINGS_CURATION.md`](REAL_PAINTINGS_CURATION.md) step 5.
+Omni has no negative prompt, so the "don'ts" go in the last two sentences.
 
-*Open question (2026-10-04):* the founder is comparing this detailed prompt with the one-line
-"Animate this; keep the camera still." on ten more paintings. Update this section with the
-winner.
+**Open question:** the founder is comparing this template with a one-line prompt ("Animate this; keep the camera still.") on ten more paintings. Update this section with the winner.
 
-## Fidelity checklist (step 6 of the runbook)
+## Fidelity checklist
 
-Pull the first, middle and last frames, e.g.
-`ffmpeg -ss <t> -i clip.mp4 -frames:v 1 f<t>.png`.
-- [ ] **Landmarks line up** across the frames (a lamppost, a building edge, the signature, the
-      painting's border). If they don't, the camera moved: reroll.
-- [ ] **The last frame is still the painting.** The main figures are near their painted
-      positions, and nothing has been repainted.
+Pull the first, middle and last frames, e.g. `ffmpeg -ss <t> -i clip.mp4 -frames:v 1 f<t>.png`.
+- [ ] **Landmarks line up** across the frames (a lamppost, a building edge, the signature, the painting's border). If they don't, the camera moved: reroll.
+- [ ] **The last frame is still the painting.** Main figures are near their painted positions; nothing is repainted.
 - [ ] **No new people or objects**, and the dark wall is clean.
-- [ ] **Faces and hands intact**, with no melting or extra limbs.
+- [ ] **Faces and hands are intact**, with no melting or extra limbs.
 - [ ] **The brushwork doesn't crawl**, and the paint hasn't turned photographic.
-- [ ] **There is a real primary mover**, not only shimmer (the `PROMPT_GUIDANCE.md` rule).
+- [ ] **There is a real primary mover**, not just shimmer.
 
-## Overrides of `PROMPT_GUIDANCE.md`
+## Where this mode differs from `PROMPT_GUIDANCE.md`
 
-| `PROMPT_GUIDANCE.md` says | In real-paintings mode |
+| `PROMPT_GUIDANCE.md` | Real-paintings mode |
 |---|---|
-| Don't regenerate famous icons; skip the greatest hits | **Famous first.** Each work is used once. Skip only what `gallery.json` already has. |
-| Render in-situ, edge to edge; never as a museum object or "in a frame" | The painting hangs on a **dark wall**: whole, never cropped, never extended. |
+| Skip famous icons | **Famous first.** Each work is used once; skip only what `gallery.json` already has. |
+| Art fills the image edge to edge | The painting hangs whole on a **dark wall**, never cropped or extended. |
 | A slow camera push or pan is fine | **Locked camera.** |
-| Image-prompt rules (patina, aging, era anchoring…) | Not applicable: there is no image prompt. |
+| Image-prompt rules (freshness, light, framing) | Don't apply: there's no image prompt. |

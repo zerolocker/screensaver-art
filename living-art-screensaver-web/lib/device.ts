@@ -5,26 +5,22 @@ import { useEffect, useState } from 'react'
 type UAData = { mobile?: boolean }
 
 /**
- * True for phones and tablets (iOS, iPadOS, Android) — the devices that can't
- * run the macOS app, so their "Download" CTA should email a link instead.
- *
- * Deliberately device-based, not viewport-width-based: a Mac in a narrow window
- * must still download directly, and an iPad (which reports a desktop
- * "Macintosh" UA since iPadOS 13) must still be treated as mobile.
+ * True for phones and tablets, which get "email me the link" instead of a
+ * download. Based on the device, not the window width, so a narrow Mac window
+ * still downloads.
  */
 export function detectMobileDevice(): boolean {
   if (typeof navigator === 'undefined') return false
   const ua = navigator.userAgent || ''
-  // iPadOS 13+ masquerades as desktop Safari ("Macintosh"); tell it apart by its
-  // real touchscreen. (maxTouchPoints, not 'ontouchend' — desktop Chrome reports
-  // ontouchend even with no touchscreen, which would misflag a Mac as mobile.)
+  // iPads report a "Macintosh" UA; detect the touchscreen. (Not 'ontouchend',
+  // which desktop Chrome reports too.)
   const iPadOS = /Macintosh/.test(ua) && (navigator.maxTouchPoints ?? 0) > 1
   const uaMobile = (navigator as Navigator & { userAgentData?: UAData }).userAgentData?.mobile
   if (uaMobile) return true
   return iPadOS || /Android|iPhone|iPad|iPod|Windows Phone|Mobile/i.test(ua)
 }
 
-/** True only for a macOS *desktop* (excludes iPadOS-pretending-to-be-Mac). */
+/** True only for a Mac, not an iPad. */
 export function detectIsMac(): boolean {
   if (typeof navigator === 'undefined') return false
   const ua = navigator.userAgent || ''
@@ -33,11 +29,7 @@ export function detectIsMac(): boolean {
   return isMacUA && !iPadOS
 }
 
-/**
- * Device-based mobile check for components. Returns `undefined` until mounted so
- * SSR/first client render stay identical (no hydration mismatch); callers should
- * treat `undefined` as "assume desktop" until it resolves.
- */
+/** `undefined` until mounted, to avoid a hydration mismatch; treat it as desktop. */
 export function useIsMobileDevice(): boolean | undefined {
   const [isMobile, setIsMobile] = useState<boolean | undefined>(undefined)
   useEffect(() => {

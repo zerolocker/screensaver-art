@@ -4,26 +4,13 @@ import { createClient } from '@supabase/supabase-js'
 import { getPostHogClient, flushPostHog } from '@/lib/posthog-server'
 
 /**
- * POST /api/download-link  —  emails a macOS download link to a visitor.
+ * POST /api/download-link: emails a phone visitor a link to open on their Mac.
+ * Supabase's mailer sends it, through `inviteUserByEmail`, or
+ * `resetPasswordForEmail` for an existing user. Both templates carry the same
+ * plain link to the home page. See docs/download-link-email.md.
  *
- * Mobile visitors can't install the Mac app on their phone, so instead of a
- * dead "Download" button we capture their email here and send a link they can
- * open on their Mac. Supabase is used purely as the mailer (the only one this
- * project has): `inviteUserByEmail` triggers the send, and the email template
- * links straight to the home page (`/?src=email-download`) — NOT to Supabase's
- * verify endpoint. So there's no `redirectTo`, no auth token on the click, and
- * no redirect-URL allowlist to configure. The home page's EmailArrivalTracker
- * counts the click and starts the DMG.
- *
- * Existing emails can't be re-invited (inviteUserByEmail 422s), so we fall back
- * to `resetPasswordForEmail`, which triggers the same email for an existing user.
- * Both the "Invite user" and "Reset Password" auth templates are otherwise
- * unused in this passwordless project and are repurposed with identical
- * download-link copy — see docs/download-link-email.md.
- *
- * Public + unauthenticated by design (visitors aren't logged in). Abuse is
- * bounded by Supabase's per-address + per-project email rate limits, an email
- * shape check, and a honeypot field.
+ * Unauthenticated by design. Abuse is limited by Supabase's email rate limits,
+ * an email check, and a honeypot field.
  */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -34,8 +21,7 @@ const supabaseAdmin = createClient(
   { auth: { autoRefreshToken: false, persistSession: false } },
 )
 
-// Anon client for resetPasswordForEmail (the existing-user fallback) — mirrors
-// how the browser would call it, and needs no service role.
+// resetPasswordForEmail needs no service role.
 const supabaseAnon = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -50,8 +36,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid request.' }, { status: 400 })
   }
 
-  // Honeypot: real users leave this hidden field empty. Pretend success so bots
-  // learn nothing, but send nothing.
+  // Honeypot: real users leave this hidden field empty. Pretend success.
   if (typeof body.company === 'string' && body.company.trim() !== '') {
     return NextResponse.json({ ok: true })
   }
@@ -63,10 +48,6 @@ export async function POST(request: NextRequest) {
 
   const location = typeof body.location === 'string' ? body.location.slice(0, 40) : 'unknown'
 
-  // ── Send the link ──────────────────────────────────────────────────────────
-  // We only use Supabase as the mailer: the email template links straight to the
-  // home page (`/?src=email-download`), NOT to Supabase's verify endpoint, so no
-  // `redirectTo` is needed and the click never carries an auth token.
   let newUser = true
   const { error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email)
 
@@ -78,7 +59,7 @@ export async function POST(request: NextRequest) {
       )
     }
     if (isAlreadyRegistered(inviteError)) {
-      // Existing user: trigger the same email via the recovery mailer instead.
+      // Existing user: send the same email through the recovery template.
       newUser = false
       const { error: resetError } = await supabaseAnon.auth.resetPasswordForEmail(email)
       if (resetError) {
@@ -97,7 +78,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Ad-blocker-safe funnel event (the client also fires `download_email_submitted`).
+  // Server-side, so ad blockers can't drop it.
   getPostHogClient().capture({
     distinctId: distinctId(request),
     event: 'download_link_requested',
@@ -120,8 +101,7 @@ function isRateLimited(err: { code?: string; status?: number; message?: string }
   return err.status === 429 || err.code === 'over_email_send_rate_limit' || /rate limit/i.test(err.message ?? '')
 }
 
-// Reuse the visitor's posthog distinct_id (set by posthog-js) so the request
-// stitches onto the same person; mint an anonymous id when there's no cookie.
+// Reuse the visitor's PostHog id from its cookie, or mint an anonymous one.
 function distinctId(request: NextRequest): string {
   const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
   const raw = token ? request.cookies.get(`ph_${token}_posthog`)?.value : undefined
@@ -130,7 +110,7 @@ function distinctId(request: NextRequest): string {
       const id = JSON.parse(decodeURIComponent(raw))?.distinct_id
       if (typeof id === 'string' && id) return id
     } catch {
-      /* malformed cookie — fall through */
+      /* malformed cookie */
     }
   }
   return `anon-download-${randomUUID()}`

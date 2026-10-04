@@ -17,9 +17,7 @@ import { InstallerProvider, useInstaller } from './lib/InstallerProvider'
 import { UpdateProvider } from './lib/UpdateProvider'
 import { PlanPickerProvider } from './lib/PlanPickerProvider'
 
-// How long to wait for getSession() to validate/refresh the token at startup
-// before falling back to the stored session. Comfortably covers a normal online
-// refresh (a few hundred ms) without making an offline launch sit on a spinner.
+// How long startup waits for a token refresh before using the stored session.
 const INITIAL_SESSION_TIMEOUT_MS = 2000
 
 export function App() {
@@ -28,9 +26,7 @@ export function App() {
   const [oauthError, setOauthError] = useState<string | null>(null)
   const navigate = useNavigate()
 
-  // OAuth round-trips through the system browser and returns via a livingart://
-  // deep link. The main process forwards that URL here; we exchange it for a
-  // session (which then emits SIGNED_IN and navigates to the gallery).
+  // OAuth returns through a livingart:// deep link forwarded by the main process.
   useEffect(() => {
     return window.electronAPI.auth.onCallback(async (url) => {
       const { error } = await completeOAuthFromUrl(url)
@@ -47,33 +43,11 @@ export function App() {
   useEffect(() => {
     let cancelled = false
 
-    // Decide the initial auth state without letting an offline/slow network hang
-    // the UI. getSession() returns a *validated, refreshed* session when it can,
-    // but if the stored access token is expired and we're offline it retries the
-    // refresh for ~25s before giving up — which would freeze startup on a spinner.
-    // So we race it against a short timeout and, if it doesn't win, fall back to
-    // the session supabase-js already has in storage.
-    //
-    // Why the stored fallback matters: it keeps the user signed in for everything
-    // that doesn't need the network — browsing the cached gallery, setting the
-    // screensaver, viewing the account — instead of bouncing them to login or
-    // hanging just because they're offline. Two ways that happens at launch:
-    //
-    //   • "Offline at cold start": right after launch the network often isn't up
-    //     yet (Wi-Fi reconnecting after sleep/wake, the OS still bringing up
-    //     networking after login/boot), so the refresh HTTPS call to Supabase
-    //     fails even though the stored session is valid.
-    //
-    //   • "Throttled renderer": this runs in an Electron (Chromium) renderer,
-    //     which suspends/throttles timers and network in hidden or just-woken
-    //     windows to save power, stalling the refresh request mid-flight.
-    //
-    // supabase-js auto-refreshes the token and emits TOKEN_REFRESHED (handled
-    // below) once connectivity returns, swapping the stale session for a fresh
-    // one. This also fixed the older "it asked me to sign in again, but relaunching
-    // signed me right back in" bug (a transient refresh failure no longer logs you
-    // out). A genuinely revoked session is cleared by supabase-js before
-    // getSession() returns, so getStoredSession() yields null → the login screen.
+    // Offline, getSession() retries an expired token's refresh for ~25s, so race
+    // it against a short timeout and fall back to the stored session. That keeps
+    // the user signed in for everything that works offline, e.g. right after
+    // wake when the network isn't back yet. supabase-js refreshes later
+    // (TOKEN_REFRESHED). A revoked session is cleared, so the fallback is null.
     async function resolveInitialSession(): Promise<void> {
       const validated = await Promise.race([
         supabase.auth.getSession().then(({ data }) => data.session),
@@ -86,9 +60,7 @@ export function App() {
       if (validated) {
         setSession(validated)
       } else {
-        // No fresh session in time. Fall back to the persisted session: present
-        // ⇒ stay signed in (offline / slow refresh); absent ⇒ genuinely signed
-        // out (getSession returns null fast when nothing is stored).
+        // No stored session means signed out.
         const stored = getStoredSession()
         if (stored) {
           log.info('auth', 'using stored session at startup; will refresh when online')
@@ -100,9 +72,7 @@ export function App() {
 
     void resolveInitialSession()
 
-    // Listen for auth changes. We deliberately ignore INITIAL_SESSION here — it
-    // reports null on the same transient/offline failure above and would clobber
-    // the stored-session fallback; resolveInitialSession owns the initial decision.
+    // Ignore INITIAL_SESSION: it reports null when offline and would undo the fallback above.
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
@@ -113,8 +83,7 @@ export function App() {
       if (event === 'SIGNED_IN') {
         navigate('/gallery')
       } else if (event === 'SIGNED_OUT') {
-        // Drop the PostHog identity + mint a fresh anon id so the next account
-        // on this machine doesn't inherit this user's aliased device id.
+        // Start a fresh analytics identity for whoever signs in next.
         resetIdentity()
         navigate('/login')
       }
@@ -166,9 +135,8 @@ export function App() {
   )
 }
 
-// The signed-in app shell. Lives inside InstallerProvider so it can short-circuit
-// to a recovery screen when the embedded screensaver component is missing (a
-// damaged/incomplete install) — without it the app can't do its one job.
+// The signed-in shell. Shows a recovery screen if the embedded screensaver is
+// missing (a damaged install).
 function AuthedShell({ session }: { session: Session }) {
   const { installer } = useInstaller()
 
@@ -180,11 +148,7 @@ function AuthedShell({ session }: { session: Session }) {
     <div className="flex h-screen">
       <Sidebar session={session} />
       <main className="flex-1 overflow-y-auto">
-        {/* Draggable titlebar strip. Height matches the sidebar title's top
-            inset (pt-8) so each page's content starts at the same height as the
-            "Living Art Screensaver" title. Frosted + on top so scrolled content
-            can't show through it; the gallery's sticky controls pin just below it
-            at top-8. */}
+        {/* Draggable titlebar strip, as tall as the sidebar's top inset (pt-8). */}
         <div className="titlebar-drag h-8 sticky top-0 z-30 bg-background/95 backdrop-blur-sm" />
         <Routes>
           <Route path="/gallery" element={<GalleryPage session={session} />} />

@@ -9,11 +9,7 @@ import { LogoMark } from "@/components/logo-mark"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { greenGlow } from "@/lib/brand"
 
-/**
- * `homeHref` — the homepage scrolls to its own top (`#top`); every standalone
- * page (the gallery landing pages) must send the logo to `/` instead, or the
- * one obvious "get me out of here" affordance does nothing.
- */
+/** `homeHref`: `#top` on the homepage; other pages must pass `/`. */
 export function Header({ homeHref = '#top' }: { homeHref?: string } = {}) {
   const [user, setUser] = useState<SupabaseUser | null>(null)
 

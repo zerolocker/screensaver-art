@@ -1,11 +1,6 @@
-// Living Art Screensaver — apply curation flags to gallery.json
-//
-// Reads curation/cleanup-tool/selections.json (written by the curation tool) and
-// acts on the two flag kinds:
-//   - "undesirable" -> DELETED from gallery.json (recorded for "what to avoid")
-//   - "great"       -> KEPT in gallery.json (recorded for "what to make more of")
-// Only undesirable pieces are removed; great is a positive keep-signal. Safe +
-// reversible: the previous gallery.json is backed up under .backups/ first.
+// Apply the review flags in selections.json: remove "undesirable" pieces from
+// gallery.json (backed up first) and record both kinds for analysis. "Great"
+// pieces are kept.
 //
 //   node curation/cleanup-tool/apply.mjs
 //
@@ -54,8 +49,6 @@ const withMeta = (i) => ({
   ...(noteBySrc.has(i.src) ? { _note: noteBySrc.get(i.src) } : {}),
 });
 
-// Only "undesirable" pieces are deleted. "great" is a positive keep-signal — those
-// stay in the gallery and are recorded separately for the "make more of this" pass.
 const removed = gallery.filter(i => reasonBySrc.get(i.src) === 'undesirable').map(withMeta);
 const loved = gallery.filter(i => reasonBySrc.get(i.src) === 'great').map(withMeta);
 const kept = gallery.filter(i => reasonBySrc.get(i.src) !== 'undesirable');
@@ -68,7 +61,7 @@ await mkdir(BACKUPS, { recursive: true });
 const ts = new Date().toISOString().replace(/[:.]/g, '-');
 await writeFile(join(BACKUPS, `gallery.${ts}.json`), JSON.stringify(gallery, null, 2) + '\n');
 
-// Rewrite gallery.json (2-space indent matches the existing format + the bot's edits).
+// 2-space indent, matching the file.
 await writeFile(GALLERY, JSON.stringify(kept, null, 2) + '\n');
 
 // Record removed (undesirable) for the "what to avoid" analysis.

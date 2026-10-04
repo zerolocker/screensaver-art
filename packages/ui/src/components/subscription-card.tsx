@@ -63,20 +63,17 @@ const statusConfig = {
   },
 }
 
-// Three states (see the account screenshots):
-//   1. Lifetime owner — terminal "Your plan: Lifetime" card, nothing to sell.
-//   2. Active subscriber — status + current plan, an "Own it forever" upgrade
-//      box, and Manage.
-//   3. Free (or lapsed) — "Unlock the gallery" with both offers, lifetime
-//      featured.
+// Three states:
+//   1. Lifetime owner: nothing to sell.
+//   2. Subscriber: current plan, a lifetime upgrade, and Manage.
+//   3. Free or lapsed: both offers, lifetime featured.
 export function SubscriptionCard({
   subscription,
   onCheckout,
   onManage,
   openExternal,
 }: SubscriptionCardProps) {
-  // Which action is in flight — keys the spinner to the clicked button while
-  // disabling all of them.
+  // The clicked button shows the spinner; all are disabled.
   const [loading, setLoading] = useState<'lifetime' | 'monthly' | 'manage' | null>(null)
 
   const status = subscription?.status || 'inactive'
@@ -104,7 +101,7 @@ export function SubscriptionCard({
 
   const spinner = <Loader2 className="mr-2 h-4 w-4 animate-spin" />
 
-  // ── 1. Lifetime owner — terminal state ────────────────────────────────────
+  // ── 1. Lifetime owner ─────────────────────────────────────────────────────
   if (isLifetime) {
     const purchased = subscription?.lifetime_purchased_at
       ? new Date(subscription.lifetime_purchased_at).toLocaleDateString()
@@ -145,7 +142,7 @@ export function SubscriptionCard({
     )
   }
 
-  // ── 2. Active subscriber — current plan + upgrade path ────────────────────
+  // ── 2. Subscriber ─────────────────────────────────────────────────────────
   if (isActive) {
     return (
       <Card className="bg-card border-border">
@@ -211,10 +208,8 @@ export function SubscriptionCard({
     )
   }
 
-  // ── 3. Free plan (incl. lapsed/past-due) — both offers, lifetime featured ─
-  // @container: the two offer boxes go side-by-side when the *card* (not the
-  // viewport) is wide — wide in the Electron app, stacked in the website's
-  // half-width account grid.
+  // ── 3. Free or lapsed ─────────────────────────────────────────────────────
+  // @container: the offers sit side by side when the card itself is wide.
   return (
     <Card className="bg-card border-border @container">
       <CardHeader>

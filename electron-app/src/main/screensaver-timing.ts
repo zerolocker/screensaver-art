@@ -1,24 +1,17 @@
-// Reads the two macOS idle thresholds that decide whether the user ever actually
-// SEES the screensaver, and starts it on demand for an instant preview.
-//
-//   X = screensaver start delay  (defaults -currentHost read com.apple.screensaver idleTime → seconds)
-//   Y = display-off delay        (pmset -g → the "displaysleep" line, in minutes)
-//
-// If the display turns off at or before the screensaver would start (Y ≤ X) the
-// screen goes dark first and the saver never appears — the renderer warns about
-// exactly that. The un-sandboxed main process can read both directly, so unlike
-// the pluginkit work there's no Swift helper involved. Everything is best-effort
-// and macOS-only: on failure / other platforms the values come back null and the
-// UI degrades to a neutral "your screensaver is set" message rather than guess.
+// Reads the two macOS idle delays that decide whether the screensaver is ever
+// seen, and starts it on demand for a preview:
+//   start delay        `defaults -currentHost read com.apple.screensaver idleTime` (seconds)
+//   display-off delay  `pmset -g` "displaysleep" (minutes)
+// If the display turns off first, the screensaver never shows. macOS only;
+// values are null when they can't be read.
 
 import { spawn, execFile } from 'child_process'
 import { log } from './logger'
 
 export interface ScreensaverTiming {
-  // Idle SECONDS before the screensaver starts. 0 = "Never" (won't auto-start);
-  // null = couldn't read / not macOS.
+  // Seconds. 0 = never; null = unknown.
   screensaverStartSec: number | null
-  // Idle MINUTES before the display turns off. 0 = "Never"; null = couldn't read.
+  // Minutes. 0 = never; null = unknown.
   displayOffMin: number | null
 }
 
@@ -34,26 +27,19 @@ function defaultRun(cmd: string, args: ReadonlyArray<string>): Promise<RunResult
   })
 }
 
-// Test seam (mirrors installer.ts): swap spawn/run so tests don't shell out to
-// the dev machine's real `defaults`/`pmset`/`open`.
+// Test seam, as in installer.ts.
 export const _testHooks: { spawn: typeof spawn; run: typeof defaultRun } = {
   spawn,
   run: defaultRun,
 }
 
-// `defaults -currentHost read com.apple.screensaver idleTime` prints just the
-// integer seconds (e.g. "1200\n"), or errors when the key doesn't exist. We only
-// accept a clean integer and report null otherwise, so the UI stays neutral
-// rather than inventing a number.
+// Accept only a clean integer; anything else is null.
 export function parseIdleSeconds(stdout: string): number | null {
   const t = stdout.trim()
   return /^\d+$/.test(t) ? parseInt(t, 10) : null
 }
 
-// `pmset -g` prints the currently-active power settings, one "  key   value"
-// per line; we want `displaysleep` in minutes (0 = never). Using `-g` (not
-// `-g custom`) gives the value for the live power source, which is what actually
-// governs the user right now.
+// `-g` (not `-g custom`) reports the current power source's settings.
 export function parseDisplaySleepMinutes(pmsetOutput: string): number | null {
   const m = pmsetOutput.match(/^\s*displaysleep\s+(\d+)/m)
   return m ? parseInt(m[1], 10) : null
@@ -73,10 +59,7 @@ export async function getScreensaverTiming(): Promise<ScreensaverTiming> {
   return { screensaverStartSec, displayOffMin }
 }
 
-// Start the currently-selected screensaver right now so the user can SEE what
-// they picked without waiting out the idle timer — the tight feedback loop. Any
-// keypress / mouse-move quits it (standard screensaver behaviour). Fire-and-
-// forget `open` of the system ScreenSaverEngine; not available off macOS.
+// Start the active screensaver now, so the user doesn't have to wait.
 const SCREENSAVER_ENGINE = '/System/Library/CoreServices/ScreenSaverEngine.app'
 export async function startScreensaverPreview(): Promise<{ ok: boolean; error?: string }> {
   if (process.platform !== 'darwin') {
@@ -92,7 +75,7 @@ export async function startScreensaverPreview(): Promise<{ ok: boolean; error?: 
         log.error('screensaver-timing', 'preview failed to launch', { error: err.message })
         resolve({ ok: false, error: err.message })
       })
-      // `open` exits as soon as it has handed off to the engine; code 0 = launched.
+      // `open` exits once the engine has started.
       proc.on('exit', (code: number | null) => {
         if (settled) return
         settled = true

@@ -11,11 +11,8 @@ interface CheckoutCompletePageProps {
   searchParams: Promise<{ status?: string; plan?: string }>
 }
 
-// Public landing for app-initiated Stripe checkouts (success or cancel). The
-// browser that ran checkout has no website session, so this page deliberately
-// needs no auth. The purchase is recorded by the Stripe webhook; the app
-// re-checks status when its window regains focus, so the user just returns to
-// the app.
+// Where Stripe returns after an app checkout. No auth: that browser has no
+// website session. The app picks up the purchase when it regains focus.
 export default async function CheckoutCompletePage({ searchParams }: CheckoutCompletePageProps) {
   const { status, plan } = await searchParams
   const canceled = status === 'canceled'

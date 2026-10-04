@@ -1,13 +1,6 @@
-// Showcase data for the marketing homepage. Pure data + helpers (no React),
-// so it can be imported by any client component.
-// Video assets live on the public R2 bucket, served through the Cloudflare
-// custom domain (screensaver-assets.living-art-asset.com) — NOT the r2.dev
-// dev endpoint, which bypasses Cloudflare's CDN cache and is rate-limited /
-// not-for-production. The custom domain routes through Cloudflare's edge, so
-// these multi-MB clips are edge-cached (cf-cache-status HIT) and browsers get
-// Cloudflare's default ~4h Browser Cache TTL out of the box — avoiding re-fetch
-// on repeat visits and reel wrap-arounds.
-// Each piece carries the same { name, style } placard shown in-app.
+// Pieces shown on the marketing homepage. No React, so client components can
+// import it. Clips come from R2's custom domain, which Cloudflare caches;
+// never use the r2.dev URL.
 
 export const R2_GALLERY = "https://screensaver-assets.living-art-asset.com/gallery/"
 
@@ -23,8 +16,7 @@ const v = (file: string, name: string, style: string): Piece => ({
   style,
 })
 
-// Deterministic poster background per piece — a colored gradient derived from the
-// title, shown behind a video until it paints (and as the ambient glow source).
+// A gradient derived from the title, shown behind a video until it paints.
 export function hashHue(str: string): number {
   let h = 0
   for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0
@@ -37,17 +29,9 @@ export function poster(it?: { name?: string }): string {
   return `radial-gradient(125% 95% at 30% 14%, hsl(${H} 44% 40%), hsl(${H2} 50% 22%) 74%)`
 }
 
-// The real-art poster image for a piece — the exact first frame of its clip, as
-// a ~59 KB 640w WebP on R2 (`thumb` in gallery.json). Painted under/before the
-// video so visitors on slow links see the artwork immediately instead of the
-// gradient.
-//
-// Derived by string transform rather than looked up in gallery.json, because
-// this module is imported by client components and gallery.json is ~400 KB of
-// mostly prompts — it has no business in a browser bundle. The key is
-// deterministic: every clip has a sibling `<stem>_640w.webp` (scripts/
-// backfill-image-derivatives.mjs, and the nightly run in
-// curation/AUTOMATED_CURATION.md keeps it true for new pieces).
+// The clip's first frame (the 640w WebP `thumb`), shown before the video plays.
+// Derived from the clip URL, since every clip has a sibling `<stem>_640w.webp`,
+// to keep the large gallery.json out of the browser bundle.
 export function posterImage(it?: { src?: string }): string {
   const file = it?.src?.split("/").pop() ?? ""
   return R2_GALLERY + file.replace(/\.mp4$/i, "_640w.webp")

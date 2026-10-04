@@ -9,11 +9,8 @@ interface LegalPageProps {
 }
 
 /**
- * Shared shell for the Privacy Policy and Terms of Service pages. Keeps both
- * legal pages visually consistent with the marketing site (same header/footer,
- * serif display headings, muted body copy). Child content is plain semantic
- * HTML (h2/h3/p/ul/a/strong) styled via arbitrary variant selectors below, so
- * the pages read like prose without pulling in the Tailwind typography plugin.
+ * Layout for the Privacy Policy and Terms. Children are plain HTML, styled by
+ * the selectors below rather than the Tailwind typography plugin.
  */
 export function LegalPage({ title, lastUpdated, children }: LegalPageProps) {
   return (

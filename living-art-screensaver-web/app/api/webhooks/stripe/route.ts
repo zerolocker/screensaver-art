@@ -6,7 +6,7 @@ import Stripe from 'stripe'
 import { getPostHogClient, flushPostHog } from '@/lib/posthog-server'
 import { isLifetimeCheckoutSession, recordLifetimePurchase } from '@/lib/lifetime'
 
-// Use service role for webhook handling (bypasses RLS)
+// Service role: bypasses RLS
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -21,9 +21,8 @@ function subscriptionIdFromInvoice(invoice: Stripe.Invoice): string | undefined 
   return invoice.parent?.subscription_details?.subscription as string | undefined
 }
 
-// Our checkout stamps the Supabase user id into subscription metadata; resolve
-// it so PostHog events attach to the right person. Returns null if the sub was
-// created outside our flow (no mapping) or the lookup fails.
+// The Supabase user id our checkout stored in the subscription's metadata, or
+// null (created elsewhere, or the lookup failed). For PostHog.
 async function userIdForSubscription(subscriptionId: string): Promise<string | null> {
   try {
     const sub = await stripe.subscriptions.retrieve(subscriptionId)
@@ -35,13 +34,9 @@ async function userIdForSubscription(subscriptionId: string): Promise<string | n
 }
 
 /**
- * Canonical sync: given a Stripe subscription id, re-fetch the *current* state
- * from Stripe and write it to Supabase.
- *
- * Re-fetching (instead of trusting the event's payload) makes us immune to
- * Stripe's out-of-order and duplicate delivery — every event just means "go
- * re-read the truth", so a stale event can never overwrite newer state. The
- * write is idempotent.
+ * Re-fetch the subscription from Stripe and write its current state to Supabase.
+ * Ignoring the event payload means late or duplicate events can't overwrite
+ * newer state.
  */
 async function syncSubscriptionById(subscriptionId: string) {
   const sub = await stripe.subscriptions.retrieve(subscriptionId)
@@ -51,10 +46,7 @@ async function syncSubscriptionById(subscriptionId: string) {
   const row = {
     stripe_customer_id: sub.customer as string,
     stripe_subscription_id: sub.id,
-    // Stripe spells it `canceled`; our schema + UI use `cancelled` (which is
-    // also what the `customer.subscription.deleted` handler below writes). Map
-    // it here so one state can't land in the column under two spellings
-    // depending on which event arrives last.
+    // Our schema spells it `cancelled`.
     status: sub.status === 'canceled' ? 'cancelled' : sub.status,
     current_period_start: toIso(item?.current_period_start),
     current_period_end: toIso(item?.current_period_end),
@@ -62,15 +54,12 @@ async function syncSubscriptionById(subscriptionId: string) {
   }
 
   if (userId) {
-    // Our checkout stamps supabase_user_id into subscription metadata, so we can
-    // create-or-update keyed on the user — this also handles an event arriving
-    // before the row exists.
+    // Upsert by user, which also covers an event arriving before the row exists.
     await supabaseAdmin
       .from('subscriptions')
       .upsert({ user_id: userId, ...row }, { onConflict: 'user_id' })
   } else {
-    // Subscription created outside our checkout (no user mapping) — only update
-    // an existing row; don't create an orphan we can't attribute to a user.
+    // Created outside our checkout: update an existing row, never create an orphan.
     await supabaseAdmin
       .from('subscriptions')
       .update(row)
@@ -104,9 +93,7 @@ export async function POST(req: Request) {
 
   try {
     switch (event.type) {
-      // A purchase completed via our Checkout — either the subscription starting
-      // or the one-time lifetime purchase. This is the canonical "a free user
-      // converted to paid" moment.
+      // A subscription started, or a lifetime purchase.
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         if (isLifetimeCheckoutSession(session)) {
@@ -133,8 +120,7 @@ export async function POST(req: Request) {
         break
       }
 
-      // Subscription lifecycle. `created` also covers subs made outside Checkout
-      // (e.g. the customer portal); both just re-sync canonical state.
+      // `created` also covers subscriptions made in the customer portal.
       case 'customer.subscription.created':
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription
@@ -159,15 +145,13 @@ export async function POST(req: Request) {
         break
       }
 
-      // Money actually arrived — the canonical "active / renewed / recovered"
-      // signal. Re-syncs status (-> active) and extends the period each renewal.
+      // Payment arrived: a renewal or recovery. Re-sync status and period.
       case 'invoice.paid': {
         const invoice = event.data.object as Stripe.Invoice
         const subscriptionId = subscriptionIdFromInvoice(invoice)
         if (subscriptionId) {
           await syncSubscriptionById(subscriptionId)
-          // Only a recurring cycle is a "renewal"; the first invoice is the
-          // initial purchase (already tracked as subscription_started).
+          // The first invoice is the purchase itself, not a renewal.
           if (invoice.billing_reason === 'subscription_cycle') {
             const userId = await userIdForSubscription(subscriptionId)
             if (userId) {
@@ -202,10 +186,7 @@ export async function POST(req: Request) {
         break
       }
 
-      // SCA / 3-D Secure: a renewal (common for EU / international cards) needs
-      // the cardholder to authenticate before it clears. Sync Stripe's real
-      // status so the app can surface "payment needs action" rather than
-      // silently dropping the user to the free tier.
+      // 3-D Secure: a renewal needs the cardholder to authenticate. Sync the real status.
       case 'invoice.payment_action_required': {
         const invoice = event.data.object as Stripe.Invoice
         const subscriptionId = subscriptionIdFromInvoice(invoice)

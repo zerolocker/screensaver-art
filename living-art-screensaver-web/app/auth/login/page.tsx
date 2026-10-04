@@ -13,9 +13,7 @@ import { Loader2 } from 'lucide-react'
 import posthog from 'posthog-js'
 import { createClient } from '@/lib/supabase/client'
 
-// Single passwordless auth screen — no email/password. Social sign-in and the
-// email one-time code both create the account on first use, so there's no
-// separate sign-up step. (Matches the Electron app.)
+// Passwordless sign-in, which also creates the account on first use.
 function LoginInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -30,8 +28,7 @@ function LoginInner() {
     posthog.capture('oauth_sign_in_clicked', { provider })
     const supabase = createClient()
     const { scopes, queryParams } = OAUTH_PROVIDER_OPTIONS[provider]
-    // @supabase/ssr uses the PKCE flow: the provider redirects back to
-    // /auth/callback?code=…, which exchanges the code for a cookie session.
+    // PKCE: the provider returns to /auth/callback?code=….
     const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
@@ -61,7 +58,7 @@ function LoginInner() {
           const { data, error } = await supabase.auth.verifyOtp({ email, token: code, type: 'email' })
           if (error) return { error: error.message }
           if (data.user) {
-            // Stitch the prior anonymous session to the user, then record login.
+            // Link the anonymous session to the user.
             posthog.identify(data.user.id, { email: data.user.email })
             posthog.capture('login_completed', { method: 'email_otp' })
           }

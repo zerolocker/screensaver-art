@@ -4,8 +4,7 @@ import { tmpdir } from 'os'
 import { join } from 'path'
 import { EventEmitter } from 'events'
 
-// Point the appex/helper at a throwaway tmp dir so the test never touches the
-// real resources/ artifacts (and so "missing"/"present" cases are controllable).
+// Use a tmp dir for the appex and helper, so tests control whether they exist.
 const TMP = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const fs = require('fs') as typeof import('fs')
@@ -19,8 +18,7 @@ const TMP = vi.hoisted(() => {
   return dir
 })
 
-// installer.ts imports `app` from electron. We don't run inside Electron,
-// so stub it with the bare-minimum surface installer.ts touches.
+// Stub the parts of electron's `app` that installer.ts uses.
 vi.mock('electron', () => ({
   app: { isPackaged: false },
 }))
@@ -43,9 +41,7 @@ function fakeSpawn(cmd: string, args: ReadonlyArray<string>) {
   return ee as unknown as ReturnType<typeof realSpawn>
 }
 
-// Canned output for the capturing runner. Every pluginkit interaction now goes
-// through the PaperSaver helper, so the only command installer.ts runs is the
-// helper itself (status/find/register/unregister/activate).
+// Canned helper output.
 type RunResult = { code: number; stdout: string; stderr: string }
 const runCalls: { cmd: string; args: ReadonlyArray<string> }[] = []
 let runImpl: (cmd: string, args: ReadonlyArray<string>) => RunResult
@@ -92,8 +88,7 @@ describe('installer', () => {
     if (existsSync(APPEX())) rmSync(APPEX(), { recursive: true, force: true })
   })
 
-  // Helper `find` output for the "registered" cases (PaperSaver already parsed
-  // pluginkit and resolved the path).
+  // `find` output when registered.
   const foundJson = () => `{"registered":true,"path":"${APPEX()}"}`
 
   describe('getStatus', () => {
@@ -146,10 +141,8 @@ describe('installer', () => {
       expect(s.active).toBe(true)
     })
 
-    // After uninstall, pluginkit no longer knows the extension but the system's
-    // active-screensaver preference can still name it, so the helper keeps
-    // reporting active=true. `active` is gated on `registered` to avoid the
-    // contradictory "Set as your screensaver" + "Install Screensaver" UI.
+    // The system preference can still name an unregistered extension; it
+    // shouldn't count as active.
     it('reports active=false when the extension is no longer registered', async () => {
       runImpl = (cmd, args) => {
         if (cmd === HELPER() && args[0] === 'status') {
@@ -236,7 +229,6 @@ describe('installer', () => {
       expect(r.version).toBe('1.0.4')
       expect(spawnCalls.some((c) => c.cmd === 'sh')).toBe(true)
       expect(runCalls.some((c) => c.cmd === HELPER() && c.args[0] === 'register')).toBe(true)
-      // The post-update LaunchServices re-seed: lsregister -f <app> runs before register.
       const ls = runCalls.find((c) => c.cmd.endsWith('/lsregister'))
       expect(ls).toBeTruthy()
       expect(ls!.args[0]).toBe('-f')
@@ -248,20 +240,18 @@ describe('installer', () => {
       expect(lsIdx).toBeLessThan(regIdx)
     })
 
-    // The real-world post-auto-update bug: `pluginkit -a` exits 0 but pkd only
-    // finishes registering ~1s later, so the helper's immediate find misses it.
-    // We must poll `find` and succeed once it lands, instead of erroring out.
+    // `pluginkit -a` registers about a second late, so poll `find` instead of failing.
     it('confirms via find polling when pluginkit -a registers asynchronously', async () => {
       plantBundle(APPEX())
       let findCalls = 0
       withVersion('1.0.5', (cmd, args) => {
         if (cmd === HELPER() && args[0] === 'register') {
-          // The async miss: -a exited 0 but the immediate re-query saw nothing.
+          // Registered, but not visible yet.
           return { code: 0, stdout: '{"registered":false,"path":null}', stderr: '' }
         }
         if (cmd === HELPER() && args[0] === 'find') {
           findCalls += 1
-          // Initial status check + first poll miss; pkd has it by the 3rd find.
+          // Visible from the third `find`.
           return findCalls >= 3
             ? { code: 0, stdout: foundJson(), stderr: '' }
             : { code: 0, stdout: '{"registered":false,"path":null}', stderr: '' }

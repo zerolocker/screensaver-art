@@ -17,10 +17,8 @@ import { greenGlow } from '@/lib/brand'
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 /**
- * The platforms a visitor can vote for. `slug` is what we store + aggregate (as
- * the `platforms` property on the PostHog events); `label` is user-facing —
- * people self-identify by *device* ("iPhone"), not OS ("iOS"). Extend this list
- * as we consider new targets.
+ * Platforms a visitor can ask for. `slug` goes to PostHog; `label` names the
+ * device ("iPhone"), which is how people think, rather than the OS.
  */
 const PLATFORM_OPTIONS = [
   { slug: 'windows', label: 'Windows' },
@@ -36,22 +34,10 @@ const DEFAULT_LABEL = 'Want it on Windows / iPad / iOS / TV / etc?'
 type Step = 1 | 2 | 'voted' | 'emailed'
 
 /**
- * A lightweight cross-platform demand probe. Living Art is Mac-only today; this
- * link lets a visitor *self-report* which other platforms they want — a better
- * signal than inferring their device, and it captures multi-platform intent
- * (e.g. a Mac user who also wants it on their iPad + TV).
- *
- * Two steps on purpose: step 1 collects the platform vote, step 2 asks for an
- * (optional) email. Splitting them means a reluctant user still leaves the
- * cheap, valuable signal — the vote — even if they decline the email.
- *
- * Analytics is entirely client-side — there is no backend. posthog-js is routed
- * through our same-origin reverse proxy (`/ingest`, see next.config.mjs), so
- * these events survive ad/tracker blockers without a server round-trip, and
- * PostHog retains them long-term (query the emails there later). Events:
- * `platform_interest_opened` (on open), `platform_interest_selected` (step-1
- * vote), and `platform_interest_submitted` (step-2 email, with the email +
- * platforms as properties).
+ * Asks visitors which other platforms they want. Step 1 records the vote, step 2
+ * asks for an optional email, so a visitor who skips the email still counts.
+ * There's no backend: the votes and emails are PostHog events, sent through the
+ * `/ingest` proxy so ad blockers don't drop them.
  */
 export function PlatformInterest({
   location,
@@ -89,8 +75,7 @@ export function PlatformInterest({
 
   function onContinue() {
     if (selected.length === 0) return
-    // The platform vote — the primary demand signal — is captured here on the
-    // frontend so a user who declines the email is still counted.
+    // Record the vote now, in case the email is skipped.
     posthog.capture('platform_interest_selected', { platforms: selected, location })
     setStep(2)
   }
@@ -102,8 +87,7 @@ export function PlatformInterest({
       setError('Enter a valid email address.')
       return
     }
-    // Honeypot: real users leave this empty. If a bot filled it, show success
-    // but record nothing (so bot emails never pollute the analytics event).
+    // Honeypot: a bot filled it. Show success but record nothing.
     if (company.trim() === '') {
       posthog.capture('platform_interest_submitted', { email: value, platforms: selected, location })
     }

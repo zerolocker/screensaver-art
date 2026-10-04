@@ -15,12 +15,8 @@ import {
 } from '@/lib/gallery-catalog'
 
 /**
- * Shared chrome for the three gallery landing-page tiers.
- *
- * These pages exist to catch traffic from a social post (Pinterest first) and
- * convert it to a Mac download, so every one of them gets the same skeleton:
- * site header (logo pointing home, not at a dead `#top` anchor), a breadcrumb
- * back into the browse surface, the content, a download band, and the footer.
+ * Shared layout for the gallery pages: header, breadcrumb, content, download
+ * band, footer. They exist to turn social traffic into Mac downloads.
  */
 
 export function GalleryPageShell({ children }: { children: React.ReactNode }) {
@@ -61,12 +57,8 @@ export function Breadcrumbs({ trail }: { trail: Crumb[] }) {
 }
 
 /**
- * The 15 era wings as pills — the main internal-linking surface of the site.
- *
- * Wrapped on desktop, but a single horizontal scroll strip on a phone: wrapping
- * 15 pills costs ~8 rows of vertical space, which on mobile (where most pin
- * traffic lands) would push the actual artwork below several screens of nav.
- * Same pattern the homepage's movement picker uses.
+ * The era pills. They wrap on desktop but scroll sideways on a phone, where
+ * wrapping would push the art below several screens of pills.
  */
 export function EraPills({ activeSlug }: { activeSlug?: string }) {
   return (
@@ -97,11 +89,7 @@ export function EraPills({ activeSlug }: { activeSlug?: string }) {
   )
 }
 
-/**
- * The conversion block. Every gallery page ends on one, because the entire point
- * of the tier is turning a pin click into a Mac install. `campaign`/`content`
- * tag the download link so we can tell which page did it (see `downloadHref`).
- */
+/** The download block that ends every gallery page. `campaign`/`content` tag the link. */
 export function DownloadBand({
   campaign,
   content,
@@ -145,15 +133,9 @@ export function DownloadBand({
 }
 
 /**
- * The standing disclosure, shown on every gallery page. We say plainly what a
- * visitor is looking at rather than letting them guess:
- *  - an AI piece is AI-generated homage in the *style* of a historical
- *    movement, never a reproduction of an original work;
- *  - a real artwork is the reverse: a real public-domain work by the credited
- *    artist, where only the motion is AI.
- * Pass `piece` on a piece page (the copy is about that piece); pass `pieces`
- * (default: the whole catalog) on a browse page, where the copy covers the mix.
- * While no real artwork is in view the browse copy is the original all-AI line.
+ * What the visitor is looking at, said plainly: an AI piece is an homage, not a
+ * reproduction; a real artwork is the artist's own work with AI motion. Pass
+ * `piece` on a piece page, or `pieces` (default: everything) on a browse page.
  */
 export function AiDisclosure({
   className = '',
@@ -202,12 +184,7 @@ export function AiDisclosure({
   )
 }
 
-/**
- * The visible museum credit under a real artwork — artist, title, date, museum
- * and credit line, licence — linking to the museum's own object page. CC0 asks
- * for no attribution, but we credit the human artist anyway: it's honest, and
- * it's the caption a visitor arriving from a pin wants.
- */
+/** The museum credit under a real artwork, linking to the museum's page. Shown even for CC0. */
 export function ArtworkCredit({ artwork, className = '' }: { artwork: Artwork; className?: string }) {
   return (
     <p className={`m-0 text-[13.5px] leading-[1.6] text-muted-foreground ${className}`}>

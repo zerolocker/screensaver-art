@@ -4,8 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
 import { stripe } from '@/lib/stripe'
 
-// Service-role client: lifetime purchases are recorded server-to-server (webhook
-// or post-checkout sync), bypassing RLS.
+// Service role: bypasses RLS.
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -16,26 +15,21 @@ export function isLifetimeCheckoutSession(session: Stripe.Checkout.Session): boo
 }
 
 /**
- * Records a completed one-time "Own it forever" purchase from its Checkout
- * Session, and cancels any still-running subscription so an upgrading
- * subscriber is never billed again ("no double billing").
- *
- * Idempotent — both the Stripe webhook and the website's post-checkout sync
- * call it, and a re-run just rewrites the same columns. It only ever touches
- * the lifetime columns (plus customer id), so it can't clobber concurrent
- * subscription syncs; conversely the subscription sync never writes the
- * lifetime columns, so a later subscription event can't revoke lifetime access.
+ * Record a lifetime purchase and cancel any running subscription, so an
+ * upgrading subscriber isn't billed again. Idempotent: the webhook and the
+ * post-checkout page both call it. It writes only the lifetime columns (and
+ * customer id), and subscription syncs never write those, so neither can
+ * undo the other.
  */
 export async function recordLifetimePurchase(session: Stripe.Checkout.Session): Promise<void> {
   const userId = session.metadata?.supabase_user_id
   if (!userId) {
-    // Created outside our flow — nothing to attribute it to.
+    // Created outside our flow.
     console.error('Lifetime checkout session without supabase_user_id:', session.id)
     return
   }
 
-  // The Stripe-hosted receipt lives on the payment's charge; grab it now so
-  // "View receipt" on the account page needs no later Stripe round-trip.
+  // Save the receipt URL now, for the account page's "View receipt".
   const paymentIntentId =
     typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id
   let receiptUrl: string | null = null
@@ -63,10 +57,7 @@ export async function recordLifetimePurchase(session: Stripe.Checkout.Session): 
     { onConflict: 'user_id' },
   )
 
-  // Upgrade path: end the recurring subscription now that everything is owned
-  // outright. Cancellation is immediate (lifetime already covers the remaining
-  // paid period); the resulting `customer.subscription.deleted` webhook marks
-  // the row's status 'cancelled' without touching the lifetime columns.
+  // End the subscription immediately; lifetime covers the rest of its period.
   try {
     const { data: row } = await supabaseAdmin
       .from('subscriptions')
@@ -80,8 +71,7 @@ export async function recordLifetimePurchase(session: Stripe.Checkout.Session): 
       }
     }
   } catch (err) {
-    // Never fail the purchase over this — the user has lifetime access either
-    // way; a stray subscription can still be ended from the customer portal.
+    // Don't fail the purchase over this; the portal can still cancel it.
     console.error('Failed to auto-cancel subscription after lifetime purchase:', err)
   }
 }

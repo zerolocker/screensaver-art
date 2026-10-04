@@ -9,11 +9,7 @@ import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { getPostHogClient, flushPostHog } from '@/lib/posthog-server'
 import { isLifetimeCheckoutSession, recordLifetimePurchase } from '@/lib/lifetime'
 
-/**
- * Web (cookie-authed) checkout. `cancelPath` is where Stripe sends the user if
- * they back out — it must be a real route (the user is signed in here, so
- * `/account` is the safe default; the home pricing section passes `/#pricing`).
- */
+/** Website checkout. `cancelPath` must be a real route. */
 export async function createCheckoutSession(
   productId: string,
   origin: string,
@@ -31,26 +27,22 @@ export async function createCheckoutSession(
     return { error: 'Please sign in to subscribe' }
   }
 
-  // Check if user already has an active subscription
   const { data: subscription } = await supabase
     .from('subscriptions')
     .select('*')
     .eq('user_id', user.id)
     .single()
 
-  // Lifetime is terminal — nothing left to buy.
+  // Lifetime owners have nothing left to buy.
   if (subscription?.lifetime_purchased_at) {
     return { error: 'You already own the full gallery' }
   }
 
-  // An active subscriber may still buy lifetime (the upgrade path — the webhook
-  // cancels their subscription on purchase), but not a second subscription.
+  // A subscriber may upgrade to lifetime, but not buy a second subscription.
   if (product.plan === 'monthly' && subscription?.status === 'active') {
     return { error: 'You already have an active subscription' }
   }
 
-  // Server-side conversion event: the user committed to checkout on the website.
-  // Captured here (not just client-side) so an ad blocker can't hide it.
   getPostHogClient().capture({
     distinctId: user.id,
     event: 'checkout_started',
@@ -81,14 +73,11 @@ export async function syncSubscriptionFromSession(sessionId: string) {
       expand: ['subscription'],
     })
 
-    // Verify this session belongs to the current user
     if (session.metadata?.supabase_user_id !== user.id) {
       return { error: 'Session does not belong to current user' }
     }
 
-    // Lifetime (payment-mode) checkout: record the purchase directly — the
-    // webhook does the same, but syncing here means the account page reflects
-    // the purchase on the very redirect back from Stripe. Idempotent.
+    // Record lifetime here too, so the account page shows it straight away.
     if (isLifetimeCheckoutSession(session)) {
       if (session.payment_status !== 'paid') {
         return { error: 'Payment not completed' }

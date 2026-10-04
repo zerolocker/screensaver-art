@@ -1,49 +1,7 @@
-// Caption copy for the social clips — shared by the asset engine (which writes a
-// human-readable captions.md and burns the title pill) and the poster (which
-// sends the same strings to the four platforms).
-//
-// ONE FIXED LINE, ON PURPOSE (founder call, 2026-09-12). Instagram and YouTube
-// posts lead with the same short sentence, CAPTION below, and TikTok with the
-// same pitch pointed at its pinned comment, TIKTOK_CAPTION. The clip
-// itself carries no marketing text — a post that reads as an ad gets scrolled
-// past, and words on screen pull attention off the art — so the caption is where
-// a post quietly says this is an app, not an account that shares daily art.
-//   - Short, because a phone shows a line or two before "more".
-//   - No URL, because those three platforms don't make caption links clickable.
-//     The profile's bio link does that job, or on TikTok the pinned comment.
-//   - No "Mac", deliberately: interest from people on other platforms is a signal
-//     worth seeing.
-//
-// Behind "more", each post names its piece in the same words as the title pill,
-// so posts stay distinguishable to search. Repeating the first line nightly is
-// not a duplicate to Zernio, which fingerprints the text and the media together.
-//
-// Pinterest is the exception. A pin is itself a link, to the piece's own
-// /art/<slug> page, so it never says "Link in bio". Its title leads with the
-// piece's style, because pin titles are what Pinterest search ranks and people
-// search a style ("ukiyo-e"), not a piece's name. No hashtags there: Pinterest
-// ranks the words in a pin, not its tags.
-//
-// HASHTAGS come from the piece itself (lib/hashtags.mjs): its movement and its
-// era, where either has a real audience, after the two every post carries. Four
-// at most on Instagram and TikTok (Instagram caps a post at five), and three in a
-// YouTube description, the most YouTube shows beside the title.
-//
-// TikTok also gets LINK_COMMENT, which the poster comments under each video and
-// pins. That account can't have a clickable bio link (it has no Business switch,
-// and a personal account needs 1,000 followers), so its caption says "Link in
-// comment and bio" (founder call, 2026-09-14): the pinned comment carries the
-// address, and the bio carries it as plain text. TikTok makes neither clickable.
-//
-// REAL ARTWORKS (`source: "real_artwork"` in gallery.json — a public-domain
-// painting with AI motion) keep the same fixed first lines, but behind "more"
-// they lead with the painting and painter ("Caillebotte's Paris Street; Rainy
-// Day, brought to life") plus a museum credit, take their hashtags from the
-// artist and movement (#caillebotte #impressionism #arthistory…), and their
-// YouTube and pin titles name the painting and the artist.
-//
-// Everything is a pure function of the piece, so a retried post republishes
-// byte-identical copy.
+// Caption text for the social clips, shared by make-social-assets.mjs (which
+// writes captions.md) and post-social.mjs (which posts it). The rules behind it
+// are in marketing/README.md ("Captions"). Everything depends only on the piece,
+// so a retried post is identical.
 
 import { artPhrase, artistMovement, artistShortName, artworkHashtags, pieceHashtags } from './hashtags.mjs'
 import { SITE_ORIGIN, landingUrl } from './pieces.mjs'
@@ -54,10 +12,10 @@ const PITCH = 'Animated art screensaver app'
 /** The first (on a phone, often the only visible) line of every IG / YouTube post. */
 export const CAPTION = `${PITCH} - Link in bio`
 
-/** TikTok's first line: its link lives in the pinned comment, and as plain text in the bio. */
+/** TikTok's first line. Its link is in the pinned comment and, as plain text, the bio. */
 const TIKTOK_CAPTION = `${PITCH} - Link in comment and bio`
 
-/** Pinned under every TikTok video. Verified visible to signed-out viewers, 2026-09-14. */
+/** Pinned under every TikTok video. */
 const LINK_COMMENT = `Get the screensaver app: ${SITE_ORIGIN.replace(/^https?:\/\//, '')}`
 
 /** The piece as the title pill names it, e.g. "The Street Food Stall · Contemporary Illustration". */
@@ -95,10 +53,8 @@ export function artworkCreditLine(artwork) {
 const fitWithTail = (lead, tail, max) => `${clamp(lead, max - tail.length)}${tail}`
 
 /**
- * Captions for a real public-domain artwork. Same skeleton as an AI piece —
- * the IG / TikTok first lines are the SAME fixed lines (founder calls,
- * 2026-09-12/-14) — but the copy behind "more" leads with the painting and the
- * painter, credits the museum, and the hashtags come from the artist.
+ * Captions for a real artwork: the same fixed first lines, then the painting,
+ * painter and museum, with hashtags from the artist.
  */
 function artworkCaptions({ title, era, webSlug, artwork }) {
   const lead = artworkLead(title, artwork)
@@ -114,8 +70,7 @@ function artworkCaptions({ title, era, webSlug, artwork }) {
       linkComment: LINK_COMMENT,
     },
     youtube: {
-      // The Shorts title names the painting and the painter, then keeps the
-      // fixed line's job (what this is, and where the link is) as room allows.
+      // Painting and painter, then as much of the fixed line as fits.
       title: `${lead} | ${CAPTION}`.length <= 100
         ? `${lead} | ${CAPTION}`
         : fitWithTail(lead, ' - Link in bio', 100),
@@ -124,9 +79,9 @@ function artworkCaptions({ title, era, webSlug, artwork }) {
         .filter(Boolean).map((t) => t.replace(/[,<>]/g, '').trim()).filter(Boolean),
     },
     pinterest: {
-      // Painting and painter first: for a real work, that's what people search.
+      // Painting and painter first: that's what people search for.
       title: fitWithTail(`${title} by ${artwork.artist}, animated`, ' | Art screensaver app', 100),
-      // Pinterest ranks the words in a pin, so the movement (or era) is named too.
+      // Pinterest ranks a pin's words, so name the movement (or era) too.
       description: `${lead}. ${credit}.${movement ? ` ${movement}.` : phrase ? ` ${capitalize(phrase)}.` : ''} ` +
         'The real artwork, gently animated with AI for your screensaver by Living Art Screensaver, ' +
         'with a new piece every night.',
@@ -153,20 +108,18 @@ export function buildCaptions({ title, style, era = null, webSlug, artwork = nul
       linkComment: LINK_COMMENT,
     },
     youtube: {
-      // The Shorts player shows the title, so the fixed line goes there; the
-      // description (rarely seen, but searched) names the piece. Its hashtags put
-      // the piece's own first: YouTube shows up to three beside the title.
+      // The Shorts player shows the title, so the fixed line goes there. YouTube
+      // shows up to three hashtags, so the piece's own come first.
       title: CAPTION,
       description: `${piece}\n\n${hashtagLine([...own, '#animatedart'], 3)}`,
       // YouTube splits tags on commas and rejects angle brackets.
       tags: ['screensaver app', 'animated art', style, title].map((t) => t.replace(/[,<>]/g, '').trim()).filter(Boolean),
     },
     pinterest: {
-      // Style first: it is what people search for, and search ranks the title.
+      // Style first: people search for styles, and search ranks the title.
       title: clamp(`Animated ${style}: ${title} | Art screensaver app`, 100),
       description: `${piece}. ${phrase ? `${capitalize(phrase)}, gently animated` : 'Gently animated art'} ` +
         'for your screensaver by Living Art Screensaver, with a new piece every night.',
-      // Tagged with the channel so PostHog can attribute pin traffic.
       link: landingUrl(webSlug, 'pinterest'),
     },
   }

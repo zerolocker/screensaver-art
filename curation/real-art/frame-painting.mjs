@@ -1,10 +1,7 @@
 #!/usr/bin/env node
-// Step 4 of the real-paintings nightly curation: hang one cleared artwork on a
-// 3840x2160 near-black "dark wall" — the still Veo animates and publish-piece
-// derives the web images from. The artwork is scaled to *contain* (never cropped),
-// centred, and never upscaled or extended: the only resampling is a lanczos
-// downscale, so no detail is invented. A source smaller than the fit box hangs at
-// its native size with more wall around it.
+// Hang one cleared artwork on a 3840x2160 near-black wall: the still that gets
+// animated and published. It's scaled down to fit (never cropped, upscaled or
+// extended), so no detail is invented; a small source hangs at native size.
 //
 //   node curation/real-art/frame-painting.mjs --candidates /tmp/cands.json --id aic:20684
 //   node curation/real-art/frame-painting.mjs --record piece.json --stem monet_haystacks --margin 0.04
@@ -92,12 +89,10 @@ const outProv = path.join(outDir, `${stem}.provenance.json`)
 // ---- which URL(s) to try ---------------------------------------------------
 
 /**
- * AIC IIIF: the largest size served for a public-domain work is its native width,
- * requested explicitly (`full/full` and `max` are WAF-blocked with an HTML 403;
- * native+1 px is a 403 — checked 2026-10-03), bounded by the server's advertised
- * maxArea. Non-PD works redirect to an 843px cap, so redirects are refused and we
- * step down the advertised `sizes` instead. Never a width above native (that
- * would be the server upscaling).
+ * AIC IIIF: ask for the native width explicitly (`full/full` and `max` are
+ * blocked, and native+1 px is refused), within the server's maxArea. Non-PD
+ * works redirect to an 843px cap, so refuse redirects and step down the
+ * advertised `sizes` instead.
  */
 async function aicAttempts(url) {
   const m = url.match(/^(https:\/\/www\.artic\.edu\/iiif\/2\/[^/]+)\//)
@@ -129,8 +124,7 @@ let src = null
 let failure = null
 let encoding = false
 const tmp = path.join(outDir, `${stem}_src.download`)
-// process.exit() would skip the finally-cleanup below, so failures throw and the
-// script exits only after the raw download is gone.
+// Throw instead of process.exit(), so the cleanup below runs.
 const fail = (msg) => { throw new Error(msg) }
 try {
   for (const a of attempts) {
@@ -152,9 +146,8 @@ try {
   log(`  downloaded ${dims.width}×${dims.height} (${(statSync(src).size / 1e6).toFixed(1)} MB)`)
   if (long < MIN_LONG_EDGE) fail(`long edge ${long}px < ${MIN_LONG_EDGE}px — too small for a 4K wall; pick another work (never upscale a real artwork)`)
 
-  // Contain-fit inside the margin box, capped at 1:1 (never upscale); even
-  // dimensions keep the 4:2:0 chroma grid aligned with the wall so the painting's
-  // edge stays crisp.
+  // Fit inside the margin box without upscaling. Even dimensions keep the
+  // painting's edge crisp.
   const inset = Math.round(margin * H)
   const scale = Math.min(1, (W - 2 * inset) / dims.width, (H - 2 * inset) / dims.height)
   const sw = Math.min(W - 2 * inset, 2 * Math.floor((dims.width * scale) / 2))
@@ -182,8 +175,7 @@ try {
   if (encoding) rmSync(outStill, { force: true }) // a half-written still; never an older good one
   failure = e
 } finally {
-  // Never leave the raw museum download lying around (CLAUDE.md: no media in the
-  // repo, and gallery/ is the nightly scratch space).
+  // Never leave the raw download around.
   if (src) rmSync(src, { force: true })
   rmSync(tmp, { force: true })
 }

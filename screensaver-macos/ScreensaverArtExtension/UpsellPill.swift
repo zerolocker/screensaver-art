@@ -2,16 +2,9 @@ import Cocoa
 
 // MARK: - Upsell Pill
 //
-// A gentle, non-blocking subscribe nudge for free-plan users. It's a small
-// frosted pill that sits just above the title pill and NEVER covers the art —
-// ScreensaverArtView fades it in and out on a slow cycle (16s on / 16s off) so
-// the gallery can breathe. (This replaced an older full-screen modal that
-// blacked out the art for 30s — far too distracting for an art screensaver.)
-//
-// A screensaver can't be clicked (any input quits it), so the copy points the
-// user back to the Electron app, where the Subscribe button lives. The
-// `isSubscribed` flag comes from the cache manifest the Electron app writes; the
-// screensaver itself never talks to the subscription API.
+// A small subscribe nudge for free users, above the title pill and never over
+// the art. ScreensaverArtView fades it in and out. A screensaver can't be
+// clicked, so the copy points to the app.
 
 class UpsellPill: NSView {
 
@@ -28,8 +21,7 @@ class UpsellPill: NSView {
         wantsLayer = true
         layer?.cornerRadius  = radius
         layer?.masksToBounds = false
-        // Match the title pill's soft drop shadow so the nudge reads as the same
-        // family of chrome rather than a foreign element.
+        // Same shadow as the title pill.
         layer?.shadowColor   = NSColor.black.cgColor
         layer?.shadowOpacity = 0.35
         layer?.shadowOffset  = CGSize(width: 0, height: -2)

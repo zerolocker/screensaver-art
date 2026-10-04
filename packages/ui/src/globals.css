@@ -1,11 +1,6 @@
-/* Living Art Screensaver — shared design tokens
- *
- * Import this file in your app's CSS AFTER Tailwind:
+/* Shared design tokens. Import after Tailwind:
  *   @import 'tailwindcss';
  *   @import '@screensaver-art/ui/globals.css';
- *
- * Both the website and Electron app use the same tokens
- * so the shared components render identically in both.
  */
 
 @custom-variant dark (&:is(.dark *));

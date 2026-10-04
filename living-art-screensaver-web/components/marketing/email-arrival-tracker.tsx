@@ -5,11 +5,8 @@ import posthog from 'posthog-js'
 import { detectIsMac } from '@/lib/device'
 
 /**
- * Handles arrivals from the "email me a download link" flow. The email link
- * (sent by /api/download-link) points at `/?src=email-download`, so a visitor
- * landing here with that param is the click we count: `download_email_link_clicked`.
- * On a Mac we also start the DMG; the home page's own Download CTA is the manual
- * fallback. Renders nothing.
+ * Counts clicks on the emailed download link (`/?src=email-download`) and, on a
+ * Mac, starts the download. Renders nothing.
  */
 export function EmailArrivalTracker() {
   const handled = useRef(false)
@@ -30,7 +27,7 @@ export function EmailArrivalTracker() {
       document.body.appendChild(iframe)
     }
 
-    // Drop our tracking param so the URL is clean and a refresh won't re-trigger.
+    // Drop the param so a refresh doesn't trigger it again.
     params.delete('src')
     const qs = params.toString()
     window.history.replaceState(null, '', window.location.pathname + (qs ? `?${qs}` : ''))

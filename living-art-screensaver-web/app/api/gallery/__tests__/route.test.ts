@@ -1,14 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { NextRequest } from 'next/server'
 
-// /api/gallery returns the FULL gallery to everyone now — gating moved to the
-// client (it locks non-free pieces for non-subscribers and never caches them).
-// Free-ness is per-item (each item's `free` flag), so this route's job is
-// narrow: fetch the playlist, resolve the subscription, and hand back
-// { items, isSubscribed }. These tests mock both verifyNativeAuth (the auth
-// check) and the upstream GitHub Contents API fetch (the playlist source, read
-// off master with GITHUB_RELEASE_TOKEN). They cover:
-//   - subscribers and non-subscribers both get the whole list (no slice)
+// /api/gallery returns every piece plus `isSubscribed`; gating is client-side.
+// verifyNativeAuth and the GitHub fetch are mocked. Covered:
+//   - everyone gets the whole list
 //   - isSubscribed reflects the auth result
 //   - a missing Authorization header never 401s (returns the list as a guest)
 //   - the playlist is read from the repo ref, token-authed (never a public URL)
@@ -16,7 +11,7 @@ import { NextRequest } from 'next/server'
 //   - upstream fetch failure surfaces as 502
 //   - the response shape is exactly { isSubscribed, items }
 
-// Hoisted state lets the vi.mock factory share refs with the test scope.
+// Hoisted so the vi.mock factory can share it.
 const { authMock } = vi.hoisted(() => ({
   authMock: vi.fn(),
 }))
@@ -66,8 +61,7 @@ describe('GET /api/gallery', () => {
 
   describe('full gallery (no server-side gating)', () => {
     it('non-subscriber gets the whole gallery (gating is client-side now)', async () => {
-      // Build a collection larger than the free count to prove there is NO slice:
-      // every item comes back regardless of subscription.
+      // More items than the free count: all come back anyway.
       const bigGallery = Array.from({ length: FREE_ITEM_COUNT + 50 }, (_, n) => ({
         src: `https://r2/big-${n}.mp4`,
         title: `Big ${n}`,
@@ -105,8 +99,7 @@ describe('GET /api/gallery', () => {
 
       const res = await GET(makeReq())
 
-      // Critical: must NOT return 401, otherwise the screensaver/Electron app
-      // would have nothing to play during onboarding.
+      // Never 401, or the app has nothing to play during onboarding.
       expect(res.status).toBe(200)
       const body = await res.json()
       expect(body.isSubscribed).toBe(false)
@@ -124,11 +117,10 @@ describe('GET /api/gallery', () => {
       expect(url).toBe(
         'https://api.github.com/repos/zerolocker/screensaver-art/contents/gallery.json?ref=master',
       )
-      // Token-authed + raw media type: works on a private repo, and dodges the
-      // Contents API's 1 MB base64-JSON ceiling.
+      // Token-authed (works on a private repo), raw (no 1 MB limit).
       expect(init.headers.Authorization).toBe('Bearer test-token')
       expect(init.headers.Accept).toBe('application/vnd.github.raw')
-      // Nothing may reach for the old public GitHub Pages copy.
+      // Never the public GitHub Pages copy.
       expect(url).not.toContain('github.io')
     })
 
@@ -139,7 +131,7 @@ describe('GET /api/gallery', () => {
       const res = await GET(makeReq())
 
       expect(res.status).toBe(500)
-      // Must fail loudly rather than quietly serving a stale/public playlist.
+      // Fail loudly rather than serve a stale or public playlist.
       expect(fetchSpy).not.toHaveBeenCalled()
     })
   })

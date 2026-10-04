@@ -1,140 +1,95 @@
-# Living Art Screensaver Automated Curation
+# Nightly curation
 
-You are building a screensaver app that showcases classic and modern artworks brought to life using AI animation (Google Veo 3.1). You are working on an automated task to curate a new art collection.
+You are adding four new pieces to the Living Art Screensaver gallery: artworks brought to life with AI animation. Run every command from the repo root.
 
-Instructions below assume the git repo is the current working directory.
+## Step 0: pick the mode
 
-## Step 0: which curation runs tonight
+Read `curation/CURATION_MODE`. It holds one word:
+- **`real-paintings`**: stop here and follow [`REAL_PAINTINGS_CURATION.md`](REAL_PAINTINGS_CURATION.md) instead. It reuses this file's publish and social steps.
+- **`ai-generated`**: continue below.
 
-Read **`curation/CURATION_MODE`**. It holds one word:
-- **`real-paintings`**: stop reading this file and follow
-  [`curation/REAL_PAINTINGS_CURATION.md`](REAL_PAINTINGS_CURATION.md) instead. It animates real
-  public-domain paintings and reuses this file's publish, commit and social steps by reference.
-- **`ai-generated`**: continue with the steps below. This is the original AI-art curation; it is
-  kept intact so it can be switched back on.
+To switch modes, change that word and push to `master`.
 
-To switch modes, edit that one word and push to `master`.
+## Prerequisites
 
-## Prerequisites & credentials
+Secrets live in `curation/.env` (template: `curation/.env.example`). Run any command that needs one through `curation/with-secrets.sh`, which loads the file and fails if a named secret is missing:
+- `GEMINI_API_KEY` for the image, video and music skills: `bash curation/with-secrets.sh GEMINI_API_KEY -- python .claude/skills/<skill>/scripts/generate.py …`
+- `CLOUDFLARE_API_TOKEN` for R2. `publish-piece.mjs` loads it itself.
+- `ZERNIO_API_KEY` for social posting in step 8 only. If it's missing, you lose the night's post, not the night's art.
 
-Secrets live in **`curation/.env`** (gitignored; template `curation/.env.example`).
-Run every command that needs a secret through **`curation/with-secrets.sh`**, which
-loads `curation/.env`, **verifies the named secret(s) are present**, and errors out
-if any is missing — so each call names exactly what it depends on:
-- **`GEMINI_API_KEY`** — the image/video skills. They're invoked as
-  `bash curation/with-secrets.sh GEMINI_API_KEY -- python .claude/skills/<skill>/scripts/generate.py …`
-  (see each skill's `SKILL.md`).
-- **`CLOUDFLARE_API_TOKEN`** — the R2 upload. `curation/publish-piece.mjs` (step 4)
-  wraps itself in `with-secrets.sh`, so you never pass this one by hand.
-- **`ZERNIO_API_KEY`** — the social posting in step 8. Passed explicitly:
-  `bash curation/with-secrets.sh ZERNIO_API_KEY -- node marketing/post-social.mjs …`.
-  Steps 1-7 don't need it, so a missing key costs the night's posts, not the night's art.
+If a required secret is missing, abort and report it. You must use the **nano-banana-pro** and **veo3-video-gen** skills; abort if they're missing. `ffmpeg` must be on `PATH`.
 
-If a required secret is missing, **abort** and report it rather than proceeding.
+The only files you change are `gallery.json`, `curation/ART_STYLES_FOR_INSPIRATION.md` (step 6), and, only for a genuinely new failure pattern, the Hard rules in `curation/PROMPT_GUIDANCE.md`. Record the night's batch in the commit message.
 
-You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't find them, abort.
-`ffmpeg` must be on `PATH` (step 4 derives the web images with it).
+## Steps
 
-## Steps to execute
+1. **Context.** Read the repo-root `README.md` and `curation/PROMPT_GUIDANCE.md`.
 
-> **Do NOT append to the round log in `curation/PROMPT_GUIDANCE.md`.** That log is for
-> the human review loop (`/curate-gallery`) only. This nightly run records its batch in
-> the git commit messages (steps 7 and 8d), nothing more. The only files you edit are
-> `gallery.json` (step 4), `curation/ART_STYLES_FOR_INSPIRATION.md` if you used a new
-> style (step 6), and — only when you discover a genuinely new reject/fix pattern — the
-> **Hard rules** section of `PROMPT_GUIDANCE.md` (plus your memory). Don't open a
-> round-log entry to narrate the night's batch.
+2. **Make the still.**
+   - Pick a new style, following *Brand & taste* and the *Era mix* cap in `PROMPT_GUIDANCE.md`.
+   - Generate a 4K still with **nano-banana-pro**: `--size 4K --out gallery/<name>_4k.webp`. Write the prompt per the Hard rules.
+   - **Review the still before animating it.** Look at it honestly against the Hard rules. If it breaks one, or simply wouldn't look good framed on a wall, revise the prompt and regenerate. A reroll is far cheaper than a wasted video.
 
-1.  **Gain Context:** Read the repo-root `README.md`.
+3. **Animate it** with **veo3-video-gen**, using the 4K still as the first frame. Write the video prompt per the Hard rules.
+   - **Before generating, say the clip in one sentence: "<actor> <does what>."** If you can't, the prompt isn't ready.
+   - Decide whether this piece should loop (see *Loops* in the Hard rules):
+     - **Non-looping:** `--first-frame <still>` only. Name the video `gallery/<name>_animated.mp4`.
+     - **Looping:** pass the same still as `--first-frame` and `--last-frame`. Name it `gallery/<name>_looping.mp4`.
 
-2.  **Still Image Generation:**
-    *   Pick a new theme/style, honouring **"Brand & taste"** and the **"Era mix"** cap in `curation/PROMPT_GUIDANCE.md`.
-    *   Generate a high-quality **4K** still with the **nano-banana-pro** skill — pass **`--size 4K`** (output is WebP by default, e.g. `--out gallery/<descriptive_name>_4k.webp`). Write the image prompt per the **Hard rules** in `curation/PROMPT_GUIDANCE.md`.
-    *   **Self-review the still before animating it (vision gate).** Look at the generated image and judge it honestly, checking it against the **Hard rules**. Regenerate (revising the prompt) if it breaks any of them or simply **wouldn't look good framed on a wall**. Only proceed to animation once the still is genuinely gallery-worthy. This is cheap insurance — it's far better to reroll a still than to spend a video generation on a bad image.
+4. **Publish.**
+   ```bash
+   node curation/publish-piece.mjs \
+     --still gallery/<name>_4k.webp \
+     --video gallery/<name>_animated.mp4 \
+     --title "Title - Style (AI Animated)" \
+     --tag "Modern" \
+     --image-prompt "$IMG_PROMPT" --video-prompt "$VID_PROMPT"
+   ```
+   It makes the three web images from the still, uploads them and the video to R2, adds the `gallery.json` entry with today's date, and deletes the local files. Pass the same prompt variables you gave the skills so they're recorded exactly.
+   - `--tag` takes exactly one wing from *Gallery tags* in `PROMPT_GUIDANCE.md`. The script rejects anything else.
+   - Looping is read from the filename; use `--looping` or `--no-looping` for other names.
+   - If a key already exists, retry with a new `--stem <name>`. If an upload failed partway, rerun the same command with `--resume`. Use `--dry-run` to check without publishing.
 
-3.  **AI Animation:**
-    *   Animate the still with the **veo3-video-gen** skill, feeding the 4K WebP as the first frame. Write the video prompt per the **Hard rules** in `curation/PROMPT_GUIDANCE.md`.
-    *   **Motion gate — before you generate, say the clip out loud in one sentence: "<actor> <does what>."** If you can't, the prompt is not ready (see the primary-mover rule). Then **decide per-piece whether it should loop** (see the loop rule) and name the file accordingly:
-        *   **Non-looping piece** — `--first-frame <still.webp>` only (no `--last-frame`, no extend). Name the video `gallery/<descriptive_name>_animated.mp4`.
-        *   **Looping piece** — pass the **same** still to both `--first-frame` and `--last-frame` so the clip ends exactly where it began. Name the video `gallery/<descriptive_name>_looping.mp4`.
+5. **Repeat** steps 2–4 until you have **4** pieces. There's no loop quota.
 
-4.  **Publish the piece — one command:**
-    ```bash
-    node curation/publish-piece.mjs \
-      --still gallery/<descriptive_name>_4k.webp \
-      --video gallery/<descriptive_name>_animated.mp4 \
-      --title "Title - Style (AI Animated)" \
-      --tag "Modern" \
-      --image-prompt "$IMG_PROMPT" --video-prompt "$VID_PROMPT"
-    ```
-    It derives the three web images from the 4K still, **uploads the images and the video** to R2 (immutable cache headers, refusing to overwrite an existing key), appends the `gallery.json` entry with today's date, and deletes the local files. Reuse the same shell variables you passed to the two skills so the prompts are recorded verbatim.
-    *   **`--tag` takes exactly one** museum "wing" from the closed list in `curation/PROMPT_GUIDANCE.md` ("Gallery tags") — it drives the Gallery filter pills, so **never invent a new value**. The script rejects anything off the list.
-    *   `looping` is inferred from the video filename (`_looping.mp4` / `_animated.mp4`); pass `--looping` or `--no-looping` for any other name.
-    *   If it reports that a key already exists, **pick a different name** and retry with `--stem <new_name>`. If an upload failed partway, re-run the identical command with `--resume`.
-    *   The 4K master is **not** uploaded — the 2K derivative is the archival copy. Run with `--dry-run` first if you want to check the derivation and the entry without publishing.
+6. **New styles.** If a style you used isn't in `curation/ART_STYLES_FOR_INSPIRATION.md`, add it under the best-fitting `##` category.
 
-5.  **Repeat:** Perform steps 2-4 a total of **4 times** to create 4 unique pieces. There is **no fixed loop quota** — a night of all non-looping pieces is fine.
+7. **Commit and push.**
+   ```bash
+   git add gallery.json curation/ART_STYLES_FOR_INSPIRATION.md
+   git commit -m "AUTO_CURATION: Added [Style 1, Style 2, Style 3, Style 4] collections"
+   git push
+   ```
+   Don't commit anything else you generated.
 
-6.  **Expand Inspiration:** If a style you picked doesn't exist in `curation/ART_STYLES_FOR_INSPIRATION.md`, append it under the section it best fits (the `##` headings are categories, not styles).
+8. **Post one piece to social.**
 
-7.  **Commit and Push:**
-    *   Run: `git add gallery.json curation/ART_STYLES_FOR_INSPIRATION.md && git commit -m "AUTO_CURATION: Added [Style 1, Style 2, Style 3, Style 4] collections"`
-    *   Run: `git push` to sync changes to the remote. Remember your task is to curate, so don't push other stuff you generated to the repo.
+   **8a. Pick the piece** most likely to work as a muted vertical clip seen for three seconds on a phone:
+   - One clear subject in the middle two-thirds of the width. The clip zooms the art 1.5× and crops the sides, so detail spread across a wide scene, or a subject near an edge, gets lost.
+   - Colour and light that stand out in a feed. This is a brighter, higher-contrast bar than "looks good on a wall".
+   - Something different from the last few nights. `marketing/out/.posted.json` lists past posts; avoid a third misty landscape in a row.
 
-8.  **Post the day's art to social — you choose the piece and score it.**
+   **8b. Write its music prompt** following *Music prompts* in `PROMPT_GUIDANCE.md`.
 
-    **8a. Pick the one piece of the four to post.** Pick the one
-    that will do best as a **vertical clip on a phone, seen for three seconds, muted**:
-    *   **One obvious subject in the middle two-thirds of the width.** The clip zooms the
-        art to 1.5× and crops the sides, then shows it on a phone. A piece whose appeal is
-        fine detail across a wide composition, or whose subject sits near an edge, loses it.
-    *   **Colour and light that pop in a feed**, which is a brighter, higher-contrast bar
-        than "looks good framed on a wall".
-    *   **Something different from the last few nights.** `marketing/out/.posted.json`
-        lists what has already gone out; avoid a third consecutive misty landscape.
+   **8c. Render and post.**
+   ```bash
+   MUSIC_PROMPT="Bright, playful summer daytime music: pizzicato strings and warm marimba …
+   Even dynamics, no build or drop. Instrumental, no vocals."
 
-    **8b. Write its music prompt.** Read **"Music prompts"** in
-    [`curation/PROMPT_GUIDANCE.md`](PROMPT_GUIDANCE.md) first.
+   node marketing/make-social-assets.mjs --title "<the piece>" --music-prompt "$MUSIC_PROMPT"
 
-    **8c. Render and post it:**
-    ```bash
-    MUSIC_PROMPT="Bright, playful summer daytime music: pizzicato strings and warm marimba …
-    Even dynamics, no build or drop. Instrumental, no vocals."
+   bash curation/with-secrets.sh ZERNIO_API_KEY -- \
+     node marketing/post-social.mjs --slug <slug from the render>
+   ```
+   The first command generates the music, renders the clips and captions, and records `music_prompt` on the piece's `gallery.json` entry. The second posts to Instagram, YouTube, TikTok and Pinterest. Details: [`marketing/README.md`](../marketing/README.md).
 
-    node marketing/make-social-assets.mjs --title "<the piece you picked>" \
-      --music-prompt "$MUSIC_PROMPT"
+   **8d. Commit the music prompt.**
+   ```bash
+   git add gallery.json && git commit -m "AUTO_CURATION: music_prompt for <piece>" && git push
+   ```
 
-    bash curation/with-secrets.sh ZERNIO_API_KEY -- \
-      node marketing/post-social.mjs --slug <asset-slug-from-the-render>
-    ```
-    The first generates the music (one Lyria call), renders a 9:16 clip (Instagram, TikTok,
-    YouTube) and a 2:3 clip (Pinterest) with the art zoomed, the piece's title in a pill
-    under it and the music mixed at −9 dB, writes `captions.md` + `meta.json`, and
-    **records `music_prompt` on that piece's `gallery.json` entry**. The second publishes it
-    through Zernio to all four channels: Instagram and YouTube lead with the fixed caption
-    *Animated art screensaver app - Link in bio*, and the pin links to that piece's own
-    `/art/<slug>` page. TikTok, whose profile can't carry a link, says *Link in comment and
-    bio* instead and gets the site's address as a pinned comment under the video. Details in
-    [`marketing/README.md`](../marketing/README.md).
-
-    **8d. Commit the recorded prompt:**
-    ```bash
-    git add gallery.json && git commit -m "AUTO_CURATION: music_prompt for <piece>" && git push
-    ```
-
-    Things to know:
-    *   **Order matters:** step 8 runs *after* step 7's push, because the pin links to a
-        landing page that only exists once Vercel has rebuilt from the new `gallery.json`.
-        The poster checks the page is live before pinning (a pin's destination URL can
-        never be edited) and waits out the deploy; the other three channels carry no link
-        and don't wait.
-    *   **Only the posted piece gets scored**, so only it carries `music_prompt` — the
-        other three stay silent and unposted. `make-social-assets.mjs` refuses
-        `--music-prompt` when more than one piece matches, so this can't drift.
-    *   **Never commit anything from `marketing/out/`** — clips are media (repo rules in
-        `CLAUDE.md`) and the directory is gitignored. The generated MP3 is written to a
-        temp dir and deleted after the render; the prompt in `gallery.json` is what makes
-        the score reproducible.
-    *   If posting exits non-zero, report which channel failed and carry on; a missed post
-        is not worth failing the curation run over. Still do 8d — the piece was scored.
-
+   Notes:
+   - Step 8 must run after step 7's push. The pin links to the piece's web page, which exists only after Vercel rebuilds; the poster waits for it.
+   - Only the posted piece gets a music prompt. `make-social-assets.mjs` refuses `--music-prompt` if more than one piece matches.
+   - Never commit anything from `marketing/out/`.
+   - If posting fails, report which channel failed and carry on. Still do 8d.

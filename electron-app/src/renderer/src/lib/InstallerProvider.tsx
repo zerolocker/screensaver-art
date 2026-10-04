@@ -14,19 +14,18 @@ import { track } from './analytics'
 interface InstallerContextValue {
   // Null until the first status read resolves.
   installer: InstallerStatus | null
-  // Registered but not the active screensaver — the top-of-app "Set" banner shows.
+  // Registered but not active: show the "Set" banner.
   needsActivation: boolean
-  // A one-click "Set" is in flight.
+  // A "Set" is in progress.
   activating: boolean
   // Most recent setup (auto-register) or activation failure, if any.
   error: string | null
   activate: () => Promise<void>
-  // The macOS idle thresholds the "Screensaver is set" status banner explains.
-  // Null until first read (and stays null off macOS).
+  // The idle delays shown in the status banner. Null until read, and off macOS.
   timing: ScreensaverTiming | null
   // Start the screensaver now for an instant preview.
   preview: () => Promise<void>
-  // A "Preview now" launch is in flight.
+  // A "Preview now" is in progress.
   previewing: boolean
 }
 
@@ -38,12 +37,8 @@ export function useInstaller(): InstallerContextValue {
   return ctx
 }
 
-// Owns the screensaver installer state for the whole (signed-in) app. Mounting
-// this == the user is past login, which is exactly when we want to auto-register
-// the embedded .appex (so the report on a failure carries the user id, and there
-// is no manual "Install" step to puzzle over). Registration is idempotent and
-// version-aware in the main process: it only re-registers when the appex is
-// missing from pluginkit or the app was updated since we last registered.
+// Screensaver state for the signed-in app. It registers the appex once after
+// sign-in, so a failure report includes the user id.
 export function InstallerProvider({ children }: { children: ReactNode }) {
   const [installer, setInstaller] = useState<InstallerStatus | null>(null)
   const [activating, setActivating] = useState(false)
@@ -51,21 +46,19 @@ export function InstallerProvider({ children }: { children: ReactNode }) {
   const [timing, setTiming] = useState<ScreensaverTiming | null>(null)
   const [previewing, setPreviewing] = useState(false)
 
-  // Guards the auto-register so it runs once per session, not again on every
-  // focus / StrictMode double-mount.
+  // Register once per session, despite focus events and StrictMode.
   const ensuredRef = useRef(false)
 
   const refresh = useCallback(async () => {
     setInstaller(await window.electronAPI.installer.status())
   }, [])
 
-  // Re-read the idle thresholds — cheap, and the user may have just changed them
-  // in System Settings, so we refresh on focus alongside status.
+  // The user may have just changed these in System Settings.
   const refreshTiming = useCallback(async () => {
     try {
       setTiming(await window.electronAPI.screensaver.timing())
     } catch {
-      /* leave the previous value; the banner degrades to neutral copy */
+      /* keep the previous value */
     }
   }, [])
 
@@ -102,9 +95,7 @@ export function InstallerProvider({ children }: { children: ReactNode }) {
       if (cancelled) return
       setInstaller(status)
 
-      // Auto-register once, only where it can actually work. If the bundle is
-      // missing the app shows a blocking recovery screen instead (see App), so
-      // don't bother trying to register a missing file.
+      // A missing bundle gets the recovery screen instead.
       if (status.supported && status.bundledExtensionExists && !ensuredRef.current) {
         ensuredRef.current = true
         try {
@@ -121,9 +112,7 @@ export function InstallerProvider({ children }: { children: ReactNode }) {
       }
     })()
 
-    // Re-read status + timing on focus so a change made in System Settings (the
-    // active saver, or the idle thresholds) is reflected app-wide. Read-only —
-    // never auto-registers (that's once-per-launch above).
+    // Refresh on focus to pick up System Settings changes. Never registers.
     const onFocus = (): void => {
       window.electronAPI.installer.status().then(setInstaller).catch(() => {})
       void refreshTiming()

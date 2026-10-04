@@ -1,18 +1,7 @@
-// Generates a synthetic re-export package that unifies the two component roots
-// (the website's shadcn library at components/ui + the product-unique pieces
-// from @screensaver-art/ui) into ONE design-system package the design-sync
-// converter can consume.
-//
-// Why a synthetic package:
-//  - `module` → src/all.ts `export *`s every real file, so ALL exports
-//    (incl. Radix subcomponents like DialogContent) land on window.LivingArt
-//    for composition in previews.
-//  - `types`  → src/index.ts NAMED-exports only the ~57 top-level components,
-//    so the card list + .d.ts props stay clean (no subexport explosion).
-//  - group dirs (src/<group>/<Name>.tsx) drive the DS-pane grouping via the
-//    converter's path-based enrichment.
-//  - rooted UNDER the website so ts-morph's node_modules walk finds cva/Radix/
-//    @types/react → real prop extraction.
+// Generates one package re-exporting the website's shadcn components and the
+// product components from @screensaver-art/ui, for the design-sync converter.
+// See .design-sync/NOTES.md. Group folders (src/<group>/<Name>.tsx) set the
+// grouping.
 //
 // Re-run: `node .design-sync/gen-synth.mjs`
 
@@ -54,9 +43,8 @@ const COMPONENTS = [
     Alert: 'alert.tsx', Progress: 'progress.tsx', Skeleton: 'skeleton.tsx', Spinner: 'spinner.tsx',
     Toaster: 'sonner.tsx',
   }),
-  // Product-unique (no shadcn equivalent) — named re-export so the 5 duplicate
-  // primitives in @screensaver-art/ui (Button/Card/Input/Label/Textarea) never
-  // collide with the website set on the global.
+  // Named re-exports, so @screensaver-art/ui's duplicate primitives don't
+  // collide with the website's.
   { name: 'OtpForm', group: 'product', pkg: '@screensaver-art/ui' },
   { name: 'OAuthButtons', group: 'product', pkg: '@screensaver-art/ui' },
   { name: 'SubscriptionCard', group: 'product', pkg: '@screensaver-art/ui' },
@@ -76,12 +64,12 @@ for (const c of COMPONENTS) {
   writeFileSync(f, body);
 }
 
-// all.ts — the bundle entry: everything on window.LivingArt.
+// all.ts: the bundle entry, everything on window.LivingArt.
 writeFileSync(
   join(SYNTH, 'src', 'all.ts'),
   COMPONENTS.map((c) => `export * from ${JSON.stringify(`./${c.group}/${c.name}`)};`).join('\n') + '\n',
 );
-// index.ts — the types/card-list entry: exactly the top-level components.
+// index.ts: the types entry, top-level components only.
 writeFileSync(
   join(SYNTH, 'src', 'index.ts'),
   COMPONENTS.map((c) => `export { ${c.name} } from ${JSON.stringify(`./${c.group}/${c.name}`)};`).join('\n') + '\n',

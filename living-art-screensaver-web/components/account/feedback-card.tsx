@@ -6,10 +6,8 @@ import { FeedbackForm } from '@screensaver-art/ui'
 import type { ResizedImage } from '@screensaver-art/ui'
 import { createClient } from '@/lib/supabase/client'
 
-// Logged-in feedback on the website. Reuses the shared FeedbackForm (identical to
-// the Electron app's Help tab) and POSTs to /api/feedback with a Bearer token —
-// the same endpoint the desktop app uses. Debug info here is the browser-side
-// analog of the app's diagnostics (there's no installer/cache state on the web).
+// The website's feedback form: the app's FeedbackForm, posting to /api/feedback
+// with browser debug info in place of the app's diagnostics.
 export function FeedbackCard() {
   async function handleSubmit({ message, image }: { message: string; image: ResizedImage | null }) {
     const supabase = createClient()

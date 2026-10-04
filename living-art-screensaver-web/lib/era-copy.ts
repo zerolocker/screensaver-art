@@ -1,26 +1,14 @@
 /**
- * Hand-written copy for the 15 era "wings" — the closed tag vocabulary in
- * `@screensaver-art/constants` (`TAG_ORDER`).
- *
- * This is the one genuinely editorial layer in the gallery pages, and it's why
- * `/era/<tag>` is a real browse surface rather than a generated stub: 15 pages,
- * each with a written headline and paragraph, each listing ~17 pieces. It is
- * also reused as the middle paragraph of every `/art/<slug>` page.
- *
- * Every blurb describes the *historical* tradition, not the pieces' origin: a
- * wing can hold both AI-generated homages and real public-domain artworks
- * (`source: "real_artwork"`), and the blurb is reused on both kinds of piece
- * page. So a blurb must never say the pieces are AI-made, or that they're
- * originals — the piece page's own opener and disclosure say which it is.
- *
- * Keys must match `TAG_ORDER` exactly; a test asserts full coverage so a new
- * tag can't ship with a missing wing.
+ * Hand-written copy for each era (`TAG_ORDER`), used on `/era/<tag>` and as
+ * the middle paragraph of every piece page. A blurb describes the historical
+ * tradition only. It must not say the pieces are AI-made or originals, since a
+ * wing holds both kinds. A test checks every tag has an entry.
  */
 
 export interface EraCopy {
   /** Page headline for `/era/<tag>` — a phrase, not the bare tag. */
   headline: string
-  /** One paragraph. Reused verbatim as paragraph 2 of every piece in the era. */
+  /** One paragraph, also used on every piece page in the era. */
   blurb: string
   /** Short line under the headline / on the era card. */
   tagline: string

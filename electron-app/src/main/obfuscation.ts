@@ -1,14 +1,9 @@
-// Cache-file obfuscation.
+// Cache obfuscation: an 8-byte magic header, then the MP4 XOR'd with a 32-byte
+// key, saved as `<hash>.bin` so it won't open in QuickTime. It deters casual
+// copying; it isn't encryption, since both binaries contain the key.
 //
-// We XOR every byte of an MP4 with a fixed 32-byte cycling key and prepend an
-// 8-byte magic header. Files land on disk as `<hash>.bin`, so they don't open
-// in QuickTime even after rename. This is NOT cryptography — anyone willing to
-// disassemble either binary can recover the key. The point is to deter the
-// casual "drag the MP4 out of the cache and post it" path for a $0.99 product.
-//
-// The exact same key + magic + filename hash is duplicated in the Swift
-// screensaver (see screensaver/CachedGallery.swift). If you change either,
-// change both.
+// The key, header and filename hash MUST match
+// screensaver-macos/ScreensaverArtExtension/Constants.swift.
 
 export const MAGIC = Buffer.from('LARTV001', 'utf8') // 8 bytes
 export const KEY = Buffer.from([
@@ -18,8 +13,7 @@ export const KEY = Buffer.from([
   0x76, 0x33, 0x88, 0x4f, 0xaa, 0x12, 0xb9, 0x60,
 ])
 
-// djb2-127 of the URL string. Mirrors the Swift implementation byte-for-byte.
-// The 64-bit unsigned overflow has to match Swift's `&*` / `&+` semantics.
+// djb2-127 of the URL, matching Swift's wrapping `&*` / `&+` on 64-bit unsigned.
 export function filenameForUrl(url: string): string {
   const MASK = (1n << 64n) - 1n
   let hash = 5381n
@@ -39,11 +33,8 @@ export function obfuscate(plaintext: Buffer): Buffer {
   return out
 }
 
-// XOR `chunk` with the cycling KEY, where `offset` is the chunk's byte position
-// within the plaintext (NOT counting the magic header). This lets us obfuscate a
-// download as a stream without buffering the whole MP4 — concatenating the magic
-// header with obfuscateChunk() over consecutive chunks produces bytes identical
-// to obfuscate(wholeBuffer), regardless of where the chunk boundaries fall.
+// XOR one chunk of a stream. `offset` is its position in the MP4 (excluding the
+// header), so chunked output matches obfuscate(wholeBuffer).
 export function obfuscateChunk(chunk: Buffer, offset: number): Buffer {
   const out = Buffer.allocUnsafe(chunk.length)
   for (let i = 0; i < chunk.length; i++) {

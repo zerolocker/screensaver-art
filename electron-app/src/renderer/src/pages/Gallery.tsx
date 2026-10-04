@@ -38,14 +38,10 @@ type Tab = 'all' | 'free' | 'paid' | 'selected'
 
 const SORT_KEY = 'lart-gallery-sort'
 const PREVIEW_MODE_KEY = 'lart-gallery-preview-mode'
-// After the last tick, wait this long before re-syncing the cache, so rapid
-// toggling triggers one sync, not one per click.
+// Debounce before re-syncing after a selection change.
 const SYNC_DEBOUNCE_MS = 1500
-// The grid is paginated so a large catalog never shows hundreds of poster cards
-// at once — each visible card lazily captures a first frame (a partial video
-// download + decode), so bounding the page bounds the network/decode/paint cost.
-// 51 = 3 columns × 17 rows. Search + tag filters run across the whole catalog
-// first; pagination applies to the filtered result.
+// 3 columns × 17 rows. Each visible card captures a frame from its video, so
+// paging bounds the cost. Filters apply before paging.
 const PAGE_SIZE = 51
 
 export function GalleryPage({ session }: GalleryPageProps) {
@@ -62,11 +58,9 @@ export function GalleryPage({ session }: GalleryPageProps) {
   )
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set())
   const [query, setQuery] = useState('')
-  // Zero-indexed current page over the *filtered* items. Reset to 0 whenever the
-  // filters change (effect below) so new results start on page 1.
+  // Zero-based page within the filtered items.
   const [page, setPage] = useState(0)
-  // Frozen snapshot of the selection when the "Selected" tab was entered, so
-  // unticking a piece there dims it in place instead of making it vanish.
+  // Selection when the "Selected" tab opened, so unticking dims a card instead of hiding it.
   const [selectedScope, setSelectedScope] = useState<Set<string>>(new Set())
   const [modalItem, setModalItem] = useState<ArtItem | null>(null)
   const [previewMode, setPreviewMode] = useState<PreviewMode>(
@@ -89,23 +83,18 @@ export function GalleryPage({ session }: GalleryPageProps) {
       const data: GalleryResponse = await res.json()
       setGallery(data)
 
-      // Resolve the selection: stored explicit list, or the default free set
-      // (the same default cache-sync applies for a null selection).
+      // Null selection means the free pieces, as in cache-sync.
       const stored = await window.electronAPI.selection.get()
       const resolved = stored.selected ?? data.items.filter(isItemFree).map((i) => i.src)
 
-      // Drop "orphans" — selected pieces no longer in the gallery (e.g. curated
-      // out of gallery.json). They render no card, so they'd otherwise inflate
-      // the "Selected" count and leave "Deselect all" unable to reach zero.
-      // Locked-but-present pieces are intentionally KEPT (shown with a tick) so a
-      // lapsed subscriber can still de-select them.
+      // Drop selected pieces that left the gallery; they'd inflate the count.
+      // Keep locked ones so a lapsed subscriber can still deselect them.
       const gallerySrcs = new Set(data.items.map((i) => i.src))
       const cleaned = resolved.filter((src) => gallerySrcs.has(src))
       setSelected(new Set(cleaned))
       setSelectionReady(true)
 
-      // Self-heal the persisted file when we dropped orphans from an explicit
-      // selection. A null/default selection stays null (don't materialize it).
+      // Save the cleaned list. A null selection stays null.
       if (stored.selected && data.items.length > 0 && cleaned.length !== stored.selected.length) {
         log.info('selection', 'pruned orphaned selections', {
           before: stored.selected.length,
@@ -126,7 +115,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
     fetchGallery()
   }, [fetchGallery])
 
-  // Connectivity: a refetch fails offline. Show a calm notice and auto-recover.
+  // A refetch fails offline: show a notice and recover automatically.
   useEffect(() => {
     const handleOnline = (): void => {
       setIsOnline(true)
@@ -145,17 +134,14 @@ export function GalleryPage({ session }: GalleryPageProps) {
     return () => window.clearTimeout(syncTimer.current)
   }, [])
 
-  // A lock click opens the plan picker (lifetime vs subscribe), not checkout
-  // directly — the plan choice happens in-app.
+  // A lock click opens the plan picker.
   const onSubscribe = useCallback(() => {
     openPlanPicker('gallery_lock')
   }, [openPlanPicker])
 
   const persistAndSync = useCallback(
     (next: Set<string>) => {
-      // Persist immediately so a toggle is never lost, but debounce the cache
-      // re-sync (download newly-selected). Deselected items stay cached on this
-      // auto sync — only a manual "Sync Now" prunes them.
+      // Save now; debounce the sync.
       window.electronAPI.selection.set([...next]).catch((err) => {
         log.warn('selection', 'failed to persist selection', { error: String(err) })
       })
@@ -169,9 +155,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
 
   const items = useMemo(() => gallery?.items ?? [], [gallery])
 
-  // Locked = a non-subscriber's non-free pieces (the `free` flag is per-item, so
-  // these are interleaved through the grid, not clustered at the end). They can't
-  // be ticked or cached — the tick becomes a "Subscribe to unlock".
+  // Locked pieces can't be selected; the tick becomes "Subscribe to unlock".
   const lockedSrcs = useMemo(() => {
     if (!gallery || gallery.isSubscribed) return new Set<string>()
     return new Set(gallery.items.filter((i) => isItemLocked(i, gallery.isSubscribed)).map((i) => i.src))
@@ -180,9 +164,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
   const toggle = useCallback(
     (src: string) => {
       setSelected((prev) => {
-        // A locked piece can be de-selected (it was selected while subscribed,
-        // and is now locked after the subscription lapsed) but never newly
-        // selected — that path prompts to subscribe instead.
+        // A locked piece can be deselected (after a lapse) but not selected.
         if (!prev.has(src) && lockedSrcs.has(src)) return prev
         const next = new Set(prev)
         if (next.has(src)) next.delete(src)
@@ -221,7 +203,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
     })
   }, [])
 
-  // Distinct tags across the gallery, in canonical pill order (Misc fallback baked in).
+  // Distinct tags, in pill order.
   const allTags = useMemo(() => {
     const seen: string[] = []
     const set = new Set<string>()
@@ -236,7 +218,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
     return orderTags(seen)
   }, [items])
 
-  // Display order: by date added (undated pieces fall back to launch date).
+  // By date added.
   const sortedItems = useMemo(() => {
     const dir = sort === 'oldest' ? 1 : -1
     return [...items].sort((a, b) => {
@@ -246,8 +228,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
     })
   }, [items, sort])
 
-  // Free / Paid are per-item (the `free` flag), independent of subscription — the
-  // "Paid" pieces are the subscriber-only ones (locked for non-subscribers).
+  // Free / Paid come from each piece's `free` flag, not the user's subscription.
   const freeCount = useMemo(() => items.filter(isItemFree).length, [items])
   const paidCount = items.length - freeCount
 
@@ -266,37 +247,29 @@ export function GalleryPage({ session }: GalleryPageProps) {
   const visibleItems = useMemo(() => sortedItems.filter(isVisible), [sortedItems, isVisible])
   const visibleCount = visibleItems.length
 
-  // Pagination over the filtered set. A filter change can shrink the list below
-  // the current page, so clamp before slicing (the reset effect handles the
-  // common case; the clamp guards the render in between).
+  // Clamp: a filter change can shrink the list below the current page.
   const pageCount = Math.max(1, Math.ceil(visibleCount / PAGE_SIZE))
   const clampedPage = Math.min(page, pageCount - 1)
   const pageStart = clampedPage * PAGE_SIZE
-  // Srcs of the cards on the current page. Off-page and filtered-out cards stay
-  // mounted (poster captured once, never re-captured on filter/sort/page) but are
-  // display:none'd so they're not painted or poster-captured.
+  // Cards on the current page. The others stay mounted but hidden, so their
+  // frames are captured once.
   const pageSrcs = useMemo(
     () => new Set(visibleItems.slice(pageStart, pageStart + PAGE_SIZE).map((it) => it.src)),
     [visibleItems, pageStart],
   )
 
-  // Jump back to page 1 whenever the filtered set changes, so results always start
-  // at the top instead of a now-out-of-range page.
+  // Back to page 1 when the filters change.
   useEffect(() => {
     setPage(0)
   }, [tab, query, activeTags, sort])
 
   const goToPage = useCallback((next: number) => {
     setPage(next)
-    // Scroll the content area back to the top so the new page starts at row 1.
     document.querySelector('main')?.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
 
-  // Select All operates on the currently-shown pieces. While any unlocked shown
-  // piece is still off it reads "Select all" and turns them all on; once they're
-  // all on it flips to "Deselect all", which clears every selected shown piece —
-  // including locked-but-selected ones, so a lapsed subscriber can clear them in
-  // one click. (Select never turns a locked piece on — that needs a sub.)
+  // Acts on the shown pieces. "Select all" never selects locked pieces;
+  // "Deselect all" also clears locked ones.
   const visibleUnlockedSrcs = useMemo(
     () => visibleItems.filter((it) => !lockedSrcs.has(it.src)).map((it) => it.src),
     [visibleItems, lockedSrcs],
@@ -325,7 +298,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
     })
   }, [selectAllDisabled, visibleUnlockedSrcs, visibleItems, persistAndSync])
 
-  // Block the whole view only while we have nothing yet; a refetch keeps the grid.
+  // Block the view only on first load.
   if (loading && !gallery) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -466,9 +439,7 @@ export function GalleryPage({ session }: GalleryPageProps) {
           </div>
         )}
 
-      {/* Art grid — all cards stay mounted; visibility is toggled so filtering,
-          sorting, and paging never re-capture posters. A card shows only when it
-          passes the filters AND falls on the current page. */}
+      {/* All cards stay mounted and are shown or hidden, so frames are captured once. */}
       <div
         className="grid gap-4 mt-2"
         style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}

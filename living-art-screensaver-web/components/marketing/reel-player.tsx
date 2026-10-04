@@ -44,14 +44,10 @@ export interface ReelPlayerProps {
 }
 
 /**
- * The readiness-gated reel player behind the marketing Monitors and the
- * art-styles featured display. Two persistent <video> layers crossfade under
- * the control of the pure state machine in lib/reel-machine.ts: the hidden
- * layer preloads the next clip (only once the current one is buffered), and a
- * rotation happens only when that clip can actually play — on slow networks
- * the current clip simply keeps looping. Under the videos sit the piece's
- * hue gradient and its real first-frame WebP, so visitors always see art,
- * never a loading void. Fills its parent; the parent supplies the bezel.
+ * The marketing reel player: two <video> layers that crossfade, driven by
+ * lib/reel-machine.ts. On a slow network the current clip just keeps looping.
+ * A gradient and the first-frame still sit underneath, so there's always art
+ * on screen. Fills its parent.
  */
 export function ReelPlayer({
   pieces,
@@ -76,8 +72,7 @@ export function ReelPlayer({
   const videoRefB = useRef<HTMLVideoElement>(null)
   const videoRef = (layer: LayerId) => (layer === "A" ? videoRefA : videoRefB)
 
-  // The machine + everything the media-event handlers need, kept in refs so the
-  // handlers are stable and never see stale closures.
+  // Kept in refs so the media handlers are stable and never stale.
   const machine = useRef(initialReelState(n))
   const clock = useRef<DwellClock | null>(null)
   if (clock.current === null) clock.current = new DwellClock(minDwellMs)
@@ -179,8 +174,7 @@ export function ReelPlayer({
             break
           case "timeupdate":
           case "progress":
-            // Chrome can `suspend` and never fire canplaythrough; timeupdate
-            // keeps firing while playing, so the pipeline can't deadlock.
+            // Chrome may never fire canplaythrough; timeupdate keeps firing.
             if (!machine.current.frontBuffered && isFullyBuffered(v.duration, bufferedEnd(v)))
               dispatch({ type: "FRONT_BUFFERED" })
             break
@@ -188,9 +182,7 @@ export function ReelPlayer({
         return
       }
 
-      // Hidden-layer events only matter while a preload is in flight (the
-      // reducer also guards on backIdx, so stale events from the just-swapped
-      // outgoing clip are ignored).
+      // Hidden-layer events matter only while preloading.
       switch (kind) {
         case "playing":
           dispatch({ type: "BACK_PLAYING" })
@@ -201,8 +193,7 @@ export function ReelPlayer({
         case "canplay":
         case "loadeddata":
         case "progress":
-          // Safari fires canplaythrough erratically with preload="auto";
-          // readyState is the ground truth.
+          // Safari's canplaythrough is erratic; trust readyState.
           if (!machine.current.backReady && backIsReady(v)) dispatch({ type: "BACK_READY" })
           break
         case "error":
@@ -215,9 +206,8 @@ export function ReelPlayer({
   }
   const { dispatch, runDwell, haltDwell, onLayerEvent } = glue.current
 
-  // Visibility = intersecting AND tab shown. Drives play/pause + the dwell
-  // clock, so backgrounding the tab or scrolling away never causes silent
-  // advances. First intersection also unlocks loading for non-eager players.
+  // Visible = on screen and tab shown. Drives play/pause and the dwell clock.
+  // The first intersection also starts loading for non-eager players.
   useEffect(() => {
     const root = rootRef.current
     if (!root) return
@@ -246,8 +236,7 @@ export function ReelPlayer({
     }
   }, [dispatch])
 
-  // Controlled index: a parent-driven change jumps immediately (GOTO). The
-  // echo of our own onIndexChange is a no-op in the reducer.
+  // A parent-driven index change jumps immediately.
   useEffect(() => {
     if (index !== undefined && index !== machine.current.frontIdx) dispatch({ type: "GOTO", idx: index })
   }, [index, dispatch])
@@ -259,8 +248,8 @@ export function ReelPlayer({
     else runDwell()
   }, [holdDwell, runDwell, haltDwell])
 
-  // Post-render reconcile: enforce muted (the clips ship audio tracks and the
-  // attribute alone is unreliable) and retry plays that raced the DOM commit.
+  // After render: force muted (the attribute alone is unreliable) and retry
+  // plays that raced the DOM update.
   useEffect(() => {
     for (const layer of ["A", "B"] as const) {
       const v = videoRef(layer).current
@@ -270,10 +259,8 @@ export function ReelPlayer({
     }
   })
 
-  // Readiness backstop: media events are flaky across browsers, so while a
-  // question is open (front not yet buffered / back not yet ready), poll
-  // readyState once a second. Also catches state reached before hydration
-  // attached the event handlers (the eager hero on a fast cache).
+  // Media events are flaky, so poll readyState each second while waiting. This
+  // also catches readiness reached before hydration attached the handlers.
   useEffect(() => {
     const tick = () => {
       const m = machine.current
@@ -288,15 +275,9 @@ export function ReelPlayer({
       if (m.backIdx !== null && !m.backReady && back && backIsReady(back)) {
         dispatch({ type: "BACK_READY" })
       } else if (
-        // iOS/mobile Safari won't buffer a hidden <video> from preload alone —
-        // it only downloads once play() is called — so the back layer never
-        // reaches BACK_READY and the reel stalls on the first clip forever
-        // (the front loops fine: muted-inline autoplay via play() is allowed).
-        // Fallback: once the front has served its full dwell and the back still
-        // isn't ready, play the (still-hidden) back layer to force it to load.
-        // The crossfade still only commits on BACK_PLAYING (real frames), and
-        // the fully-buffered front keeps looping meanwhile so nothing stutters.
-        // On desktop the back is ready well before dwell, so this never runs.
+        // iOS Safari only downloads a hidden <video> once play() is called, so
+        // the reel would stall on the first clip. After the dwell, play the
+        // hidden layer to force it to load.
         m.backIdx !== null &&
         !m.backReady &&
         m.dwellMet &&

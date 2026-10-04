@@ -1,22 +1,15 @@
 #!/usr/bin/env node
-// Publish one finished nightly piece — the whole tail of the curation run in one
-// command: derive the three web images from the 4K still, upload them + the video
-// to R2 under never-overwritten keys, and append the `gallery.json` entry.
-//
-// This replaces what used to be three hand-executed steps in AUTOMATED_CURATION.md
-// (an ffmpeg block, a copy-pasted bash `upload()` helper, and a hand-authored JSON
-// entry), repeated four times a night. Everything here is deterministic, so the
-// agent's job is now just to pick the art and write the prompts.
+// Publish one finished piece: make the three web images from the 4K still,
+// upload them and the video to R2 under keys that are never overwritten, and
+// append the `gallery.json` entry.
 //
 //   node curation/publish-piece.mjs \
 //     --still gallery/<name>_4k.webp --video gallery/<name>_animated.mp4 \
 //     --title "Autumn Portage - Group of Seven (AI Animated)" --tag Modern \
 //     --image-prompt "$IMG_PROMPT" --video-prompt "$VID_PROMPT"
 //
-// A REAL public-domain painting (curation/REAL_PAINTINGS_CURATION.md) swaps
-// --image-prompt for --provenance: there is no image prompt, because nobody
-// generated the still. The file is a JSON object holding the nine provenance
-// keys (see PROVENANCE below); they're validated and copied onto the entry.
+// A real public-domain painting passes --provenance (a JSON file of the
+// provenance keys) instead of --image-prompt.
 //
 //   node curation/publish-piece.mjs \
 //     --still gallery/<name>_4k.webp --video gallery/<name>_animated.mp4 \
@@ -24,15 +17,11 @@
 //     --tag "19th Century" --provenance gallery/<name>.provenance.json \
 //     --video-prompt "$VID_PROMPT"
 //
-// WHAT LANDS ON R2 (four keys, all immutable — see CLAUDE.md "Add new art pieces"):
-//   <stem>_2k.webp    -> img     2K hero. Not read by the site today (it prefers
-//                                og_img); kept as the high-res copy for future needs.
-//   <stem>_720p.jpeg  -> og_img  social cards. JPEG, not WebP: crawler WebP support
-//                                is inconsistent and satori (next/og) can't rasterize it.
-//   <stem>_640w.webp  -> thumb   the /gallery grid tile.
+// Uploaded to R2 (the 4K master is not):
+//   <stem>_2k.webp    -> img     archival high-res copy
+//   <stem>_720p.jpeg  -> og_img  social cards (JPEG: crawlers and satori handle WebP badly)
+//   <stem>_640w.webp  -> thumb   the /gallery grid
 //   <stem>_{animated,looping}.mp4 -> src
-// The 4K master is the local source for all three and is NOT uploaded — the 2K is
-// the archival copy. Generating at 4K and downsampling still beats rendering at 2K.
 //
 // Requires: ffmpeg, and CLOUDFLARE_API_TOKEN via curation/with-secrets.sh.
 
@@ -46,9 +35,7 @@ const GALLERY = path.join(ROOT, 'gallery.json')
 const BUCKET = 'screensaver-assets'
 const BASE = 'https://screensaver-assets.living-art-asset.com/'
 
-// The provenance contract for real paintings lives in @screensaver-art/constants
-// (gallery.ts), alongside the tag vocabulary. Both are read from there, so this
-// script can't drift from what the website and app expect.
+// Read from @screensaver-art/constants so they can't drift from the website and app.
 const CONSTANTS_SRC = readFileSync(path.join(ROOT, 'packages/constants/src/gallery.ts'), 'utf8')
 function constList(name) {
   const block = CONSTANTS_SRC.match(new RegExp(`export const ${name}\\b[^=]*=\\s*\\[([\\s\\S]*?)\\]`))
@@ -102,8 +89,7 @@ const DRY = !!opts['dry-run']
 const KEEP = !!opts.keep
 const RESUME = !!opts.resume
 
-// A real painting has no image prompt (nobody generated the still); an AI piece
-// has no provenance. Exactly one of the two says which kind this is.
+// Exactly one of --image-prompt (AI piece) and --provenance (real painting).
 const REAL = !!opts.provenance
 if (REAL && opts['image-prompt']) {
   die('--provenance is for a real painting, which has no image prompt — drop --image-prompt')
@@ -121,15 +107,13 @@ for (const [label, f] of [['still', still], ['video', video]]) {
 }
 if (!/\.mp4$/i.test(video)) die(`--video must be an .mp4, got "${path.basename(video)}"`)
 
-// The tag vocabulary is closed and drives the Gallery filter pills, so validate it
-// against the real source of truth rather than a copy that can drift.
+// The tag list is closed: each tag is a filter pill.
 const TAGS = constList('TAG_ORDER')
 if (!TAGS.includes(opts.tag)) {
   die(`unknown tag "${opts.tag}" — never invent a wing. Valid:\n  ${TAGS.join('\n  ')}`)
 }
 
-// Provenance for a real painting: exactly the contract's keys, validated, in
-// contract order. Checked before any ffmpeg/R2 work so a bad file costs nothing.
+// Validate provenance before any ffmpeg or R2 work, and keep the keys in order.
 const provenance = REAL ? readProvenance(path.resolve(opts.provenance)) : null
 
 function readProvenance(file) {
@@ -155,12 +139,11 @@ function readProvenance(file) {
   if (out.source !== 'real_artwork') die(`provenance "source" must be "real_artwork", got "${out.source}"`)
   if (!LICENSES.includes(out.license)) {
     die(`provenance "license" must be one of ${LICENSES.map((l) => `"${l}"`).join(' / ')} — got "${out.license}". ` +
-      'Anything weaker (CC-BY, "No Known Copyright", unknown…) is not eligible; see REAL_PAINTINGS_CURATION.md §0.')
+      'Anything weaker (CC-BY, "No Known Copyright", unknown…) is not eligible; see "The legal gate" in REAL_PAINTINGS_CURATION.md.')
   }
   if (!/^https?:\/\/\S+$/i.test(out.source_url)) die(`provenance "source_url" must be an http(s) URL, got "${out.source_url}"`)
 
-  // The title names the artist where an AI piece names its movement — the
-  // website and the social captions split on it.
+  // The website and captions split the title on the artist's name.
   const esc = out.artist.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   if (!new RegExp(`^.+ - ${esc} \\(AI Animated\\)$`).test(opts.title)) {
     die(`a real painting's title must read "<painting> - ${out.artist} (AI Animated)", got "${opts.title}"`)
@@ -178,7 +161,7 @@ const looping = opts.looping ? true
   : die(`can't infer looping from "${path.basename(video)}" — pass --looping or --no-looping`)
 
 const date = opts.date || (() => {
-  // Local date, not toISOString(): a late-evening run must still stamp today.
+  // Local date: a late-evening run must still stamp today.
   const d = new Date()
   const p = (n) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
@@ -188,11 +171,10 @@ if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) die(`--date must be YYYY-MM-DD, got "${da
 // ---- plan ------------------------------------------------------------------
 
 const dir = path.dirname(still)
-// The key encodes the loop mode, so a mislabelled local filename can't put the
-// wrong suffix on R2 — `looping` is the single source of truth for both.
+// The key's suffix comes from `looping`, not the local filename.
 const videoKey = `gallery/${stem}${looping ? '_looping' : '_animated'}.mp4`
 
-/** field -> the derivative that fills it. Filters are the runbook's, verbatim. */
+/** field -> the derivative that fills it. */
 const derivatives = [
   {
     field: 'img', file: path.join(dir, `${stem}_2k.webp`), key: `gallery/${stem}_2k.webp`,
@@ -229,8 +211,7 @@ const existsOnR2 = (key) =>
 
 const putOnR2 = (file, key, ct) => wrangler([
   'put', `${BUCKET}/${key}`, `--file=${file}`, '--remote',
-  // Keys are never overwritten, so cache them hard: Cloudflare serves this to
-  // browsers on top of its edge cache, so the site never re-fetches them.
+  // Keys are never overwritten, so cache them for a year.
   '--cache-control', 'public, max-age=31536000, immutable',
   '--content-type', ct,
 ])
@@ -240,7 +221,7 @@ const putOnR2 = (file, key, ct) => wrangler([
 process.stdout.write(`publishing "${opts.title}"\n  stem ${stem} · ${looping ? 'looping' : 'non-looping'} · ${date} · ${opts.tag}` +
   `${provenance ? ` · real painting (${provenance.museum}, ${provenance.license})` : ''}\n`)
 
-// 1. Derive. Cheap and local, so do it before touching the network.
+// 1. Derive (local, before touching the network).
 for (const d of derivatives) {
   const r = spawnSync('ffmpeg',
     ['-v', 'error', '-y', '-i', still, '-vf', d.filter, ...d.extra, d.file],
@@ -251,8 +232,7 @@ for (const d of derivatives) {
   process.stdout.write(`  derived ${path.basename(d.file)} (${(statSync(d.file).size / 1e3).toFixed(0)} kB)\n`)
 }
 
-// 2. Preflight every key before uploading any of them, so a name collision can't
-//    leave the piece half-published under a stem we then have to abandon.
+// 2. Check every key first, so a name collision can't leave a half-published piece.
 const skip = new Set()
 if (!DRY) {
   const taken = uploads.filter((u) => existsOnR2(u.key))
@@ -283,7 +263,7 @@ if (DRY) {
   }
 }
 
-// 4. Append the entry. Field order matches AUTOMATED_CURATION.md's format block.
+// 4. Append the entry.
 const entry = {
   src: BASE + videoKey,
   img: BASE + `gallery/${stem}_2k.webp`,
@@ -293,8 +273,7 @@ const entry = {
   type: 'video',
   date,
   tags: [opts.tag],
-  // AI piece: the prompt the still was generated from. Real painting: who made
-  // it and where it hangs instead (and no image_prompt — there wasn't one).
+  // AI piece: its image prompt. Real painting: its provenance.
   ...(provenance ?? { image_prompt: opts['image-prompt'] }),
   video_prompt: opts['video-prompt'],
   looping,
@@ -311,9 +290,7 @@ if (DRY) {
   process.stdout.write(`  appended to gallery.json (${items.length} pieces)\n`)
 }
 
-// 5. Clean up — generated media must never be left lying around (CLAUDE.md repo
-//    rules), and a night of 4K stills adds up fast. `${video}.json` is
-//    veo3-video-gen's sidecar (the file URI it needs to extend a clip).
+// 5. Delete the local media. `${video}.json` is the video skill's sidecar.
 if (!DRY && !KEEP) {
   const removed = []
   for (const f of [still, video, `${video}.json`, ...derivatives.map((d) => d.file)]) {
@@ -323,9 +300,7 @@ if (!DRY && !KEEP) {
   }
   process.stdout.write(`  cleaned up ${removed.length} local files: ${removed.join(', ')}\n`)
 
-  // Whatever is still sitting here is almost always a still the vision gate
-  // rejected and rerolled — this script only ever sees the one it was handed, so
-  // it flags the rest rather than deleting files nobody told it about.
+  // Leftovers are usually rejected stills. Flag them; don't delete files we weren't given.
   const left = readdirSync(dir).filter((f) => !f.startsWith('.'))
   if (left.length) {
     process.stdout.write(

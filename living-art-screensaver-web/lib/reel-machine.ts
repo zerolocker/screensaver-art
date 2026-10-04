@@ -1,21 +1,12 @@
-// Pure, DOM-free state machine for the marketing reel players (the hero/CTA
-// Monitors and the art-styles featured display). It exists to replace a blind
-// setInterval rotation that, on slow networks, kept switching to clips that
-// hadn't downloaded a single byte — leaving visitors staring at poster
-// backgrounds instead of art.
-//
-// The rules it encodes:
+// State machine for the marketing reel players, kept free of the DOM so it can
+// be unit-tested. reel-player.tsx runs its commands on real <video> elements.
+// The rules, so slow networks still show art rather than posters:
 //   - Never switch TO a clip that isn't buffered enough to play through.
 //   - Never switch AWAY from a clip before it has actually PLAYED (not merely
 //     existed on screen) for the minimum dwell.
-//   - Preload the next clip on the hidden layer only after the current one is
-//     comfortably buffered, so two multi-MB fetches never compete on a slow link.
-//   - Commit a crossfade only when the incoming clip is truly rendering frames
-//     (its `playing` event), so the poster never flashes mid-rotation.
-//
-// The reducer is pure (state + event -> state + commands); the React glue in
-// components/marketing/reel-player.tsx executes the commands against real
-// <video> elements. This split keeps every gating rule unit-testable in node.
+//   - Preload the next clip only once the current one is buffered, so two
+//     downloads never compete.
+//   - Crossfade only once the incoming clip is rendering frames (`playing`).
 
 export type LayerId = "A" | "B"
 

@@ -1,16 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { NextRequest } from 'next/server'
 
-// /api/checkout is the Electron app's one-click purchase entry point. The app is
-// already signed in, so it POSTs its Bearer token + {plan} and we hand back a
-// Stripe Checkout URL it opens directly. Behavior locked in here:
-//   - the `plan` in the body picks the offer (this is the ONLY app-specific
-//     logic — everything downstream is the shared checkout builder). Getting it
-//     wrong would silently sell a subscription to someone who clicked "Buy once".
-//   - a body-less request (app versions predating the lifetime offer) still works
+// /api/checkout, the app's purchase endpoint:
+//   - `plan` picks the offer (wrong here sells a subscription to someone who
+//     clicked "Buy once")
+//   - a request with no body (older apps) still works
 //   - a lifetime OWNER can't buy anything again (409)
-//   - an active SUBSCRIBER can still buy lifetime (the upgrade path) but not a
-//     second subscription (409)
+//   - a SUBSCRIBER can buy lifetime but not a second subscription (409)
 
 const { authMock, checkoutMock, captureMock } = vi.hoisted(() => ({
   authMock: vi.fn(),
@@ -18,8 +14,7 @@ const { authMock, checkoutMock, captureMock } = vi.hoisted(() => ({
   captureMock: vi.fn(),
 }))
 
-// `after()` requires a real request scope; outside the server it throws. Keep
-// the rest of next/server intact (NextRequest/NextResponse) and no-op just that.
+// `after()` throws outside a request; stub only that.
 vi.mock('next/server', async (importOriginal) => ({
   ...(await importOriginal<typeof import('next/server')>()),
   after: () => {},

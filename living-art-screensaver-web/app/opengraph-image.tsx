@@ -3,23 +3,11 @@ import { brand, greenGlow } from '@/lib/brand'
 import { logoSwirlPath } from '@/lib/logo-path'
 
 /**
- * The social share card (og:image / twitter:image) for the whole site. Next
- * auto-detects this file convention and attaches the generated 1200×630 PNG to
- * the metadata for every page that doesn't override it, so links shared to
- * X / Slack / iMessage / Pinterest unfurl with a branded preview instead of a
- * bare URL — which matters because sharing the art is the growth engine.
- *
- * Mirrors the marketing hero: near-black canvas + mint glow, the living-swirl
- * logo badge, the Playfair serif headline with the italic green "living gallery."
- * accent, and — on the right — a realistic Studio-Display-style monitor showing a
- * real gallery still (Starry Coast), the way the hero's <Monitor> communicates
- * the product at a glance. (satori can't blur / backdrop-filter / play video, so
- * the ambient glow is a soft gradient and the art is a single frame.)
- *
- * The art still is colocated (loaded via import.meta.url so the bundler traces it
- * on Vercel); fonts are fetched from Google at request time. Both are best-effort
- * and degrade gracefully. Brand literals live in lib/brand.ts (satori can't read
- * the CSS design tokens).
+ * The site's default 1200×630 share card, modelled on the homepage hero: the
+ * headline on the left and a monitor showing a gallery still on the right.
+ * satori can't blur or play video, so the glow is a gradient. Fonts come from
+ * Google at request time; brand colours are in lib/brand.ts because satori
+ * can't read the CSS tokens.
  */
 export const runtime = 'edge'
 export const alt = 'Living Art Screensaver — centuries of art, animated by AI, on your idle Mac'
@@ -32,14 +20,14 @@ type FontEntry = { name: string; data: ArrayBuffer; weight: Weight; style: 'norm
 async function loadGoogleFont(family: string, weight: Weight, italic: boolean): Promise<ArrayBuffer> {
   const spec = italic ? `ital,wght@1,${weight}` : `wght@${weight}`
   const url = `https://fonts.googleapis.com/css2?family=${family.replace(/ /g, '+')}:${spec}`
-  // No custom UA → Google returns a plain TrueType src (satori can't read woff2).
+  // Without a custom UA, Google returns TrueType (satori can't read woff2).
   const css = await (await fetch(url)).text()
   const src = css.match(/src:\s*url\(([^)]+)\)\s*format\('(?:opentype|truetype)'\)/)
   if (!src) throw new Error(`Could not parse font src for ${family}`)
   return fetch(src[1]).then((r) => r.arrayBuffer())
 }
 
-// Best-effort per font — one failed fetch degrades that face only, never the image.
+// One failed font fetch loses only that face.
 async function tryFont(name: string, weight: Weight, italic = false): Promise<FontEntry | null> {
   try {
     return { name, data: await loadGoogleFont(name, weight, italic), weight, style: italic ? 'italic' : 'normal' }
@@ -49,8 +37,6 @@ async function tryFont(name: string, weight: Weight, italic = false): Promise<Fo
 }
 
 export default async function OpengraphImage() {
-  // Playfair Display = the site's serif headline; Inter = its sans body. Loaded
-  // in parallel; whatever succeeds is used, otherwise we fall back gracefully.
   const fonts = (
     await Promise.all([
       tryFont(brand.fontSerif, 700, false),
@@ -60,8 +46,7 @@ export default async function OpengraphImage() {
     ])
   ).filter((f): f is FontEntry => f !== null)
 
-  // Only claim the serif once BOTH faces exist — else the italic accent would
-  // render as a non-italic fallback next to serif text.
+  // Use the serif only if both faces loaded, or the italic accent breaks.
   const hasSerif =
     fonts.some((f) => f.name === brand.fontSerif && f.style === 'normal') &&
     fonts.some((f) => f.name === brand.fontSerif && f.style === 'italic')
@@ -69,7 +54,7 @@ export default async function OpengraphImage() {
   const serif = hasSerif ? brand.fontSerif : undefined
   const sans = hasSans ? brand.fontSans : 'sans-serif'
 
-  // Real art still for the on-screen frame — colocated so it's Vercel-traced.
+  // Colocated so Vercel bundles it.
   let artSrc: string | null = null
   try {
     const buf = await fetch(new URL('./starry-coast-og.jpg', import.meta.url)).then((r) => r.arrayBuffer())
@@ -82,9 +67,7 @@ export default async function OpengraphImage() {
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="${logoSwirlPath}" fill="${brand.ink}"/></svg>`,
   )}`
 
-  // Monitor sizing — the card's focal element. Bump MONITOR_W to resize it; the
-  // 16:9 screen, stand, glow, vertical centering and the headline column all
-  // derive from it so the composition stays balanced.
+  // Everything else is sized from MONITOR_W.
   const MONITOR_W = 500
   const MONITOR_RIGHT = 70
   const SCREEN_W = MONITOR_W - 24 // outer(7) + inner(5) padding, both sides
@@ -165,7 +148,7 @@ export default async function OpengraphImage() {
                       'linear-gradient(122deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 16%, rgba(255,255,255,0) 40%)',
                   }}
                 />
-                {/* frosted title pill (text only, per request) */}
+                {/* frosted title pill */}
                 <div
                   style={{
                     position: 'absolute',

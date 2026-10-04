@@ -1,9 +1,6 @@
-// The three open-access museum adapters. Each one only *harvests* — search,
-// hydrate, and map its raw record onto (a) the gallery provenance keys and (b) the
-// raw fields the clearance gate judges. Eligibility is decided in clearance.mjs.
-//
-// Server-side filters (AIC is_public_domain, CMA cc0=1) only use the museum's own
-// licence flag to avoid fetching obvious rejects; the gate re-checks every record.
+// The three museum adapters. They search and map records to the provenance keys
+// and the fields clearance.mjs judges; they don't decide eligibility. Server-side
+// licence filters just skip obvious rejects.
 
 import { LICENSE_RULES, peopleFromAic, peopleFromCma, peopleFromMet } from './clearance.mjs'
 import { chunk, http, log, mapPool } from './lib.mjs'
@@ -193,9 +190,8 @@ async function metSearchIds(params, n) {
 }
 
 /**
- * Round-robin the per-medium result lists (paintings first) so prints can't crowd
- * out paintings. `skip`: object IDs already hydrated this run (each one costs a
- * ~1 s request at the Met, so never fetch one twice).
+ * Interleave the per-medium results, paintings first, so prints can't crowd
+ * them out. `skip`: IDs already fetched this run (each costs ~1 s at the Met).
  */
 async function metSearch(query, n, highlights, skip = new Set()) {
   const per = []

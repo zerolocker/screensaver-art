@@ -17,13 +17,9 @@ import { useIsMobileDevice } from '@/lib/device'
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 /**
- * The site's "Download" call to action.
- *
- * On a Mac (or any desktop) it's a normal link to `/download/mac`, labelled
- * `label` with a download icon. On a phone or tablet — where the macOS app can't
- * be installed — it instead opens a dialog that emails a link to open on the
- * Mac, and relabels to `mobileLabel` with a mail icon so the action (and that
- * it's not an on-device download) is honest. Same button styling in both cases.
+ * The Download button. On a desktop it links to `/download/mac`. On a phone or
+ * tablet it reads `mobileLabel` and opens a form that emails a link to open on
+ * the Mac.
  */
 export function DownloadCTA({
   className,
@@ -45,8 +41,7 @@ export function DownloadCTA({
 }) {
   const isMobile = useIsMobileDevice()
 
-  // Until we know the device (and on desktop) render a real link — best for SEO,
-  // accessibility, and the common case. Matches SSR so there's no hydration flip.
+  // A real link until the device is known, matching the server render.
   if (!isMobile) {
     return (
       <a

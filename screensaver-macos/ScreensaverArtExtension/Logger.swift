@@ -1,7 +1,6 @@
 import OSLog
 
-// Shared OSLog subsystem so the extension's lifecycle can be watched in
-// Console.app / `log stream`:
+// Watch with:
 //
 //   log stream --predicate 'subsystem == "com.livingart.screensaver.app"' --level debug
 //

@@ -1,20 +1,15 @@
-// Shared GitHub API proxy: release assets for /download/[os] + /updates/[...path],
-// and repo file contents for /api/gallery.
-//
-// Everything here goes through a server-side token (GITHUB_RELEASE_TOKEN, a
-// fine-grained PAT with Contents: Read-only) — never a public URL. Asking the API
-// for a release asset with `Accept: application/octet-stream` yields a short-lived
-// SIGNED objects.githubusercontent.com URL that downloads fine for anonymous users
-// on a public OR private repo; `fetchRepoFile` reads tracked files the same way.
-// So going public → private is a zero-change event for downloads, auto-update,
-// and the gallery playlist alike.
+// GitHub API access for /download, /updates and /api/gallery, always through
+// GITHUB_RELEASE_TOKEN (a read-only fine-grained PAT) rather than public URLs,
+// so everything keeps working if the repo goes private. A release asset fetched
+// with `Accept: application/octet-stream` redirects to a short-lived signed URL
+// that anyone can download.
 
 export const REPO = 'zerolocker/screensaver-art'
 export const REVALIDATE_SECONDS = 120
 
 export interface GitHubAsset {
   name: string
-  url: string // API URL — used with Accept: octet-stream to mint a signed URL
+  url: string // API URL, used to mint a signed URL
 }
 
 export interface GitHubRelease {
@@ -26,22 +21,14 @@ export function githubHeaders(token: string): HeadersInit {
     Accept: 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
     Authorization: `Bearer ${token}`,
-    // GitHub requires a User-Agent on API requests.
     'User-Agent': 'living-art-screensaver-web',
   }
 }
 
 /**
- * Fetch the latest release. Throws on a non-OK response.
- *
- * `fresh` skips the data cache. The default (cached) mode is
- * stale-while-revalidate: after the window expires the next request still gets
- * the OLD release and only *triggers* a background refresh — on a low-traffic
- * route that can serve a just-superseded release for many minutes (observed:
- * the auto-update feed still said 1.4.5 seventeen minutes after 1.4.6
- * published). Fine for /download (a human retrying is cheap); wrong for
- * /updates, where a stale answer silently delays every installed app's
- * "Relaunch to update" banner — so the updater feed passes `fresh: true`.
+ * Fetch the latest release. The default cache is stale-while-revalidate, which
+ * can serve an outdated release for many minutes on a quiet route. That's fine
+ * for /download; /updates passes `fresh` so installed apps learn of updates promptly.
  */
 export async function getLatestRelease(token: string, opts?: { fresh?: boolean }): Promise<GitHubRelease> {
   const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
@@ -52,11 +39,7 @@ export async function getLatestRelease(token: string, opts?: { fresh?: boolean }
   return (await res.json()) as GitHubRelease
 }
 
-/**
- * Mint a fresh short-lived signed URL for an asset (for a 302 redirect, so the
- * bytes stream from GitHub's CDN, never through Vercel). Returns the signed URL,
- * or null if GitHub didn't hand one back.
- */
+/** A short-lived signed URL for an asset, to redirect to (so bytes skip Vercel). */
 export async function mintSignedAssetUrl(assetApiUrl: string, token: string): Promise<string | null> {
   const res = await fetch(assetApiUrl, {
     headers: { ...githubHeaders(token), Accept: 'application/octet-stream' },
@@ -66,10 +49,7 @@ export async function mintSignedAssetUrl(assetApiUrl: string, token: string): Pr
   return res.headers.get('location')
 }
 
-/**
- * Fetch an asset's raw bytes server-side (follows the signed-URL redirect). Used
- * for the tiny update manifest, which we proxy inline rather than redirect.
- */
+/** An asset's bytes, for the small update manifest that's served inline. */
 export async function fetchAssetBody(assetApiUrl: string, token: string): Promise<Response> {
   return fetch(assetApiUrl, {
     headers: { ...githubHeaders(token), Accept: 'application/octet-stream' },
@@ -78,11 +58,8 @@ export async function fetchAssetBody(assetApiUrl: string, token: string): Promis
 }
 
 /**
- * Read a tracked file from the repo at `ref`, as text. Throws on a non-OK response.
- *
- * Uses the `raw` media type deliberately: the Contents API's well-known 1 MB
- * ceiling applies to the default base64-JSON response, while raw serves up to
- * 100 MB — so a growing playlist won't quietly hit a wall.
+ * Read a repo file at `ref`. Uses the `raw` media type, which allows 100 MB;
+ * the default JSON response stops at 1 MB.
  */
 export async function fetchRepoFile(
   path: string,

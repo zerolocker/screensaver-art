@@ -1,262 +1,100 @@
-# Marketing asset engine
+# Social clips
 
-> Part of the growth initiative — live status + backlog in the hub:
-> [`../docs/GROWTH-PROGRESS.md`](../docs/GROWTH-PROGRESS.md).
+Turns a gallery piece into vertical social clips and posts them. The nightly curation runs both scripts for one piece a night (step 8 of [`AUTOMATED_CURATION.md`](../curation/AUTOMATED_CURATION.md)). Growth status: [`docs/GROWTH-PROGRESS.md`](../docs/GROWTH-PROGRESS.md).
 
-Turn a gallery piece into **ready-to-post social clips + captions — and then post
-them**. The nightly curation agent produces landscape (16:9) art; social feeds are
-vertical. `make-social-assets.mjs` reframes a piece into **9:16** (Instagram, TikTok,
-YouTube) and **2:3** (Pinterest): the art zoomed over a blurred copy of itself, the
-piece's title in a pill under it, and a music bed written for that artwork. It writes
-the per-platform captions too. **The clip keeps the source's own length and plays
-once** — these are authored pieces, and many are deliberately non-looping.
-`post-social.mjs` then publishes it to **Instagram, YouTube, TikTok and Pinterest**.
-
-| Script | What it does |
+| File | What it does |
 |---|---|
-| `make-social-assets.mjs` | renders the clips + `captions.md` + `meta.json` |
-| `post-social.mjs` | publishes one rendered piece to all four channels |
-| `lib/captions.mjs` | the caption copy, shared by both |
-| `lib/hashtags.mjs` | each piece's hashtags + search phrase, from its style and era |
-| `lib/title_pill.py` | renders the title pill burned under the art (Pillow) |
-| `lib/music.mjs` | generates the per-piece bed (one Lyria call, via the `lyria-music-gen` skill) |
+| `make-social-assets.mjs` | Renders the clips, `captions.md` and `meta.json` |
+| `post-social.mjs` | Posts one rendered piece to Instagram, YouTube, TikTok and Pinterest |
+| `lib/captions.mjs` | Caption text, shared by both scripts |
+| `lib/hashtags.mjs` | Each piece's hashtags and search phrase |
+| `lib/title_pill.py` | Draws the title pill under the art (Pillow) |
+| `lib/music.mjs` | Generates the piece's music (one Lyria call) |
 
-Because it reuses art you already generate nightly, the marginal cost of a day's
-worth of social content is ~one ffmpeg run. This is the engine behind the
-"content flywheel" in [`../docs/growth-and-marketing-strategy.md`](../docs/growth-and-marketing-strategy.md).
+Needs `ffmpeg`, Node 18+, and python3 with Pillow (without Pillow, the title falls back to a plain ffmpeg text box). No npm packages.
 
-## Requirements
-- **ffmpeg** on `PATH` (`ffmpeg -version`). On macOS: `brew install ffmpeg`.
-- **python3 with Pillow** for the title pill. The nightly curation already has it (the
-  image and video skills import it). Without it the title falls back to ffmpeg's own
-  square text box rather than disappearing.
-- Node ≥ 18 (uses built-ins + global `fetch`; **no npm deps**).
+## Rendering
 
-## Usage
 ```bash
-# Render the night's four pieces (silent — only the one being posted gets scored):
-node marketing/make-social-assets.mjs --latest 4
-
-# The piece being posted, scored with music written for it:
+node marketing/make-social-assets.mjs --latest 4                       # the 4 newest pieces, silent
 node marketing/make-social-assets.mjs --title "Splash Fountain" --music-prompt "$MUSIC_PROMPT"
-
-# A specific piece (title substring match, case-insensitive):
-node marketing/make-social-assets.mjs --title "Art Nouveau"
-
-# A local/remote file directly, with an explicit style for the title and captions:
 node marketing/make-social-assets.mjs --src ./clip.mp4 --title "Stormy Sea" --style "Romanticism"
 ```
 
-### Flags
 | Flag | Default | Meaning |
 |---|---|---|
-| `--latest [N]` | 4 | Process the N newest `gallery.json` entries (newest are appended last). |
-| `--title <substr>` | — | Process the gallery entry whose title contains `<substr>`. |
-| `--src <path\|url>` | — | Use this MP4 directly (skips gallery lookup). Pair with `--title`/`--style`. |
-| `--style <text>` | derived | Override the art style shown in the title pill and captions. |
-| `--formats <list>` | `9x16,2x3` | Comma list of `9x16`, `2x3`. |
-| `--duration <sec>` | source length | Trim to at most N seconds. Only ever trims — nothing is looped to pad a longer target. |
-| `--music-prompt <text>` | off | Generate a bed from this prompt (one Lyria call) and score the clip with it. Also records the prompt as `music_prompt` on the piece's `gallery.json` entry. Refused when more than one piece matches. |
-| `--audio <file\|url>` | off | Score with an existing audio file instead of generating one. |
-| `--gain <dB>` | `-9` | Bed level. Negative = quieter than the source. |
-| `--out <dir>` | `marketing/out` | Output base directory (gitignored). |
+| `--latest [N]` | 4 | The N newest `gallery.json` entries |
+| `--title <text>` | | The entry whose title contains this (case-insensitive) |
+| `--src <path\|url>` | | Use this MP4 directly; pair with `--title`/`--style` |
+| `--style <text>` | from the title | The style shown in the pill and captions |
+| `--formats <list>` | `9x16,2x3` | Which shapes to render |
+| `--duration <sec>` | the clip's length | Trim to at most this long. Never loops to pad. |
+| `--music-prompt <text>` | off | Generate music from this prompt and record it as `music_prompt` in `gallery.json`. Refused if more than one piece matches. |
+| `--audio <file\|url>` | off | Use an existing audio file instead |
+| `--gain <dB>` | `-9` | Music level |
+| `--out <dir>` | `marketing/out` | Output folder (gitignored) |
 
-## Output
-```
-marketing/out/<slug>/
-  <slug>_9x16.mp4     # 1080×1920 — Instagram, TikTok, YouTube
-  <slug>_2x3.mp4      # 1080×1620 — Pinterest
-  captions.md         # the exact per-platform copy the poster will publish
-  meta.json           # the hand-off to post-social.mjs (incl. the music prompt used)
-marketing/out/.posted.json   # ledger: what has already been published where
-```
-`out/` is gitignored — it's build output, not source.
+Output, per piece, in `marketing/out/<slug>/`:
+- `<slug>_9x16.mp4` (1080×1920) for Instagram, TikTok and YouTube, whose players letterbox anything else.
+- `<slug>_2x3.mp4` (1080×1620) for Pinterest.
+- `captions.md`: exactly what will be posted.
+- `meta.json`: the hand-off to the poster, including `webSlug`, the piece's permanent `/art/<slug>` page. The poster never recomputes it.
 
-**`meta.json` is the contract between the two scripts.** It records the title, the
-style, the rendered formats and — the important one — `webSlug`, the piece's
-permanent `/art/<slug>` landing page. The poster never re-derives any of it.
+`marketing/out/.posted.json` records what has been posted where.
 
-## How it reframes
-A blurred, darkened copy of the clip fills the canvas, and the art sits on it **zoomed
-to 1.5× the canvas width**, so the clip shows the middle two-thirds of the piece. That
-is deliberate: in a feed every tile has the same width, so a letterboxed piece is the
-same small strip whatever the canvas shape, and only cropping makes the art itself
-bigger (here, half again as large). The nightly agent picks pieces whose subject
-survives the crop (`AUTOMATED_CURATION.md` step 8a).
+**The frame.** The art is zoomed to 1.5× the frame width over a blurred copy of itself, so the clip shows its middle two-thirds. In a feed, only cropping makes the art bigger. The piece's title sits in a pill right under the art, styled like the screensaver's own. There's no brand text, URL or call to action in the clip: a post that looks like an ad gets scrolled past. The clip plays once, at the source's length.
 
-The art stays vertically centred, and **the piece's title sits in a pill right under
-it** (*The Street Food Stall · Contemporary Illustration*). The pill mirrors the one the
-screensaver itself shows: dark, translucent, fully rounded, system font at medium
-weight. `lib/title_pill.py` renders it; a long title shrinks to fit within 85% of the
-width rather than wrapping.
+**The music** is written for the piece by the nightly agent ([`PROMPT_GUIDANCE.md`](../curation/PROMPT_GUIDANCE.md), *Music prompts*). Music that contradicts the picture is worse than silence, so there's no shared library. It's mixed at −9 dB with fades. The MP3 is temporary; only the prompt is kept, in `gallery.json`. Every prompt must say "Instrumental, no vocals" (Lyria sings by default, and the script refuses a prompt without it) and "Even dynamics, no build or drop".
 
-**There is no brand or marketing text in the clip** — no URL, no call to action
-(founder call, 2026-09-12). A post that reads as an ad gets scrolled past, and words on
-screen pull attention off the art. The caption carries the pitch instead.
-
-Which clip goes where: Instagram, TikTok and YouTube get **9:16**, because their players
-are 9:16 and give any other shape black bars. Pinterest gets **2:3**, its recommended pin
-shape. On 9:16 the title lands near the top of the area Instagram's caption covers; the
-art is deliberately not lifted until a real post shows whether that matters.
-
-## Audio — the per-piece music bed
-`--music-prompt` makes one Lyria call, then cuts the ~30s result to the clip's own
-length at **−9 dB**, with fades in and out that scale with the clip (up to 1 s / 1.5 s
-— a hard cut on a sustained pad is very audible). The art leads; the music sits
-under it.
-
-**The music is written for the specific artwork, not pulled from a library.** An
-earlier version reused five generic ambient beds, on the theory that nobody notices
-the bed varying nightly. True — but it misses what *is* noticed: a bright, noisy
-plaza full of children playing in a fountain scored with a slow, tender solo piano
-reads as a mistake, because the music contradicts the picture. Matching music is
-worth one API call a night; mismatched music is worth less than silence.
-
-**The prompt is the durable artifact, not the MP3.** The audio is generated into a
-temp dir, muxed into the clips, and deleted — nothing is committed, nothing is
-uploaded (`CLAUDE.md` → Repo rules). What persists is `music_prompt` on that piece's
-`gallery.json` entry, a curation-only field alongside `image_prompt` and
-`video_prompt` (the shared `ArtItem` type deliberately omits all three — no client
-reads them). Because only one piece a night is posted, **only one piece a night
-carries the field**, and the script refuses `--music-prompt` when more than one piece
-matches so that can't drift.
-
-**Who writes the prompt: the nightly curation agent.** It has just written the image
-and video prompts and looked at the still, so nothing downstream knows the piece as
-well. The rules, a worked example and the anti-patterns live in
-[`curation/PROMPT_GUIDANCE.md`](../curation/PROMPT_GUIDANCE.md) → *Music prompts*;
-the runbook is step 8 of [`curation/AUTOMATED_CURATION.md`](../curation/AUTOMATED_CURATION.md).
-
-Two clauses belong in every prompt:
-- ⚠️ **"Instrumental, no vocals."** Lyria sings by default — a perfectly innocent
-  prompt comes back fully sung, with its own lyric sheet. `make-social-assets.mjs`
-  rejects a prompt without this *before* spending the call, and the skill fails
-  after one if it hears lyrics.
-- **"Even dynamics, no build or drop."** A crescendo pulls attention off the art,
-  which is the one thing the clip exists to show.
-
-Self-generated audio is also the only workable answer here: the platforms' trending
-libraries are licence-restricted for commercial accounts *and* a posting API can't
-attach a native sound anyway (strategy **§11**/**§11.2**). A baked-in track needs no
-cooperation from anyone.
-
-## Posting (`post-social.mjs`)
+## Posting
 
 ```bash
-# preflight: key, connected accounts, the Pinterest board. Posts nothing.
-bash curation/with-secrets.sh ZERNIO_API_KEY -- \
-  node marketing/post-social.mjs --check
-
-# the nightly call (step 8 of curation/AUTOMATED_CURATION.md)
-bash curation/with-secrets.sh ZERNIO_API_KEY -- \
-  node marketing/post-social.mjs --latest 4
+bash curation/with-secrets.sh ZERNIO_API_KEY -- node marketing/post-social.mjs --check      # preflight, posts nothing
+bash curation/with-secrets.sh ZERNIO_API_KEY -- node marketing/post-social.mjs --slug <slug>
 ```
 
-One vendor, four channels, all equal priority: **Zernio** posts to Instagram, YouTube,
-TikTok and Pinterest (strategy **§11.1**). Each clip goes up once through Zernio's
-presigned media upload (the 9:16 serves three channels, the 2:3 the pin), then each
-channel gets its own `POST /v1/posts` with `publishNow`. That is one post per channel
-rather than one post for all four, because a payload that one platform rejects fails
-the whole request, and it must not take the other three down with it. (Until
-2026-09-12, Instagram + YouTube went through upload-post.)
-
-### Flags
 | Flag | Default | Meaning |
 |---|---|---|
-| `--check` | — | Preflight only: verify the key, list connected accounts, resolve the board. |
-| `--dry-run` | — | Build and validate everything, publish nothing (includes TikTok's own dry-run check). |
-| `--latest [N]` | 4 | Consider the N most recently rendered pieces. |
-| `--count <K>` | 1 | How many of them to actually post. |
-| `--slug <s>` | — | Post one specific rendered piece (its `marketing/out/<slug>` dir). |
-| `--channels <list>` | all four | `instagram,youtube,tiktok,pinterest`. |
-| `--format <fmt>` | `9x16`; `2x3` for Pinterest | Post this rendered clip to every channel instead. A piece rendered before 2:3 existed pins its 9:16 clip. |
-| `--force` | off | Post again even if the ledger says it already went out. |
+| `--check` | | Check the key, list connected accounts, find the board |
+| `--dry-run` | | Build and validate everything, publish nothing |
+| `--latest [N]` | 4 | Consider the N most recent renders |
+| `--count <K>` | 1 | How many of them to post |
+| `--slug <s>` | | Post this rendered piece |
+| `--channels <list>` | all four | `instagram,youtube,tiktok,pinterest` |
+| `--format <fmt>` | `9x16`; `2x3` for Pinterest | Post this shape everywhere |
+| `--force` | off | Post again even if the ledger says it went out |
 
-Env override: `PINTEREST_BOARD` (a board **name** or id; defaults to *Daily Curation*,
-falling back to the account default).
+`PINTEREST_BOARD` sets the board name or id (default "Daily Curation").
 
-### The five things that make it safe to run unattended
-1. **Every pin links to that piece's own page** — `/art/<slug>` with
-   `utm_source=pinterest`, never the home page. The slug comes from `meta.json`, which
-   mirrors the website's own permanent rule; a drift test
-   (`living-art-screensaver-web/lib/__tests__/social-slug-drift.test.ts`) fails the
-   build if the two ever disagree. **A pin's destination URL cannot be edited after
-   publishing** — which is the whole reason none of this is improvised at post time.
-   Instagram, TikTok and YouTube posts carry no link at all: their captions can't be
-   clicked, so Instagram and YouTube say *Link in bio* and the profile does the
-   linking. TikTok's profile can't carry a link, so it says *Link in comment and bio*
-   and gets the address as a pinned comment (see *Caption copy*).
-2. **It refuses to pin a dead link.** The landing page only exists once Vercel has
-   rebuilt from the pushed `gallery.json`, so the poster polls it before pinning and
-   waits the deploy out rather than pinning a 404. The other three channels don't wait.
-3. **One piece a night, not four.** Four posts a day is a cadence nobody wants in a
-   feed. The other three stay rendered for later nights.
-4. **A ledger (`out/.posted.json`) plus an idempotency key.** Re-runs skip what already
-   went out. Each post also carries an `x-request-id`, so a call retried within
-   Zernio's ~5-minute window returns the original post instead of creating a second one.
-5. **In-flight ≠ failed.** Zernio reports `pending`/`processing` while it is still
-   working, and retries a platform that transiently errors — a real pin did exactly
-   that and published a minute later. The poster waits for a terminal state and treats
-   an unsettled one as *sent*, because calling it a failure would make the next night
-   publish a duplicate.
+Everything goes through Zernio. Each clip is uploaded once through Zernio's presigned upload (its direct upload rejects files over about 4.5 MB). Then each channel gets its own post, so one platform rejecting a post can't sink the other three.
 
-Don't reach for a platform trending sound: it's licence-restricted for commercial
-accounts *and* a posting API can't attach one (§11), which is why we score the clips
-ourselves. Spend the ~2 min/day replying to early comments instead.
+What makes it safe to run unattended:
+- **Pins link to the piece's own page** with `utm_source=pinterest`. A pin's link can't be edited later, so the slug comes from `meta.json`, and `living-art-screensaver-web/lib/__tests__/social-slug-drift.test.ts` fails if the poster's slug rule and the website's ever differ.
+- **No pinning dead links.** The page exists only after Vercel rebuilds from the new `gallery.json`, so the poster waits until it's live. The other channels have no link and don't wait.
+- **No double posts.** The ledger skips what already went out, and each request has an idempotency key, so a retry returns the original post.
+- **Pending isn't failed.** Zernio reports `pending` while it retries a platform. The poster waits for a final state and treats an unsettled post as sent, because marking it failed would repost it the next night.
 
-## Caption copy
-The copy lives in `lib/captions.mjs` and is shared: `captions.md` shows exactly what
-`post-social.mjs` will publish, so what you read is what went out.
+## Captions
 
-**Instagram and YouTube lead with one fixed line** (founder call, 2026-09-12), and TikTok
-with the same pitch pointed at its pinned comment (founder call, 2026-09-14):
+All copy lives in `lib/captions.mjs` and depends only on the piece, so a retry posts identical text.
+
+Instagram and YouTube lead with one fixed line; TikTok's differs at the end:
 
 ```
 Animated art screensaver app - Link in bio               (Instagram, YouTube)
 Animated art screensaver app - Link in comment and bio   (TikTok)
 ```
 
-- **It says this is an app**, not an account that shares daily art, in the few words a
-  phone shows before "more".
-- **No URL.** Those three platforms don't make caption links clickable; the bio link
-  does, or on TikTok the pinned comment.
-- **No "Mac", on purpose.** Interest from people on other platforms is a signal worth
-  seeing.
+It says this is an app, in the few words a phone shows. It has no URL, because these captions aren't clickable. It leaves out "Mac" on purpose, so interest from other platforms shows up. Under it come the piece's name and its hashtags. On YouTube the fixed line is the title.
 
-Under it, after a blank line, each post names its piece in the same words as the title
-pill, so posts stay distinguishable to search, followed by its hashtags (below).
-On YouTube the fixed line is the title and the piece's name is the description. A
-caption repeated every night isn't a duplicate to Zernio, which fingerprints the text
-and the media together.
+**Pinterest** works differently: a pin is itself a link, and Pinterest search ranks the pin's words. Pin titles lead with the style ("Animated Ukiyo-e: Mount Fuji | Art screensaver app"), the description names the art in plain words, and pins have no hashtags.
 
-**Pinterest is different:** a pin is itself a link, so it never says "Link in bio", and
-its link is the piece's `/art/<slug>` page. Pinterest search ranks the words in a pin, and
-people search a style (*ukiyo-e*), not a piece's name. So since 2026-09-14 the title leads
-with the style (*Animated Ukiyo-e: Mount Fuji | Art screensaver app*), the description
-names the art in plain words (*Japanese art, gently animated for your screensaver…*), and
-pins carry no hashtags.
+**Hashtags** (`lib/hashtags.mjs`): Instagram and TikTok get `#screensaver #animatedart` plus up to two for the piece, one for its movement or country and one for its era. YouTube gets three, the piece's own first.
+- A tag must be true of every piece it lands on. `Chinese & Korean` has no era tag, because `#chineseart` is wrong on a Korean painting.
+- A tag must have an audience. Style tags were checked against TikTok's view counts; tags under about 5M views were dropped, and the art-specific form wins where the bare word means something else (`#renaissanceart`, `#cyberpunkart`).
+- Few on purpose: Instagram allows five, and favours targeted ones. No `#art`.
 
-**Hashtags come from the piece** (`lib/hashtags.mjs`, since 2026-09-14). Instagram and
-TikTok posts carry `#screensaver #animatedart`, then up to two of the piece's own: one for
-its movement or country, one for its era. *Mount Fuji · Ukiyo-e* gets
-`#screensaver #animatedart #ukiyoe #japaneseart`. A YouTube description gets three, the
-piece's own first, because YouTube shows up to three beside the title.
-
-- **True of the piece.** An era gets a hashtag only if it fits every style filed under it.
-  *Chinese & Korean* has none (`#chineseart` is wrong on a Joseon painting), so those
-  pieces take theirs from the style.
-- **Has an audience.** Most styles are used once, so only well-known movements, schools
-  and countries map to a tag. Each tag was checked against TikTok's own counts: tags under
-  ~5M views were dropped, and where the bare word is used for much else the art-specific
-  form wins (`#renaissanceart` over `#renaissance`, `#cyberpunkart` over `#cyberpunk`).
-- **Few, on purpose.** Instagram caps a post at five hashtags and says a few targeted ones
-  beat generic ones, so there is no `#art`.
-- **The era comes from `meta.json`** (`era`, written at render time), or from
-  `gallery.json` for clips rendered before that field existed.
-
-**Real public-domain paintings** (`source: "real_artwork"` in `gallery.json`, see
-`curation/REAL_PAINTINGS_CURATION.md`) keep the same fixed first lines, but the rest leads
-with the painting and the painter, plus a museum credit:
+**Real paintings** (`source: "real_artwork"`) keep the fixed first line, then name the painting, painter and museum:
 
 ```
 Animated art screensaver app - Link in bio
@@ -266,31 +104,10 @@ Gustave Caillebotte, 1877 · Art Institute of Chicago · Public domain
 #screensaver #animatedart #caillebotte #impressionism
 ```
 
-Their own hashtags come from the artist, in order: the artist's tag, their movement (or
-the era's tag if we don't claim one), `#arthistory`, and `#famouspaintings` for the famous
-names `lib/hashtags.mjs` lists; the usual caps then apply, so IG / TikTok show the first
-two and YouTube the first three. The YouTube title and the pin title name the painting and
-artist (*Paris Street; Rainy Day by Gustave Caillebotte, animated | Art screensaver app*).
-`meta.json` records the provenance as `artwork`. **The artist tags were not checked against
-TikTok's counts** the way the style tags were.
+Their hashtags come from the artist, in order: the artist, their movement (or the era), `#arthistory`, and `#famouspaintings` for the famous names listed in `lib/hashtags.mjs`. Artist tags weren't checked against TikTok's counts. YouTube and pin titles name the painting and artist.
 
-**TikTok also gets a pinned comment**, *Get the screensaver app:
-living-art-screensaver.com*, posted under each video once it is live (since 2026-09-14).
-The TikTok account can't have a bio link: it has no Business switch, and a personal
-account only gets one at 1,000 followers. So its caption says *Link in comment and
-bio*: the pinned comment carries the address, and the bio carries it as plain text
-(set by hand, once).
-
-- **Plain text, not a link.** TikTok doesn't make URLs in comments clickable. The
-  comment was checked by hand to be visible to signed-out viewers.
-- **Needs Zernio's TikTok Business app connection** (every connection since
-  2026-09-10). An account still on the old developer app gets
-  `400 PLATFORM_LIMITATION`; reconnecting it in Zernio moves it over.
-- **The pin is retried.** A pin sent the instant the comment lands fails, because
-  TikTok hasn't registered the comment yet, so the poster waits 15s between tries.
-- **A failure is a warning, never a failed run.** The video is already public, and
-  a post recorded as failed would be published again the next night. The error is
-  printed (`⚠ tiktok link comment`) and kept on the ledger entry as `linkComment`.
-
-Everything is a pure function of the piece, so a retried post republishes
-byte-identical copy.
+**TikTok's pinned comment.** The TikTok account can't have a bio link (no Business option, and personal accounts need 1,000 followers). So after each video goes live, the poster comments "Get the screensaver app: living-art-screensaver.com" and pins it.
+- It's plain text; TikTok comment links aren't clickable.
+- It needs Zernio's TikTok Business app connection. An older connection gets `400 PLATFORM_LIMITATION`; reconnect the account in Zernio.
+- Pinning right after commenting fails, so the poster retries every 15 s.
+- A failure only warns (`⚠ tiktok link comment`, saved as `linkComment` in the ledger). It never fails the run, since the video is already public.

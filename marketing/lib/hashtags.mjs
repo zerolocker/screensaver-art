@@ -1,30 +1,17 @@
-// Hashtags and search phrases for a piece, derived from its style and its
-// gallery era tag (or, for a real public-domain artwork, from its artist — see
-// "Real public-domain artworks" below). Used by lib/captions.mjs; nothing is
-// stored per piece.
-//
-// Two rules keep every tag honest:
-//   - It must be true of the piece. An era only gets a hashtag when it fits every
-//     style filed under it. "Chinese & Korean" has none, because #chineseart is
-//     wrong on a Joseon painting; those pieces get theirs from the style instead.
-//   - It must have an audience, about the right thing. Most styles are used once
-//     ("Modernist Sporting Oil"), so only well-known movements, schools and
-//     countries map to a tag. Every style/era tag here was checked against
-//     TikTok's own counts (2026-09-14; the artist tags below were not): under
-//     ~5M views was dropped, and where the bare word is used for much else the
-//     art-specific form wins (#renaissanceart, not #renaissance; #cyberpunkart,
-//     not the game-heavy #cyberpunk).
-//
-// Pure data and a few pure functions, no deps.
+// Hashtags and search phrases for a piece, from its style and era tag, or for a
+// real artwork from its artist. Every tag must be true of every piece it lands on
+// ("Chinese & Korean" has none: #chineseart is wrong on a Korean painting) and
+// have a real audience. The style and era tags were checked against TikTok's view
+// counts (under ~5M dropped; #renaissanceart over the ambiguous #renaissance).
 
-/** Era tag → the hashtag and search phrase that are true of every piece under it. */
+/** Era tag → a hashtag and phrase true of every piece under it. */
 const ERA = {
   'Prehistoric': { tag: '#prehistoricart', phrase: 'prehistoric art' },
   'Egyptian': { tag: '#egyptianart', phrase: 'ancient Egyptian art' },
   'Ancient Near East': { tag: '#ancientart', phrase: 'ancient Near Eastern art' },
   'Greek & Roman': { tag: '#ancientart', phrase: 'ancient Mediterranean art' },
   'Arts of the Americas': { tag: '#mesoamerica', phrase: 'Mesoamerican art' },
-  // Aboriginal, Māori, West African, Ethiopian…: no one tag or phrase fits them all.
+  // Too varied for one tag or phrase.
   'Arts of Africa & Oceania': {},
   'Japanese': { tag: '#japaneseart', phrase: 'Japanese art' },
   'Chinese & Korean': { phrase: 'East Asian art' },
@@ -34,7 +21,7 @@ const ERA = {
   'Renaissance & Baroque': { tag: '#oldmasters', phrase: 'Old Master painting' },
   '19th Century': { tag: '#19thcenturyart', phrase: '19th-century art' },
   'Modern': { tag: '#modernart', phrase: 'modern art' },
-  // Cyberpunk to storybook illustration: the style decides the tag.
+  // Too varied: the style decides.
   'Contemporary': { phrase: 'contemporary art' },
 }
 
@@ -105,22 +92,12 @@ const styleRule = (style) => STYLE.find(([re]) => re.test(style ?? ''))?.[1] ?? 
 
 // ── Real public-domain artworks ─────────────────────────────────────────────
 //
-// A real painting's title names its artist where an AI piece names a style, so
-// its hashtags come from the artist instead: the artist, their movement, then
-// two art-history tags. Same two rules as above:
-//   - True of the piece. The movement is only claimed for artists listed here,
-//     and only one they're squarely filed under (Manet, Sargent, Whistler… sit
-//     between movements, so they get their era's tag instead). #famouspaintings
-//     is only claimed for the famous names in this list: curation prefers a
-//     master's *lesser-known* work, but the painter is famous.
-//   - An audience, about the right thing: the tag people actually use for that
-//     artist (#claudemonet, since #monet is a common name; #jmwturner, never
-//     #turner). These are NOT yet checked against TikTok's counts the way the
-//     tables above were — do that before relying on them.
-// Anyone not listed gets a full-name tag (#jeanbaptisteoudry): unambiguous, so
-// it's at least about the right person. Every artist listed died before 1955,
-// so their work can be public domain at all. Patterns use full names where a
-// surname alone is shared (Rex Whistler, Yasuo Kuniyoshi, Rembrandt Peale…).
+// A real painting's hashtags come from its artist. A movement is claimed only
+// for artists squarely in one (Manet, Sargent and Whistler get their era's tag),
+// and #famouspaintings only for listed names. Tags are the forms people use
+// (#claudemonet, #jmwturner) but were NOT checked against TikTok's counts.
+// Unlisted artists get a full-name tag. Patterns use full names where a surname
+// is shared (Rex Whistler, Yasuo Kuniyoshi, Rembrandt Peale).
 
 /** Artist (matched against the provenance `artist`) → short name, hashtag, movement. */
 const ARTISTS = [

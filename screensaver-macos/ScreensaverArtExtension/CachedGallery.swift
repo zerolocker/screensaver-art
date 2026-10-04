@@ -2,23 +2,15 @@ import Foundation
 
 // MARK: - Cached gallery reader
 //
-// Reads the manifest written by the Electron companion app and turns each
-// obfuscated `.bin` file into a playable temp `.mp4` URL on demand.
-//
-// Lifetime model: each call to `playableURL(for:)` writes a fresh decrypted
-// file under NSTemporaryDirectory() (inside this extension's own sandbox
-// container — always writable). Pair every call with `releasePlayable(_:)`
-// once the player is done with it so we don't leak temp files. macOS will
-// also reap NSTemporaryDirectory() on its own, so the leak is bounded even
-// if we miss one.
+// Reads the manifest and decrypts a `.bin` to a temp `.mp4` on demand. Pair each
+// `playableURL(for:)` with `releasePlayable(_:)` to delete the temp file.
 
 final class CachedGallery {
 
     static let shared = CachedGallery()
     private init() {}
 
-    /// Loads the manifest. Returns nil if the Electron app hasn't synced
-    /// anything yet, or if the manifest is corrupt.
+    /// Nil if nothing has synced yet, or the manifest is corrupt.
     func loadManifest() -> CachedManifest? {
         guard let data = try? Data(contentsOf: Cache.manifestFile),
               let manifest = try? JSONDecoder().decode(CachedManifest.self, from: data) else {
@@ -27,9 +19,7 @@ final class CachedGallery {
         return manifest
     }
 
-    /// Decrypts an item's `.bin` file to a temp `.mp4` and returns its URL.
-    /// Returns nil if the file is missing, the magic header doesn't match,
-    /// or the temp write fails.
+    /// The decrypted temp `.mp4`, or nil if the file is missing or invalid.
     func playableURL(for item: CachedItem) -> URL? {
         let src = Cache.videosDir.appendingPathComponent(item.filename)
         guard let blob = try? Data(contentsOf: src) else { return nil }

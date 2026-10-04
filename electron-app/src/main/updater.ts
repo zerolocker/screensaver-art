@@ -1,24 +1,8 @@
-// Background auto-update (Claude-Desktop style): silently download a new release
-// and surface a "Relaunch to update" prompt in the renderer.
-//
-// Built on electron-updater (the package that ships with electron-builder). On
-// macOS this drives Squirrel.Mac, which REQUIRES a Developer-ID-signed +
-// notarized build — so auto-update only does anything in a packaged release
-// build. In dev (`electron-vite dev`, `!app.isPackaged`) the whole thing is a
-// no-op: autoUpdater would throw "Could not get code signature for running
-// application", so we never wire it up.
-//
-// Where updates come from is baked into Contents/Resources/app-update.yml at
-// build time from the `publish` block in electron-builder.cjs (a `generic`
-// provider pointed at the website's /updates feed, which proxies the GitHub
-// release through the same token as /download — keeping "private repo = zero
-// change" intact). See CLAUDE.md › Auto-update.
-//
-// The embedded screensaver .appex needs no special handling here: it travels
-// inside the same signed/notarized .app the updater swaps in, and installer.ts's
-// version-aware ensureRegistered re-registers it with pluginkit on the
-// post-quitAndInstall relaunch (the appex CFBundleVersion bump is what triggers
-// it). See CLAUDE.md › Embedded .appex compatibility.
+// Background auto-update: download new releases silently, then show a
+// "Relaunch to update" banner. Squirrel.Mac needs a Developer ID signed build,
+// so this is a no-op unless packaged. Updates come from the website's /updates
+// feed (the `publish` block in electron-builder.cjs). After the relaunch,
+// installer.ts re-registers the updated appex.
 
 import { app, powerMonitor, type BrowserWindow } from 'electron'
 import { autoUpdater } from 'electron-updater'
@@ -36,8 +20,7 @@ export interface UpdateState {
   error?: string
 }
 
-// A normalized, Electron-free view of the autoUpdater events — so the state
-// transitions can be unit-tested without spinning up Electron.
+// autoUpdater events without Electron types, so the reducer is testable.
 export type UpdaterEvent =
   | { type: 'checking' }
   | { type: 'available'; version: string }
@@ -47,16 +30,9 @@ export type UpdaterEvent =
   | { type: 'error'; message: string }
 
 /**
- * Pure reducer: fold an updater event into the next UI state. `autoDownload` is
- * on, so an available update goes straight to `downloading` (the download starts
- * immediately); progress keeps the version we learned at `available`; a finished
- * download is `ready` (the only state that shows the "Relaunch" prompt).
- *
- * `ready` is sticky: once an update is downloaded, a later 'checking' /
- * 'not-available' must not hide the "Relaunch" banner (checkForUpdates skips
- * re-checks while ready, but this guards any event that slips through — the
- * only ways forward from ready are relaunching or a *different* version
- * becoming available).
+ * Fold an updater event into the UI state. Downloads start automatically, so
+ * `available` goes straight to `downloading`. `ready` shows the banner and is
+ * sticky: only a different version can replace it.
  */
 export function reduceUpdateState(prev: UpdateState, event: UpdaterEvent): UpdateState {
   switch (event.type) {
@@ -78,19 +54,14 @@ export function reduceUpdateState(prev: UpdateState, event: UpdaterEvent): Updat
   }
 }
 
-// Why a check can start: which trigger fired. Logged with every check so the
-// time-to-banner after a release can be reconstructed from main.log.
+// Logged with every check, to measure time-to-banner after a release.
 export type CheckTrigger = 'launch' | 'interval' | 'focus' | 'resume' | 'manual'
 
-const RECHECK_INTERVAL_MS = 6 * 60 * 60 * 1000 // background fallback while running
-const INITIAL_CHECK_DELAY_MS = 3_000 // let the window settle before the first check
-// A window-focus check runs at most this often. Focus is the high-value moment
-// (the user is *looking* at the app — exactly when the banner can be seen), so
-// this is deliberately much shorter than the background interval.
+const RECHECK_INTERVAL_MS = 6 * 60 * 60 * 1000
+const INITIAL_CHECK_DELAY_MS = 3_000
+// Check on window focus (when the banner can be seen), at most this often.
 const FOCUS_CHECK_MIN_GAP_MS = 15 * 60 * 1000
-// After system wake, give the network a moment to come back before checking.
-// setInterval doesn't fire while the machine sleeps (the 6h cadence stretches —
-// observed 6h42m gaps in the field), so wake gets its own trigger.
+// After wake, let the network come back first.
 const RESUME_CHECK_DELAY_MS = 10_000
 
 let currentState: UpdateState = { status: 'idle' }
@@ -112,10 +83,7 @@ export function getUpdateState(): UpdateState {
 
 export async function checkForUpdates(trigger: CheckTrigger = 'manual'): Promise<void> {
   if (!app.isPackaged) return
-  // Once an update is downloaded there is nothing left to check for — and a
-  // re-check would re-download the whole zip (autoDownload re-fetches a version
-  // it already has: observed ~30 redundant full downloads of one release over 8
-  // days in the field) and momentarily knock the "Relaunch" banner out.
+  // Once downloaded, a re-check would download the whole zip again.
   if (currentState.status === 'ready') {
     log.info('updater', 'check skipped: update already downloaded', {
       trigger,
@@ -129,8 +97,7 @@ export async function checkForUpdates(trigger: CheckTrigger = 'manual'): Promise
   try {
     await autoUpdater.checkForUpdates()
   } catch (err) {
-    // checkForUpdates can reject on a transient network failure; the 'error'
-    // event also fires, so just log here and let the state machine handle it.
+    // The 'error' event also fires and updates the state.
     log.warn('updater', 'checkForUpdates threw', {
       trigger,
       error: err instanceof Error ? err.message : String(err),
@@ -141,15 +108,11 @@ export async function checkForUpdates(trigger: CheckTrigger = 'manual'): Promise
 export function quitAndInstall(): void {
   if (!app.isPackaged) return
   log.info('updater', 'quitAndInstall requested', { version: currentState.version })
-  // isSilent=false → show the standard install UI; isForceRunAfter=true → relaunch
-  // so installer.ts's ensureRegistered re-registers the (bumped) appex.
+  // Relaunch after installing, so the updated appex gets re-registered.
   autoUpdater.quitAndInstall(false, true)
 }
 
-/**
- * Wire up auto-update. Called once after the window is created. Safe to call
- * with a fresh window getter on later launches; listeners are attached once.
- */
+/** Set up auto-update once; later calls only replace the window getter. */
 export function initUpdater(windowGetter: () => BrowserWindow | null): void {
   getWindow = windowGetter
   if (wired) return
@@ -160,8 +123,6 @@ export function initUpdater(windowGetter: () => BrowserWindow | null): void {
     return
   }
 
-  // Pipe electron-updater's own logs into our structured logger so they land in
-  // the same file + error reports.
   autoUpdater.logger = {
     info: (m?: unknown) => log.info('updater', String(m)),
     warn: (m?: unknown) => log.warn('updater', String(m)),
@@ -176,8 +137,6 @@ export function initUpdater(windowGetter: () => BrowserWindow | null): void {
   autoUpdater.on('update-not-available', () => emit({ type: 'not-available' }))
   autoUpdater.on('download-progress', (p) => emit({ type: 'progress', percent: Math.round(p.percent) }))
   autoUpdater.on('update-downloaded', (info) => {
-    // The moment the "Relaunch to update" banner becomes possible — log the
-    // time from check start so time-to-banner is measurable per release.
     log.info('updater', 'update downloaded (banner ready)', {
       version: info.version,
       sinceCheckStartMs: lastCheckStartedAt ? Date.now() - lastCheckStartedAt : null,
@@ -190,20 +149,14 @@ export function initUpdater(windowGetter: () => BrowserWindow | null): void {
 
   log.info('updater', 'auto-update enabled', { version: app.getVersion() })
   setTimeout(() => void checkForUpdates('launch'), INITIAL_CHECK_DELAY_MS)
-  // Background fallback. setInterval doesn't tick during system sleep, so this
-  // alone can stretch far past 6h — the focus/resume triggers below are what
-  // keep discovery timely for a machine that sleeps or an app left open.
+  // setInterval pauses during sleep, hence the focus and wake triggers below.
   setInterval(() => void checkForUpdates('interval'), RECHECK_INTERVAL_MS)
 
-  // The user just brought the app to the front — the one moment the banner is
-  // actually visible. Throttled so window-hopping doesn't hammer the feed.
   app.on('browser-window-focus', () => {
     if (Date.now() - lastCheckStartedAt < FOCUS_CHECK_MIN_GAP_MS) return
     void checkForUpdates('focus')
   })
 
-  // System wake: the interval timer was suspended and may be hours away from
-  // its next tick; check shortly after the network is back instead.
   powerMonitor.on('resume', () => {
     setTimeout(() => {
       if (Date.now() - lastCheckStartedAt < FOCUS_CHECK_MIN_GAP_MS) return

@@ -5,20 +5,11 @@ description: Generate or transform video with Google Veo 3.1 (google-genai SDK) 
 
 # veo3-video-gen (Google Veo 3.1)
 
-A thin, composable CLI over Veo 3.1. **Each run is exactly one Veo API call** that
-exposes the raw building blocks as flags; you compose richer results by choosing
-flags and chaining runs. This keeps the tool generic — mix and match rather than
-baking one workflow in.
+A thin CLI over Veo 3.1. Each run is exactly one Veo call; chain runs for richer results.
 
-Script: `.claude/skills/veo3-video-gen/scripts/generate.py`
-Always run it through the secrets wrapper (loads `curation/.env`, fails fast if
-`GEMINI_API_KEY` is missing). Requires the `google-genai` SDK. `--out` gets the MP4
-plus a sidecar `<out>.json` (the result video's file URI, used to extend it later).
-The script prints the output path on the **last stdout line**.
+Script: `.claude/skills/veo3-video-gen/scripts/generate.py`. Run it through the secrets wrapper, which fails fast if `GEMINI_API_KEY` is missing. Needs the `google-genai` SDK. `--out` gets the MP4 plus a sidecar `<out>.json` holding the video's file URI, used to extend it later. The output path is printed on the **last stdout line**.
 
-## Building blocks (one call each)
-
-**Image-to-video** — animate a still (its first frame is the still):
+**Image to video** (the still is the first frame):
 ```bash
 bash curation/with-secrets.sh GEMINI_API_KEY -- \
   python .claude/skills/veo3-video-gen/scripts/generate.py \
@@ -26,48 +17,33 @@ bash curation/with-secrets.sh GEMINI_API_KEY -- \
     --first-frame gallery/baroque.png --out gallery/baroque_animated.mp4
 ```
 
-**Text-to-video** — no input frame:
+**Text to video:**
 ```bash
 … generate.py --prompt "A cinematic shot of a misty harbor at dawn" --out clip.mp4
 ```
 
-**First + last frame interpolation** — animate from a start frame to a target end
-frame. Set the end frame **equal to** the start for a **seamless loop**:
+**First and last frame.** Use the same image for both to get a seamless loop:
 ```bash
 … generate.py --prompt "gentle motion, settle back to the opening" \
     --first-frame F.png --last-frame F.png --out loop.mp4
 ```
 
-**Extend a previous video (two runs).** Veo can only extend a video *it* generated,
-referenced by the sidecar from the earlier run — not an arbitrary local file:
+**Extend a video.** Veo can only extend a video it generated, referenced by its sidecar:
 ```bash
-# run 1 — generate (writes v1.mp4 + v1.mp4.json)
-… generate.py --prompt "..." --first-frame F.png --out v1.mp4
-# run 2 — extend it; --from-video reads v1.mp4.json
+… generate.py --prompt "..." --first-frame F.png --out v1.mp4                 # writes v1.mp4 + v1.mp4.json
 … generate.py --prompt "continue the motion" --from-video v1.mp4.json --out v2.mp4
 ```
-`v2.mp4` is the **full cumulative clip** (≈15s after one extend: the original 8s +
-~7s), not just the new tail. Extend up to 20× for length.
+`v2.mp4` is the whole clip (about 15 s after one extension), not just the new part. You can extend up to 20 times.
 
 ## Flags
-- `--out` (required) — MP4 path (+ `<out>.json` sidecar).
-- `--prompt` — motion/scene prompt. Per `curation/PROMPT_GUIDANCE.md`, match motion
-  to the scene and keep it physically plausible.
-- `--first-frame PATH` — starting frame (image-to-video / interpolation start).
-  Any image format works (incl. WebP) — it's re-encoded to PNG and downscaled to
-  ≤2048px before sending.
-- `--last-frame PATH` — target final frame (interpolation; `== --first-frame` ⇒ loop).
-- `--from-video PATH` — sidecar `.json` (or the `.mp4` beside it) to extend.
-- `--resolution` `720p`|`1080p` (default `720p`); `--aspect` (default `16:9`, ignored when extending);
-  `--negative-prompt`; `--model` (`$VEO_MODEL`, default `veo-3.1-generate-preview`).
-
-## What Veo rejects (don't bother)
-- **Extend + `--last-frame` together** → `400 Unsupported video generation request`.
-  You can extend, or pin a last frame, but not both in one call.
+- `--out` (required): the MP4 path.
+- `--prompt`: for gallery clips, follow `curation/PROMPT_GUIDANCE.md`.
+- `--first-frame PATH`: any image format; it's converted to PNG and scaled to at most 2048 px.
+- `--last-frame PATH`: the final frame. Same as `--first-frame` means a loop.
+- `--from-video PATH`: the sidecar `.json` (or the `.mp4` next to it) to extend.
+- `--resolution` `720p` (default) or `1080p`; `--aspect` (default `16:9`, ignored when extending); `--negative-prompt`; `--model` (default `$VEO_MODEL` or `veo-3.1-generate-preview`).
 
 ## Notes
-- **Paid + slow** (~1–3 min/call). Generate only from a still that passed the
-  vision gate in `curation/AUTOMATED_CURATION.md`.
-- Each generated MP4 may contain audio (the screensaver plays muted).
-- Compose longer or looping results by chaining the blocks above with `ffmpeg`
-  concat when needed — the script itself stays single-call.
+- Extending and `--last-frame` can't be combined in one call (`400 Unsupported video generation request`).
+- Paid and slow (1–3 minutes per call). For curation, only animate a still that passed review.
+- The MP4 may contain audio; the screensaver plays muted.

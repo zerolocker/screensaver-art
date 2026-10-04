@@ -1,95 +1,53 @@
 # PostHog analytics
 
-Product analytics for both shipping surfaces — the **website**
-(`living-art-screensaver-web/`) and the **Electron app** (`electron-app/`) — into
-one PostHog project (US cloud).
+The website and the Electron app send events to one PostHog project (US cloud).
 
-## Design at a glance
-
-| Surface | SDK | Identity | Notes |
+| Where | SDK | Identity | Setup |
 |---|---|---|---|
-| Website (browser) | `posthog-js` | anonymous → `identify(user.id)` via `PostHogAuthBridge` | Init in `instrumentation-client.ts`. Autocapture + SPA pageviews + session replay. |
-| Website (server: API routes, server actions, webhook) | `posthog-node` | `user.id` (or PostHog cookie id for anonymous downloads) | Singleton in `lib/posthog-server.ts`; flushed via `after(flushPostHog)`. |
-| Electron main | `posthog-node` | stable device UUID → `identify(user.id)` on first sync | `src/main/posthog.ts`. Key is hardcoded (publishable). |
-| Electron renderer | none (forwards over IPC) | same as main | `src/renderer/src/lib/analytics.ts` → `analytics:capture` IPC → main client. |
+| Website, browser | `posthog-js` | Anonymous, then `identify(user.id)` | `instrumentation-client.ts`. Autocapture, pageviews, session replay. |
+| Website, server | `posthog-node` | `user.id`, or the visitor's PostHog cookie id | `lib/posthog-server.ts`, flushed with `after(flushPostHog)` |
+| Electron main | `posthog-node` | A device UUID, then `identify(user.id)` on first sync | `src/main/posthog.ts` |
+| Electron renderer | none | Same as main | `src/renderer/src/lib/analytics.ts` forwards events over IPC |
 
-Two deliberate choices:
-
-- **Ad-blocker resilience.** The website routes `posthog-js` through a
-  same-origin reverse proxy (`/ingest/*` rewrites in `next.config.mjs`; `ingest`
-  is excluded from the Supabase middleware matcher in `proxy.ts`). The
-  conversion-critical events (`checkout_started`, `app_checkout_session_created`,
-  `download_served`, the Stripe webhook lifecycle) are captured **server-side**,
-  where no blocker can drop them.
-- **One identity per Electron install.** The renderer has no PostHog SDK; UI
-  events are forwarded to the main process so every event — main or renderer —
-  carries the same device/user `distinctId`. A device UUID
-  (`<userData>/posthog-device-id.json`) covers pre-login events; the first
-  authenticated sync calls `identify()` + `alias()` to merge it into the user.
-- **Browser identity is client-side.** Only a client-side `identify()` merges a
-  browser's anonymous session into the user — server-side identify can't (it
-  never sees the browser's anon id). So `components/posthog-auth-bridge.tsx`
-  (mounted in the root layout) identifies off the Supabase session on load + on
-  every sign-in, and `reset()`s on sign-out. The email-OTP screen and
-  `/auth/callback` (OAuth) still fire their own `identify`/`login_completed`, but
-  the bridge is what guarantees OAuth + returning-visitor browser events attach
-  to the user.
-
-### Session replay
-Enabled at the PostHog **project** level; the reverse proxy already carries the
-recorder asset (`/ingest/static/recorder.js`) and snapshot uploads (`/ingest/s/`).
-Privacy posture: this app has minimal privacy surface, so we set
-`maskAllInputs: false` in `instrumentation-client.ts` for fully legible replays
-(input values, incl. the login email, are captured; passwords are always masked
-by PostHog regardless). If a sensitive field ever needs hiding, add the
-`ph-no-capture` class to that element.
+- **Ad blockers.** The website sends browser events through a same-origin proxy (`/ingest/*` rewrites in `next.config.mjs`). Events that measure conversion are captured on the server, where nothing can block them.
+- **One identity per app install.** Renderer events go through the main process so every event has the same id. The device id lives in `<userData>/posthog-device-id.json`; the first signed-in sync merges it into the user.
+- **Browser identity.** Only a client-side `identify()` can link an anonymous browser session to a user. `components/posthog-auth-bridge.tsx` does this on load and on sign-in, and calls `reset()` on sign-out.
+- **Session replay** is on, with `maskAllInputs: false` so replays are readable. Passwords are always masked. Add the `ph-no-capture` class to hide a field.
 
 ## Events
 
-### Website — client (`posthog-js`)
-- autocaptured **pageviews / pageleaves / clicks** (via `defaults`)
+**Website, browser**
+- Autocaptured pageviews, page leaves and clicks
 - `download_clicked` `{ location: hero | pricing_section | cta }`
-- `subscribe_clicked` `{ location: pricing_section | account_page, is_logged_in? }`
+- `subscribe_clicked` `{ location, is_logged_in? }`
 - `customer_portal_opened`
 - `oauth_sign_in_clicked` `{ provider }`, `otp_code_requested`
-- `login_completed` `{ method: email_otp }` (+ `identify`)
+- `login_completed` `{ method: email_otp }`
 - `feedback_submitted` `{ source: website, has_image }`
-- `checkout_completed` / `checkout_canceled` `{ source: app_initiated }` (the public `/checkout/complete` page)
-- `platform_interest_opened` / `platform_interest_selected` `{ platforms, location }` / `platform_interest_submitted` `{ email, platforms, location }` — the cross-platform demand probe (`components/marketing/platform-interest.tsx`). No backend: the email is recorded straight onto the `_submitted` event (queryable in PostHog), relying on the `/ingest` reverse proxy for ad-blocker resilience.
+- `checkout_completed` / `checkout_canceled` `{ source: app_initiated }`, from `/checkout/complete`
+- `platform_interest_opened`, `platform_interest_selected` `{ platforms, location }`, `platform_interest_submitted` `{ email, platforms, location }`. The demand probe has no backend; the email is stored on the event.
+- Email-the-link flow: `download_email_modal_opened`, `download_email_submitted`, `download_email_link_clicked` (see `living-art-screensaver-web/docs/download-link-email.md`)
 
-### Website — server (`posthog-node`)
-- `checkout_started` `{ source: web, product_id }` — `app/actions/stripe.ts`
-- `app_checkout_session_created` `{ source: electron_app, existing_customer }` — `app/api/checkout/route.ts`
-- `login_completed` `{ method: oauth }` (+ `identify`) — `app/auth/callback/route.ts`
-- `download_served` `{ platform, asset }` — `app/download/[os]/route.ts` (**ad-blocker-safe download count**; reuses the visitor's PostHog cookie id)
-- Stripe webhook (`app/api/webhooks/stripe/route.ts`):
-  - `subscription_started` — `checkout.session.completed`
-  - `subscription_renewed` — `invoice.paid` with `billing_reason = subscription_cycle`
-  - `subscription_payment_failed` — `invoice.payment_failed`
-  - `subscription_cancelled` — `customer.subscription.deleted`
+**Website, server**
+- `checkout_started` `{ source: web, product_id }` (`app/actions/stripe.ts`)
+- `app_checkout_session_created` `{ source: electron_app, existing_customer }` (`app/api/checkout/route.ts`)
+- `login_completed` `{ method: oauth }` (`app/auth/callback/route.ts`)
+- `download_served` `{ platform, asset }` (`app/download/[os]/route.ts`), the reliable download count
+- `download_link_requested` (`app/api/download-link/route.ts`)
+- From the Stripe webhook: `subscription_started`, `subscription_renewed`, `subscription_payment_failed`, `subscription_cancelled`
 
-### Electron — main (`posthog-node`)
+**Electron main**
 - `app_launched` `{ version, platform, arch, electron, packaged }`
-- `gallery_synced` `{ item_count, is_subscribed, pruned }` (+ `identify` on the access token's user id)
-- `gallery_sync_failed` `{ error }`
-- `screensaver_registered` `{ version }`
-- `screensaver_activated`
+- `gallery_synced` `{ item_count, is_subscribed, pruned }`, `gallery_sync_failed` `{ error }`
+- `screensaver_registered` `{ version }`, `screensaver_activated`
 - `cache_cleared`
 - `feedback_submitted` `{ source: app, has_image }`
 
-### Electron — renderer (forwarded over IPC)
+**Electron renderer**
 - `subscribe_clicked` `{ source: gallery_lock | upsell_banner | account_card }`
 - `screensaver_preview_clicked`
 
 ## Configuration
 
-Project token (publishable `phc_…`) + host live in:
-
-- **Website:** `living-art-screensaver-web/.env.local` (gitignored) and **Vercel**
-  project env (Production + Preview + Development):
-  - `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN`
-  - `NEXT_PUBLIC_POSTHOG_HOST` = `https://us.i.posthog.com`
-- **Electron:** hardcoded in `src/main/posthog.ts` (same convention as the
-  Supabase anon key in `src/renderer/src/lib/supabase.ts`; the token is a
-  client-side write key and safe to ship). Override for dev with
-  `LART_POSTHOG_KEY` / `LART_POSTHOG_HOST`.
+- **Website:** `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` and `NEXT_PUBLIC_POSTHOG_HOST` (`https://us.i.posthog.com`), in `.env.local` and in Vercel for all environments.
+- **Electron:** hardcoded in `src/main/posthog.ts`. It's a public write key, safe to ship. Override with `LART_POSTHOG_KEY` / `LART_POSTHOG_HOST`.

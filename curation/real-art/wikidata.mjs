@@ -1,8 +1,7 @@
 // Fame signal: how many Wikipedia language editions have an article on the
 // artwork, joined through each museum's Wikidata object-ID property.
 //
-// IDs were looked up via the Wikidata API (wbsearchentities, each property's P1630
-// formatter URL, wbgetentities labels) rather than from memory — 2026-10-03:
+// Properties (verified through the Wikidata API):
 //   P4610  "ARTIC artwork ID"           -> https://www.artic.edu/artworks/$1
 //   P3634  "The Met object ID"          -> https://www.metmuseum.org/art/collection/search/$1
 //   P11110 "Cleveland Museum of Art ID" -> https://www.clevelandart.org/art/$1 (accession no.)
@@ -14,9 +13,7 @@
 // inventory numbers (~68k); AIC too, as a backstop to P4610 (~3k). The Met's P3634
 // (~72k) is dense, and the Met API hands us the item QID directly as well.
 //
-// Query shapes matter: WDQS times out (HTTP 504) on a plain UNION of these
-// patterns + a sitelinks filter, but runs the same thing as UNIONed subqueries in
-// a few seconds.
+// Use UNIONed subqueries: a plain UNION with a sitelinks filter times out (504).
 
 import { chunk, http } from './lib.mjs'
 

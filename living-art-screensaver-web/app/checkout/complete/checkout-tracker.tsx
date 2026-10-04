@@ -3,12 +3,8 @@
 import { useEffect } from 'react'
 import posthog from 'posthog-js'
 
-// Client tracker for the public app-initiated checkout return page. This page
-// has no website session, but the browser that ran Stripe checkout is the same
-// one that opened from the marketing/app link, so posthog-js still has the
-// visitor's distinct_id — these events stitch to that person. The authoritative
-// "they actually paid" signal is the server-side `subscription_started` webhook
-// event; this just captures the funnel's final client step.
+// Records the return from an app checkout. The webhook's events are the real
+// record of payment; this is the funnel's last browser step.
 export function CheckoutTracker({ status, plan }: { status: string | undefined; plan: string | undefined }) {
   useEffect(() => {
     if (status === 'success') {

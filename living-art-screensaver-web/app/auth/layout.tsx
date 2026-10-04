@@ -1,10 +1,7 @@
 import type { Metadata } from 'next'
 
-// Auth pages are utility flows, not search targets — keep them out of the index.
-// `default` is the title for the (client-component) login page, which can't
-// export its own metadata; re-declaring `template` here lets descendant pages
-// (e.g. the error page) keep the brand suffix — a plain-string title would
-// stop the root template from reaching them.
+// Auth pages stay out of search. `default` titles the client-side login page;
+// `template` keeps the brand suffix on child pages.
 export const metadata: Metadata = {
   title: {
     default: 'Sign In',

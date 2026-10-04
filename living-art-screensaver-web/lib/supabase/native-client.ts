@@ -1,9 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 
-/**
- * Creates a Supabase client authenticated via a Bearer token (for native macOS app requests).
- * Unlike the cookie-based server client, this uses the access_token JWT directly.
- */
+/** A Supabase client authed with the app's Bearer token rather than cookies. */
 export function createNativeClient(accessToken: string) {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

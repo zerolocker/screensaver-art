@@ -1,12 +1,6 @@
-// Error report assembly + upload.
-//
-// Gathers a self-contained JSON snapshot of the app's state (versions, OS,
-// installer/codesign diagnostics, cache summary, and the recent in-memory log
-// buffer from both processes) and POSTs it to the website's /api/error-report
-// endpoint, which stores it in the Supabase `user-error-reports` bucket.
-//
-// The access token is sent as a Bearer header (so the server can attribute the
-// report to a user) and is deliberately NOT included in the report body.
+// Builds a JSON snapshot (versions, OS, installer diagnostics, cache summary,
+// recent logs) and posts it to /api/error-report. The access token goes in the
+// Authorization header, never in the body.
 
 import { app } from 'electron'
 import { randomUUID } from 'crypto'
@@ -18,7 +12,7 @@ import { getDiagnostics, type InstallerDiagnostics } from './installer'
 import { PATHS } from './cache-sync'
 import { getRecentLogs, getLogFilePath, log, type LogEntry } from './logger'
 
-// The shared diagnostics block attached to both error reports and feedback.
+// Diagnostics shared by error reports and feedback.
 export interface DiagnosticsSnapshot {
   app: { name: string; version: string }
   system: { platform: string; arch: string; osType: string; osRelease: string }
@@ -45,8 +39,7 @@ export interface SendReportInput {
   rendererContext?: unknown
 }
 
-// A downsampled image attached to feedback (assembled in the renderer; see
-// packages/ui/src/image-resize.ts). The data-URL is embedded as-is in the JSON.
+// A downsized image attached to feedback, as a data URL.
 export interface FeedbackImage {
   dataUrl: string
   bytes: number
@@ -87,9 +80,7 @@ async function cacheSummary(): Promise<ErrorReport['cache']> {
   }
 }
 
-// Gathers the system/versions/cache/installer/log block shared by error reports
-// and feedback. `recentLogsLimit` trims the log tail (feedback embeds an image,
-// so it leaves headroom under the bucket's 1 MB cap).
+// `recentLogsLimit` trims the logs so feedback with an image stays under the 1 MB cap.
 export async function assembleDiagnostics(opts: { recentLogsLimit?: number } = {}): Promise<DiagnosticsSnapshot> {
   const diagnostics = await getDiagnostics().catch((err) => {
     log.warn('report', 'getDiagnostics failed', { error: err instanceof Error ? err.message : String(err) })
@@ -123,7 +114,6 @@ export async function assembleReport(input: Pick<SendReportInput, 'reason' | 'er
   }
 }
 
-// Shared upload: POST a JSON payload as the report/feedback body, Bearer-auth'd.
 async function postJson(
   endpoint: string,
   accessToken: string | null,

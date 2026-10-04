@@ -1,10 +1,5 @@
-// Shared hook for assembling + uploading a debug report. Used by the Help tab's
-// "Send error report" button and by the inline button next to install errors on
-// the Account page. Each caller gets its own reporting/result state.
-//
-// The access token is fetched fresh at send time (see getAccessToken) so the
-// upload never fails with "Unauthorized" because of a stale token in React
-// state.
+// Sends a debug report, with its own state per caller. Fetches a fresh token at
+// send time (see getAccessToken).
 
 import { useState } from 'react'
 import { ERROR_REPORT_ENDPOINT } from './api'

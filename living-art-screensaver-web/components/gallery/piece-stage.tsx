@@ -5,26 +5,15 @@ import { useEffect, useRef } from 'react'
 import type { CatalogPiece } from '@/lib/gallery-catalog'
 
 /**
- * The hero player on a piece page — the reason someone clicked the pin.
- *
- * Deliberately simpler than the homepage `<Monitor>`: one clip, loaded eagerly,
- * playing the instant it can. It keeps the site's monitor language (aluminium
- * bezel, black inner frame, glare, frosted placard, ambient art-glow behind the
- * screen) so a visitor who lands here first still sees "this is what your Mac
- * will look like", but it doesn't rotate — a landing page has exactly one
- * subject and shouldn't swap it out from under the person reading about it.
- *
- * The still under the video is the piece's own poster where one exists; where it
- * doesn't (77 of 262 pieces have no still — media isn't committed to this repo,
- * see CLAUDE.md → Repo rules), the deterministic gradient carries the frame so
- * the layout is never empty or broken while the clip buffers.
+ * The player on a piece page: one clip, loaded eagerly, in the same monitor
+ * frame as the homepage but without rotating. The piece's still (or its
+ * gradient) shows while the clip buffers.
  */
 export function PieceStage({ piece }: { piece: CatalogPiece }) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
-  // The MP4s ship with an audio track, and React's `muted` attribute alone is
-  // unreliable — force it on the element before asking for playback, or the
-  // autoplay policy rejects the play() and the visitor gets a still frame.
+  // React's `muted` attribute is unreliable and the MP4s have audio, so force it
+  // or autoplay is refused.
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
@@ -44,8 +33,7 @@ export function PieceStage({ piece }: { piece: CatalogPiece }) {
       >
         <div className="absolute inset-0" style={{ background: piece.gradient }} />
         {piece.posterUrl && (
-          // It's blurred to 48px — a tiny variant is indistinguishable from the
-          // original here, so ask for the smallest one.
+          // Blurred heavily, so the smallest variant will do.
           <Image src={piece.posterUrl} alt="" fill sizes="256px" className="object-cover" />
         )}
       </div>
@@ -68,9 +56,7 @@ export function PieceStage({ piece }: { piece: CatalogPiece }) {
             style={{ aspectRatio: '16 / 9', background: piece.gradient }}
           >
             {piece.posterUrl && (
-              // The LCP element: the visitor arrived from a pin to see exactly
-              // this, so it's eager and priority-hinted. `sizes` still caps it
-              // to the stage width rather than the 4K original.
+              // The LCP element, so eager and priority-hinted.
               <Image
                 src={piece.posterUrl}
                 alt={`${piece.name} — a still from the animation`}

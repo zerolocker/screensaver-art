@@ -21,10 +21,7 @@ export interface NativeAuthResult {
   subscription: SubscriptionRow | null
 }
 
-/**
- * Extracts Bearer token from request, validates the user, and checks subscription.
- * Returns a result object — never throws. Callers decide how to handle unauthenticated requests.
- */
+/** Resolve the Bearer token's user and subscription. Never throws. */
 export async function verifyNativeAuth(request: NextRequest): Promise<NativeAuthResult> {
   const authHeader = request.headers.get('Authorization')
   const accessToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null

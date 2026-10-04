@@ -3,12 +3,9 @@ import { mkdtempSync, existsSync, readdirSync, readFileSync, writeFileSync } fro
 import { tmpdir } from 'os'
 import { join } from 'path'
 
-// cache-sync.ts derives PATHS from os.homedir() at module-load time.
-// On POSIX, homedir() reads $HOME, so we redirect HOME into a tmp dir BEFORE
-// the import resolves. vi.hoisted runs ahead of all imports so this is safe.
-// (vi.mock('os', ...) was tried first — it doesn't propagate into the
-// imported cache-sync module under vitest 2.x with vite-node, so we override
-// the env var that the un-mocked homedir() actually reads.)
+// cache-sync.ts computes its paths at import time, so point them at a tmp dir
+// before the import (vi.hoisted runs first). vi.mock('os') doesn't reach the
+// module under vitest, so set the env vars instead.
 const FAKE_HOME = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const fs = require('fs') as typeof import('fs')
@@ -18,19 +15,14 @@ const FAKE_HOME = vi.hoisted(() => {
   const path = require('path') as typeof import('path')
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cache-sync-test-'))
   process.env.HOME = dir
-  process.env.LOCALAPPDATA = dir   // Windows code path uses this instead
-  // On macOS the cache lives at the fixed /Users/Shared/LivingArtScreensaver;
-  // redirect it into the tmp dir so tests never write to the real shared path.
+  process.env.LOCALAPPDATA = dir   // Windows code path
+  // Never touch the real /Users/Shared cache.
   process.env.LART_CACHE_DIR = path.join(dir, 'LivingArtScreensaver')
   return dir
 })
 
-// cache-sync.ts pulls in electron transitively (via ./logger, which imports
-// `app`). We don't run inside Electron and the electron *binary* may not even
-// be installed, so importing the real module throws "Electron failed to install
-// correctly". Stub it: logger.ts disables file logging when app.getPath is
-// absent, and cache-sync only uses BrowserWindow as a type. (vi.mock is hoisted
-// above the imports below.)
+// Importing the real electron module outside Electron throws. logger.ts skips
+// file logging without app.getPath, and BrowserWindow is only a type here.
 vi.mock('electron', () => ({
   app: {},
   BrowserWindow: class {},
@@ -67,8 +59,7 @@ function streamFromBytes(bytes: Buffer): ReadableStream<Uint8Array> {
   })
 }
 
-// The download path streams `res.body`, so asset responses now expose a web
-// ReadableStream rather than arrayBuffer().
+// Downloads stream `res.body`, so asset responses expose a web ReadableStream.
 function makeStreamResponse(bytes: Buffer, ok = true): Response {
   return {
     ok,
@@ -77,8 +68,7 @@ function makeStreamResponse(bytes: Buffer, ok = true): Response {
   } as unknown as Response
 }
 
-// A body that yields a chunk and then errors — simulates a dropped connection
-// mid-download.
+// A body that yields a chunk and then errors, like a dropped connection.
 function makeErroringResponse(): Response {
   return {
     ok: true,
@@ -92,8 +82,7 @@ function makeErroringResponse(): Response {
   } as unknown as Response
 }
 
-// A body that never produces bytes and never closes — a hung download we expect
-// to be torn down by cancelSync() (it would otherwise hit the stall timeout).
+// A body that never produces bytes or closes: a hung download for cancelSync().
 function makeHangingResponse(): Response {
   return {
     ok: true,
@@ -107,9 +96,7 @@ function fakeApiResponse(
   opts: Partial<Pick<ApiResponse, 'isSubscribed'>> = {},
 ): ApiResponse {
   return {
-    // Default every item to free, so nothing is "locked" unless a test opts a
-    // specific item out with `free: false` to exercise the non-subscriber lock
-    // path. (Mirrors prod: the unlocked set is the free pieces for a non-sub.)
+    // Every item is free unless a test sets `free: false` to test locking.
     items: items.map((it) => ({ ...it, free: it.free ?? true })),
     isSubscribed: opts.isSubscribed ?? true,
   }
@@ -142,7 +129,7 @@ describe('cache-sync', () => {
   })
 
   afterEach(async () => {
-    // Belt-and-suspenders: never let an in-flight sync leak into the next test.
+    // Don't let an in-flight sync leak into the next test.
     if (isSyncing()) cancelSync()
     vi.unstubAllGlobals()
     await clearCache()
@@ -150,9 +137,7 @@ describe('cache-sync', () => {
 
   describe('PATHS', () => {
     it('roots the cache under the (env-overridden) home dir, not the developer machine', () => {
-      // Sanity check that HOME redirection actually worked — if this fails,
-      // every other test in this file is silently writing to the real
-      // ~/Library/Caches/ScreensaverArt and may delete a real user's cache.
+      // If this fails, the other tests are touching a real cache.
       expect(PATHS.CACHE_DIR.startsWith(FAKE_HOME)).toBe(true)
       expect(PATHS.VIDEOS_DIR).toBe(join(PATHS.CACHE_DIR, 'videos'))
       expect(PATHS.MANIFEST_PATH).toBe(join(PATHS.CACHE_DIR, 'gallery.json'))
@@ -193,8 +178,7 @@ describe('cache-sync', () => {
       expect(existsSync(join(PATHS.VIDEOS_DIR, manifest.items[1].filename))).toBe(true)
       expect(existsSync(PATHS.MANIFEST_PATH)).toBe(true)
 
-      // Round-trip: decrypted bytes match what was downloaded (proves the
-      // streaming chunk-wise XOR produces the same bytes as the whole-buffer path)
+      // Decrypted bytes match the download (chunked XOR == whole-buffer XOR).
       expect(decryptCachedFile(join(PATHS.VIDEOS_DIR, manifest.items[0].filename))).toEqual(
         videoBytesA,
       )
@@ -222,8 +206,7 @@ describe('cache-sync', () => {
 
       const assetCall = fetchMock.mock.calls[1]
       expect(assetCall[0]).toBe('https://r2.example/a.mp4')
-      // No auth header on the asset fetch (R2 is public; sending the Supabase
-      // token there would just leak it) — only an abort signal.
+      // No auth header on the R2 fetch; sending the token there would leak it.
       expect(assetCall[1].headers).toBeUndefined()
       expect(assetCall[1].signal).toBeInstanceOf(AbortSignal)
     })
@@ -256,10 +239,7 @@ describe('cache-sync', () => {
     })
 
     it('writes the manifest BEFORE downloading any videos so the screensaver can pick up the new list mid-sync', async () => {
-      // Capture the manifest contents at the moment the first video download
-      // is requested. If the manifest is already on disk by then, the
-      // screensaver wakes up mid-sync and sees the full new list (videos that
-      // haven't been downloaded yet are skipped at play time).
+      // The manifest must be on disk before the first download starts.
       const items = [
         { src: 'https://r2.example/a.mp4', title: 'A', type: 'video' },
         { src: 'https://r2.example/b.mp4', title: 'B', type: 'video' },
@@ -284,8 +264,7 @@ describe('cache-sync', () => {
     })
 
     it('writes the manifest atomically (no partial JSON readable mid-write)', async () => {
-      // The manifest goes via a .tmp + rename so the screensaver — which polls
-      // it on every advance() — never observes a half-written file.
+      // Temp file + rename: the screensaver never sees a half-written manifest.
       fetchMock
         .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse([])))
       await syncGallery('https://api/gallery', null, null)
@@ -297,9 +276,7 @@ describe('cache-sync', () => {
     })
 
     it('writes each video via a temp file and leaves no .tmp behind on success', async () => {
-      // Downloads stream into <hash>.bin.tmp and atomically rename into place,
-      // so the final .bin only ever appears fully written — and no temp sibling
-      // is left lying around afterwards.
+      // Downloads go to <hash>.bin.tmp and are renamed into place, leaving no temp file.
       const items = [{ src: 'https://r2.example/a.mp4', title: 'A', type: 'video' }]
       fetchMock
         .mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(items)))
@@ -313,8 +290,7 @@ describe('cache-sync', () => {
     })
 
     it('leaves neither a .bin nor a .tmp when a download dies mid-stream', async () => {
-      // The core partial-failure guarantee: an interrupted download must not
-      // leave a truncated .bin (which would be skipped forever) or a stray .tmp.
+      // An interrupted download leaves neither a truncated .bin nor a .tmp.
       const items = [{ src: 'https://r2.example/a.mp4', title: 'A', type: 'video' }]
       fetchMock.mockImplementation((url: string) => {
         if (url === 'https://api/gallery')
@@ -331,8 +307,7 @@ describe('cache-sync', () => {
     })
 
     it('sweeps a stale .tmp left by a previously-interrupted sync', async () => {
-      // Seed the videos dir via a trivial sync, then drop a leftover temp file
-      // as if a previous run had been killed mid-write. The next sync removes it.
+      // A leftover temp file from a killed run is removed by the next sync.
       fetchMock.mockResolvedValueOnce(makeJsonResponse(fakeApiResponse([])))
       await syncGallery('https://api/gallery', null, null)
 
@@ -420,9 +395,8 @@ describe('cache-sync', () => {
     })
 
     it('only deletes orphans AFTER downloads complete (cache only grows mid-sync)', async () => {
-      // Pre-seed the cache with an orphan that won't be in the new gallery.
-      // While the new download is in flight, the orphan must still exist so
-      // the screensaver has something to play if it wakes up.
+      // An orphaned file must survive until the new downloads finish, so the
+      // screensaver still has something to play.
       const orphanPath = join(PATHS.VIDEOS_DIR, 'orphan-from-previous-sync.bin')
       writeFileSync(orphanPath, 'old leftover')
       expect(existsSync(orphanPath)).toBe(true)
@@ -463,10 +437,8 @@ describe('cache-sync', () => {
       await syncGallery('https://api/gallery', null, null, [all[0].src, all[1].src, all[2].src])
       expect(readdirSync(PATHS.VIDEOS_DIR)).toHaveLength(3)
 
-      // Sync 2: subscription lapsed. The API still returns the FULL list, but
-      // isSubscribed=false makes the non-free piece C "locked" — it must be
-      // evicted (re-enforcing gating) even though it's still selected, while the
-      // two free pieces stay (already cached, still unlocked).
+      // Sync 2: subscription lapsed. C is now locked and must be evicted even
+      // though it's selected; the free pieces stay.
       fetchMock.mockReset()
       fetchMock.mockResolvedValueOnce(
         makeJsonResponse(fakeApiResponse(all, { isSubscribed: false })),
@@ -490,8 +462,7 @@ describe('cache-sync', () => {
         { src: 'https://r2.example/b.mp4', title: 'B', type: 'video', free: false },
       ]
 
-      // Non-subscriber → only the free piece A is unlocked. B is selected but
-      // must never be fetched or cached.
+      // Non-subscriber: B is selected but locked, so it's never fetched.
       fetchMock
         .mockResolvedValueOnce(
           makeJsonResponse(fakeApiResponse(all, { isSubscribed: false })),
@@ -543,8 +514,7 @@ describe('cache-sync', () => {
       await syncGallery('https://api/gallery', null, null, [all[0].src, all[1].src, all[2].src])
       expect(readdirSync(PATHS.VIDEOS_DIR)).toHaveLength(3)
 
-      // Auto sync (pruneDeselected defaults false), deselect C — its .bin stays
-      // (cache is decoupled from the play set), but it drops out of the manifest.
+      // Auto sync with C deselected: its .bin stays, but it leaves the manifest.
       fetchMock.mockReset()
       fetchMock.mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(all)))
       const mAuto = await syncGallery('https://api/gallery', null, null, [all[0].src, all[1].src])
@@ -552,8 +522,7 @@ describe('cache-sync', () => {
       expect(existsSync(join(PATHS.VIDEOS_DIR, filenameForUrl(all[2].src)))).toBe(true) // kept
       expect(readdirSync(PATHS.VIDEOS_DIR)).toHaveLength(3)
 
-      // Manual sync (pruneDeselected=true) with the same selection — now C is
-      // tidied away because the manual sync prunes deselected items.
+      // Manual sync (pruneDeselected) removes C's file.
       fetchMock.mockReset()
       fetchMock.mockResolvedValueOnce(makeJsonResponse(fakeApiResponse(all)))
       const mManual = await syncGallery(
@@ -571,9 +540,7 @@ describe('cache-sync', () => {
     })
 
     it('defaults a null selection to the free pieces', async () => {
-      // Both items are free (helper default), so a null selection caches both —
-      // a never-customized install plays the free set. (Locking is covered by the
-      // selectedSrcs path above; here we just prove null === "the free pieces".)
+      // A null selection means "the free pieces".
       const items = [
         { src: 'https://r2.example/a.mp4', title: 'A', type: 'video' },
         { src: 'https://r2.example/b.mp4', title: 'B', type: 'video' },

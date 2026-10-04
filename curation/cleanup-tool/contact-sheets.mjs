@@ -1,17 +1,11 @@
-// Living Art Screensaver — build labeled contact sheets of flagged pieces
-//
-// Extracts the first frame of every flagged piece — both "undesirable" (what to
-// avoid) and "great" / want-more (what to make more of) — and tiles them into
-// labeled contact sheets, so Claude can review dozens of frames in a handful of
-// images (vision can't take dozens of stills one at a time). Pure ffmpeg — no deps.
+// Build labeled contact sheets of the first frame of every flagged piece, so
+// Claude can review dozens of frames in a few images. Needs only ffmpeg.
 //
 //   node curation/cleanup-tool/contact-sheets.mjs
 //
 // Outputs under curation/cleanup-tool/.analysis/:
-//   frames/<reason>/NNN.png    one labeled FULL-RESOLUTION frame per flagged piece
-//                              — read these when a note turns on fine detail
-//   sheets/<reason>_NN.png     frames tiled 2x2 (4 per sheet), index burned in
-//                              — the overview; see the TILE_W note on why 2 cols
+//   frames/<reason>/NNN.png    a labeled full-resolution frame per piece, for detail
+//   sheets/<reason>_NN.png     frames tiled 2x2, the overview
 //   index.json                 { undesirable:[…], great:[…] } -> {n, sheet, src, title, note, prompts}
 //   index.md                   same mapping, human/Claude-readable, grouped by reason
 
@@ -31,18 +25,12 @@ const OUT = join(HERE, '.analysis');
 const FRAMES = join(OUT, 'frames');
 const SHEETS = join(OUT, 'sheets');
 
-// Sheet tiles. Vision downsamples any image to ~1568px on its long edge, so a
-// tile's *effective* resolution is 1568/COLS regardless of what we render here —
-// rendering 1280px tiles would just double the file for no extra detail. Keeping
-// the sheet ~1568 wide at 2 columns is therefore the most detail a grid can carry
-// (~768px/tile). At the old 4x4 @ 480 tiles arrived ~390px, far too coarse to
-// check a note like "too much dirt / cracks on the faces".
-// For real detail, read frames/<reason>/NNN.png (full-res) instead of the sheet.
+// Vision downsamples an image to ~1568px on its long edge, so a tile's real
+// resolution is 1568/COLS whatever we render. Two columns (~768px per tile) is
+// the most detail a grid can carry; read the full-res frames for more.
 const TILE_W = 768, TILE_H = 432;     // 16:9 tile
 const COLS = 2, ROWS = 2;             // 4 frames per sheet
-// Full-resolution frames are written alongside the sheets (frames/<reason>/NNN.png)
-// at the video's native size, capped here. The sheet is the overview; when a
-// reviewer note turns on fine detail, read the full-res frame instead.
+// Cap for the full-resolution frames.
 const FRAME_MAX_W = 1920;
 const CONCURRENCY = 6;
 const FONT = [
@@ -84,11 +72,8 @@ async function pool(items, n, fn) {
 if (!existsSync(SELECTIONS)) { console.error('No curation/cleanup-tool/selections.json. Run the tool first.'); process.exit(1); }
 const sel = JSON.parse(await readFile(SELECTIONS, 'utf8'));
 
-// Prompt lookup. This normally runs *after* apply.mjs, which has already deleted
-// the undesirable pieces from gallery.json — so looking them up there yields
-// nothing, blanking the prompts for exactly the pieces we most need to analyse.
-// apply.mjs's records keep the full items (prompts + note), so read those first
-// and fall back to the live gallery (covers a standalone run before apply).
+// This usually runs after apply.mjs has removed the undesirable pieces from
+// gallery.json, so read apply.mjs's records first and fall back to the gallery.
 const readItems = async (path) =>
   existsSync(path) ? (JSON.parse(await readFile(path, 'utf8')).items || []) : [];
 
@@ -134,18 +119,15 @@ async function buildBucket(reason, pieces) {
   await mkdir(tilesDir, { recursive: true });
 
   const ok = await pool(pieces, CONCURRENCY, async (p, idx) => {
-    // 1. Full-resolution frame, for reading a single piece up close. Labelled at a
-    //    size relative to the frame so it stays unobtrusive at native resolution.
+    // 1. Full-resolution frame, with a label scaled to the frame.
     const fullVf = [
       `scale='min(${FRAME_MAX_W},iw)':-2`,
       drawtext(idx, 'h/28'),
     ].join(',');
-    // -frames:v 1 from the start: ffmpeg reads only enough of the remote stream to
-    // decode the first frame, so this does not download the whole MP4.
+    // Reads only enough of the remote MP4 to decode the first frame.
     await run('ffmpeg', ['-y', '-i', p.src, '-frames:v', '1', '-vf', fullVf, join(framesDir, `${pad(idx)}.png`)]);
 
-    // 2. Downscaled tile for the contact sheet, labelled after the downscale so the
-    //    index stays readable in the grid.
+    // 2. Tile for the sheet, labelled after downscaling so the label stays readable.
     const tileVf = [
       `scale=${TILE_W}:${TILE_H}:force_original_aspect_ratio=decrease`,
       `pad=${TILE_W}:${TILE_H}:(ow-iw)/2:(oh-ih)/2:color=black`,
@@ -155,9 +137,7 @@ async function buildBucket(reason, pieces) {
   });
   console.log(`  ${reason}: extracted ${ok.filter(Boolean).length}/${pieces.length} frames.`);
 
-  // The tile filter packs consecutive input frames into a grid and emits one image
-  // per full grid; trailing cells on the last sheet are filled with the pad color.
-  // ffmpeg's image2 muxer numbers sheets from 01, so +1 below to match <reason>_NN.png.
+  // ffmpeg numbers sheets from 01, hence the +1.
   await run('ffmpeg', [
     '-y', '-framerate', '1', '-start_number', '0', '-i', join(tilesDir, '%03d.png'),
     '-vf', `tile=${COLS}x${ROWS}:padding=10:margin=10:color=0x1d2029`,

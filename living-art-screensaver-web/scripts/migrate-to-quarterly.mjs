@@ -1,31 +1,15 @@
 #!/usr/bin/env node
 /**
- * One-off migration: move existing monthly subscribers onto the new quarterly
- * Stripe Price ($2.97 every 3 months). Run once per Stripe mode — test, then live.
+ * Move subscriptions from OLD_PRICE_ID to NEW_PRICE_ID. Run once per Stripe
+ * mode, test first. Kept for future price changes (docs/stripe-webhooks.md).
  *
- * For each ACTIVE subscription on OLD_PRICE_ID this calls subscriptions.update with:
- *   - items: [{ id, price: NEW_PRICE_ID }]
- *   - proration_behavior: 'create_prorations'  // credit the unused part of the current month
- *   - billing_cycle_anchor: 'now'              // start a fresh 3-month cycle today + invoice now
- * => the customer is invoiced immediately for ~$2.97 minus a credit for the unused
- *    days of their current month. The daily rate is unchanged ($0.99/mo == $2.97/90d),
- *    so nobody overpays — they just move to one charge every 3 months.
+ * - Active: switched now with proration and a fresh billing cycle, invoiced at
+ *   once. The credit for unused days means nobody overpays.
+ * - Trialing: switched without a charge; converts at trial end.
+ * - Anything else: skipped.
  *
- * TRIALING subs are switched WITHOUT charging (proration_behavior 'none', anchor
- * 'unchanged') so the trial is preserved and converts to quarterly at trial end.
- * canceled / past_due / incomplete / unpaid subs are SKIPPED (logged).
- *
- * Supabase is NOT written here. The resulting `customer.subscription.updated` +
- * `invoice.paid` webhooks re-sync each row's status/current_period_end via the
- * app's canonical sync path (app/api/webhooks/stripe/route.ts). Make sure the
- * webhook endpoint for this mode is live before running with --apply.
- *
- * DRY RUN by default — prints what it *would* do and changes nothing.
- * Pass --apply to actually mutate Stripe.
- *
- * Run history: the launch monthly→quarterly migration ($0.99/mo -> $2.97/quarter)
- * was applied to both test and live in 2026-06. Kept as the template for future
- * price/interval changes — see living-art-screensaver-web/docs/stripe-webhooks.md.
+ * It only changes Stripe; the webhooks update Supabase, so make sure that
+ * mode's webhook is live. Dry run unless you pass --apply.
  *
  * Usage (from living-art-screensaver-web/):
  *   # preview (test mode)
@@ -43,8 +27,7 @@ import Stripe from 'stripe'
 import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
-// Minimal .env.local loader (same approach as the pricing-drift test) so the
-// script runs without dotenv. Existing process.env always wins.
+// Minimal .env.local loader; process.env wins.
 function loadEnvLocal() {
   const envPath = resolve(process.cwd(), '.env.local')
   if (!existsSync(envPath)) return
@@ -102,8 +85,8 @@ try {
   die(`Could not load NEW_PRICE_ID in ${mode} mode: ${e.message}`)
 }
 
-// status: 'all' so we can see (and explicitly skip) non-active subs. The `price`
-// filter returns only subs still on the old price, so re-running is idempotent.
+// status 'all' so non-active subs are logged as skipped. Filtering on the old
+// price makes re-runs safe.
 for await (const sub of stripe.subscriptions.list({ price: OLD_PRICE_ID, status: 'all', limit: 100 })) {
   const item = sub.items.data.find((i) => i.price.id === OLD_PRICE_ID)
   const who = `${sub.id} (cust ${sub.customer}, ${sub.status})`

@@ -1,385 +1,134 @@
-# Screensaver Art — Project Reference
+# Living Art Screensaver
 
-## What this project is
-A **pnpm workspace** monorepo containing:
-- **Shared constants** (`packages/constants/`) — **pure-data** package (no React, no Node, no deps): the single source of truth for cross-app constants/configs/types — `FREE_ITEM_COUNT`, `PRICING`, the gallery item shape (`ArtItem`), the `/api/gallery` response contract (`GalleryApiResponse`), and the tag vocabulary + helpers. Imported by the website (client + server routes), the Electron app (main + renderer), and tests.
-- **Shared UI library** (`packages/ui/`) — React components shared between the website and Electron app
-- **Electron desktop app** (`electron-app/`) — **the only thing end users install**. Handles auth, subscription, gallery sync, video obfuscation, and installs + activates the platform-native screensaver.
-- **macOS screensaver** (`screensaver-macos/`) — native Swift **`.appex` ExtensionKit screensaver** (Sonoma+), built with Xcode (via xcodegen). **Pure player.** Reads videos from a shared local cache populated by the Electron app. No auth, no network. Embedded into the Electron app and registered with `pluginkit`.
-- **Screensaver helper** (`screensaver-helper/`) — tiny SwiftPM CLI (`lart-screensaver-helper`) that wraps [PaperSaver](https://github.com/AerialScreensaver/PaperSaver) so the Electron app can do everything that needs Swift: detect/set the active screensaver (one-click "Set"), and register/unregister/discover the `.appex` via PaperSaver's `PluginkitManager` (so the Electron app never shells out to `pluginkit` itself).
-- **Marketing + account website** (`living-art-screensaver-web/`) — Next.js, deployed to `living-art-screensaver.com` via Vercel
-- **Gallery playlist** (`gallery.json`) — single source of truth for all art items
-- **Web preview** (`index.html`) — standalone HTML+CSS+JS, no build step
+A macOS screensaver that plays AI-animated art. Users install one Electron app. It handles sign-in and payment, downloads the videos, and registers a native screensaver that plays them. New art is added every night by a curation agent.
 
 ## Repo rules
 
-**🚫 Never commit media files without the founder's explicit approval.** Images, audio, video
-(`.png`, `.jpg`, `.webp`, `.gif`, `.mp3`, `.wav`, `.mp4`, `.mov`, …) — **ask first, every time.**
-This applies to AI-generated media too, and to "just a few small files."
+- **Never commit media** (images, audio, video) without the founder's explicit approval. Ask every time, even for small or AI-generated files. Media goes to R2.
+- Use **pnpm**, never npm or yarn.
 
-## Key paths
-| Path | Purpose |
+## Layout
+
+| Path | What it is |
 |---|---|
-| `pnpm-workspace.yaml` | Workspace config — ties all packages together |
-| `packages/constants/` | **Pure-data shared package** (`@screensaver-art/constants`) — `FREE_ITEM_COUNT` (the advertised free-tier size = count of `free: true` pieces in `gallery.json`), the per-item gating rule (`isItemFree`/`isItemLocked`), `PRICING`, `ArtItem`/`GalleryApiResponse` types, tag vocabulary (`TAG_ORDER`, `tagsOf`, `orderTags`). No build step; consumers compile the TS source. The Electron **main** process bundles it via `externalizeDepsPlugin({ exclude: [...] })`; the website lists it in `transpilePackages`. |
-| `packages/ui/` | **Shared UI** — React components (LoginForm, SignUpForm, SubscriptionCard, base UI) |
-| `electron-app/` | **The user-facing installer** — see below |
-| `electron-app/src/main/installer.ts` | Auto-registers the `.appex` on launch (`ensureRegistered`, **version-aware** — re-registers only when unregistered or the app updated, so an update can't run stale appex code), queries status, and sets the active screensaver — all via the PaperSaver helper. On the (re)register path it `lsregister -f`'s the bundle first (a Squirrel in-place update's stale LaunchServices entry otherwise makes `pluginkit -a` silently no-op), then **polls `find`** to confirm (`pluginkit -a` registers asynchronously, ~1s later). No manual install/uninstall UI. |
-| `electron-app/src/main/screensaver-timing.ts` | Reads the two macOS idle thresholds the "screensaver is set" status banner explains — screensaver start delay (`defaults -currentHost read com.apple.screensaver idleTime`, seconds) + display-off delay (`pmset -g` displaysleep, minutes) — and starts the screensaver on demand (`open -a ScreenSaverEngine`) for "Preview now". macOS-only; degrades to null off-platform. |
-| `electron-app/src/main/cache-sync.ts` | Fetches `/api/gallery`, downloads + obfuscates MP4s, writes manifest to `/Users/Shared/LivingArtScreensaver/` |
-| `electron-app/src/main/obfuscation.ts` | XOR + magic-header + djb2 filename hash. **Mirror of `screensaver-macos/ScreensaverArtExtension/Constants.swift`** — change both. |
-| `electron-app/src/main/logger.ts` | Dependency-free main-process logger — console + JSONL file (`<userData>/logs/main.log`) + in-memory ring buffer. Renderer logs forwarded via `log:record` IPC. |
-| `electron-app/src/main/report.ts` | Assembles a debug snapshot (versions, OS, installer/codesign diagnostics, cache summary, recent logs) and uploads it to `/api/error-report`. |
-| `electron-app/scripts/bundle-appex.sh` | Builds the universal `.appex` + helper and copies them into `electron-app/resources/`. Stamps the appex `CFBundleVersion` from `electron-app/package.json` (via `LART_APPEX_VERSION` → `build.sh`) so each release bumps it — pluginkit caches registrations by version, so this is what lets a launch-time re-register actually refresh the system's copy. |
-| `electron-app/scripts/afterpack-sign.cjs` | electron-builder `afterPack` hook — fixes the embedded appex signature after the universal merge (which invalidates it, breaking `pluginkit` registration). Ad-hoc by default; pre-signs the appex+helper with Developer ID when `LART_CODESIGN_IDENTITY` is set. |
-| `electron-app/scripts/aftersign-staple.cjs` | electron-builder `afterSign` hook — staples the notarization ticket onto the `.app` (electron-builder notarizes but doesn't staple). Runs only when notary creds are set. |
-| `electron-app/electron-builder.cjs` | DMG (universal) / NSIS distribution config — **JS, env-driven**: ad-hoc unless `LART_CODESIGN_IDENTITY` selects Developer ID (then hardened runtime + notarization). Wires both signing hooks. |
-| `electron-app/build/entitlements.mac.plist` + `.inherit.plist` | Hardened-runtime entitlements for the outer Electron app + its helper processes (Developer ID builds). The appex has its own entitlements. |
-| `index.html` | Standalone web preview (HTML+CSS+JS, no build step) |
-| `gallery.json` | Playlist — all art items with `src`, `title`, `type`, `date`, `tags`, prompts (`image_prompt`, `video_prompt`, and on the one piece a night that gets posted to social, `music_prompt` — the prompt its clip's music bed was generated from), plus the **website-only image derivatives** `img` (2K hero), `og_img` (1280×720 JPEG social card), `thumb` (640w WebP grid tile). The derivatives are **not** in the shared `ArtItem` type — the app never reads them. `img` is the archival high-res copy (the site itself prefers `og_img`); the 4K master it is downsampled from stays local and is not uploaded. **Real public-domain paintings** (`curation/REAL_PAINTINGS_CURATION.md`) have **no `image_prompt`** and instead carry provenance: `source: "real_artwork"`, `artist`, `artist_dates`, `original_title`, `original_date`, `museum`, `credit_line`, `source_url`, `license` (`"Public Domain"` / `"CC0"`); title `"<painting> - <artist> (AI Animated)"`. A missing `source` = AI-generated. Typed on `ArtItem` + `isRealArtwork()` in `@screensaver-art/constants`; the website's `/art/<slug>` prose, the social captions and the app's preview credit branch on it. |
-| `curation/publish-piece.mjs` | Publishes one finished art piece: derives the three web images from the 4K still, uploads them + the MP4 to R2 under never-overwritten immutable keys, appends the `gallery.json` entry, deletes the local media. The nightly curation's step 4 (`curation/AUTOMATED_CURATION.md`). For a real painting, `--provenance <file.json>` replaces `--image-prompt` (validated: required keys, allowed licence, title naming the artist). |
-| `R2 Bucket` | `https://screensaver-assets.living-art-asset.com/gallery/` — MP4 assets, served via a **Cloudflare custom domain** on the `screensaver-assets` bucket (`gallery/` prefix). **Never use the `*.r2.dev` URL** — it bypasses the CDN cache and is rate-limited / not-for-production. Every object carries a 1-year immutable `Cache-Control`, and cacheable GETs return `cf-cache-status: HIT`. (Gotcha: `curl -I`/HEAD shows `DYNAMIC` — Cloudflare caches/serves on **GET** only; test with a GET.) |
-| `screensaver-macos/project.yml` | xcodegen spec — generates `ScreensaverArt.xcodeproj` (DevHost scaffold + the `.appex` extension target) |
-| `screensaver-macos/ScreensaverArtExtension/*.swift` | The screensaver extension — pure player, see split below |
-| `screensaver-macos/ScreensaverArtExtension/{Info.plist,*.entitlements}` | `XPC!` package type, `NSExtension`/`com.apple.screensaver`, sandbox + `/Users/Shared/` read exception |
-| `screensaver-macos/build.sh` | Regenerates the project (xcodegen) and builds the `.appex` (Release = universal) |
-| `screensaver-helper/` | SwiftPM package for `lart-screensaver-helper` (PaperSaver-backed `status`/`activate`/`register`/`unregister`/`find`) |
-| `living-art-screensaver-web/` | Next.js website (marketing, auth, billing, gallery API) |
-| `living-art-screensaver-web/lib/gallery-catalog.ts` | **The gallery landing pages' data layer** — imports `gallery.json` at build time and derives the `/gallery`, `/art/<slug>` (×262) and `/era/<tag>` (×15) routes plus the sitemap, so a nightly push to `master` grows them with no extra step. Holds the **permanent** slug rule (derived from the immutable R2 key — a changed slug would 404 every social post ever made), the templated per-piece prose, and `INDEX_ART_PAGES`, the single switch controlling whether `/art/*` is `noindex`. Era copy lives in `lib/era-copy.ts`. These pages are **landing destinations for social posts** (Pinterest first), not an SEO play — `docs/growth-and-marketing-strategy.md` §4.3. |
-| `living-art-screensaver-web/app/api/gallery/route.ts` | **The gating endpoint** — serves gallery to the Electron app. Reads `gallery.json` off the `master` ref through the GitHub Contents API (`lib/github-release.ts` → `fetchRepoFile`, token-authed), **not** GitHub Pages — Pages dies on a private repo (Free plan), and a wedged Pages build once froze the playlist for a day. |
-| `living-art-screensaver-web/app/api/subscription/verify/route.ts` | Subscription status check |
-| `living-art-screensaver-web/app/api/webhooks/stripe/route.ts` | Stripe → Supabase sync |
-| `living-art-screensaver-web/app/api/error-report/route.ts` | Stores Electron-app debug reports (Bearer-auth) in the Supabase `user-error-reports` bucket via the service role |
+| `packages/constants/` | Shared pure-data package: `FREE_ITEM_COUNT`, `PRICING`, the `ArtItem` type, the `/api/gallery` response type, the tag list, and the gating rules (`isItemLocked`, `isSubscriptionActive`). No build step: the website's `transpilePackages` and the Electron main's `externalizeDepsPlugin({ exclude })` compile it. |
+| `packages/ui/` | Shared React components (auth forms, `SubscriptionCard`, base UI) and `globals.css` design tokens. No build step, no Next.js imports. |
+| `electron-app/` | The app users install. Sign-in, payment, gallery sync, screensaver registration. Windows support is scaffolded but not built. |
+| `screensaver-macos/` | The screensaver: a sandboxed Swift ExtensionKit `.appex`. A pure player with no network or auth. |
+| `screensaver-helper/` | `lart-screensaver-helper`, a small Swift CLI wrapping [PaperSaver](https://github.com/AerialScreensaver/PaperSaver). The app calls it to register the `.appex` and set it as the active screensaver. |
+| `living-art-screensaver-web/` | Next.js website on Vercel: marketing, account, Stripe, and the APIs the app calls. |
+| `gallery.json` | The playlist. One entry per art piece. |
+| `curation/` | The nightly curation agent's runbooks and the human review tool. See `curation/README.md`. |
+| `marketing/` | Renders and posts the daily social clip. See `marketing/README.md`. |
+| `index.html` | Standalone web preview, served by GitHub Pages. Nothing depends on it. |
 
-## Getting started (pnpm workspace)
-```bash
-pnpm install              # install all workspace dependencies from repo root
-```
+## Commands
 
-## Build the screensaver directly (developer shortcut)
 ```bash
-# Requires Xcode + xcodegen (brew install xcodegen).
-bash screensaver-macos/build.sh Debug   # fast, host-arch, auto-registers via pluginkit
-bash screensaver-macos/build.sh         # Release, universal (Intel + Apple Silicon)
-```
-This regenerates `ScreensaverArt.xcodeproj` from `project.yml` and builds the
-`.appex` (embedded in a throwaway `DevHost.app` scaffold so it can register).
-A Debug build auto-registers the extension with `pluginkit` for local testing;
-set it active from System Settings or via `screensaver-helper`. End users never
-run this — they install the Electron app, which embeds + registers the `.appex`.
+pnpm install                              # from the repo root
 
-## Electron desktop app
-```bash
 cd electron-app
-pnpm dev                  # runs bundle-appex.sh, then launches Electron with HMR
-pnpm build                # builds renderer + main + preload to electron-app/out/
-pnpm dist:mac             # → electron-app/dist/Living Art Screensaver-<v>-universal.dmg
-pnpm dist:win             # → electron-app/dist/Living Art Screensaver Setup-<v>.exe
-```
-- Uses `electron-vite` for build tooling (main + preload + renderer) and `electron-builder` for distribution
-- Renderer is React + Tailwind v4, imports shared components from `@screensaver-art/ui`
-- Auth via `@supabase/supabase-js` (not SSR — stores session in Chromium localStorage)
-- Cache management: main process handles file I/O via IPC; renderer shows stats and clear button
-- Cache dir: `/Users/Shared/LivingArtScreensaver/` (macOS), `%LOCALAPPDATA%\ScreensaverArt\` (Windows). See "Why the cache lives in /Users/Shared" below.
-- `scripts/bundle-appex.sh` (run before every `pnpm dev`/`build`) builds the universal `.appex` + helper into `electron-app/resources/`. `electron-builder` embeds the `.appex` at `Contents/PlugIns/` and the helper at `Contents/Resources/` in the packaged app, where `installer.ts` finds them. Requires Xcode + xcodegen.
-- macOS install is **automatic**: on launch the renderer's `InstallerProvider` calls `installer:ensureRegistered`, which registers the embedded `.appex` via `pluginkit` (version-aware — see the `installer.ts` key-path row; the appex `CFBundleVersion` is stamped from the app version at build time). No copy into `~/Library/Screen Savers/`, no manual Install/Uninstall UI. Activation is the one-click **"Set"** banner at the top of the app (PaperSaver helper), or the user picks it in System Settings. A missing embedded appex (damaged install) shows a blocking recovery screen — send report + restart, gated post-login so the report carries the user id.
-- Windows `.scr` support is scaffolded but not implemented; the install flow returns an "unsupported on this platform" error there.
+pnpm dev                                  # builds the .appex + helper, then runs the app
+pnpm dist:mac                             # local universal DMG, ad-hoc signed
 
-## Website (living-art-screensaver-web)
-```bash
 cd living-art-screensaver-web
-pnpm dev                  # localhost:3000
-```
-- Deployed on **Vercel** (project `v0-living-art-screensaver`, team `gavin-1a51c3e5`)
-- Vercel is connected to **this repo** (`zerolocker/screensaver-art`), root directory set to `living-art-screensaver-web/`
-- Auto-deploys on push to `master`
-- Uses **pnpm** — do not use npm or yarn
+pnpm dev                                  # localhost:3000
 
-## Shared UI library (packages/ui)
-- Package name: `@screensaver-art/ui`
-- Exports: `LoginForm`, `SignUpForm`, `SubscriptionCard`, base UI components (`Button`, `Card`, `Input`, `Label`), `cn()` utility
-- Also exports `globals.css` with shared design tokens (OKLch color palette, fonts, radii)
-- Components are **framework-agnostic** — no Next.js imports; auth forms accept `onSubmit` callbacks
-- No build step — consuming apps (Next.js, Vite) compile the TSX source directly
-- Website uses `transpilePackages: ['@screensaver-art/ui']` in `next.config.mjs`
-
-### Tailwind v4 + pnpm workspace gotcha
-Tailwind v4's Vite plugin auto-detects classes in imported files, but **does not scan workspace packages resolved through `node_modules` symlinks**. Each consuming app must add a `@source` directive in its CSS pointing at the shared package source:
-```css
-@import 'tailwindcss';
-@source "../../../../packages/ui/src";   /* relative to the CSS file */
+bash screensaver-macos/build.sh Debug     # build the .appex alone; auto-registers it
+./scripts/release.sh [minor|major|X.Y.Z]  # ship a signed, notarized release
 ```
-Without this, classes like `bg-primary` used only in `packages/ui` components won't be generated.
+
+Building the app or screensaver needs Xcode and `brew install xcodegen`.
+
+## How it works
+
+1. The app calls `GET /api/gallery` with the user's Supabase token. The route reads `gallery.json` from the `master` branch through the GitHub Contents API, so a push to `master` is the whole deploy.
+2. The app downloads each MP4, obfuscates it, and writes it to `/Users/Shared/LivingArtScreensaver/` with a manifest.
+3. The `.appex` reads the manifest each time it starts, decrypts each file to a temp MP4, and crossfades between them (`ScreensaverArtView.swift`). It has no settings UI. Free users see a small subscribe pill.
+
+### Gating
+
+- `/api/gallery` returns every piece to everyone, plus `isSubscribed`. Gating happens in the client.
+- A piece is locked when the user isn't subscribed and the piece lacks `free: true` (`isItemLocked`). Exactly `FREE_ITEM_COUNT` (50) pieces are free; a test keeps the two in sync.
+- The app never downloads a locked piece, and each sync deletes cached files that became locked or left the gallery.
+- The manifest lists only selected, unlocked pieces. The cache can hold more: deselected files stay until a manual "Sync Now" or "Clear cache".
+- The MP4s are public on R2, so this gating is friction, not security. If piracy matters, use signed R2 URLs.
+
+### Cache and obfuscation
+
+- Each video is cached as `<djb2 hash of URL>.bin`: the 8-byte header `LARTV001`, then the MP4 XOR'd with a 32-byte key. It stops casual copying; it is not encryption.
+- **The key, header and hash exist twice and must match:** `electron-app/src/main/obfuscation.ts` (writer) and `screensaver-macos/ScreensaverArtExtension/Constants.swift` (reader).
+- The cache lives in `/Users/Shared/` because the sandboxed `.appex` can read it through a `temporary-exception` entitlement, and writing there triggers no macOS privacy prompt.
+
+### Screensaver registration
+
+- On launch the app registers the embedded `.appex` with `pluginkit` through the helper (`electron-app/src/main/installer.ts`). It re-registers only when the app version changed.
+- Before registering, it runs `lsregister -f` on the bundle (after an in-place update, a stale LaunchServices entry makes `pluginkit -a` silently do nothing). Then it polls `find`, because `pluginkit -a` registers about a second later.
+- `scripts/bundle-appex.sh` stamps the app version into the appex's `CFBundleVersion`. pluginkit caches by version, so without this an update keeps running old screensaver code.
+- An `.appex` with an invalid signature is silently ignored by `pluginkit`.
+
+### Auth
+
+- Passwordless only: an emailed one-time code, or Apple, Google or Microsoft sign-in with PKCE.
+- The app opens the provider in the system browser. The provider redirects to `/auth/desktop-callback`, which hands the code to the app through the `livingart://auth-callback` deep link. That URL must be in Supabase's redirect allow-list.
+- The app keeps its session in Chromium localStorage and sends it to the website as a Bearer token. Server routes that the app calls use `lib/supabase/native-client.ts`, not the cookie client.
+
+### Payments
+
+- Two offers: $0.99/month billed as $2.97 every 3 months (`STRIPE_PRICE_ID`), and a $15.99 lifetime purchase (`STRIPE_LIFETIME_PRICE_ID`).
+- Both are stored on the user's `subscriptions` row. `isSubscriptionActive()` is the one access rule: lifetime, or status `active`/`trialing`.
+- Buying lifetime cancels any running subscription. Subscription webhooks never touch the lifetime columns.
+- From the app, "Subscribe" posts the user's token to `/api/checkout` and opens the returned Stripe URL directly, so the user never logs in to the website. On any error it opens `/account` instead.
+- Setup and the price-change procedure: `living-art-screensaver-web/docs/stripe-webhooks.md`.
+
+### Signing and notarization
+
+- `LART_CODESIGN_IDENTITY` switches the build between ad-hoc signing (default, runs only on the build machine) and Developer ID with hardened runtime and notarization.
+- The universal merge rewrites files inside the `.appex` and breaks its signature. `scripts/afterpack-sign.cjs` re-signs the `.appex` and helper after the merge. electron-builder never signs `Contents/PlugIns/`.
+- Notarization runs when Apple credentials are in the environment. `scripts/aftersign-staple.cjs` staples the ticket.
+- For a release, copy `electron-app/release.env.example` to `release.env` and run `pnpm dist:mac:release`.
+
+### Releases and auto-update
+
+- `./scripts/release.sh` bumps the version, builds a signed, notarized DMG, tags, pushes, and publishes a GitHub Release. Toggles: `DRY_RUN=1`, `SKIP_BUILD=1`, `ALLOW_BRANCH=1`.
+- `/download/mac` redirects to the latest release's DMG. `/updates/*` serves electron-updater's files from the latest release. Both read GitHub with `GITHUB_RELEASE_TOKEN` (set in Vercel and in the website's `.env.local`), so the repo can go private. A missing token returns 500.
+- electron-updater needs the `zip` target and asset names without spaces, because GitHub turns spaces into dots and `latest-mac.yml` names the zip exactly.
+- Updates only install on a Developer ID build running from `/Applications`.
+
+### Logging
+
+- The main process logs to the console, `<userData>/logs/main.log`, and a ring buffer. The renderer forwards its logs over IPC.
+- "Send error report" uploads a snapshot (versions, installer diagnostics, cache summary, recent logs) to `/api/error-report`, which stores it in the Supabase `user-error-reports` bucket.
+- The Swift helper logs to the unified log under `com.livingart.screensaver.app` and keeps stdout for JSON.
+
+## Gallery data
+
+- Each `gallery.json` entry has `src`, `title`, `type`, `date`, `tags`, and the website-only images `img` (2K), `og_img` (1280×720 JPEG) and `thumb` (640w). AI pieces also have `image_prompt` and `video_prompt`; the posted piece each night has `music_prompt`.
+- Real public-domain paintings have `source: "real_artwork"` and provenance fields instead of an image prompt (`isRealArtwork()`).
+- Add pieces with `curation/publish-piece.mjs`. It uploads to R2 with immutable cache headers and never overwrites a key.
+- Don't set `free` on new pieces. They are subscriber-only by design.
+
+## Website
+
+- Vercel project `v0-living-art-screensaver`, deployed on every push to `master`.
+- `lib/gallery-catalog.ts` builds `/gallery`, `/art/<slug>` and `/era/<tag>` from `gallery.json` at build time. These pages are landing pages for social posts.
+- **Slugs come from the R2 key and must never change**: posted pins can't be edited, so a changed slug breaks them forever.
+- Tailwind v4 doesn't scan workspace packages, so each app's CSS needs `@source "…/packages/ui/src"`.
 
 ## Infrastructure
-| Service | What it does |
+
+| Service | Use |
 |---|---|
-| **Supabase** | Auth (passwordless: email one-time code + Apple/Google/Microsoft OAuth) + `subscriptions` table + `user-error-reports` Storage bucket (private; debug reports from the Electron app) |
-| **Stripe** | Payments — two offers: $0.99/month billed quarterly ($2.97 every 3 months, to cut per-transaction fees) via `STRIPE_PRICE_ID`, and a $15.99 one-time "Own it forever" lifetime purchase via `STRIPE_LIFETIME_PRICE_ID` (both Vercel env vars, per-mode test/live IDs) |
-| **Cloudflare R2** | Hosts MP4 video assets (public, no auth) |
-| **Vercel** | Hosts the Next.js website |
-| **GitHub Pages** | Hosts the standalone web preview (`index.html`) at `https://zerolocker.github.io/screensaver-art/` — deployed natively from `master` (Settings → Pages → "Deploy from a branch"). **Nothing in the product depends on it**: `/api/gallery` reads `gallery.json` from the GitHub API, not Pages (see below). Pages is public-repo-only on a Free plan, so this preview is the one thing that would go dark if the repo went private. |
+| Supabase | Auth, the `subscriptions` table (schema in `living-art-screensaver-web/scripts/*.sql`), the `user-error-reports` bucket |
+| Stripe | Payments |
+| Cloudflare R2 | Media, served from `https://screensaver-assets.living-art-asset.com/gallery/`. Never use the `r2.dev` URL. Test caching with a GET; HEAD always shows `DYNAMIC`. |
+| Vercel | The website |
+| GitHub Pages | `index.html` preview only |
 
-The Apple (6-month) and Microsoft/Azure (24-month) sign-in secrets **expire** and must be rotated. Dates + procedure live in `docs/secret-rotation.md`; `.github/secret-rotation.json` is the source of truth and `.github/workflows/secret-rotation-reminder.yml` auto-opens a reminder issue before each due date.
+The Apple and Microsoft sign-in secrets expire. See `docs/secret-rotation.md`.
 
-## Add new art pieces
-1. Upload MP4 to Cloudflare R2 bucket `screensaver-assets` under the `gallery/` prefix. Set a long, immutable `Cache-Control` on the object at upload time (`wrangler r2 object put … --cache-control "public, max-age=31536000, immutable"`) — gallery keys are never overwritten, so caching them hard is safe and stops repeat re-fetches.
-2. Add an entry to `gallery.json` — include `src` (full custom-domain URL, `https://screensaver-assets.living-art-asset.com/gallery/…`), `title`, `type`, `date`, `image_prompt`, `video_prompt`. **Do not set `free`** — new pieces are **locked (subscriber-only) by default**, which is intentional: fresh art is the recurring perk that justifies a subscription, and it keeps the free tier pinned at exactly `FREE_ITEM_COUNT` pieces as the catalog grows. (The free pieces are a fixed, interleaved set chosen once; see *Where gating happens*.)
-3. Push to `master` — that's the whole deploy. `/api/gallery` reads `gallery.json` off the `master` ref via the GitHub API (~5 min response cache), so there is no build/deploy step in between. Subscribers' Electron apps pick up the new piece on their next sync.
+## Other docs
 
-Steps 1–2 are what `curation/publish-piece.mjs` automates — the nightly curation calls it once per finished piece, and it is the right entry point for a hand-added piece too.
-
----
-
-## Subscription & Gating Architecture
-
-### The product model
-- Two paid offers, both at `living-art-screensaver.com` and directly inside the Electron app: a **subscription** ($0.99/month, billed quarterly as $2.97 every 3 months via Stripe) and a **lifetime one-time purchase** ($15.99, "Own it forever" — no renewals). In the app, generic unlock CTAs (gallery locks, the upsell banner, the fullscreen preview) open a **plan-picker modal** (`PlanPickerModal` via `PlanPickerProvider`, lifetime pre-selected); the Account card's per-plan buttons skip the picker. Either way `startCheckout(source, plan)` goes **straight to Stripe checkout** (see *App-initiated checkout* below).
-- **Lifetime** is recorded on the same `subscriptions` row (`lifetime_purchased_at` + `lifetime_receipt_url` + `stripe_payment_intent_id`, migration `scripts/002_add_lifetime_purchase.sql`); the single access rule is `isSubscriptionActive()` in `@screensaver-art/constants` (lifetime OR active/trialing). The webhook handles the payment-mode checkout session (`metadata.purpose === 'lifetime'`, shared logic in `lib/lifetime.ts`) and **auto-cancels any running subscription** on lifetime purchase — the "your subscription ends automatically, no double billing" upgrade path. Subscription syncs never touch the lifetime columns, so a later subscription event can't revoke lifetime access.
-- **Everyone** browses the *entire* gallery in the app — a free user can preview every piece.
-- **Subscribed**: can select + cache any pieces (selection drives what plays).
-- **Not subscribed**: only the **free** pieces (those flagged `free: true` in `gallery.json`) are *unlockable*; every other piece shows a lock ("Subscribe to unlock") and is never downloaded/cached. The free pieces are selected by default.
-- The screensaver doesn't know or care about subscriptions — it just plays whatever is in the cache directory
-
-### Where gating happens
-Gating is **client-side** and **per-item**. Each `gallery.json` entry carries a `free` flag; the free pieces are deliberately **interleaved** through the catalog (by date — roughly every other one of the oldest pieces, with the newest left locked) so a free user keeps bumping into locked art while browsing, instead of all the free pieces sitting in one contiguous block. `/api/gallery` inspects the Bearer token, checks Supabase `subscriptions`, and returns the **full** list for everyone (the per-item `free` flag rides along):
-```
-{ items: GalleryItem[], isSubscribed: boolean }
-```
-(The old positional `freeCount` threshold and `totalCount` are gone — `items.length` is the total, and `free`-ness is per-item.) The single gating rule lives in `@screensaver-art/constants` as `isItemLocked(item, isSubscribed)` (= `!isSubscribed && item.free !== true`). The Electron app renders all items but locks the non-free ones for non-subscribers (lock icon instead of the selection tick, and the modal's add button becomes "Subscribe to unlock"). `cache-sync` enforces the same rule: it never downloads a locked piece, and on each sync evicts any cached `.bin` that is now locked (e.g. an expired subscription) or no longer in the gallery — re-enforcing the gate even though the API hands back the full list. The advertised free count (`FREE_ITEM_COUNT`, currently **50**) is the number of `free: true` pieces in `gallery.json`; a test (`free-tier invariant`) keeps the two in lockstep.
-
-**Cache is decoupled from "what plays":** the manifest = *selected ∩ unlocked* (what the screensaver plays), but the on-disk cache is kept *wider*. Deselecting an unlocked piece on a normal (auto) sync **keeps** its `.bin` so re-adding is instant; only a manual "Sync Now" (`pruneDeselected`) tidies deselected files off disk. A subscriber's cache therefore trends toward "everything ever selected" — the **Clear cache** button in Account is the reset.
-
-### App-initiated checkout (no website re-login, straight to Stripe)
-Clicking any "Subscribe" CTA in the Electron app used to just open `living-art-screensaver.com/account` in the browser — but the app's session lives in *its own* Chromium localStorage, not the browser's cookies, so the user had to **log in again** and then click "Subscribe" **again**. Now the app skips both:
-- The renderer's `startCheckout()` (`src/renderer/src/lib/checkout.ts`) POSTs the user's Supabase access token to **`/api/checkout`** (Bearer-authed via `verifyNativeAuth`), which creates a Stripe Checkout Session and returns its URL; the app opens *that* directly with `shell.openExternal` — straight to payment. Any failure (offline, already subscribed → 409, server error) falls back to opening `/account` so the button always does something.
-- The Stripe session-building logic is shared in `lib/checkout.ts` (`createSubscriptionCheckoutSession`) between the new API route and the website's cookie-authed `createCheckoutSession` server action.
-- **Success/cancel** for the app flow land on the **public** `/checkout/complete?status=success|canceled` page (no auth — the browser running Stripe checkout has no website session). The subscription is recorded by the Stripe webhook; the Account page re-verifies on window focus, so the app reflects the new status when the user switches back. (The website's own checkout, from `/account` / the home `#pricing` section, still returns to `/account?success=…` since those users *are* logged in.)
-- **The old `/pricing` 404:** the web `createCheckoutSession`'s `cancel_url` pointed at `${origin}/pricing` (and the pricing section's post-login redirect at `/pricing`), but there is no `/pricing` route — only the `#pricing` anchor on the home page. Both now use real targets (`/account` or `/#pricing`).
-
-### Auth flow
-Auth is **passwordless** — there is no email/password sign-in or sign-up. The same
-single screen serves both (a first-time email/provider just creates the account):
-- **Email one-time code** (`signInWithOtp` + `verifyOtp`, `shouldCreateUser: true`)
-- **Social sign-in** — Apple / Google / Microsoft via `signInWithOAuth` using the
-  **PKCE** flow. The app opens the **system browser** (never an embedded webview —
-  Google blocks those). The provider's `redirect_to` is a web page we control,
-  **`/auth/desktop-callback`**, not the deep link directly: pointing the browser
-  straight at `livingart://` left it spinning on a half-finished custom-scheme
-  navigation even after the app signed in. The hand-off page forwards the PKCE
-  `code` to the `livingart://auth-callback?code=…` deep link (which the main
-  process receives) and shows a "you can close this window" message;
-  `exchangeCodeForSession` then swaps the code for a session. The web URL must be
-  in Supabase Auth → Redirect URLs. The website uses the identical PKCE flow
-  (`/auth/callback`); provider config (labels, scopes/query params) is shared in
-  `@screensaver-art/ui`. The social buttons never disable/spin on click — sign-in
-  continues elsewhere, so disabling them only ever stranded users on a spinner.
-
-1. User opens the Electron app
-2. Signs in passwordlessly (email code or a social provider); `@supabase/supabase-js`
-   persists the session in Chromium localStorage. On later launches the app falls
-   back to the stored session when offline so local features keep working.
-3. App calls `GET /api/gallery` with `Authorization: Bearer <access_token>`
-4. App downloads each MP4, XOR-obfuscates it, writes it to the cache directory, and updates `gallery.json` (the manifest)
-5. App auto-registers the embedded `.appex` on launch via the PaperSaver helper (`pluginkit -a`) — version-aware, so an app update re-registers the new build — then offers a one-click "Set" banner (also via the helper) to make it the active screensaver, or the user can pick it in System Settings
-
-### Why gating is client-side now (and why that's OK)
-The API used to return only the free slice (to hide URLs); we traded that for letting free users browse + preview the whole gallery — a better upsell. No piracy regression: the MP4s were always public on R2 (no signed URLs), and the real friction is the **cache-side obfuscation** below — `cache-sync` still refuses to download locked pieces and evicts any that become locked, so a non-subscriber never holds the locked `.bin` files. If piracy ever matters, the next step is signed R2 URLs, not re-hiding the playlist.
-
-### Cache obfuscation
-Every cached MP4 is stored as `<djb2-127-hash-of-URL>.bin`: an 8-byte `LARTV001` magic header + the MP4 XOR'd with a 32-byte cycling key. The key, magic, and filename hash are duplicated in two files that **must stay in sync** — `electron-app/src/main/obfuscation.ts` (writer) and `screensaver-macos/ScreensaverArtExtension/Constants.swift` (reader).
-
-This is **not real cryptography** — both binaries embed the key. It's a deliberate friction layer, not DRM: the `.bin` files don't open in QuickTime even after rename, which blocks the casual "drag the MP4 out and post it" path without over-engineering a $0.99 product. The Swift screensaver decrypts on demand into `NSTemporaryDirectory()/ScreensaverArt/`, hands the temp URL to AVPlayer, and deletes it when the slot is reused.
-
-### Why the cache lives in /Users/Shared (macOS)
-
-The `.appex` screensaver is sandboxed (ExtensionKit requires it), so by default it can only read its own container. We share the video cache with the un-sandboxed Electron app via a **fixed path under `/Users/Shared/`** (`/Users/Shared/LivingArtScreensaver/`):
-
-- `/Users/Shared/` is **nobody's** app container / Application-Support, so the un-sandboxed Electron app writing there triggers **no** macOS "access data from other apps" (`SystemPolicyAppData`) TCC prompt. (This is why the old `mac-permission.ts` explainer/recovery code is gone.)
-- The sandboxed extension reads it via a `com.apple.security.temporary-exception.files.absolute-path.read-only = /Users/Shared/` entitlement (see `ScreensaverArtExtension.entitlements`). No App Group, no provisioning profile — the same trick [Aerial](https://github.com/AerialScreensaver/Aerial) uses.
-
-This replaced the old approach where the legacy `.saver` ran inside `legacyScreenSaver`'s container and Electron had to write into *that* container (which is what triggered the TCC prompt).
-
-### Offline support
-- Cache lives in `/Users/Shared/LivingArtScreensaver/` (Mac) / `%LOCALAPPDATA%\ScreensaverArt\` (Windows)
-- The Electron app populates and refreshes this cache; the screensaver only reads
-- The screensaver re-reads `gallery.json` every time `startAnimation` fires, so a fresh sync is picked up the next time the screensaver kicks in — no reboot needed
-- The Electron app can be quit; the screensaver keeps working from the existing cache
-- If the cache is empty (user hasn't synced yet) the screensaver shows a black screen with "Open the Living Art Screensaver app to sync your gallery."
-
-### Supabase `subscriptions` table schema
-```
-id                    uuid
-user_id               uuid  FK → auth.users
-stripe_customer_id    text
-stripe_subscription_id text
-status                text  ('active' | 'trialing' | 'inactive' | 'cancelled' | 'past_due')
-current_period_start  timestamp
-current_period_end    timestamp
-lifetime_purchased_at timestamp  -- set on the one-time "Own it forever" purchase
-lifetime_receipt_url  text       -- Stripe-hosted receipt, captured by the webhook
-stripe_payment_intent_id text
-updated_at            timestamp
-```
-`isActive` = `lifetime_purchased_at` set OR status is `active`/`trialing` (`isSubscriptionActive` in `@screensaver-art/constants` — the one rule every gate uses)
-
-### Native Supabase client (for Electron app requests)
-The website's default Supabase client uses cookies (for browser sessions). The Electron app sends a Bearer token instead. Use `lib/supabase/native-client.ts` which creates a `@supabase/supabase-js` client with `Authorization: Bearer <token>` in the global headers — **not** the SSR cookie client.
-
----
-
-## Screensaver internals (Swift, `.appex`)
-
-The screensaver is a modern **ExtensionKit `.appex`** (macOS Sonoma+), not the
-legacy `.saver` plug-in. It runs in its **own sandboxed process** and appears in
-System Settings → Screen Saver alongside Apple's first-party savers. Each class
-lives in its own file under `screensaver-macos/ScreensaverArtExtension/`:
-
-| File | Class / enum | Responsibility |
-|---|---|---|
-| `ScreensaverArtExtension.swift` | `ScreensaverArtExtension` | Principal class (`ScreenSaverExtension` subclass), set as `NSExtensionPrincipalClass` in Info.plist |
-| `ScreensaverArtViewController.swift` | `ScreensaverArtViewController` | `ScreenSaverViewController` subclass; `loadView()` builds the view |
-| `ScreensaverArtView.swift` | `ScreensaverArtView` | Main view — A/B CALayer crossfade, timer, empty-state hint. Starts/stops from `viewDidMoveToWindow` (robust across ScreenSaverEngine + System Settings preview) and `startAnimation`/`stopAnimation` |
-| `CachedGallery.swift` | `CachedGallery` | Reads the manifest; decrypts a `.bin` to a temp `.mp4` for AVPlayer |
-| `Models.swift` | `CachedItem`, `CachedManifest` | Decodable types matching the manifest the Electron app writes |
-| `Constants.swift` | `Cache`, `Obfuscation` | Cache path (`/Users/Shared/LivingArtScreensaver/`) + XOR key/magic shared with the Electron app |
-| `UpsellPill.swift` | `UpsellPill` | Gentle subscribe nudge for free users (`isSubscribed` false): a small frosted pill above the title that fades in/out (16s on / 16s off) and **never covers the art**. Copy points back to the app's Subscribe button (a screensaver can't be clicked). Replaced an older full-screen 30s modal. |
-| `Logger.swift` | `LartLog` | Shared OSLog subsystem `com.livingart.screensaver.app` |
-| `ScreenSaverPrivate.h` + `*-Bridging-Header.h` | — | Private decls for `ScreenSaverExtension` / `ScreenSaverViewController` (not in the public SDK) |
-
-### Build model
-- No hand-rolled `swiftc`/`.saver` bundle anymore. `project.yml` (xcodegen) defines two targets: `ScreensaverArtExtension` (the `.appex`) and `DevHost` (a minimal app scaffold that embeds the extension so it can build/sign/register locally — never shipped; the real host is the Electron app).
-- The appex executable's entry point is `NSExtensionMain` (classic `NSExtension` model, `CFBundlePackageType = XPC!`, `NSExtensionPointIdentifier = com.apple.screensaver`), exactly like Apple's `Arabesque.appex`.
-- Local builds are **ad-hoc** signed ("Sign to Run Locally"). The `temporary-exception` entitlements are honored ad-hoc locally and are allowed under Developer ID notarization for release (not the App Store).
-
-### No configure sheet
-`SSEHasConfigureSheet = false` (Info.plist). The screensaver has no UI of its own — accounts and cache are managed in the Electron app.
-
-### Distribution
-Distribution is owned by the Electron app — see `electron-app/electron-builder.cjs`. The `.appex` is embedded in the Electron `.app`'s `Contents/PlugIns/` and registered with `pluginkit`. There is no per-screensaver DMG.
-
-### Code signing & notarization (env-driven)
-The embedded `.appex` **must** have a valid signature or `pluginkit -a` silently refuses to register it (it exits 0 but the extension never appears in `pluginkit -m` — surfaced in-app as "Failed to register the screensaver (helper exit 0)."). The trap: for a `universal` build, `@electron/universal` merges the x64 + arm64 apps and **rewrites nested `Info.plist` files after the appex was signed**, invalidating its signature. So the appex always needs (re)signing *after* the merge — that's what `scripts/afterpack-sign.cjs` (the `afterPack` hook) does, on the merged universal app.
-
-The whole pipeline is toggled by the **`LART_CODESIGN_IDENTITY`** env var, kept in lockstep between `electron-builder.cjs` and the hooks:
-
-**Ad-hoc (default — local/contributor builds, no cert):** `electron-builder.cjs` sets `identity: null` (electron-builder skips signing). `afterpack-sign.cjs` ad-hoc signs the whole bundle: `codesign --deep --sign -`, re-sign the appex with its entitlements, re-seal the outer app, `--verify --deep --strict`. Registers fine on the build machine; not distributable to others.
-
-**Developer ID (release):** set `LART_CODESIGN_IDENTITY="Developer ID Application: NAME (TEAMID)"`. Then:
-- `electron-builder.cjs` → `hardenedRuntime: true`, `identity: <that>`. electron-builder signs the frameworks/helper-apps/outer app with the hardened runtime (`build/entitlements.mac{,.inherit}.plist`). **It ignores `Contents/PlugIns/` by design**, so it never touches the appex.
-- `afterpack-sign.cjs` pre-signs the **appex** (with its sandbox + `/Users/Shared` temporary-exception entitlements) and the **helper**, both hardened-runtime + secure-timestamp. electron-builder then seals the outer app over them.
-- **Notarization** is electron-builder-native (`@electron/notarize`) and kicks in when Apple notary creds are in the env — easiest is a keychain profile from `xcrun notarytool store-credentials`: `APPLE_KEYCHAIN_PROFILE="…"` (or `APPLE_ID`/`APPLE_APP_SPECIFIC_PASSWORD`/`APPLE_TEAM_ID`). `@electron/notarize` submits but doesn't staple, so `scripts/aftersign-staple.cjs` (the `afterSign` hook) staples the ticket onto the `.app` before the DMG is built. With no creds, the app is signed but not notarized (staple skipped).
-
-Release: copy `electron-app/release.env.example` → `release.env` (gitignored; holds your `LART_CODESIGN_IDENTITY` + `APPLE_KEYCHAIN_PROFILE` — not secrets, just developer-specific), then `pnpm dist:mac:release` (wrapper: `scripts/dist-mac-release.sh` loads `release.env` and runs `pnpm dist:mac`). Equivalent to setting the env vars inline:
-```bash
-LART_CODESIGN_IDENTITY="Developer ID Application: NAME (TEAMID)" \
-APPLE_KEYCHAIN_PROFILE="living-art-notary" \
-pnpm dist:mac
-# verify:
-spctl -a -vvv -t install "dist/mac-universal/Living Art Screensaver.app"   # → accepted, Notarized Developer ID
-xcrun stapler validate "dist/Living Art Screensaver-1.0.0.dmg"
-```
-The `temporary-exception` entitlements are accepted by Developer ID notarization (automated malware scan, not an App Store entitlement review — Aerial ships the same combo). Test the DMG on a *different* Mac to truly confirm Gatekeeper is happy.
-
-### Logging & error reports
-- **Main process**: `src/main/logger.ts` logs to console + `<userData>/logs/main.log` (JSONL, rotated at ~5 MB) + an in-memory ring buffer. `installGlobalHandlers()` captures `uncaughtException`/`unhandledRejection`. Installer, cache-sync, and IPC are instrumented.
-- **Renderer**: `src/renderer/src/lib/log.ts` mirrors to the console and forwards to main via `log:record`, and installs `window` `error`/`unhandledrejection` handlers. So one report covers both processes.
-- **Swift helper**: logs to the unified log under subsystem `com.livingart.screensaver.app` (category `helper`) — `log stream --predicate 'subsystem == "com.livingart.screensaver.app"'`. Never writes to stdout (that carries the JSON the Electron app parses).
-- **Error report**: the Account page has a "Send error report" button (shown on errors + a persistent Diagnostics card). `report.ts` assembles a JSON snapshot — app/OS/Electron versions, `installer.getDiagnostics()` (status + appex `codesign --verify` + helper `find`), cache summary, and the recent log buffer — and POSTs it (Bearer-auth) to `/api/error-report`, which stores it in the Supabase `user-error-reports` bucket at `<userId>/<timestamp>-<id>.json`. No video content or access token is included in the body.
-
----
-
-## Releasing a new version
-
-The website's "Download for Mac" button doesn't link to a fixed file — it links
-to **`/download/mac`**, a Next.js route that resolves "latest" from this repo's
-**GitHub Releases** at request time. So shipping a new version = publishing a new
-GitHub Release with the DMG attached; the link updates itself within ~2 min (no
-website redeploy).
-
-### One command
-```bash
-./scripts/release.sh            # patch bump (1.0.0 → 1.0.1)
-./scripts/release.sh minor      # or: major / 1.4.2 (explicit)
-```
-`scripts/release.sh` bumps `electron-app/package.json`, builds a **signed +
-notarized** universal DMG (`pnpm dist:mac:release`, reads `electron-app/release.env`),
-commits the bump, tags `vX.Y.Z`, pushes, and `gh release create`s the release
-with the DMG attached under a versioned, platform-tagged name
-(**`Living-Art-Screensaver-<version>-mac.dmg`**) — that asset name is the filename
-users get on download (the `/download/:os` route passes it through via
-`Content-Disposition`).
-Toggles: `DRY_RUN=1` (build only, nothing pushed/published), `SKIP_BUILD=1`
-(reuse the existing DMG to re-publish), `ALLOW_BRANCH=1` (release off non-master).
-Prereqs: `release.env` present, `gh` authed (repo scope), Xcode + xcodegen.
-
-### The download link (`/download/:os`)
-- `living-art-screensaver-web/app/download/[os]/route.ts` — `mac` → latest `.dmg`,
-  `win` → latest `.exe` (Windows scaffolded, no build ships yet). 302s to the
-  signed asset URL; returns 5xx (not a public fallback) if the token is missing
-  or the release lookup fails. The platform segment is required — there is no
-  bare `/download` default.
-- The four "Download" buttons (hero/pricing/cta/account) point at `/download/mac`.
-- **One-time:** the route + button changes must be deployed once (push to master →
-  Vercel) before the first release link works. Per-release, no website change.
-
-### The `GITHUB_RELEASE_TOKEN` (always required)
-`/download`, `/updates`, and `/api/gallery` **always** go through the GitHub API
-with a server-side token rather than a public URL — so the repo can go private
-with zero changes. The token is **`GITHUB_RELEASE_TOKEN`**, a fine-grained PAT
-with `Contents: Read-only` on this repo, set in two places:
-- **Vercel** project env (Production + Preview + Development) — for the deployed site.
-- **`living-art-screensaver-web/.env.local`** (gitignored) — for `pnpm dev`.
-
-Given the token, the release routes request the asset with `Accept: application/octet-stream`
-and 302 to the short-lived **signed** `objects.githubusercontent.com` URL (bytes
-never flow through Vercel; works for anonymous users on a private repo).
-`/api/gallery` uses the same token on the Contents API (`fetchRepoFile`) to read
-`gallery.json` off `master`. Missing token → 500 by design, so a private repo
-can't silently hand out broken links or an empty gallery.
-
-### Auto-update (electron-updater)
-
-The installed Mac app updates itself (Claude-Desktop style): it downloads a new
-release in the background and shows a **"Relaunch to update"** banner. No more
-re-downloading the DMG and dragging it into `/Applications`.
-
-- **How it works.** `electron-app/src/main/updater.ts` wraps `electron-updater`'s
-  `autoUpdater` — it checks on launch + every 6 h, downloads silently
-  (`autoDownload`), and pushes state to the renderer (`update:event` IPC). The
-  renderer's `UpdateProvider` + `UpdateBanner` (top of the `AppBanners` stack)
-  surface the relaunch prompt; `quitAndInstall()` installs + relaunches. Account →
-  "About" has a manual **Check for updates**.
-- **Where updates come from.** electron-builder's `publish: generic` points the
-  app at **`/updates`** on the website (`app/updates/[...path]/route.ts`), which
-  serves the updater's files from the latest GitHub release through the **same
-  `GITHUB_RELEASE_TOKEN` proxy** as `/download` (shared `lib/github-release.ts`) —
-  `latest-mac.yml` proxied inline, `.zip`/`.blockmap` 302'd to a signed CDN URL.
-  No token is baked into the app.
-- **Build artifacts.** `mac.target` now also builds a **`zip`** (Squirrel.Mac
-  updates from a zip, not the DMG) and electron-builder emits `latest-mac.yml` +
-  the zip `.blockmap`. `scripts/release.sh` uploads all three to the GitHub
-  release **under their built, space-free names** — `latest-mac.yml` references
-  the zip by exact filename, and GitHub rewrites spaces in asset names to dots,
-  which would break the lookup (hence `mac.artifactName` =
-  `Living-Art-Screensaver-<version>-universal.zip`). The DMG keeps its own
-  hyphenated name as before.
-- **Signing is mandatory.** Squirrel.Mac only applies a **Developer-ID-signed +
-  notarized** update (the release path already does this); auto-update is a no-op
-  in dev / ad-hoc builds (`app.isPackaged` guard). The embedded `.appex` needs no
-  special handling: it ships inside the same signed/notarized/stapled `.app` the
-  zip wraps, and `installer.ts`'s version-aware `ensureRegistered` re-registers it
-  with `pluginkit` on the post-update relaunch (the bumped appex `CFBundleVersion`
-  triggers it).
-- **Caveats.** Auto-update only kicks in **from the next release onward** — the
-  first build that contains the updater still has to be installed manually (the
-  user's current build has no updater). And the app must run from `/Applications`
-  (not the DMG / a translocated path) for Squirrel to swap it in place.
-
----
-
-## Repo history
-The dated change log lives in [docs/CHANGELOG.md](docs/CHANGELOG.md) — log an entry there only for major changes whose context is hard to recover from the code alone; `git log` has the rest.
-
-## Growth & marketing
-User-acquisition work (get people to the site + downloading) is tracked in a shared, multi-agent hub: **[docs/GROWTH-PROGRESS.md](docs/GROWTH-PROGRESS.md)** — the canonical live status/backlog (read + update it before/after growth work). Reasoning lives in [docs/growth-and-marketing-strategy.md](docs/growth-and-marketing-strategy.md); launch copy in [docs/launch-kit.md](docs/launch-kit.md); the social-clip generator in [marketing/](marketing/README.md). If you're doing growth work, start at the hub.
+- `docs/GROWTH-PROGRESS.md`: growth status and backlog. Read it before marketing work.
+- `docs/posthog-analytics.md`: analytics events.
+- `curation/README.md`: how art is made and reviewed.

@@ -1,20 +1,8 @@
 /**
- * The gallery landing-page catalog — one derived, sorted view of `gallery.json`
- * that `/gallery`, `/art/<slug>` and `/era/<tag>` all read from.
- *
- * WHY THESE PAGES EXIST (it frames every decision in this file): they are
- * **landing destinations for social posts, primarily Pinterest** — not an SEO
- * play. A pin needs a unique, relevant page that shows the art moving and offers
- * a Mac download. Search traffic is a free option on top, not the goal. See
- * docs/growth-and-marketing-strategy.md §4.3.
- *
- * `gallery.json` is imported statically, so the pages are generated at build
- * time and served as static HTML — the fastest thing we can hand a visitor
- * arriving from a pin. The nightly curation job pushes `gallery.json` to
- * `master`, and a push to `master` auto-deploys the site (CLAUDE.md → Website),
- * so the route list and the sitemap grow themselves without any extra step.
- * (The Electron app still reads /api/gallery off the GitHub API — that path is
- * deliberately deploy-independent and is not touched here.)
+ * The data behind `/gallery`, `/art/<slug>` and `/era/<tag>`: a sorted view of
+ * `gallery.json`, imported at build time. These pages are landing pages for
+ * social posts (mainly Pinterest), not an SEO play. Each nightly push to
+ * `master` redeploys the site, so new pieces get pages automatically.
  */
 
 import {
@@ -30,36 +18,19 @@ import { poster as gradientPoster } from './gallery-showcase'
 import { ERA_COPY, type EraCopy } from './era-copy'
 
 /**
- * INDEXING SWITCH — flip this one line to let search engines index the 262
- * per-piece pages.
- *
- * Default `false`, deliberately. ~262 pages whose art *and* prose are generated
- * is close to what Google's scaled-content-abuse systems demote, and a penalty
- * lands on the whole domain — including the brand-name search that actually
- * converts today. Pinterest does not care whether a destination is indexed, so
- * `noindex` costs the channel these pages were built for exactly nothing.
- *
- * `/gallery` and the 15 `/era/<tag>` pages stay indexable: they are a small,
- * curated, hand-written browse surface, not scaled content.
- *
- * Flip to `true` once there is a reason to (e.g. hand-written per-piece prose,
- * or evidence the risk has passed). Everything downstream — the `robots` meta
- * tag on `/art/*` and whether those URLs appear in the sitemap — reads this.
+ * Whether search engines may index `/art/*` (controls the robots tag and the
+ * sitemap). Off because hundreds of generated pages risk a Google penalty on
+ * the whole domain, and Pinterest doesn't need them indexed. `/gallery` and
+ * `/era/*` are always indexable.
  */
 export const INDEX_ART_PAGES = false
 
 /** Raw `gallery.json` entry — a superset of the client-facing `ArtItem`. */
 export interface RawItem extends ArtItem {
   /**
-   * Website-only image derivatives on R2 — deliberately NOT part of the shared
-   * `ArtItem`, because the Electron app and screensaver never read them.
-   * All three are present for every piece (backfilled 2026-08-05; the nightly
-   * curation run emits them for new pieces).
-   *   img     2K WebP        the high-res still. Kept as data for future needs
-   *                          (4K clips, print); the site itself never needs more
-   *                          than 720p because that is the clips' resolution
-   *   og_img  1280x720 JPEG  social cards — JPEG because crawler WebP support
-   *                          is inconsistent and satori can't rasterize WebP
+   * Website-only images on R2 (not in `ArtItem`; the app never reads them):
+   *   img     2K WebP        archival still; the site never needs more than 720p
+   *   og_img  1280x720 JPEG  social cards (JPEG: crawlers and satori handle WebP badly)
    *   thumb   640w WebP      the /gallery grid
    */
   img?: string
@@ -70,11 +41,7 @@ export interface RawItem extends ArtItem {
   looping?: boolean
 }
 
-/**
- * Provenance of a real, public-domain artwork (`source: "real_artwork"` in
- * gallery.json) — who made it, when, and where the original is. Required keys
- * are guaranteed by curation/publish-piece.mjs; optional ones are '' if absent.
- */
+/** Provenance of a real public-domain artwork. Missing optional fields are ''. */
 export interface Artwork {
   artist: string
   /** "1848–1894", or '' */
@@ -96,17 +63,11 @@ export interface CatalogPiece {
   slug: string
   /** Display name, e.g. "Woman and Flora" (title minus the style + suffix). */
   name: string
-  /**
-   * Art-movement label from the title, e.g. "Art Nouveau". 203 distinct values.
-   * '' on a real artwork, whose title names the artist in that slot instead.
-   */
+  /** Art movement from the title, e.g. "Art Nouveau". '' on a real artwork. */
   movement: string
-  /**
-   * The line shown under the name — the movement for an AI piece, the artist
-   * for a real artwork. What tiles, the placard and headers display.
-   */
+  /** The line under the name: the movement, or the artist for a real artwork. */
   subtitle: string
-  /** Set only on a real public-domain artwork; null on AI-generated pieces (the default). */
+  /** Set only on a real artwork. */
   artwork: Artwork | null
   /** Full title as stored in gallery.json. */
   title: string
@@ -120,7 +81,7 @@ export interface CatalogPiece {
   cardUrl: string | null
   /** Deterministic CSS gradient shown under/instead of the poster. */
   gradient: string
-  /** Era tag (the closed 15-value vocabulary in @screensaver-art/constants). */
+  /** Era tag, from the closed list in @screensaver-art/constants. */
   era: string
   /** `/era/<eraSlug>`. */
   eraSlug: string
@@ -145,34 +106,20 @@ function slugify(value: string): string {
 }
 
 /**
- * The piece slug — derived from the R2 object key, never from the title.
+ * The piece's URL slug, from its R2 key.
  *
- * STABILITY IS A HARD REQUIREMENT, not a nicety. Every pin, YouTube description
- * and social post points at `/art/<slug>` forever, and **a pin's destination URL
- * cannot be edited after it is posted**. A slug that changed would silently 404
- * every pin ever published — the single worst failure mode this feature has.
- *
- * So:
- *  - It is derived from `src`, the R2 object key. Gallery keys are never
- *    overwritten or renamed (CLAUDE.md → "Add new art pieces"), which makes the
- *    key the piece's permanent identity. Titles, by contrast, *are* edited by
- *    curation, so a title-derived slug would drift.
- *  - It is a pure function of one item and looks at nothing else in the catalog.
- *    That rules out collision suffixes ("-2") and positional ids, either of
- *    which could renumber an existing piece when a *different* piece is added or
- *    removed. Uniqueness is instead asserted by a test over the real data
- *    (lib/__tests__/gallery-catalog.test.ts), which fails the build's test step
- *    if curation ever introduces two keys that slugify the same.
- *  - Cosmetic cleanups (dropping the "-animated" suffix, prettifying) are
- *    deliberately NOT applied: they would change every existing URL the day they
- *    landed, and stripping suffixes can also merge two distinct keys.
+ * Must never change: posted pins can't be edited, so a changed slug breaks
+ * them forever. R2 keys are never renamed, unlike titles. It depends on this
+ * item alone (no "-2" suffixes or positions that shift when other pieces are
+ * added); a test asserts uniqueness. Don't prettify it either, since that would
+ * change every existing URL.
  */
 export function slugForSrc(src: string): string {
   const file = src.split('/').pop() ?? src
   return slugify(file.replace(/\.[a-z0-9]+$/i, ''))
 }
 
-/** `/era/<eraSlug>` — same reasoning: derived from the closed tag vocabulary. */
+/** `/era/<eraSlug>`, from the closed tag list. */
 export function slugForEra(era: string): string {
   return slugify(era)
 }
@@ -182,11 +129,8 @@ export function slugForEra(era: string): string {
 // ---------------------------------------------------------------------------
 
 /**
- * Every AI gallery title is authored as `"<Name> - <Movement> (AI Animated)"`
- * (all 262 match today, and a test asserts the split keeps working). Splitting
- * it gives the display name and the movement label without a second data field.
- * Anything that doesn't match falls back to the whole title as the name and no
- * movement, so a stray format can never break a page.
+ * AI titles are `"<Name> - <Movement> (AI Animated)"`. A title that doesn't
+ * match becomes the name, with no movement.
  */
 const TITLE_RE = /^(.+?)\s+-\s+(.+?)\s*\(AI Animated\)\s*$/
 
@@ -197,10 +141,9 @@ export function parseTitle(title: string): { name: string; movement: string } {
 }
 
 /**
- * A real artwork's title puts the artist where an AI piece puts the movement:
+ * A real artwork's title puts the artist in the movement slot:
  * `"Paris Street; Rainy Day - Gustave Caillebotte (AI Animated)"`. Split on the
- * *known* artist rather than the first " - " (a painting's own title can contain
- * one), and fall back to `original_title` if the title was hand-edited off-format.
+ * known artist, since the painting's own title may contain " - ".
  */
 export function parseArtworkTitle(title: string, artwork: Pick<Artwork, 'artist' | 'originalTitle'>): string {
   const suffix = ` - ${artwork.artist} (AI Animated)`
@@ -227,23 +170,11 @@ function artworkOf(item: RawItem): Artwork | null {
 // Posters
 // ---------------------------------------------------------------------------
 
-/**
- * The stills to paint before (and behind) the clip.
- *
- * Every piece now carries all three derivatives on R2, so this is a plain read
- * rather than the old three-tier fallback (own `img` -> a committed
- * public/posters/ file -> gradient). The committed posters are gone: media is
- * never committed to this repo (CLAUDE.md -> Repo rules), and R2 is where these
- * belong. The gradient remains as the paint-before-load background and as the
- * safety net if a field is ever missing.
- */
+/** The stills shown before and behind the clip. The gradient covers any gap. */
 function postersFor(item: RawItem) {
   return {
-    // The hero poster is og_img (1280x720), NOT img, deliberately: the clips are
-    // 720p, so a larger still is wasted bytes *and* shows a visible resolution
-    // drop the moment the video takes over. It also matters that `img` is the
-    // original 5504x3072 WebP (~3.2 MB) on the 140 pieces that had one before
-    // the backfill — that was the page's LCP element on mobile.
+    // og_img, not img: the clips are 720p, so a bigger still only costs bytes
+    // and shows a resolution drop when the video starts.
     posterUrl: item.og_img ?? item.img ?? null,
     thumbUrl: item.thumb ?? item.og_img ?? null,
     cardUrl: item.og_img ?? item.img ?? null,
@@ -328,10 +259,8 @@ function eraCopy(era: string): EraCopy {
 }
 
 /**
- * Internal links out of a piece page: pieces that share the exact movement label
- * (or, for a real artwork, the same artist) first, topped up with the rest of
- * its era — the surface we want crawled/clicked. Deterministic, so the rendered
- * HTML is stable between builds.
+ * Related pieces for a piece page: same movement (or artist) first, then the
+ * rest of its era. Deterministic, so builds are stable.
  */
 export function relatedPieces(piece: CatalogPiece, limit = 8): CatalogPiece[] {
   const sameMovement = piece.subtitle
@@ -349,13 +278,7 @@ export function relatedPieces(piece: CatalogPiece, limit = 8): CatalogPiece[] {
 // Pagination (/gallery)
 // ---------------------------------------------------------------------------
 
-/**
- * Page size for the gallery index. Each tile lazy-loads a clip only once it
- * approaches the viewport (`preload="none"` + a shared IntersectionObserver),
- * so the cost of a page is "the tiles you actually scroll past", not 48 clips.
- * Pagination keeps the DOM and the RSC payload small on the phones that most
- * pin traffic arrives on.
- */
+/** Tiles per /gallery page. Kept small for the phones most visitors use. */
 export const GALLERY_PAGE_SIZE = 48
 
 export const GALLERY_PAGE_COUNT = Math.max(1, Math.ceil(ALL_PIECES.length / GALLERY_PAGE_SIZE))
@@ -394,32 +317,13 @@ function variantIndex(slug: string, count: number): number {
 }
 
 /**
- * The per-piece prose.
+ * The piece page's prose, built from its fields with a sentence shape picked
+ * per slug, plus the era paragraph. Not from the prompts, which read like
+ * machine instructions.
  *
- * Written from structured fields only — name, movement, era, date, free flag,
- * and for a real artwork its provenance — with a few sentence shapes selected
- * deterministically per slug, plus the hand-written era paragraph. Deliberately
- * NOT derived from the `image_prompt` / `video_prompt` fields: those are machine
- * instructions ("static camera", "no morphing", "keeps its exact painted
- * shape"), 61 pieces don't have them at all, and dumping them would make 262
- * pages that read like a config file.
- *
- * Every sentence is true, and the first one always says what the art is:
- *  - An AI piece (the default: no `source`) is AI-generated homage in the style
- *    of a movement, never an original work, and the page must never imply
- *    otherwise.
- *  - A real artwork (`source: "real_artwork"`) is the opposite case, where
- *    "AI-generated, not a reproduction" would be false. Its opener credits the
- *    artist (with their dates), the work's date and the museum, says the image
- *    is public domain, and says the motion was added with AI.
- * That goes for the motion too: only a piece authored as a seamless loop
- * (`looping: true`) is ever called a loop. Most pieces are made to play through
- * once, and the screensaver moves on to the next piece rather than repeating one.
- *
- * This is honest and readable, but it is not art criticism. Richer per-piece
- * prose would need per-piece data. The only per-piece data `gallery.json` takes
- * is a real artwork's provenance (founder: no other new fields, 2026-09-13;
- * provenance allowed, 2026-10).
+ * Every sentence must be true: an AI piece is an AI homage, never an original
+ * work; a real artwork credits the artist and museum and says only the motion
+ * is AI. Only `looping: true` pieces are called loops.
  */
 export function pieceParagraphs(piece: CatalogPiece): string[] {
   const { name, movement, era, looping } = piece
@@ -431,7 +335,6 @@ export function pieceParagraphs(piece: CatalogPiece): string[] {
         `An AI-made piece in the manner of ${style}. ${name} began as a generated still and was then animated, so the scene keeps moving while your Mac sits idle. It belongs to the collection's ${era} wing.`,
         `${name} borrows the palette and composition of ${style}. It is AI-generated art rather than a reproduction of any existing work, ${looping ? 'animated to loop without an obvious seam' : 'animated so the scene moves'}. Filed under ${era}.`,
         `Filed in the ${era} wing, ${name} is an AI homage to ${style} — a generated image, animated into a scene that plays whenever your screen is idle.`,
-        // Not "like every piece here": the collection also holds real artworks.
         `${name} takes its visual language from ${style}, one of the traditions in the collection's ${era} wing. It is AI-generated — not a photograph of an original artwork — and it has been ${looping ? 'animated into a seamless loop' : 'animated'} for an idle display.`,
       ]
 
@@ -465,11 +368,7 @@ function publicDomain(artwork: Artwork): string {
   return artwork.license === 'CC0' ? 'in the public domain (CC0)' : 'in the public domain'
 }
 
-/**
- * Openers for a real artwork. Each credits the artist (and their dates), the
- * work's date and the museum, says the image is public domain, and says the
- * motion is AI — never that the art itself is generated.
- */
+/** Openers for a real artwork: credit the artist, date and museum; only the motion is AI. */
 function artworkOpeners(piece: CatalogPiece, artwork: Artwork): string[] {
   const { name, era, looping } = piece
   const by = `${artwork.artist}${lifeDates(artwork)}`

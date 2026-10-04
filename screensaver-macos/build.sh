@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# build.sh — (re)generate the Xcode project from project.yml and build the
-# ScreensaverArtExtension.appex (embedded in the DevHost build scaffold).
+# Generate the Xcode project from project.yml and build the .appex, embedded in
+# the DevHost scaffold.
 #
 #   bash build.sh           # Release, universal (x86_64 + arm64) — for shipping
 #   bash build.sh Debug     # Debug, host arch — fast dev loop (auto-registers)
@@ -25,18 +25,13 @@ elif [ ! -d ScreensaverArt.xcodeproj ]; then
 fi
 
 echo "→ Building ScreensaverArtExtension.appex ($CONFIG)…" >&2
-# Force a universal binary for Release (ARCHS_STANDARD is arm64-only on this
-# Xcode). Pass as command-line overrides so they win regardless of project
-# defaults. Debug stays single-arch (host) for a fast dev loop.
+# Release is universal (ARCHS_STANDARD is arm64-only here); Debug is host-only.
 ARCH_ARGS=()
 if [ "$CONFIG" = "Release" ]; then
     ARCH_ARGS=(ARCHS="arm64 x86_64" ONLY_ACTIVE_ARCH=NO)
 fi
-# Stamp the appex version from the embedding Electron app's version (passed in
-# via LART_APPEX_VERSION by bundle-appex.sh). This MUST change every release:
-# pluginkit caches extension registrations by CFBundleVersion, so a static
-# version means a new app version's appex keeps running the OLD code until the
-# version actually bumps. Falls back to the project.yml default if unset.
+# The app version from bundle-appex.sh. It must change every release, because
+# pluginkit caches by CFBundleVersion.
 VERSION_ARGS=()
 if [ -n "${LART_APPEX_VERSION:-}" ]; then
     VERSION_ARGS=(CURRENT_PROJECT_VERSION="$LART_APPEX_VERSION" MARKETING_VERSION="$LART_APPEX_VERSION")

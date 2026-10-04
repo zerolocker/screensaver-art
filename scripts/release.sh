@@ -1,21 +1,13 @@
 #!/usr/bin/env bash
-# release.sh — cut a new public release of the Living Art Screensaver Mac app.
+# Release a new version of the Mac app:
+#   1. bump electron-app/package.json
+#   2. build a signed, notarized universal DMG (pnpm dist:mac:release)
+#   3. commit, tag vX.Y.Z, push
+#   4. publish a GitHub Release with the DMG and the auto-update files
+# The website's /download/mac picks it up within ~2 minutes.
 #
-# This is the one command behind "release a new version". It:
-#   1. bumps electron-app/package.json (patch/minor/major or an explicit X.Y.Z)
-#   2. builds a SIGNED + NOTARIZED universal DMG  (pnpm dist:mac:release)
-#   3. commits the bump, tags vX.Y.Z, pushes
-#   4. publishes a GitHub Release with the DMG attached as a stable-named asset
-#
-# The website's "Download for Mac" button (→ /download/mac) resolves "latest"
-# from GitHub Releases at request time, so the new build goes live within ~2 min
-# of the release publishing — NO website redeploy needed per release.
-#
-# Prerequisites (one-time):
-#   - electron-app/release.env present (Developer ID + notary creds — see
-#     electron-app/release.env.example). Required for the signed build.
-#   - gh CLI authenticated with repo scope (gh auth status).
-#   - Xcode + xcodegen installed (the build bundles the .appex + helper).
+# Needs electron-app/release.env (see release.env.example), gh with repo
+# scope, and Xcode + xcodegen.
 #
 # Usage:
 #   ./scripts/release.sh             # bump patch  (1.0.0 → 1.0.1)
@@ -24,8 +16,8 @@
 #   ./scripts/release.sh 1.4.2       # set an explicit version
 #
 # Env toggles:
-#   DRY_RUN=1     build only — bump + build, but do NOT commit/tag/push/publish
-#   SKIP_BUILD=1  reuse the already-built DMG in electron-app/dist (re-publish)
+#   DRY_RUN=1     bump and build only; don't commit, tag, push or publish
+#   SKIP_BUILD=1  reuse the DMG already in electron-app/dist
 #   ALLOW_BRANCH=1  allow releasing from a branch other than master
 
 set -euo pipefail
@@ -45,8 +37,7 @@ die()  { printf '\n\033[1;31m✗ %s\033[0m\n' "$*" >&2; exit 1; }
 
 # ── Preconditions ────────────────────────────────────────────────────────────
 command -v gh >/dev/null   || die "gh CLI not found."
-# --active so a stale/invalid *other* account doesn't fail the gate (gh auth
-# status without it exits non-zero if ANY configured account has a bad token).
+# --active: otherwise a bad token on any other gh account fails this check.
 gh auth status --active >/dev/null 2>&1 || die "gh active account not authenticated (run: gh auth login / gh auth switch)."
 
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"
@@ -109,21 +100,15 @@ else
   [ -f "$DMG" ] || die "Build finished but DMG not found: $DMG"
 fi
 
-# Versioned, platform-tagged asset name — this is the filename users get on download
-# (the website /download/mac route hands off GitHub's asset name via Content-Disposition).
+# The filename users get when they download.
 ASSET_NAME="${ASSET_BASE}-${NEW_VERSION}-mac.dmg"
 ASSET_PATH="$ELECTRON_DIR/dist/$ASSET_NAME"
 cp "$DMG" "$ASSET_PATH"
 say "DMG ready: $ASSET_PATH ($(du -h "$ASSET_PATH" | cut -f1))"
 
-# ── Auto-update assets (electron-updater / Squirrel.Mac) ─────────────────────
-# The .zip is what an installed app downloads to update IN PLACE (it can't update
-# from a DMG); latest-mac.yml is the manifest the website /updates feed serves;
-# the .blockmap enables differential downloads. Unlike the DMG these keep their
-# built, SPACE-FREE names — latest-mac.yml references the zip by its exact
-# filename, and GitHub would rewrite spaces in an uploaded asset name to dots and
-# break that lookup. So do NOT rename them. (Build name set in electron-builder.cjs
-# mac.artifactName: Living-Art-Screensaver-<version>-universal.zip.)
+# ── Auto-update assets ───────────────────────────────────────────────────────
+# The zip (what installed apps update from), latest-mac.yml and the blockmap.
+# Don't rename them: latest-mac.yml names the zip exactly.
 UPDATE_ZIP="$ELECTRON_DIR/dist/${ASSET_BASE}-${NEW_VERSION}-universal.zip"
 UPDATE_BLOCKMAP="${UPDATE_ZIP}.blockmap"
 UPDATE_YML="$ELECTRON_DIR/dist/latest-mac.yml"
@@ -142,7 +127,7 @@ fi
 say "Tagging $TAG, pushing"
 git add "$PKG"
 if git diff --cached --quiet; then
-  # Version unchanged (e.g. releasing the current version as-is) — tag HEAD.
+  # Version unchanged: tag HEAD.
   say "Version already $NEW_VERSION — tagging current commit, no bump commit"
 else
   git commit -m "release: $TAG"

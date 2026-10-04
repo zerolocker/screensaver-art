@@ -24,13 +24,9 @@ import { SITE_OG_IMAGE, SITE_URL } from '@/lib/seo'
 import { greenGlow } from '@/lib/brand'
 
 /**
- * `/art/<slug>` — one page per piece. **This is the tier the whole feature is
- * for**: a Pinterest pin (or a YouTube description, or any social clip) points
- * here, the visitor lands on the exact art they clicked, sees it moving at full
- * width, and gets one obvious Mac download.
- *
- * The slug is permanent by construction — see `slugForSrc` in
- * lib/gallery-catalog.ts for why that is a hard requirement and how it's held.
+ * `/art/<slug>`: one page per piece, where social posts land. The visitor sees
+ * the piece moving and one Mac download button. The slug must never change
+ * (see `slugForSrc`).
  */
 
 export const dynamicParams = false
@@ -45,7 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!piece) return {}
 
   const url = `${SITE_URL}/art/${piece.slug}`
-  // Absolute, because the poster may live on R2 rather than this origin.
+  // Absolute, because the poster is on R2.
   const image = piece.cardUrl
     ? piece.cardUrl.startsWith('http')
       ? piece.cardUrl
@@ -56,25 +52,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: piece.subtitle ? `${piece.name} — ${piece.subtitle}, animated` : `${piece.name}, animated`,
     description: pieceSummary(piece),
     alternates: { canonical: url },
-    // See INDEX_ART_PAGES in lib/gallery-catalog.ts. `follow` stays on either
-    // way, so the links out to /gallery and /era/<tag> still count even while
-    // these pages are held back from the index. This is a search-engine
-    // directive only — it does not stop anyone linking to, sharing or pinning
-    // the page, which is the traffic these pages were actually built for.
+    // See INDEX_ART_PAGES. `follow` stays on so links out still count.
     robots: INDEX_ART_PAGES ? undefined : { index: false, follow: true },
     openGraph: {
       type: 'website',
       url,
       title: `${piece.name}${piece.subtitle ? ` — ${piece.subtitle}` : ''}`,
       description: pieceSummary(piece),
-      // `images` MUST be set explicitly: overriding `openGraph` at all drops the
-      // root opengraph-image Next would otherwise attach (see SITE_OG_IMAGE).
-      // The 77 pieces with no still fall back to the site-wide branded card —
-      // not ideal, a piece-specific card unfurls far better, but posters can't
-      // be generated here (media is never committed to this repo, CLAUDE.md →
-      // Repo rules) and a branded card beats no card at all.
-      // Dimensions matter: the old raw 5504x3072 still exceeded X's 4096px cap
-      // and was silently rejected. og_img is generated at exactly 1280x720.
+      // Overriding `openGraph` drops the default site card, so set `images`
+      // explicitly. og_img is 1280x720; X rejects images over 4096px.
       images: image
         ? [{ url: image, width: 1280, height: 720, alt: `${piece.name} — ${piece.subtitle || piece.era}` }]
         : [{ url: SITE_OG_IMAGE, width: 1200, height: 630 }],
@@ -104,8 +90,7 @@ export default async function ArtPiecePage({ params }: { params: Promise<{ slug:
     uploadDate: piece.date || undefined,
     isFamilyFriendly: true,
     genre: piece.movement || piece.era,
-    // The clip is ours; for a real artwork, the art it animates is not — say
-    // whose it is, where it lives, and that it's public domain.
+    // For a real artwork, credit the artist and museum.
     creator: { '@type': 'Organization', name: 'Living Art Screensaver' },
     ...(artwork
       ? {
@@ -126,8 +111,7 @@ export default async function ArtPiecePage({ params }: { params: Promise<{ slug:
     <GalleryPageShell>
       <script
         type="application/ld+json"
-        // Escape "<" so no value can break out of the script block (Next.js
-        // JSON-LD guide — JSON.stringify alone doesn't sanitize).
+        // Escape "<" so no value can break out of the script tag.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
 
@@ -168,9 +152,7 @@ export default async function ArtPiecePage({ params }: { params: Promise<{ slug:
             {artwork && <Chip label={artwork.license === 'CC0' ? 'CC0' : 'Public domain'} />}
             {piece.looping && <Chip label="Seamless loop" />}
             {added && <Chip label={`Added ${added}`} />}
-            {/* Only free pieces get a badge. Locked pieces get no badge rather
-                than a "subscriber only" scold — but nothing anywhere implies
-                they're free either; the prose below says which is which. */}
+            {/* Only free pieces get a badge; the prose covers the rest. */}
             {piece.free && <Chip label="In the free tier" accent />}
           </div>
         </header>

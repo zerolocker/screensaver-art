@@ -1,5 +1,5 @@
-// The copyright gate — dumb, strict and auditable on its own (REAL_PAINTINGS_CURATION.md
-// §0 + §4). Every candidate gets `clearance: {pass, reasons[], evidence{}}`.
+// The copyright gate: strict and auditable. Every candidate gets
+// `clearance: {pass, reasons[], evidence{}}`.
 //
 //   1. Licence: the museum's own flag is exactly Public Domain / CC0.
 //   2. Life+70: every identified artist died <= (this year - 71); an anonymous work
@@ -10,7 +10,7 @@
 //      photos can carry their own copyright; no photographs, by product choice).
 //   4. Image long edge >= 2000 px.
 //
-// When in doubt we reject — eligible works are plentiful, a wrong pass is not.
+// When in doubt, reject: eligible works are plentiful.
 
 export const TERM_YEARS = 70 // life + 70 (US/EU)
 export const ANON_BEFORE = 1900 // anonymous works: object end date must be < this

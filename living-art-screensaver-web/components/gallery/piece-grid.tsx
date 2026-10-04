@@ -2,12 +2,8 @@ import { PieceTile } from '@/components/gallery/piece-tile'
 import type { CatalogPiece } from '@/lib/gallery-catalog'
 
 /**
- * The responsive tile grid shared by `/gallery`, `/era/<tag>` and the "more like
- * this" rail on `/art/<slug>`. Two columns on a phone (most pin traffic is
- * mobile, and one-up tiles make the page endless), up to five on a desktop.
- *
- * The first `eagerCount` tiles skip lazy image loading — on a landing page the
- * top row is the whole first impression.
+ * The tile grid for the gallery pages: two columns on a phone, up to five on a
+ * desktop. The first `eagerCount` tiles load eagerly.
  */
 export function PieceGrid({ pieces, eagerCount = 4 }: { pieces: CatalogPiece[]; eagerCount?: number }) {
   return (

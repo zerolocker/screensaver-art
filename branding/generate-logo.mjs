@@ -1,11 +1,8 @@
 #!/usr/bin/env node
 /**
- * Generates the Living Art logo mark — "the living swirl" — and writes the
- * repo's SVG logo assets. The mark is a single tapered brushstroke winding
- * into a log-spiral: classic art in motion (Starry Night's sky, Hokusai's
- * wave) reduced to clean geometry that survives a 16px favicon.
+ * Generates the logo: a tapered brushstroke winding into a spiral.
  *
- * Run from anywhere: `node branding/generate-logo.mjs`. It rewrites:
+ * `node branding/generate-logo.mjs` rewrites:
  *   branding/logo-mark-ink.svg    bare swirl, ink  (for on-mint / light surfaces)
  *   branding/logo-mark-mint.svg   bare swirl, mint (for the near-black site)
  *   branding/logo-tile.svg        swirl on the rounded mint tile (app-icon form)
@@ -100,18 +97,14 @@ export const SWIRL_PATH = centerPath(makeSwirl());
 const MINT = '#9ee8a2'; // --primary  (oklch 0.865 0.121 145.7)
 const INK = '#0d2114';  // --primary-foreground
 
-// NOTE: no XML comments in the emitted SVGs. Comments are legal SVG, but the
-// XML spec forbids "--" inside them — and a comment mentioning CSS custom
-// properties (e.g. --primary) is exactly how that bit us: GitHub/VS Code
-// refused to render the file. Simplest robust rule: emit no comments at all.
-// Provenance lives here and in branding/README.md.
+// Emit no XML comments: "--" (as in --primary) is illegal inside one, and
+// GitHub refused to render the file.
 const bare = (fill) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
   <path d="${SWIRL_PATH}" fill="${fill}"/>
 </svg>
 `;
 
-// Same geometry as the old icon: 180×180, rx 40 (≈ tile ratio 0.222).
-// Mint = --primary (oklch 0.865 0.121 145.7); ink = --primary-foreground.
+// 180×180 with rx 40. Mint = --primary; ink = --primary-foreground.
 const tile = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
   <rect width="180" height="180" rx="40" fill="${MINT}"/>
   <g transform="scale(7.5)">

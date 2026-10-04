@@ -5,16 +5,10 @@ import { getPostHogClient, flushPostHog } from '@/lib/posthog-server'
 import type { PaidPlan } from '@screensaver-art/constants'
 
 /**
- * App-initiated checkout. The Electron app is already signed in, so instead of
- * bouncing the user to the website (re-login + a second "Subscribe" click) it
- * POSTs its Supabase access token here (with `{ plan }` in the JSON body) and
- * we hand back a Stripe Checkout URL the app opens directly — straight to
- * payment, no website session needed.
- *
- * Success/cancel land on the public `/checkout/complete` page (the browser that
- * opens Stripe checkout has no website session, so it can't use `/account`).
- * The purchase itself is synced by the Stripe webhook, and the app re-verifies
- * subscription status when its window regains focus.
+ * Checkout from the app: it posts its Supabase token and `{ plan }`, and gets a
+ * Stripe Checkout URL to open, so the user never signs in to the website.
+ * Stripe returns to the public `/checkout/complete` page (that browser has no
+ * website session). The webhook records the purchase.
  */
 export async function POST(request: NextRequest) {
   const { user, isSubscribed, subscription } = await verifyNativeAuth(request)
@@ -23,8 +17,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // `plan` defaults to monthly so requests from app versions that predate the
-  // lifetime offer keep working.
+  // Defaults to monthly for older app versions.
   const body: { plan?: string } = await request.json().catch(() => ({}))
   const plan: PaidPlan = body.plan === 'lifetime' ? 'lifetime' : 'monthly'
 
@@ -35,8 +28,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // An active subscriber may still buy lifetime (the upgrade path — the webhook
-  // cancels their subscription on purchase); another subscription is a no.
+  // A subscriber may upgrade to lifetime, but not buy a second subscription.
   if (plan === 'monthly' && isSubscribed) {
     return NextResponse.json(
       { error: 'You already have an active subscription' },
@@ -61,9 +53,6 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Conversion event for the in-app ("Subscribe" inside the Electron app) flow.
-  // The matching client intent (`subscribe_clicked`) is sent from the renderer;
-  // this server event is the ad-blocker-safe confirmation a session was created.
   getPostHogClient().capture({
     distinctId: user.id,
     event: 'app_checkout_session_created',
@@ -74,8 +63,7 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ url: result.url })
 }
 
-// Behind Vercel's proxy the public host is in x-forwarded-host; prefer it so the
-// success/cancel URLs target the public domain (mirrors /auth/callback).
+// Behind Vercel's proxy, x-forwarded-host is the public host.
 function resolveOrigin(request: NextRequest): string {
   const forwardedHost = request.headers.get('x-forwarded-host')
   if (forwardedHost) {

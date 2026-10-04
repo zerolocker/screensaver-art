@@ -10,8 +10,8 @@ import {
   Button,
 } from 'living-art-ui'
 
-// Open by default so the dialog surface renders inside the card (cardMode:single
-// + a tall viewport are set in design-sync.config.json overrides).
+// Open by default so the dialog renders inside the card (cardMode:single and a
+// tall viewport are set in .design-sync/config.json).
 export function Confirm() {
   return (
     <div style={{ background: 'var(--background)', color: 'var(--foreground)', padding: 28, minHeight: 400 }}>

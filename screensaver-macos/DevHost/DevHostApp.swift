@@ -1,12 +1,7 @@
 import SwiftUI
 
-// Minimal host app — a BUILD/TEST SCAFFOLD ONLY, never shipped to users.
-//
-// macOS only loads an .appex screensaver that's embedded inside an application
-// bundle. In production the real host is the Electron app (the .appex is
-// embedded into its Contents/PlugIns and registered via pluginkit). This tiny
-// SwiftUI app lets us build, sign, embed, and register the extension locally
-// from Xcode/xcodebuild while iterating on the Swift player code.
+// A host app for local builds only, never shipped. macOS loads an .appex only
+// from inside an app; in production that's the Electron app.
 
 @main
 struct DevHostApp: App {

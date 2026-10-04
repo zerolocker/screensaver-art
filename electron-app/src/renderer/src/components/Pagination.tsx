@@ -1,7 +1,4 @@
-// Page navigation shown below the gallery grid when the filtered set spans more
-// than one page. Prev/Next plus a compact windowed list of page numbers, and a
-// subtle "showing X–Y of N" line. Purely presentational — the parent owns the
-// current page and slicing.
+// Page navigation under the gallery grid. The parent owns the page state.
 
 // Windowed page list: always first + last + current±1, with ellipses filling the
 // gaps, so the control stays compact no matter how large the catalog grows.

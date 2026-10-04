@@ -7,10 +7,7 @@ const nextConfig = {
     unoptimized: true,
   },
   transpilePackages: ['@screensaver-art/ui', '@screensaver-art/constants'],
-  // Reverse-proxy PostHog through our own origin so the client SDK (posthog-js,
-  // configured with api_host: '/ingest' in instrumentation-client.ts) isn't
-  // blocked by ad/tracker blockers that recognise *.posthog.com. The static-asset
-  // and event ingestion hosts are split out per PostHog's recommended config.
+  // Proxy PostHog through our own origin so ad blockers don't drop events.
   async rewrites() {
     return [
       {

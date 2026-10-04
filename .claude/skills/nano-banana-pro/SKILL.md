@@ -5,32 +5,20 @@ description: Generate or edit still images with Google's Nano Banana Pro / Gemin
 
 # nano-banana-pro (Gemini 3 Pro Image)
 
-A thin, composable CLI over Nano Banana Pro. **Each run is exactly one
-`generate_content` call** exposing the building blocks as flags, so you compose by
-choosing flags rather than baking in one workflow.
+A thin CLI over Nano Banana Pro. Each run is exactly one `generate_content` call.
 
-Script: `.claude/skills/nano-banana-pro/scripts/generate.py`
-Always run it through the secrets wrapper (loads `curation/.env`, fails fast if
-`GEMINI_API_KEY` is missing). Requires the `google-genai` SDK + Pillow. Output is a
-real PNG (the API may return JPEG bytes; the script re-encodes). Prints the output
-path on the **last stdout line**.
+Script: `.claude/skills/nano-banana-pro/scripts/generate.py`. Run it through the secrets wrapper, which fails fast if `GEMINI_API_KEY` is missing. Needs the `google-genai` SDK and Pillow. The output path is printed on the **last stdout line**.
 
-## Building blocks (one call each)
-
-**Text-to-image:**
+**Text to image:**
 ```bash
 bash curation/with-secrets.sh GEMINI_API_KEY -- \
   python .claude/skills/nano-banana-pro/scripts/generate.py \
     --prompt "A Baroque oil still life, dramatic chiaroscuro, oil on canvas" \
     --out gallery/baroque.png --aspect 16:9 --size 4K
 ```
-Output defaults to **WebP** (≈1/8 the size of PNG at q90, negligible loss), so the
-example writes `gallery/baroque.webp` — the `--out` extension is swapped to match
-`--format`. The script prints the real path on its last line. Use `--format png`
-for a lossless PNG.
+Output is WebP by default, so this writes `gallery/baroque.webp`: the `--out` extension is replaced to match `--format`.
 
-**Edit / compose from reference image(s)** — pass one or more `--input-image`
-(repeatable). The prompt describes the edit or how to blend them:
+**Edit or combine images:** pass one or more `--input-image`, and describe the edit in the prompt.
 ```bash
 … generate.py --prompt "Restore and colorize this faded photo, keep the composition" \
     --input-image old.png --out restored.png
@@ -39,19 +27,15 @@ for a lossless PNG.
 ```
 
 ## Flags
-- `--prompt` (required) — image or edit prompt. For new stills, write it per
-  `curation/PROMPT_GUIDANCE.md` (concrete medium/material/era/lighting; one subject).
-- `--out` (required) — output path; its extension is replaced to match `--format`.
-- `--format` (default `webp`) — `webp` | `png`. WebP is ~1/8 the size; `png` is lossless.
-- `--quality` (default `90`) — WebP quality 1–100.
-- `--input-image PATH` — reference/edit image; repeatable. Omit for pure text-to-image.
-- `--aspect` (default `16:9`) — keep 16:9 for gallery stills (the screensaver is
-  full-screen 16:9, so a 16:9 still animates without letterboxing).
-- `--size` (default `2K`) — `1K` | `2K` | `4K`.
-- `--model` — `$GEMINI_IMAGE_MODEL`, default `gemini-3-pro-image`.
+- `--prompt` (required). For gallery stills, follow `curation/PROMPT_GUIDANCE.md`.
+- `--out` (required). Its extension is replaced to match `--format`.
+- `--format` `webp` (default, about 1/8 the size) or `png` (lossless).
+- `--quality` WebP quality, default `90`.
+- `--input-image PATH`, repeatable.
+- `--aspect`, default `16:9`. Keep 16:9 for gallery stills; the screensaver is full-screen 16:9.
+- `--size` `1K`, `2K` (default) or `4K`.
+- `--model`, default `$GEMINI_IMAGE_MODEL` or `gemini-3-pro-image`.
 
 ## Notes
-- **Paid** call. For curation, follow the "self-review the still before animating"
-  vision gate in `curation/AUTOMATED_CURATION.md`: generate, look, reroll the prompt
-  if it isn't gallery-worthy, then pass it to `veo3-video-gen`.
-- Capture the path: `IMG=$(… generate.py --prompt "…" --out gallery/foo.png | tail -1)`.
+- Paid. For curation, look at the still and reroll it if it isn't gallery-worthy before animating it (`curation/AUTOMATED_CURATION.md`).
+- Capture the path with `IMG=$(… generate.py --prompt "…" --out gallery/foo.png | tail -1)`.

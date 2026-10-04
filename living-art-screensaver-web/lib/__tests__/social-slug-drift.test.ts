@@ -5,16 +5,9 @@ import { webSlugForSrc } from '../../../marketing/lib/pieces.mjs'
 import { landingUrl } from '../../../marketing/lib/pieces.mjs'
 
 /**
- * Drift guard: the slug the social poster puts in a published post must equal
- * the slug the website routes on.
- *
- * These are two copies of one rule, in two languages, and they cannot be
- * collapsed into one: `gallery-catalog.ts` is TypeScript compiled into the Next
- * build, while `marketing/lib/pieces.mjs` is a dependency-free script the nightly
- * job runs with bare `node`. The copies are fine; a *divergence* is not — a post's
- * destination URL cannot be edited after publishing, so a slug that drifted would
- * silently 404 every post ever made (the same failure mode `slugForSrc`'s own
- * doc comment is built to prevent).
+ * The poster's slug rule (marketing/lib/pieces.mjs, run by plain node) must match
+ * the website's (`slugForSrc`). Posted links can't be edited, so a mismatch
+ * would break them all.
  */
 describe('social post links match the website routes', () => {
   it('derives the same slug as the website for every gallery piece', () => {

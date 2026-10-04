@@ -1,44 +1,18 @@
-# "Email me the download link" — Supabase setup
+# "Email me the download link"
 
-Mobile visitors can't install the macOS app on their phone, so their **Download**
-CTA opens a dialog that emails them a link to open on their Mac. This is powered
-by Supabase's built-in mailer.
+Phone visitors can't install the Mac app, so their Download button opens a form that emails them a link to open on their Mac. Supabase's built-in mailer sends it.
 
-## How it works
+1. The visitor enters an email. `POST /api/download-link` calls `inviteUserByEmail`, or `resetPasswordForEmail` if the email already has an account (the invite returns 422).
+2. The email's button is a plain link to `{{ .SiteURL }}/?src=email-download`, not `{{ .ConfirmationURL }}`. The click goes straight to the home page, with no auth token and no redirect allow-list to configure.
+3. On the home page, `EmailArrivalTracker` fires `download_email_link_clicked` and starts the download.
 
-1. Mobile visitor taps a Download CTA → dialog → enters email.
-2. `POST /api/download-link` triggers the send (Supabase is only the mailer):
-   - **New email** → `supabase.auth.admin.inviteUserByEmail(email)`
-   - **Existing email** (invite 422s) → `supabase.auth.resetPasswordForEmail(email)`
-3. Supabase sends the email. **The button links straight to
-   `https://living-art-screensaver.com/?src=email-download`** — a plain link, NOT
-   `{{ .ConfirmationURL }}`. So the click goes directly to the home page; it never
-   passes through Supabase's verify endpoint and carries no auth token.
-4. `EmailArrivalTracker` on the home page fires the **`download_email_link_clicked`**
-   PostHog event (the click metric) and starts the DMG.
+Each new email becomes a Supabase user. That's intended: if they sign in to the app later with that email, it's the same account.
 
-### Analytics funnel (PostHog)
-`download_email_modal_opened` → `download_email_submitted` (client) →
-`download_link_requested` (server, ad-blocker-safe) →
-**`download_email_link_clicked`** (the "how many clicked the email link" count) →
-`download_served` (existing server event on the DMG redirect).
+PostHog funnel: `download_email_modal_opened` → `download_email_submitted` → `download_link_requested` (server) → `download_email_link_clicked` → `download_served`.
 
-## ⚠️ One-time Supabase configuration
+## Supabase setup (once)
 
-Because the email button is a **plain link** (not `{{ .ConfirmationURL }}`),
-there's **no redirect-URL allowlist to configure** — the link goes straight to
-the site. The only setup is pasting the template.
-
-### Paste the email template
-This project is **passwordless** and doesn't use invites, so the **Invite user**
-and **Reset Password** templates are free to repurpose. Paste the HTML below into
-**both** (Authentication → Email Templates → *Invite user* and *Reset Password*)
-so new and returning visitors get the identical email.
-
-> If you ever add real invites or password reset, you'll need to split these
-> back out — see `app/api/download-link/route.ts`.
-
-Subject (both): `Your Living Art download link`
+The project is passwordless and sends no invites or password resets, so both of those templates are reused. In Supabase → Authentication → Email Templates, paste the HTML below into both **Invite user** and **Reset Password**, with the subject `Your Living Art download link`. If real invites or password resets are ever needed, split them back out (see `app/api/download-link/route.ts`).
 
 ```html
 <div style="margin:0;padding:0;background-color:#0b0b0c;">
@@ -94,17 +68,4 @@ Subject (both): `Your Living Art download link`
 </div>
 ```
 
-### Notes
-- The button is a **plain link** to `{{ .SiteURL }}/?src=email-download` (the home
-  page). `{{ .SiteURL }}` resolves to your configured Supabase Site URL, so it
-  doesn't hardcode the domain. It deliberately does **not** use
-  `{{ .ConfirmationURL }}` — see the top of `app/api/download-link/route.ts`.
-- The `?src=email-download` param is how the home page counts the click
-  (`download_email_link_clicked`) and starts the download.
-- The button uses the brand mint `#9EE8A2` on a dark card, matching the site.
-- `inviteUserByEmail` creates an auth user for each new email — that's an
-  intentional lead-capture side effect (when they later sign in with the same
-  email in the app, it's the same account).
-- **Deliverability**, not link routing, is the thing to watch: Supabase's built-in
-  SMTP is shared and rate-limited, so for production configure a custom SMTP
-  provider (Resend/Postmark/SES) with SPF/DKIM/DMARC on your sending domain.
+For production, set up a custom SMTP provider (Resend, Postmark or SES) with SPF, DKIM and DMARC. Supabase's built-in mailer is shared and rate-limited.

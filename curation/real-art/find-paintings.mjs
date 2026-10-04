@@ -1,8 +1,7 @@
 #!/usr/bin/env node
-// Step 1 + 2 of the real-paintings nightly curation: find candidate public-domain
-// artworks in three open-access museum collections, push every one through the
-// hard copyright gate (clearance.mjs), rank the eligible ones by fame, and write a
-// JSON array the curator picks from. See curation/real-art/README.md.
+// Find public-domain artworks in three museum collections, run each through the
+// copyright gate (clearance.mjs), rank the eligible ones by fame, and write a
+// JSON array for the curator. See curation/real-art/README.md.
 //
 //   node curation/real-art/find-paintings.mjs --famous --out /tmp/cands.json
 //   node curation/real-art/find-paintings.mjs --query "harbor boats" --limit 30

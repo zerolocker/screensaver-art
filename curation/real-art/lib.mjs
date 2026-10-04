@@ -1,6 +1,5 @@
-// Shared plumbing for the real-art scripts: a polite HTTP client, a tiny worker
-// pool, the CLI arg parser, and the provenance contract publish-piece copies into
-// gallery.json. Zero npm deps — Node >= 18 built-ins + global fetch only.
+// Shared helpers for the real-art scripts: a polite HTTP client, a worker pool,
+// the arg parser, and the provenance keys. No npm deps.
 
 import { createWriteStream } from 'node:fs'
 import { Readable } from 'node:stream'
@@ -10,7 +9,7 @@ export const UA =
   'LivingArtScreensaver-curation/1.0 (+https://living-art-screensaver.com; ' +
   'nightly public-domain art sourcing, ~4 works/night)'
 
-/** The gallery provenance keys — EXACTLY these are copied into gallery.json. */
+/** Exactly these keys are copied into gallery.json. */
 export const PROVENANCE_KEYS = [
   'source', 'artist', 'artist_dates', 'original_title', 'original_date',
   'museum', 'credit_line', 'source_url', 'license',
@@ -41,16 +40,13 @@ export function parseArgs(argv, bools, usage, die) {
 
 // ---- http ------------------------------------------------------------------
 
-// Per-host politeness: a minimum gap between request starts, and a cookie jar.
-// The Met sits behind Imperva, which walls off the whole IP (HTML 403s for
-// ~10-15 min) once it sees ~80 requests inside about a minute — measured
-// 2026-10-03: 2 req/s tripped at request #80, 1 req/s ran 150 clean. Its
-// documented "80 req/s" does not hold. Hence ~1 req/s there, and cookies kept.
+// Per-host minimum gap between requests, plus a cookie jar. The Met's firewall
+// blocks the whole IP for 10-15 minutes after ~80 requests in a minute (despite
+// its documented 80 req/s), so it gets ~1 req/s.
 const MIN_GAP_MS = {
   'collectionapi.metmuseum.org': 1100,
   'images.metmuseum.org': 1100,
-  // AIC documents 60 req/min for anonymous API use; its calls are batched (100
-  // ids per request), so a 1 s gap costs a handful of seconds per run.
+  // AIC allows 60 req/min; calls are batched 100 ids at a time.
   'api.artic.edu': 1000,
   'www.artic.edu': 250,
   'openaccess-api.clevelandart.org': 120,
@@ -90,9 +86,7 @@ export class HttpError extends Error {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
-// Circuit breaker: once a host has walled us off for a whole retry cycle, stop
-// asking for the rest of the run — otherwise every remaining request would sit
-// through its own backoff (minutes, for a pool of Met objects) and still fail.
+// Once a host has blocked us for a whole retry cycle, stop asking it this run.
 const tripped = new Map()
 export const trippedHosts = () => [...tripped.keys()]
 

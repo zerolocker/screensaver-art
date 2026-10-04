@@ -1,15 +1,9 @@
 #!/usr/bin/env python3
-"""Render the title pill burned under the art in the social clips.
+"""Render the title pill shown under the art in the social clips.
 
-It mirrors the pill the screensaver itself shows under the art
-(screensaver-macos/ScreensaverArtExtension/ScreensaverArtView.swift, buildTitlePill):
-a dark, translucent, fully rounded pill with the piece's name in the system font
-at medium weight, over a soft shadow. Sized for a 1080-wide frame seen on a phone.
-
-Called by make-social-assets.mjs, which overlays the PNG with ffmpeg. Prints the
-PNG's geometry as one line of JSON so the caller can place it. Pillow is already
-a dependency of the nightly curation (the nano-banana-pro and veo3-video-gen
-skills import it).
+It copies the screensaver's own pill (buildTitlePill in ScreensaverArtView.swift):
+dark, translucent, fully rounded, system font at medium weight, soft shadow.
+Prints the PNG's geometry as one JSON line for make-social-assets.mjs.
 """
 
 import argparse

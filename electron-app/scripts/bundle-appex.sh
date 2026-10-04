@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
-# bundle-appex.sh — build the macOS screensaver .appex and the PaperSaver
-# activation helper, then copy both (universal) into the Electron app's
-# resources/ so they ship inside the packaged app.
-#
-# electron-builder embeds resources/ScreensaverArtExtension.appex into
-# Contents/PlugIns/ and resources/lart-screensaver-helper into Contents/Resources/
-# (see electron-builder.yml). installer.ts finds them via process.resourcesPath.
-#
-# Run from electron-app/ before `pnpm dev` or `pnpm dist`.
+# Build the screensaver .appex and the helper (both universal) into resources/,
+# where electron-builder.cjs picks them up. `pnpm dev` and `pnpm dist` run it.
 
 set -euo pipefail
 
@@ -24,17 +17,14 @@ fi
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
-# 1. Build the screensaver extension (Release = universal) via Xcode, stamping
-#    its version from this Electron app's package.json. pluginkit caches appex
-#    registrations by CFBundleVersion, so this version MUST bump every release —
-#    otherwise an updated app keeps running the old screensaver code (the app's
-#    launch-time re-register only takes effect when the version actually changes).
+# 1. Build the appex with the app's version: pluginkit caches by CFBundleVersion,
+#    so without a bump an updated app keeps running the old screensaver code.
 LART_APPEX_VERSION="$(node -p "require('${ELECTRON_DIR}/package.json').version")"
 export LART_APPEX_VERSION
 echo "→ Stamping appex version from package.json: ${LART_APPEX_VERSION}"
 APPEX="$(bash "${REPO_ROOT}/screensaver-macos/build.sh" Release | tail -1)"
 
-# 2. Build the PaperSaver activation helper (universal) via SwiftPM.
+# 2. Build the helper.
 echo "→ Building lart-screensaver-helper (universal)…"
 ( cd "${REPO_ROOT}/screensaver-helper" && swift build -c release --arch arm64 --arch x86_64 >/dev/null )
 HELPER="${REPO_ROOT}/screensaver-helper/.build/apple/Products/Release/lart-screensaver-helper"
@@ -45,7 +35,7 @@ rm -rf "${RES}/ScreensaverArtExtension.appex"
 cp -R "${APPEX}" "${RES}/ScreensaverArtExtension.appex"
 cp "${HELPER}" "${RES}/lart-screensaver-helper"
 
-# 4. Fail loudly if either artifact isn't universal (would break Intel Macs).
+# 4. Fail if either isn't universal (Intel Macs need it).
 assert_universal() {
     local f="$1" archs
     archs="$(lipo -archs "$f")"

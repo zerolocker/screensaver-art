@@ -8,10 +8,7 @@ import { Label } from './label'
 import { resizeImageToWebp, type ResizedImage } from '../image-resize'
 
 export interface FeedbackFormProps {
-  /**
-   * Deliver the feedback. The image (if any) is already downsampled to webp.
-   * Return `{ error }` to show an error, or `{ id }` to show a success reference.
-   */
+  /** The image is already downsized. Return `{ error }`, or `{ id }` to show as a reference. */
   onSubmit: (data: { message: string; image: ResizedImage | null }) => Promise<{ error?: string; id?: string }>
   /** Optional heading rendered above the form (hosts usually use a CardHeader instead). */
   title?: string

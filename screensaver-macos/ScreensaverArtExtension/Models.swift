@@ -2,9 +2,7 @@ import Foundation
 
 // MARK: - Cached gallery models
 //
-// Written by the Electron companion app at Cache.manifestFile, then read here.
-// Kept intentionally minimal — anything subscription-related lives in the
-// Electron app, not in the screensaver.
+// The manifest the Electron app writes at Cache.manifestFile.
 
 struct CachedItem: Decodable {
     let filename: String

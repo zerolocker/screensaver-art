@@ -1,61 +1,29 @@
 import { FREE_ITEM_COUNT } from './gallery'
 
 /**
- * Promotional pricing shown across the marketing site + Electron app.
+ * The prices shown on the website and in the app. Stripe's Prices are what's
+ * actually charged; the website's pricing-drift test checks the two match.
  *
- * NOTE: this controls the *displayed* price only. What Stripe actually charges
- * is the Stripe catalog Price (referenced by the website's `STRIPE_PRICE_ID`
- * env var — different ID per test/live). Keep `billedAmount` in sync with that
- * Price's `unit_amount` and `billingPeriodMonths` with its `interval_count`
- * (the website's pricing-drift test enforces both).
- *
- * Billing is *batched* to cut Stripe's per-transaction fee (2.9% + $0.33 is steep
- * on a sub-$1 charge): instead of charging `promoPrice` every month, Stripe charges
- * `billedAmount` once every `billingPeriodMonths` months — one transaction instead
- * of three, same money. The headline we advertise stays per-month; `billedAmount`
- * is exactly `promoPrice × billingPeriodMonths`.
- *
- * The promo is a limited-time launch offer: `promoPrice` now, reverting to
- * `regularPrice` after `promoThrough`. Centralised here so the end date + both
- * prices live in one place across every surface that advertises them.
+ * We advertise a monthly price but bill every `billingPeriodMonths` months, so
+ * Stripe's fixed fee isn't paid on every $0.99 charge.
  */
 export const PRICING = {
   /** Headline per-month promotional price we advertise. */
   promoPrice: '$0.99',
-  /** Regular per-month price, shown struck-through; takes over once the promo ends. */
+  /** Shown struck through; applies after `promoThrough`. */
   regularPrice: '$2',
   interval: '/month',
-  /**
-   * The amount Stripe actually charges per billing cycle = `promoPrice × billingPeriodMonths`.
-   * Must equal the Stripe catalog Price's `unit_amount`.
-   */
+  /** `promoPrice × billingPeriodMonths`. Must equal the Stripe Price's `unit_amount`. */
   billedAmount: '$2.97',
-  /**
-   * How many months each charge covers. Must equal the Stripe Price's
-   * `recurring.interval_count` (with `recurring.interval = 'month'`).
-   */
+  /** Must equal the Stripe Price's `recurring.interval_count` (interval `month`). */
   billingPeriodMonths: 3,
-  /**
-   * Short human cadence label shown next to the per-month headline (we don't
-   * surface the batched `billedAmount` in the UI — Stripe shows it at checkout).
-   * Keep in sync with `billingPeriodMonths` (3 → quarterly).
-   */
+  /** Must match `billingPeriodMonths`. Stripe shows `billedAmount` at checkout. */
   billingNote: 'Billed quarterly',
-  /**
-   * How many artworks free (un-subscribed) users get — the headline of the free
-   * tier, shown across the site + app. Sourced from `FREE_ITEM_COUNT` (the count
-   * of `free: true` pieces in gallery.json) so the advertised number can never
-   * drift from the actual free-tier size.
-   */
+  /** Size of the free tier. */
   freeItemCount: FREE_ITEM_COUNT,
   /** Human-readable last day the promo price is valid. */
   promoThrough: '2026/12/31',
-  /**
-   * One-time "Own it forever" purchase — unlocks the full gallery (including all
-   * future art) with no recurring billing. Must equal the Stripe catalog Price
-   * referenced by the website's `STRIPE_LIFETIME_PRICE_ID` env var (a one-time
-   * Price; the pricing-drift test enforces the amount).
-   */
+  /** One-time purchase of the whole gallery, including future art. Must equal `STRIPE_LIFETIME_PRICE_ID`'s amount. */
   lifetimePrice: '$15.99',
   /** Display name of the one-time offer, shared across every surface. */
   lifetimeLabel: 'Own it forever',
@@ -66,21 +34,14 @@ export const PRICING = {
 /** The two paid offers. `monthly` is the subscription; `lifetime` the one-time purchase. */
 export type PaidPlan = 'monthly' | 'lifetime'
 
-/**
- * The minimal shape of a `subscriptions` row that access decisions need. Both
- * the website (server routes) and the Electron app hold rows of this shape.
- */
+/** The part of a `subscriptions` row that access decisions need. */
 export interface SubscriptionAccess {
   status?: string | null
   /** Set once the user completes the one-time "Own it forever" purchase. */
   lifetime_purchased_at?: string | null
 }
 
-/**
- * The single "does this user have full gallery access?" rule: a lifetime
- * purchase, or a subscription that is active/trialing. Every gate (gallery API,
- * cache-sync via `isSubscribed`, the account cards) derives from this.
- */
+/** The one access rule: a lifetime purchase, or an active or trialing subscription. */
 export function isSubscriptionActive(sub: SubscriptionAccess | null | undefined): boolean {
   if (!sub) return false
   return Boolean(sub.lifetime_purchased_at) || sub.status === 'active' || sub.status === 'trialing'

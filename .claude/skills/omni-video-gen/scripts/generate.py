@@ -43,14 +43,26 @@ MODEL = os.environ.get("OMNI_MODEL", "gemini-omni-1.1-flash")
 SEND_EDGE = {"360p": 1280, "720p": 1280, "1080p": 1920, "4k": 3840}
 
 
+def status_of(e):
+    """HTTP status of an SDK error. The Interactions API raises its own error classes, not APIError."""
+    for attr in ("status_code", "code"):
+        v = getattr(e, attr, None)
+        if isinstance(v, int):
+            return v
+    return None
+
+
 def with_retry(fn, attempts=4, base=15):
-    """Retry transient API errors (429/5xx) with exponential backoff."""
+    """Retry transient API errors (429/5xx) with exponential backoff; surface the rest plainly."""
     for i in range(attempts):
         try:
             return fn()
-        except errors.APIError as e:
-            code = getattr(e, "code", None)
+        except Exception as e:  # noqa: BLE001: both genai.errors and the Interactions client's errors
+            code = status_of(e)
             if code not in (429, 500, 502, 503, 504) or i == attempts - 1:
+                if "safety" in str(e).lower():
+                    sys.exit(f"blocked by Omni's safety filter: {e}\n"
+                             "(the image or prompt was refused; pick a different artwork, don't retry)")
                 raise
             wait = base * (2 ** i)
             print(f"  API {code} (transient); retry {i + 1}/{attempts} in {wait}s…", file=sys.stderr)

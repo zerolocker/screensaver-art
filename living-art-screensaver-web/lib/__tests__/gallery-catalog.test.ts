@@ -5,14 +5,19 @@ import {
   ALL_PIECES,
   GALLERY_PAGE_COUNT,
   GALLERY_PAGE_SIZE,
+  artworkCredit,
   eraBySlug,
   galleryPage,
+  parseArtworkTitle,
   parseTitle,
   pieceBySlug,
   pieceParagraphs,
   pieceSummary,
   relatedPieces,
   slugForSrc,
+  theMuseum,
+  toPiece,
+  type RawItem,
 } from '@/lib/gallery-catalog'
 import { ERA_COPY } from '@/lib/era-copy'
 
@@ -45,10 +50,11 @@ describe('gallery catalog', () => {
     for (const piece of ALL_PIECES) expect(slugForSrc(piece.src)).toBe(piece.slug)
   })
 
-  it('splits every title into a name and a movement', () => {
+  it('splits every title into a name and a movement (or, for a real artwork, its artist)', () => {
     for (const piece of ALL_PIECES) {
       expect(piece.name, piece.title).not.toBe('')
-      expect(piece.movement, piece.title).not.toBe('')
+      expect(piece.subtitle, piece.title).not.toBe('')
+      if (!piece.artwork) expect(piece.movement, piece.title).not.toBe('')
       expect(piece.name, piece.title).not.toMatch(/AI Animated/)
     }
     expect(parseTitle('Woman and Flora - Art Nouveau (AI Animated)')).toEqual({
@@ -112,8 +118,10 @@ describe('gallery catalog', () => {
       const text = pieceParagraphs(piece).join(' ')
       expect(text).not.toMatch(promptTells)
       expect(text.length).toBeGreaterThan(200)
-      // Honesty rule: every piece page states the art is AI-generated.
-      expect(text).toMatch(/\bAI[- ](generated|made|animated|homage)/i)
+      // Honesty rule: every AI piece page states the art is AI-generated; a real
+      // artwork's page must say the opposite (see the real-artwork suite below).
+      if (piece.artwork) expect(text).not.toMatch(/AI[- ]generated|homage/i)
+      else expect(text).toMatch(/\bAI[- ](generated|made|animated|homage)/i)
       expect(text).toContain(piece.name)
       expect(text).toContain(piece.era)
     }
@@ -127,7 +135,7 @@ describe('gallery catalog', () => {
   })
 
   it('summarises a piece for social/meta without over-claiming', () => {
-    const piece = ALL_PIECES[0]
+    const piece = ALL_PIECES.find((p) => !p.artwork)!
     const summary = pieceSummary(piece)
     expect(summary).toContain(piece.name)
     expect(summary).toMatch(/AI-animated/)
@@ -162,5 +170,106 @@ describe('gallery catalog', () => {
       expect(piece.gradient).toMatch(/^radial-gradient/)
       if (piece.posterUrl) expect(piece.posterUrl).toMatch(/^(https:\/\/|\/posters\/)/)
     }
+  })
+})
+
+/**
+ * Real public-domain artworks (`source: "real_artwork"`). Synthetic entries, so
+ * this holds before the first one lands in gallery.json. The rule they guard:
+ * the AI pieces' "AI-generated, not a reproduction" copy would be FALSE here.
+ */
+describe('real artworks', () => {
+  const real = (over: Partial<RawItem> = {}): RawItem => ({
+    src: 'https://screensaver-assets.living-art-asset.com/gallery/paris_street_rainy_day_animated.mp4',
+    title: 'Paris Street; Rainy Day - Gustave Caillebotte (AI Animated)',
+    type: 'video',
+    date: '2026-10-03',
+    tags: ['19th Century'],
+    source: 'real_artwork',
+    artist: 'Gustave Caillebotte',
+    artist_dates: '1848–1894',
+    original_title: 'Paris Street; Rainy Day',
+    original_date: '1877',
+    museum: 'Art Institute of Chicago',
+    credit_line: 'Charles H. and Mary F. S. Worcester Collection',
+    source_url: 'https://www.artic.edu/artworks/20684',
+    license: 'Public Domain',
+    video_prompt: 'rain falls',
+    looping: false,
+    ...over,
+  })
+
+  it('parses the painting name and credits the artist, not a movement', () => {
+    const piece = toPiece(real())
+    expect(piece.name).toBe('Paris Street; Rainy Day')
+    expect(piece.subtitle).toBe('Gustave Caillebotte')
+    expect(piece.movement).toBe('')
+    expect(piece.artwork).toMatchObject({ artist: 'Gustave Caillebotte', museum: 'Art Institute of Chicago' })
+    // The slug rule is untouched: still the R2 key.
+    expect(piece.slug).toBe('paris-street-rainy-day-animated')
+  })
+
+  it('splits on the known artist, so a " - " inside the painting title survives', () => {
+    const artwork = { artist: 'Claude Monet', originalTitle: 'Waterloo Bridge - Sun' }
+    expect(parseArtworkTitle('Waterloo Bridge - Sun - Claude Monet (AI Animated)', artwork)).toBe('Waterloo Bridge - Sun')
+    // Off-format title → the provenance's own title, never a crash.
+    expect(parseArtworkTitle('Something else entirely', artwork)).toBe('Waterloo Bridge - Sun')
+  })
+
+  it('leaves AI pieces alone: no source means AI-generated', () => {
+    const piece = toPiece({ src: 'https://x/gallery/a_animated.mp4', title: 'Woman and Flora - Art Nouveau (AI Animated)', type: 'video', tags: ['19th Century'] })
+    expect(piece.artwork).toBeNull()
+    expect(piece.subtitle).toBe('Art Nouveau')
+    expect(piece.movement).toBe('Art Nouveau')
+  })
+
+  it('writes true prose: credits artist, dates, year and museum; public domain; motion by AI', () => {
+    // Every opener variant: sweep slugs until each shape has been seen.
+    const openers = new Set<string>()
+    for (let i = 0; i < 40; i++) {
+      const piece = toPiece(real({ src: `https://x/gallery/p${i}_animated.mp4` }))
+      const [opener] = pieceParagraphs(piece)
+      openers.add(opener)
+      expect(opener).toContain('Paris Street; Rainy Day')
+      expect(opener).toContain('Gustave Caillebotte (1848–1894)')
+      expect(opener).toContain('1877')
+      expect(opener).toContain('the Art Institute of Chicago')
+      expect(opener).toMatch(/public domain/)
+      expect(opener).toMatch(/motion was added with AI/)
+      expect(opener).toContain('19th Century')
+      // The AI pieces' honesty line would be a lie here.
+      const all = pieceParagraphs(piece).join(' ')
+      expect(all).not.toMatch(/AI[- ](generated|made)|homage|not a reproduction|generated (still|image)/i)
+      expect(all).not.toMatch(/\bloop/i) // looping: false
+    }
+    expect(openers.size).toBe(3)
+  })
+
+  it('copes with missing optional provenance and with CC0', () => {
+    const piece = toPiece(real({ artist_dates: undefined, original_date: undefined, credit_line: undefined, license: 'CC0' }))
+    for (let i = 0; i < 12; i++) {
+      const text = pieceParagraphs({ ...piece, slug: `s${i}` })[0]
+      expect(text).not.toMatch(/\(\)|undefined|made ,|  /)
+      expect(text).toMatch(/public domain \(CC0\)/)
+    }
+    expect(artworkCredit(piece.artwork!)).toBe('Gustave Caillebotte, Paris Street; Rainy Day. Art Institute of Chicago. CC0 (public domain).')
+  })
+
+  it('summarises and credits the real work', () => {
+    const piece = toPiece(real())
+    const summary = pieceSummary(piece)
+    expect(summary).toContain('Paris Street; Rainy Day (1877) by Gustave Caillebotte')
+    expect(summary).toMatch(/public-domain/)
+    expect(summary).toMatch(/AI/)
+    expect(summary).not.toMatch(/homage|AI-generated/i)
+    expect(artworkCredit(piece.artwork!)).toBe(
+      'Gustave Caillebotte (1848–1894), Paris Street; Rainy Day, 1877. ' +
+        'Art Institute of Chicago, Charles H. and Mary F. S. Worcester Collection. Public domain.',
+    )
+  })
+
+  it('names a museum without doubling its own "The"', () => {
+    expect(theMuseum('Art Institute of Chicago')).toBe('the Art Institute of Chicago')
+    expect(theMuseum('The Metropolitan Museum of Art')).toBe('the Metropolitan Museum of Art')
   })
 })

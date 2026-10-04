@@ -111,7 +111,7 @@ export function PieceStage({ piece }: { piece: CatalogPiece }) {
               }}
             >
               <span className="truncate text-[12px] font-medium tracking-[1.1px] text-white sm:text-[13px]">
-                {piece.movement ? `${piece.name} · ${piece.movement}` : piece.name}
+                {piece.subtitle ? `${piece.name} · ${piece.subtitle}` : piece.name}
               </span>
             </div>
           </div>

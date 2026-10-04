@@ -213,33 +213,55 @@ The **Prep agent** then produces the still Veo animates:
 
 Same append/date/tag rules as `AUTOMATED_CURATION.md` Step 4, but the entry
 **drops `image_prompt`** (there is no prompt — it's a real painting) and **adds
-provenance fields**. These extra keys ride along harmlessly (the `/api/gallery`
-route passes raw JSON through; `ArtItem` ignores unknown fields) and let the app
-show a caption later.
+provenance fields**. They are typed on `ArtItem` in `@screensaver-art/constants`
+(`isRealArtwork()`), and the website's `/art/<slug>` page, the social captions and
+the app's preview credit all read them — so this exact shape is the contract.
+
+Write the provenance to a JSON file and publish with
+`curation/publish-piece.mjs --provenance <file.json>` **instead of**
+`--image-prompt`. It copies exactly these nine keys onto the entry and refuses to
+publish if a required one (`source`, `artist`, `original_title`, `museum`,
+`source_url`, `license`) is missing, the licence isn't `"Public Domain"` / `"CC0"`,
+or the title doesn't name the artist:
+
+```bash
+node curation/publish-piece.mjs \
+  --still gallery/<slug>_painting.webp --stem <slug> --video gallery/<slug>_animated.mp4 \
+  --title "Paris Street; Rainy Day - Gustave Caillebotte (AI Animated)" --tag "19th Century" \
+  --provenance gallery/<slug>.provenance.json --video-prompt "$VID_PROMPT"
+```
+
+The resulting entry:
 
 ```json
 {
   "src":  "https://screensaver-assets.living-art-asset.com/gallery/<slug>_animated.mp4",
-  "img":  "https://screensaver-assets.living-art-asset.com/gallery/<slug>_painting.webp",
-  "title": "The Fighting Temeraire — J.M.W. Turner (Animated)",
+  "img":  "https://screensaver-assets.living-art-asset.com/gallery/<slug>_2k.webp",
+  "og_img": "https://screensaver-assets.living-art-asset.com/gallery/<slug>_720p.jpeg",
+  "thumb": "https://screensaver-assets.living-art-asset.com/gallery/<slug>_640w.webp",
+  "title": "Paris Street; Rainy Day - Gustave Caillebotte (AI Animated)",
   "type": "video",
   "date": "YYYY-MM-DD",
   "tags": ["19th Century"],
   "source": "real_artwork",
-  "artist": "Joseph Mallord William Turner",
-  "artist_dates": "1775–1851",
-  "original_title": "The Fighting Temeraire",
-  "original_date": "1839",
-  "credit": "The National Gallery, London",
-  "source_url": "https://www.nationalgallery.org.uk/paintings/...",
+  "artist": "Gustave Caillebotte",
+  "artist_dates": "1848–1894",
+  "original_title": "Paris Street; Rainy Day",
+  "original_date": "1877",
+  "museum": "Art Institute of Chicago",
+  "credit_line": "Charles H. and Mary F. S. Worcester Collection",
+  "source_url": "https://www.artic.edu/artworks/20684",
   "license": "Public Domain",
   "video_prompt": "THE_VIDEO_PROMPT_USED",
   "looping": false
 }
 ```
-- **Title convention:** credit the human artist; use **"(Animated)"** — *not*
-  "(AI Animated)", which would imply the artwork itself is AI. The motion is AI, the
-  painting is real; `source: "real_artwork"` + `video_prompt` records that honestly.
+- **Title convention:** `"<painting> - <artist> (AI Animated)"` — the artist sits in
+  the slot where AI pieces put the movement. "AI Animated" is accurate: the painting
+  is real, the motion is AI. `source: "real_artwork"` is what marks it as real; a
+  missing `source` means AI-generated.
+- **`museum`** is the institution ("Art Institute of Chicago"); **`credit_line`** is
+  its credit line for the object (the donor/collection), if it gives one.
 - **`free`:** omit it → new pieces default to subscriber-locked, same as AI pieces.
 
 ---
@@ -266,8 +288,9 @@ risk, so:
 ## 8. Cadence, cleanup, commit (reused)
 
 - **4 pieces per run**, per-piece loop decision — identical to `AUTOMATED_CURATION.md`
-  Steps 3–5. Upload **both** the still and the video with the `upload()` helper
-  (unique keys, never overwrite), then **delete the local files**.
+  Steps 3–5. Publish each with `curation/publish-piece.mjs --provenance` (§6): it
+  uploads the derivatives + the video under unique, never-overwritten keys and
+  deletes the local files. Delete the downloaded original and the provenance file too.
 - Commit: `git add gallery.json && git commit -m "AUTO_CURATION (real art): Added [Artist — Title, …]"` then `git push`. Do not commit the run manifest or downloaded originals.
 
 ---
@@ -282,10 +305,9 @@ risk, so:
    but throws away most of the catalogue (most paintings are portrait).
 3. **Only CC0 / Public-Domain-Mark accepted** (§0.2). Accepting CC-BY would roughly
    double the pool but forces a visible attribution requirement into the app UI.
-4. **Attribution display is a follow-up.** The provenance fields (§6) are written now
-   but the Electron/website Gallery doesn't render them yet — a small UI change to
-   show "Painting by <artist>, <credit> · public domain · animation AI-assisted"
-   would make the credit visible. Out of scope for this workflow; worth doing.
+4. ~~**Attribution display is a follow-up.**~~ Done: the `/art/<slug>` page shows a
+   credit line linking `source_url`, and the app's piece preview shows "Original by
+   <artist>, <date> · <museum> · Public domain · Motion by AI".
 
 ---
 

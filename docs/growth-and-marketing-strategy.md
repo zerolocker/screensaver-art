@@ -247,6 +247,12 @@ worth remembering:
   deliberately unused: they're machine instructions ("static camera", "no morphing") and 61
   pieces have none. Good per-piece prose would need per-piece data, and **not in `gallery.json`**
   (founder, 2026-09-13: no new fields there). Still open, and low value while `/art/*` is `noindex`.
+  **Exception (founder, 2026-10):** real public-domain paintings carry **provenance fields**
+  (`source: "real_artwork"`, `artist`, `artist_dates`, `original_title`, `original_date`,
+  `museum`, `credit_line`, `source_url`, `license`), and their `/art/<slug>` prose is templated
+  from them: it credits the painter and the museum and says only the motion is AI, because the
+  AI pieces' "not a reproduction of any existing work" line would be false there. Still no other
+  new fields (captions, descriptions, marketing copy).
 
 **Still open:** the poster gap (77 pieces have no still anywhere, so their tiles render on a
 gradient — needs founder-approved stills on R2, not in git) and the per-piece prose above.

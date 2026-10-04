@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: { params: Promise<{ era: stri
       // SITE_OG_IMAGE). Prefer a real piece from the wing; fall back to the
       // branded card when the wing's cover has no still on R2.
       images: era.cover.posterUrl?.startsWith('http')
-        ? [{ url: era.cover.posterUrl, alt: `${era.cover.name} — ${era.cover.movement}` }]
+        ? [{ url: era.cover.posterUrl, alt: `${era.cover.name} — ${era.cover.subtitle || era.era}` }]
         : [{ url: SITE_OG_IMAGE, width: 1200, height: 630 }],
     },
   }
@@ -104,7 +104,7 @@ export default async function EraPage({ params }: { params: Promise<{ era: strin
           {era.headline}
         </h1>
         <p className="m-0 mb-[20px] max-w-[680px] text-[17px] leading-[1.6] text-muted-foreground">{era.blurb}</p>
-        <AiDisclosure className="mb-[26px] max-w-[680px]" />
+        <AiDisclosure pieces={era.pieces} className="mb-[26px] max-w-[680px]" />
         <EraPills activeSlug={era.slug} />
       </section>
 

@@ -35,10 +35,17 @@
 // comment and bio" (founder call, 2026-09-14): the pinned comment carries the
 // address, and the bio carries it as plain text. TikTok makes neither clickable.
 //
+// REAL ARTWORKS (`source: "real_artwork"` in gallery.json — a public-domain
+// painting with AI motion) keep the same fixed first lines, but behind "more"
+// they lead with the painting and painter ("Caillebotte's Paris Street; Rainy
+// Day, brought to life") plus a museum credit, take their hashtags from the
+// artist and movement (#caillebotte #impressionism #arthistory…), and their
+// YouTube and pin titles name the painting and the artist.
+//
 // Everything is a pure function of the piece, so a retried post republishes
 // byte-identical copy.
 
-import { artPhrase, pieceHashtags } from './hashtags.mjs'
+import { artPhrase, artistMovement, artistShortName, artworkHashtags, pieceHashtags } from './hashtags.mjs'
 import { SITE_ORIGIN, landingUrl } from './pieces.mjs'
 
 /** What the app is, in as few words as a phone will show. */
@@ -63,11 +70,79 @@ const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1)
 /** Distinct hashtags, first `max` of them, as one line. */
 const hashtagLine = (tags, max) => [...new Set(tags)].slice(0, max).join(' ')
 
+/** "Caillebotte's", "Rubens'" — for a name that may end in s. */
+const possessive = (name) => (/s$/i.test(name) ? `${name}'` : `${name}'s`)
+
+/**
+ * The lead for a real artwork, naming the painting and the painter:
+ * "Caillebotte's Paris Street; Rainy Day, brought to life".
+ */
+export function artworkLead(title, artwork) {
+  const short = artistShortName(artwork.artist)
+  return short ? `${possessive(short)} ${title}, brought to life` : `${title}, brought to life`
+}
+
+/** "Gustave Caillebotte, 1877 · Art Institute of Chicago · Public domain" */
+export function artworkCreditLine(artwork) {
+  return [
+    [artwork.artist, artwork.originalDate].filter(Boolean).join(', '),
+    artwork.museum,
+    artwork.license === 'CC0' ? 'CC0' : 'Public domain',
+  ].filter(Boolean).join(' · ')
+}
+
+/** Shorten `lead` until `lead + tail` fits in `max`. */
+const fitWithTail = (lead, tail, max) => `${clamp(lead, max - tail.length)}${tail}`
+
+/**
+ * Captions for a real public-domain artwork. Same skeleton as an AI piece —
+ * the IG / TikTok first lines are the SAME fixed lines (founder calls,
+ * 2026-09-12/-14) — but the copy behind "more" leads with the painting and the
+ * painter, credits the museum, and the hashtags come from the artist.
+ */
+function artworkCaptions({ title, era, webSlug, artwork }) {
+  const lead = artworkLead(title, artwork)
+  const credit = artworkCreditLine(artwork)
+  const own = artworkHashtags({ artist: artwork.artist, era })
+  const movement = artistMovement(artwork.artist)
+  const phrase = movement ? null : artPhrase({ style: null, era })
+  const body = `${lead}\n${credit}`
+  return {
+    instagram: { text: `${CAPTION}\n\n${body}\n${hashtagLine(['#screensaver', '#animatedart', ...own], 4)}` },
+    tiktok: {
+      text: `${TIKTOK_CAPTION}\n\n${body}\n${hashtagLine(['#screensaver', '#animatedart', ...own], 4)}`,
+      linkComment: LINK_COMMENT,
+    },
+    youtube: {
+      // The Shorts title names the painting and the painter, then keeps the
+      // fixed line's job (what this is, and where the link is) as room allows.
+      title: `${lead} | ${CAPTION}`.length <= 100
+        ? `${lead} | ${CAPTION}`
+        : fitWithTail(lead, ' - Link in bio', 100),
+      description: `${body}\n\n${hashtagLine([...own, '#animatedart'], 3)}`,
+      tags: ['screensaver app', 'animated art', artwork.artist, title, movement, 'art history']
+        .filter(Boolean).map((t) => t.replace(/[,<>]/g, '').trim()).filter(Boolean),
+    },
+    pinterest: {
+      // Painting and painter first: for a real work, that's what people search.
+      title: fitWithTail(`${title} by ${artwork.artist}, animated`, ' | Art screensaver app', 100),
+      // Pinterest ranks the words in a pin, so the movement (or era) is named too.
+      description: `${lead}. ${credit}.${movement ? ` ${movement}.` : phrase ? ` ${capitalize(phrase)}.` : ''} ` +
+        'The real artwork, gently animated with AI for your screensaver by Living Art Screensaver, ' +
+        'with a new piece every night.',
+      link: landingUrl(webSlug, 'pinterest'),
+    },
+  }
+}
+
 /**
  * Every string the four platforms need for one piece. `era` is its gallery tag
  * ("Japanese", "Modern"…), or null for a clip rendered from outside the gallery.
+ * `artwork` is a real artwork's provenance (`artworkOf` in lib/pieces.mjs), or
+ * null for an AI piece.
  */
-export function buildCaptions({ title, style, era = null, webSlug }) {
+export function buildCaptions({ title, style, era = null, webSlug, artwork = null }) {
+  if (artwork) return artworkCaptions({ title, era, webSlug, artwork })
   const piece = titleLine(title, style)
   const own = pieceHashtags({ style, era })
   const phrase = artPhrase({ style, era })
@@ -98,8 +173,8 @@ export function buildCaptions({ title, style, era = null, webSlug }) {
 }
 
 /** The human-facing record written next to the rendered clips. */
-export function captionsMarkdown({ title, style, era = null, webSlug }) {
-  const c = buildCaptions({ title, style, era, webSlug })
+export function captionsMarkdown({ title, style, era = null, webSlug, artwork = null }) {
+  const c = buildCaptions({ title, style, era, webSlug, artwork })
   const landing = webSlug ? `\`/art/${webSlug}\`` : 'the home page (no gallery entry for this source)'
   return `# Social captions — ${title}
 

@@ -50,7 +50,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { captionsMarkdown, titleLine } from './lib/captions.mjs'
-import { assetSlug, deriveMeta, galleryVideos, REPO_ROOT, webSlugForSrc } from './lib/pieces.mjs'
+import { artworkOf, assetSlug, deriveMeta, galleryVideos, REPO_ROOT, webSlugForSrc } from './lib/pieces.mjs'
 import { DEFAULT_GAIN_DB, generateBed } from './lib/music.mjs'
 
 /** Renders the title pill PNG; see the script for how it mirrors the screensaver's. */
@@ -341,6 +341,9 @@ async function main() {
       const { title, style } = deriveMeta(entry, a.style)
       // The gallery tag ("Japanese", "Modern"…) the hashtags and the pin's wording build on.
       const era = entry.tags?.[0] ?? null
+      // A real public-domain painting's provenance (null for AI pieces): its
+      // captions lead with the painting + painter and credit the museum.
+      const artwork = artworkOf(entry)
       const slug = assetSlug(title) || 'piece'
       const webSlug = a.src && !entry.date ? null : webSlugForSrc(entry.src)
       const dir = path.join(a.out, slug)
@@ -370,7 +373,7 @@ async function main() {
           formats[fmtKey] = name
           process.stdout.write(`  ✓ ${path.relative(REPO_ROOT, outFile)} (${(statSync(outFile).size / 1e6).toFixed(1)} MB)\n`)
         }
-        writeFileSync(path.join(dir, 'captions.md'), captionsMarkdown({ title, style, era, webSlug }))
+        writeFileSync(path.join(dir, 'captions.md'), captionsMarkdown({ title, style, era, webSlug, artwork }))
         // The hand-off to post-social.mjs. Everything it needs to publish this
         // piece — above all `webSlug`, the permanent landing page — is recorded
         // here at render time, so the poster never re-derives it.
@@ -381,6 +384,7 @@ async function main() {
           title,
           style,
           era,
+          artwork,
           galleryTitle: entry.title ?? null,
           src: entry.src,
           date: entry.date ?? null,

@@ -13,6 +13,17 @@
 //     --title "Autumn Portage - Group of Seven (AI Animated)" --tag Modern \
 //     --image-prompt "$IMG_PROMPT" --video-prompt "$VID_PROMPT"
 //
+// A REAL public-domain painting (curation/REAL_PAINTINGS_CURATION.md) swaps
+// --image-prompt for --provenance: there is no image prompt, because nobody
+// generated the still. The file is a JSON object holding the nine provenance
+// keys (see PROVENANCE below); they're validated and copied onto the entry.
+//
+//   node curation/publish-piece.mjs \
+//     --still gallery/<name>_4k.webp --video gallery/<name>_animated.mp4 \
+//     --title "Paris Street; Rainy Day - Gustave Caillebotte (AI Animated)" \
+//     --tag "19th Century" --provenance gallery/<name>.provenance.json \
+//     --video-prompt "$VID_PROMPT"
+//
 // WHAT LANDS ON R2 (four keys, all immutable — see CLAUDE.md "Add new art pieces"):
 //   <stem>_2k.webp    -> img     2K hero. Not read by the site today (it prefers
 //                                og_img); kept as the high-res copy for future needs.
@@ -35,12 +46,31 @@ const GALLERY = path.join(ROOT, 'gallery.json')
 const BUCKET = 'screensaver-assets'
 const BASE = 'https://screensaver-assets.living-art-asset.com/'
 
+// The provenance contract for real paintings lives in @screensaver-art/constants
+// (gallery.ts), alongside the tag vocabulary. Both are read from there, so this
+// script can't drift from what the website and app expect.
+const CONSTANTS_SRC = readFileSync(path.join(ROOT, 'packages/constants/src/gallery.ts'), 'utf8')
+function constList(name) {
+  const block = CONSTANTS_SRC.match(new RegExp(`export const ${name}\\b[^=]*=\\s*\\[([\\s\\S]*?)\\]`))
+  if (!block) die(`could not parse ${name} from packages/constants/src/gallery.ts`)
+  return [...block[1].matchAll(/'([^']+)'/g)].map((m) => m[1])
+}
+const PROVENANCE = constList('PROVENANCE_FIELDS')
+const REQUIRED = constList('REQUIRED_PROVENANCE_FIELDS')
+const LICENSES = constList('ART_LICENSES')
+
 const USAGE = `usage: node curation/publish-piece.mjs \\
   --still <4k.webp> --video <mp4> --title <title> --tag <wing> \\
-  --image-prompt <text> --video-prompt <text> \\
+  (--image-prompt <text> | --provenance <file.json>) --video-prompt <text> \\
   [--date YYYY-MM-DD] [--looping|--no-looping] [--stem <name>] \\
   [--dry-run] [--keep] [--resume]
 
+  --image-prompt  the prompt the still was generated from (AI pieces).
+  --provenance    a REAL public-domain painting instead: a JSON file holding
+                  ${PROVENANCE.join(', ')}.
+                  Required: ${REQUIRED.join(', ')};
+                  source must be "real_artwork", license one of ${LICENSES.map((l) => `"${l}"`).join(' / ')}.
+                  Title as "<painting> - <artist> (AI Animated)". No image prompt is written.
   --looping    defaults to the video filename (_looping.mp4 -> true,
                _animated.mp4 -> false); pass explicitly for any other name.
   --stem       R2 key stem, defaults to the still's basename minus _4k.
@@ -72,8 +102,14 @@ const DRY = !!opts['dry-run']
 const KEEP = !!opts.keep
 const RESUME = !!opts.resume
 
-for (const req of ['still', 'video', 'title', 'tag', 'image-prompt', 'video-prompt']) {
-  if (!opts[req]) die(`missing --${req}\n\n${USAGE}`)
+// A real painting has no image prompt (nobody generated the still); an AI piece
+// has no provenance. Exactly one of the two says which kind this is.
+const REAL = !!opts.provenance
+if (REAL && opts['image-prompt']) {
+  die('--provenance is for a real painting, which has no image prompt — drop --image-prompt')
+}
+for (const req of ['still', 'video', 'title', 'tag', REAL ? null : 'image-prompt', 'video-prompt']) {
+  if (req && !opts[req]) die(`missing --${req}${req === 'image-prompt' ? ' (or --provenance for a real painting)' : ''}\n\n${USAGE}`)
 }
 if (opts.looping && opts['no-looping']) die('--looping and --no-looping are mutually exclusive')
 
@@ -87,14 +123,49 @@ if (!/\.mp4$/i.test(video)) die(`--video must be an .mp4, got "${path.basename(v
 
 // The tag vocabulary is closed and drives the Gallery filter pills, so validate it
 // against the real source of truth rather than a copy that can drift.
-const TAGS = (() => {
-  const src = readFileSync(path.join(ROOT, 'packages/constants/src/gallery.ts'), 'utf8')
-  const block = src.match(/export const TAG_ORDER = \[([\s\S]*?)\n\]/)
-  if (!block) die('could not parse TAG_ORDER from packages/constants/src/gallery.ts')
-  return [...block[1].matchAll(/'([^']+)'/g)].map((m) => m[1])
-})()
+const TAGS = constList('TAG_ORDER')
 if (!TAGS.includes(opts.tag)) {
   die(`unknown tag "${opts.tag}" — never invent a wing. Valid:\n  ${TAGS.join('\n  ')}`)
+}
+
+// Provenance for a real painting: exactly the contract's keys, validated, in
+// contract order. Checked before any ffmpeg/R2 work so a bad file costs nothing.
+const provenance = REAL ? readProvenance(path.resolve(opts.provenance)) : null
+
+function readProvenance(file) {
+  if (!existsSync(file)) die(`provenance file not found: ${file}`)
+  let raw
+  try { raw = JSON.parse(readFileSync(file, 'utf8')) } catch (e) { die(`provenance file is not valid JSON (${file}): ${e.message}`) }
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) die(`provenance file must hold a JSON object: ${file}`)
+
+  const ignored = Object.keys(raw).filter((k) => !PROVENANCE.includes(k))
+  if (ignored.length) {
+    process.stderr.write(`publish-piece: WARNING — ignoring unknown provenance key(s): ${ignored.join(', ')} ` +
+      `(only ${PROVENANCE.join(', ')} are copied)\n`)
+  }
+  const out = {}
+  for (const key of PROVENANCE) {
+    const v = raw[key]
+    if (v === undefined || v === null || v === '') continue
+    if (typeof v !== 'string') die(`provenance "${key}" must be a string, got ${JSON.stringify(v)}`)
+    if (v.trim()) out[key] = v.trim()
+  }
+  const missing = REQUIRED.filter((k) => !out[k])
+  if (missing.length) die(`provenance is missing required key(s): ${missing.join(', ')}`)
+  if (out.source !== 'real_artwork') die(`provenance "source" must be "real_artwork", got "${out.source}"`)
+  if (!LICENSES.includes(out.license)) {
+    die(`provenance "license" must be one of ${LICENSES.map((l) => `"${l}"`).join(' / ')} — got "${out.license}". ` +
+      'Anything weaker (CC-BY, "No Known Copyright", unknown…) is not eligible; see REAL_PAINTINGS_CURATION.md §0.')
+  }
+  if (!/^https?:\/\/\S+$/i.test(out.source_url)) die(`provenance "source_url" must be an http(s) URL, got "${out.source_url}"`)
+
+  // The title names the artist where an AI piece names its movement — the
+  // website and the social captions split on it.
+  const esc = out.artist.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  if (!new RegExp(`^.+ - ${esc} \\(AI Animated\\)$`).test(opts.title)) {
+    die(`a real painting's title must read "<painting> - ${out.artist} (AI Animated)", got "${opts.title}"`)
+  }
+  return out
 }
 
 const stem = opts.stem || path.basename(still).replace(/\.[a-z0-9]+$/i, '').replace(/_4k$/i, '')
@@ -166,7 +237,8 @@ const putOnR2 = (file, key, ct) => wrangler([
 
 // ---- run -------------------------------------------------------------------
 
-process.stdout.write(`publishing "${opts.title}"\n  stem ${stem} · ${looping ? 'looping' : 'non-looping'} · ${date} · ${opts.tag}\n`)
+process.stdout.write(`publishing "${opts.title}"\n  stem ${stem} · ${looping ? 'looping' : 'non-looping'} · ${date} · ${opts.tag}` +
+  `${provenance ? ` · real painting (${provenance.museum}, ${provenance.license})` : ''}\n`)
 
 // 1. Derive. Cheap and local, so do it before touching the network.
 for (const d of derivatives) {
@@ -221,7 +293,9 @@ const entry = {
   type: 'video',
   date,
   tags: [opts.tag],
-  image_prompt: opts['image-prompt'],
+  // AI piece: the prompt the still was generated from. Real painting: who made
+  // it and where it hangs instead (and no image_prompt — there wasn't one).
+  ...(provenance ?? { image_prompt: opts['image-prompt'] }),
   video_prompt: opts['video-prompt'],
   looping,
 }

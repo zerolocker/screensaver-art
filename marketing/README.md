@@ -254,6 +254,26 @@ piece's own first, because YouTube shows up to three beside the title.
 - **The era comes from `meta.json`** (`era`, written at render time), or from
   `gallery.json` for clips rendered before that field existed.
 
+**Real public-domain paintings** (`source: "real_artwork"` in `gallery.json`, see
+`curation/REAL_PAINTINGS_CURATION.md`) keep the same fixed first lines, but the rest leads
+with the painting and the painter, plus a museum credit:
+
+```
+Animated art screensaver app - Link in bio
+
+Caillebotte's Paris Street; Rainy Day, brought to life
+Gustave Caillebotte, 1877 · Art Institute of Chicago · Public domain
+#screensaver #animatedart #caillebotte #impressionism
+```
+
+Their own hashtags come from the artist, in order: the artist's tag, their movement (or
+the era's tag if we don't claim one), `#arthistory`, and `#famouspaintings` for the famous
+names `lib/hashtags.mjs` lists; the usual caps then apply, so IG / TikTok show the first
+two and YouTube the first three. The YouTube title and the pin title name the painting and
+artist (*Paris Street; Rainy Day by Gustave Caillebotte, animated | Art screensaver app*).
+`meta.json` records the provenance as `artwork`. **The artist tags were not checked against
+TikTok's counts** the way the style tags were.
+
 **TikTok also gets a pinned comment**, *Get the screensaver app:
 living-art-screensaver.com*, posted under each video once it is live (since 2026-09-14).
 The TikTok account can't have a bio link: it has no Business switch, and a personal

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { X, Check, Lock } from 'lucide-react'
-import { type ArtItem, tagsOf } from '@screensaver-art/constants'
+import { type ArtItem, isRealArtwork, tagsOf } from '@screensaver-art/constants'
 
 interface ArtModalProps {
   item: ArtItem
@@ -22,6 +22,23 @@ function formatDate(date?: string): string | null {
   const d = new Date(date + 'T00:00:00')
   if (Number.isNaN(d.getTime())) return null
   return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+}
+
+// The credit for a real public-domain artwork (`source: "real_artwork"`):
+// "Original by Gustave Caillebotte, 1877 · Art Institute of Chicago · Public
+// domain · Motion by AI". Null for AI-generated pieces (no `source`), whose
+// title already says what they are. "Original", not "Painting": the source
+// collections also clear drawings and prints.
+function artworkCredit(item: ArtItem): string | null {
+  if (!isRealArtwork(item) || !item.artist) return null
+  return [
+    `Original by ${[item.artist, item.original_date].filter(Boolean).join(', ')}`,
+    item.museum,
+    item.license === 'CC0' ? 'CC0' : 'Public domain',
+    'Motion by AI',
+  ]
+    .filter(Boolean)
+    .join(' · ')
 }
 
 // Full-screen preview of a single piece so the art reads the way it will as a
@@ -79,6 +96,7 @@ export function ArtModal({
   const meta = [tagsOf(item).join(' · '), dateStr ? `Added ${dateStr}` : null]
     .filter(Boolean)
     .join('  ·  ')
+  const credit = artworkCredit(item)
 
   return (
     <div
@@ -109,6 +127,7 @@ export function ArtModal({
       <div className="absolute inset-x-0 bottom-0 z-10 flex items-end gap-4 p-6 pt-20 bg-gradient-to-t from-black/85 via-black/40 to-transparent">
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-semibold text-white truncate">{item.title}</h3>
+          {credit && <p className="text-sm text-white/85 mt-1">{credit}</p>}
           {meta && <p className="text-sm text-white/70 mt-1">{meta}</p>}
         </div>
         {locked && !selected ? (

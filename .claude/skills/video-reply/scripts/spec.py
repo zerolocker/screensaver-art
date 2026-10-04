@@ -9,7 +9,7 @@ import os
 import yaml
 
 DEFAULT_MODEL = "gemini-3.8-flash-tts"
-FALLBACK_MODEL = "gemini-3.1-flash-tts-preview"
+FALLBACK_MODEL = "gemini-3.8-flash-lite-tts"  # Google's stated replacement for 3.1-flash-tts-preview
 DEFAULT_VOICE = "Sulafat"
 DEFAULT_ACCENT = "#e4a853"
 

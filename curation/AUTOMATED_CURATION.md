@@ -4,6 +4,17 @@ You are building a screensaver app that showcases classic and modern artworks br
 
 Instructions below assume the git repo is the current working directory.
 
+## Step 0: which curation runs tonight
+
+Read **`curation/CURATION_MODE`**. It holds one word:
+- **`real-paintings`**: stop reading this file and follow
+  [`curation/REAL_PAINTINGS_CURATION.md`](REAL_PAINTINGS_CURATION.md) instead. It animates real
+  public-domain paintings and reuses this file's publish, commit and social steps by reference.
+- **`ai-generated`**: continue with the steps below. This is the original AI-art curation; it is
+  kept intact so it can be switched back on.
+
+To switch modes, edit that one word and push to `master`.
+
 ## Prerequisites & credentials
 
 Secrets live in **`curation/.env`** (gitignored; template `curation/.env.example`).

@@ -40,6 +40,17 @@ still, self-reviews it (the "vision gate") before spending a video generation,
 animates it, and publishes it with `publish-piece.mjs`. The step-by-step is
 [`AUTOMATED_CURATION.md`](AUTOMATED_CURATION.md) — **edit that, not this section.**
 
+**Two modes, one switch.** `curation/CURATION_MODE` holds one word, and Step 0 of
+`AUTOMATED_CURATION.md` routes on it:
+- `ai-generated` is the original runbook above, where AI generates the still and Veo animates it.
+- `real-paintings` follows [`REAL_PAINTINGS_CURATION.md`](REAL_PAINTINGS_CURATION.md): famous
+  public-domain paintings from museum open-access collections, cleared by
+  `real-art/find-paintings.mjs`, framed on a dark wall, then animated. Its prompt rules live in
+  [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md).
+
+The scheduled job always enters through `AUTOMATED_CURATION.md`, so switching modes is a
+one-word commit; nothing changes on the machine that runs it.
+
 **Inputs it depends on — all kept here at the `curation/` root:**
 
 | File | Purpose |

@@ -133,10 +133,10 @@ specs, and `.cache/` (TTS audio, downloaded images, build files).
 
 Top level: `title` (MP4 title + default footer), `footer`, `scenes`, and optional
 `voice` (default `Sulafat`), `model` (default `gemini-3.8-flash-tts`; falls back to
-`gemini-3.1-flash-tts-preview`), `style` (delivery direction; each model
-has a tuned default. For `gemini-3.8-*` models it is a short phrase like `friendly,
-warm and engaging`, sent as speech metadata; for older models it is prose prepended
-to each beat), `accent` (hex), `pad` (seconds after each beat, default 0.25), `speed` (pitch-preserving speech tempo, default 1.12 — the voice reads slowly at 1.0).
+`gemini-3.8-flash-lite-tts`), `style` (delivery direction; each model
+has a tuned default. For 3.8 models it is a short phrase like `friendly,
+warm and engaging`, sent as speech metadata; for the legacy 3.1/2.5 models it is
+prose prepended to each beat), `accent` (hex), `pad` (seconds after each beat, default 0.25), `speed` (pitch-preserving speech tempo, default 1.12 — the voice reads slowly at 1.0).
 
 Each scene: `template`, its fields, optional `kicker` (small accent caps line) and
 `say:` — the narration, a list of **beats**. Beat 1 shows the slide's fixed parts
@@ -207,19 +207,25 @@ Complete worked example covering every template: [`examples/demo.yaml`](examples
   + `Vindemiatrix`) in 9 of 12 comparisons. Across voices, 3.8 and 3.1 came out
   about even (3.8 won 10 of 18), but 3.8 lost every round with `Vindemiatrix`, so
   the voice changed with the model. `gemini-3.8-flash-lite-tts` is a little faster
-  and close behind. 3.1 is the fallback; `gemini-2.5-pro-preview-tts` sounded
-  stiffer than both.
-- 3.8 models go through the Interactions API and read the text **strictly as a
-  verbatim transcript**: any direction placed in the text gets spoken. `tts.py` sends
-  the `style` as speech metadata instead, so keep narration pure speech. An earlier
+  and close behind, and is the fallback: Google names it the replacement for the
+  legacy-preview 3.1, and it takes the same request shape and style.
+  `gemini-2.5-pro-preview-tts` sounded stiffer than both.
+- 3.8 models go through the Interactions API (with `store=False`) and read the text
+  **strictly as a verbatim transcript**: any direction placed in the text gets
+  spoken. `tts.py` sends the `style` as speech metadata instead, so keep narration
+  pure speech. There is no numeric speaking-rate setting; the docs steer pace only
+  through `style` ("speaking rapidly"), which is coarse, so `speed` time-stretches
+  the audio instead. An earlier
   note here said 3.8 "reads the style direction aloud and drops sentences". That was
   the old call path prepending the style to the text. Invoked correctly, 3.8 passed
   the transcription check on every demo beat. Style matters for 3.8: with no style
   it sounds flat, and `friendly, warm and engaging` tested best.
 - Each new clip gets a duration sanity check and a transcription check
-  (re-synthesised once on mismatch; warns if still off). The transcriber
-  occasionally truncates a long clip, so a rare false "missing speech" retry is
-  expected.
+  (re-synthesised once on mismatch; warns if still off). The transcriber is
+  `gemini-3.5-transcribe`, a dedicated speech-to-text model. On the 24 demo beats
+  the general `gemini-flash-latest` used before returned one empty transcript (a
+  false "missing speech"), prefixed another with "thought", and was 2.5× slower.
+  Mishearings of rare words ("Veo", "tarantella") stay within the tolerance.
 - `video` clips are always **muted** (narration is the only audio), normalised to
   1080p30 whatever their fps/size/rotation, letterboxed (never cropped), and play
   continuously across the scene's beats: looped by default when the narration runs

@@ -68,6 +68,7 @@ When you add a new style, append it under the section it best fits.
 - Animalier painting (Rosa Bonheur — French animal painting: horse fairs, cattle markets, working draft horses in motion)
 - British Sporting Art (Ferneley / Alken / Herring — 18th–19th-c. English hunting & racing scenes: red-coated fox hunts galloping across green country, streaming foxhound packs, racehorses at full stride; bright naturalistic daylight)
 - English Coaching Print (Regency hand-coloured aquatint — Pollard / Alken road scenes: four-horse mail & stage coaches at full gallop up to a country coaching inn, ostlers and travellers, crisp linework and luminous washes, bright daylight)
+- English Romantic Genre Oil (early-19th-c. road & country-life oil painting — a Royal Mail coach and four at full gallop across sunlit downs, guard with post horn, roof passengers; luminous daylight, rich saturated colour; pre-empt the painted signature)
 - Nordic Wildlife Painting (Bruno Liljefors — Swedish naturalist wildlife: geese landing, foxes, birds of prey set in bright marsh & forest)
 - Scottish Highland Romanticism (Landseer-style — red deer stags leaping the burn or standing in the glen, bright moorland of purple heather & golden bracken under blue-grey peaks)
 - Victorian Scottish Sporting/Genre Painting (bright detailed oil realism of a Highland Games gathering — caber toss, hammer throw, tug-o'-war, Highland dancers, a full-dress piper, kilted competitors in many clan tartans, a dense summer crowd, marquee tents and clan banners, green hills and a castle behind; luminous even daylight, dense colourful tartan)
@@ -102,6 +103,7 @@ When you add a new style, append it under the section it best fits.
 - Group of Seven (Canadian landscape, Tom Thomson / A.Y. Jackson)
 - American Regionalism (1930s, Thomas Hart Benton / Grant Wood)
 - Mexican Muralism (1920s–40s fresco, Rivera / Orozco / Siqueiros)
+- Mexican Modernism / Mexican School easel painting (1930s oil — simplified rounded volumes, strong clean outlines, saturated terracotta/magenta/turquoise/ochre; charreada, fiestas, markets in sunlit adobe towns; bright midday light, legible figures)
 - Brazilian Modernism (Cândido Portinari / Tarsila do Amaral — monumental rounded stylised figures, bold flat saturated tropical colour with strong dark outlines; carnival, coffee harvest, favela and folk-festival subjects)
 - Harlem Renaissance Narrative (Jacob Lawrence — flat bold-colour migration & labour scenes)
 - Expressionism
@@ -169,6 +171,7 @@ is the **AI-cliché** test in `PROMPT_GUIDANCE.md` ("Brand & taste"), not recenc
 - Dieselpunk
 - Retro-Futurism
 - Modern Nordic / Scandinavian Landscape Illustration
+- Contemporary Scandinavian Picture-Book Illustration (flat confident shapes, clean edges, bold cobalt/crimson/yellow/white palette; figure-led winter action — husky sled teams, skiers, skaters across sunlit snowfields with red cabins; bright daylight with long blue shadows)
 - Contemporary Botanical Illustration
 - Light and Space (Turrell / Irwin — luminous colour-field environments)
 - Contemporary Stained Glass

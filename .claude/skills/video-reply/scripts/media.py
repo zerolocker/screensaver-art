@@ -29,7 +29,7 @@ def locate(src, base_dir, cache_dir, kind="img"):
     if src.startswith(("http://", "https://")):
         raw = os.path.join(cache_dir, kind, "dl-" + _h(src) + os.path.splitext(src.split("?")[0])[1][:6])
         if not os.path.exists(raw):
-            req = urllib.request.Request(src, headers={"User-Agent": "explainer-video/1.0"})
+            req = urllib.request.Request(src, headers={"User-Agent": "video-reply/1.0"})
             with urllib.request.urlopen(req, timeout=120) as r, open(raw + ".tmp", "wb") as f:
                 shutil.copyfileobj(r, f)
             os.replace(raw + ".tmp", raw)

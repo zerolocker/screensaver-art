@@ -34,7 +34,7 @@ def find_chrome():
 class Chrome:
     def __init__(self, width=1920, height=1080):
         self.width, self.height = width, height
-        self.tmp = tempfile.mkdtemp(prefix="explainer-chrome-")
+        self.tmp = tempfile.mkdtemp(prefix="video-reply-chrome-")
         self.proc = subprocess.Popen(
             [find_chrome(), "--headless=new", "--remote-debugging-port=0",
              f"--user-data-dir={self.tmp}", "--no-first-run", "--no-default-browser-check",

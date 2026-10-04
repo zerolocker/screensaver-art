@@ -1,4 +1,4 @@
-/* explainer-video theme — dark, gallery-like, one warm accent. 1920×1080 canvas.
+/* video-reply theme — dark, gallery-like, one warm accent. 1920×1080 canvas.
    Fonts are macOS system fonts loaded from disk (no network). */
 @font-face { font-family: "EV Serif"; src: url("file:///System/Library/Fonts/NewYork.ttf"); font-weight: 1 1000; }
 @font-face { font-family: "EV Serif"; font-style: italic; src: url("file:///System/Library/Fonts/NewYorkItalic.ttf"); font-weight: 1 1000; }

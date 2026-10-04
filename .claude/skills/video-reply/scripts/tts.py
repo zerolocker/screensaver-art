@@ -1,20 +1,24 @@
 """Gemini TTS per beat, cached on disk by hash(text, voice, model, style).
 
-- Two invocation paths. Gemini 3.8 TTS models (`gemini-3.8-*`) go through the
-  Interactions API: the text is treated strictly as a verbatim transcript, so the
-  delivery direction goes in a `speech_metadata` annotation's `style` (a short
-  phrase) and the voice in `speech_config`. Anything put in the text itself gets
-  spoken. Older models (3.1, 2.5) use `generate_content`, with the style prose
+- Two invocation paths. Gemini 3.8+ TTS models go through the Interactions API
+  (the documented path for them): the text is treated strictly as a verbatim
+  transcript, so the delivery direction goes in a `speech_metadata` annotation's
+  `style` (a short phrase) and the voice in `speech_config`. Anything put in the
+  text itself gets spoken. Requests are sent with `store=False`: nothing here uses
+  server-side conversation state, and the API otherwise keeps every request.
+  The legacy models (3.1, 2.5) use `generate_content`, with the style prose
   prepended to the text, which they treat as direction.
-- Response audio differs by model: raw little-endian L16 PCM
-  ("audio/L16;codec=pcm;rate=24000") or a full WAV ("audio/wav"). Both are
-  normalised to 24 kHz mono s16 here.
+- Response audio differs by model: 3.8 unary requests return a WAV ("audio/wav",
+  24 kHz mono s16, followed by a C2PA chunk that the `wave` module skips); the
+  legacy models return headerless L16 PCM ("audio/l16; rate=24000; channels=1").
+  Both are normalised to 24 kHz mono s16 here.
 - Retries 429/5xx/empty responses with exponential backoff; after that, falls back
   to `fallback_model` (same prebuilt voice names) with a warning.
 - Guards against reading the direction aloud and dropping a sentence with a
-  duration sanity check and (default on) a quick transcription check of each
-  *new* clip.
+  duration sanity check and (default on) a verbatim transcription of each *new*
+  clip by a dedicated speech-to-text model.
 """
+import base64
 import difflib
 import hashlib
 import io
@@ -29,7 +33,9 @@ import wave
 from array import array
 
 RATE = 24000
-VERIFY_MODEL = os.environ.get("EXPLAINER_VERIFY_MODEL", "gemini-flash-latest")
+# A dedicated speech-to-text model (verbatim mode by default) rather than a
+# general model alias that gets hot-swapped between releases.
+VERIFY_MODEL = os.environ.get("EXPLAINER_VERIFY_MODEL", "gemini-3.5-transcribe")
 RETRY_CODES = {429, 500, 502, 503, 504}
 
 # Default delivery direction when the spec sets no `style`. 3.8 takes a short phrase
@@ -38,10 +44,13 @@ SPEECH_STYLE = "friendly, warm and engaging"  # won blind tests vs "calm…" phr
 PROSE_STYLE = ("Read this as a calm, friendly narrator explaining something to a "
                "colleague: warm, clear and brisk, conversational, never salesy.")
 
+# Models that predate the verbatim-transcript schema and read direction from the text.
+LEGACY_PREFIXES = ("gemini-2.5-", "gemini-3.1-")
+
 
 def uses_interactions(model):
-    """Gemini 3.8 TTS models are only reachable through the Interactions API."""
-    return model.startswith("gemini-3.8")
+    """3.8 and later: Interactions API with speech_metadata. Legacy models: generate_content."""
+    return not model.startswith(LEGACY_PREFIXES)
 
 
 def style_for(model, style):
@@ -185,7 +194,6 @@ class TTS:
         return self._retry(once, f"tts[{model}]")
 
     def _call_interactions(self, model, text, style):
-        import base64
         part = {"type": "text", "text": text}
         if style:
             part["annotations"] = [{"type": "speech_metadata", "style": style}]
@@ -195,13 +203,32 @@ class TTS:
                 model=model,
                 input=[{"type": "user_input", "content": [part]}],
                 response_format={"type": "audio"},
-                generation_config={"speech_config": [{"voice": self.voice}]})
+                generation_config={"speech_config": [{"voice": self.voice}]},
+                store=False)
             audio = getattr(r, "output_audio", None)
             if not audio or not audio.data:
                 raise NoAudio(f"no audio (status={getattr(r, 'status', None)})")
             data = audio.data if isinstance(audio.data, bytes) else base64.b64decode(audio.data)
             return to_pcm(audio.mime_type, data)
         return self._retry(once, f"tts[{model}]")
+
+    def _transcribe(self, pcm):
+        """Verbatim transcript of a clip. Beats are a few hundred KB, so the WAV goes inline."""
+        buf = io.BytesIO()
+        with wave.open(buf, "wb") as w:
+            w.setnchannels(1); w.setsampwidth(2); w.setframerate(RATE); w.writeframes(pcm)
+        wav = buf.getvalue()
+        if "transcribe" in VERIFY_MODEL:  # dedicated speech-to-text model: no prompt
+            r = self.client.interactions.create(
+                model=VERIFY_MODEL, store=False,
+                input=[{"type": "audio", "mime_type": "audio/wav", "data": base64.b64encode(wav).decode()}])
+            return r.output_text or ""
+        from google.genai import types  # a general model, via EXPLAINER_VERIFY_MODEL
+        r = self.client.models.generate_content(
+            model=VERIFY_MODEL,
+            contents=[types.Part.from_bytes(data=wav, mime_type="audio/wav"),
+                      "Transcribe this speech verbatim. Output only the transcript."])
+        return r.text or ""
 
     def _check(self, text, pcm):
         """Return (ok, reason). Cheap duration check, then optional transcription."""
@@ -213,15 +240,7 @@ class TTS:
         if not self.verify:
             return True, ""
         try:
-            from google.genai import types
-            buf = io.BytesIO()
-            with wave.open(buf, "wb") as w:
-                w.setnchannels(1); w.setsampwidth(2); w.setframerate(RATE); w.writeframes(pcm)
-            r = self._retry(lambda: self.client.models.generate_content(
-                model=VERIFY_MODEL,
-                contents=[types.Part.from_bytes(data=buf.getvalue(), mime_type="audio/wav"),
-                          "Transcribe this speech verbatim. Output only the transcript."]), "verify", attempts=3)
-            heard = r.text or ""
+            heard = self._retry(lambda: self._transcribe(pcm), "verify", attempts=3)
         except Exception as e:
             self._warn(f"could not verify audio ({type(e).__name__}); kept unverified: \"{text[:50]}…\"")
             return True, ""

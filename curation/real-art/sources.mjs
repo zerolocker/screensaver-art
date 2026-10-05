@@ -9,6 +9,23 @@ const aspectOf = (w, h) => (w && h ? Math.round((w / h) * 1000) / 1000 : null)
 const stripParen = (s) => String(s ?? '').replace(/\s*\([^)]*\)\s*$/, '').trim()
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1)
 
+// Attribution qualifiers heading a name ("Workshop of", "After workshop of",
+// "Workshop or circle of") or trailing an inverted AIC agent title
+// ("Bonifacio Bembo, workshop of", "Guercino, School of").
+const QUAL_KIND = String.raw`(?:workshop|studio|circle|school|followers?|imitators?|(?:in the )?(?:manner|style))`
+const LEAD_QUAL = new RegExp(String.raw`^(?:(?:attributed to|possibly|probably|copy after|after|${QUAL_KIND}(?: or ${QUAL_KIND})? of)\s+)+`, 'i')
+const TRAIL_QUAL = new RegExp(String.raw`,\s*(${QUAL_KIND} of)$`, 'i')
+
+/** "Workshop of  X" / "X, workshop of" -> {qual: "Workshop of", name: "X"}. */
+export function splitQualifier(s) {
+  const t = String(s ?? '').replace(/\s+/g, ' ').trim()
+  const lead = t.match(LEAD_QUAL)
+  if (lead) return { qual: lead[0].trim(), name: t.slice(lead[0].length) }
+  const trail = t.match(TRAIL_QUAL)
+  if (trail) return { qual: trail[1], name: t.slice(0, trail.index) }
+  return { qual: null, name: t }
+}
+
 /**
  * "1848–1894", "c. 1480–c. 1504", "1628/29–1682", "1763–after 1825",
  * "active c. 742–756", "active by 1465, died 1494"
@@ -121,14 +138,19 @@ async function aicAgents(raws) {
   return map
 }
 
-function aicArtistName(a, who) {
+export function aicArtistName(a, who) {
   const [first = '', second = ''] = String(a.artist_display || '').split('\n').map((l) => l.trim())
-  const q = first.match(/^(attributed to|workshop of|studio of|circle of|follower of|school of|manner of|after|copy after)\s+/i)
   // "Artist unknown (American, 19th century)" / "Artist Unknown\nChinese" / "Japanese"
   if (/\b(unknown|unidentified|anonymous)\b/i.test(first)) return /\(/.test(first) || !second ? first : `${first} (${second})`
   if (who.anonymous && !a.artist_title) return first ? `Unknown artist (${stripParen(first)})` : 'Unknown artist'
-  const name = a.artist_title || stripParen(first) || null
-  return q && name ? `${cap(q[1].toLowerCase())} ${name}` : name
+  // The agent title often carries a qualifier too ("Workshop of Hieronymus Bosch").
+  // Say it once, preferring the label's, which is specific to this object
+  // ("Circle of X" on a "Workshop of X" agent).
+  const label = splitQualifier(first)
+  const agent = splitQualifier(a.artist_title)
+  const name = agent.name || stripParen(label.name) || null
+  const qual = label.qual || agent.qual
+  return qual && name ? `${cap(qual.toLowerCase())} ${name}` : name
 }
 
 export const aic = {
@@ -218,9 +240,13 @@ async function metByIds(ids) {
   return out
 }
 
-function metArtistName(o, who) {
+export function metArtistName(o, who) {
   if (who.anonymous && !who.people.length) return o.artistDisplayName || 'Unidentified artist'
-  return [o.artistPrefix, o.artistDisplayName].filter(Boolean).join(' ') || null
+  const prefix = String(o.artistPrefix ?? '').replace(/\s+/g, ' ').trim()
+  const name = String(o.artistDisplayName ?? '').replace(/\s+/g, ' ').trim()
+  // The qualifier may be in the prefix or the name ("Workshop of Fra Filippo Lippi"); say it once.
+  const dup = prefix && name.toLowerCase().startsWith(prefix.toLowerCase())
+  return [dup ? '' : prefix, name].filter(Boolean).join(' ') || null
 }
 
 export const met = {
@@ -316,13 +342,16 @@ function cmaImage(a) {
   return print && long(print) >= 2000 ? print : full && long(full) >= 2000 ? full : print || full || { url: null }
 }
 
-function cmaArtistName(a, who) {
+export function cmaArtistName(a, who) {
   const cs = a.creators || []
   if (!cs.length) return 'Unknown artist'
   return cs.map((c, i) => {
     const q = (c.qualifier || '').trim()
     const name = stripParen(c.description)
-    return q ? `${i ? q : cap(q)} ${name}` : name
+    if (!q) return name
+    // Don't repeat a qualifier the description already starts with.
+    const shown = name.toLowerCase().startsWith(q.toLowerCase()) ? name : `${q} ${name}`
+    return i ? shown : cap(shown)
   }).join(' ').replace(/\s+/g, ' ') || (who.anonymous ? 'Unknown artist' : null)
 }
 

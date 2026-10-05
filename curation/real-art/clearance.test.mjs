@@ -3,8 +3,8 @@
 
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { clear, cutoffYear, parseLifeFacts, peopleFromAic, peopleFromCma, peopleFromMet } from './clearance.mjs'
-import { formatDates } from './sources.mjs'
+import { clear, cutoffYear, parseLifeFacts, peopleFromAic, peopleFromCma, peopleFromMet, toYear } from './clearance.mjs'
+import { aicArtistName, cmaArtistName, formatDates, metArtistName } from './sources.mjs'
 
 const CUT = 1955 // = cutoffYear(2026)
 const life = (s) => parseLifeFacts(s).map(({ birth, death, deathAfter, floruit }) => ({ birth, death, deathAfter, floruit }))
@@ -130,4 +130,114 @@ test('licence flag, flat-art and resolution checks', () => {
   assert.equal(metFlat('Textiles-Woven / Tapestry'), false)
   assert.equal(clear({ ...cma, width: 1999, height: 1500 }, { cutoff: CUT }).pass, false)
   assert.equal(clear({ ...cma, width: null, height: null }, { cutoff: CUT }).pass, false)
+})
+
+// Live AIC records (Oct 2026). Undated agents carry birth = death = 4713.
+const BOSCH_AGENT = { id: 119568, title: 'Workshop of Hieronymus Bosch', agent_type_title: 'Individual', birth_date: 4713, death_date: 4713 }
+const aicWith = (art, agents, extra = {}) => ({
+  ...aic('', extra),
+  who: peopleFromAic({ artist_ids: agents.map((g) => g.id), ...art }, new Map(agents.map((g) => [g.id, g]))),
+})
+
+test('implausible structured years are unknown, not dates', () => {
+  assert.equal(toYear(4713, 2026), null) // AIC's no-date sentinel
+  assert.equal(toYear(2027, 2026), null)
+  assert.equal(toYear(-4713, 2026), null)
+  assert.equal(toYear('9999', 2026), null)
+  assert.equal(toYear('', 2026), null)
+  assert.equal(toYear('1516', 2026), 1516)
+  assert.equal(toYear(-480, 2026), -480)
+  assert.equal(toYear(2026, 2026), 2026)
+})
+
+test('AIC 4713 agent dates no longer reject; the label + attribution rule decide', () => {
+  // aic:22857, The Garden of Paradise
+  const bosch = aicWith({ artist_display: 'Workshop of Hieronymus Bosch (Netherlandish, c. 1450–1516)', artist_title: BOSCH_AGENT.title }, [BOSCH_AGENT], { object_end: 1525 })
+  assert.ok(!bosch.who.people.some((p) => p.from === 'aic agent'))
+  const r = clear(bosch, { cutoff: CUT })
+  assert.equal(r.pass, true)
+  assert.ok(!r.reasons.some((x) => /4713/.test(x)))
+  assert.ok(failsOn(r, /^attribution "Workshop": object dated 1525 < 1900/))
+  // The attribution rule still bites on a modern date.
+  assert.equal(clear({ ...bosch, object_end: 1925 }, { cutoff: CUT }).pass, false)
+})
+
+test('a sentinel date falls through to the conservative rules, never a pass of its own', () => {
+  // No dates on the label either: the agent is an undated person, bounded by the object date.
+  const undated = (end) => aicWith({ artist_display: 'Jane Doe', artist_title: 'Jane Doe' }, [{ ...BOSCH_AGENT, title: 'Jane Doe' }], { object_end: end })
+  assert.equal(clear(undated(1700), { cutoff: CUT }).pass, true)
+  assert.equal(clear(undated(1950), { cutoff: CUT }).pass, false)
+  assert.equal(clear(undated(null), { cutoff: CUT }).pass, false)
+  // A far-negative sentinel would otherwise clear life+70 by itself.
+  const cma = (year) => ({
+    source: 'cma', license_value: 'CC0', type_label: 'Painting', medium: 'oil', object_end: 1950, width: 3000, height: 2000,
+    who: peopleFromCma({ creators: [{ description: 'Jane Doe', role: 'artist', birth_year: year, death_year: year }] }),
+  })
+  assert.equal(clear(cma('-4713'), { cutoff: CUT }).pass, false)
+  assert.ok(failsOn(clear(cma('-4713'), { cutoff: CUT }), /no life dates, object dated 1950/))
+  assert.equal(clear(cma('4713'), { cutoff: CUT }).pass, false)
+  assert.equal(clear({ ...cma('1890'), object_end: 1880 }, { cutoff: CUT }).pass, true)
+  // Met: 9999 still means living; an implausible end date is unknown.
+  const met = (end, object_end) => ({
+    source: 'met', license_value: true, type_label: 'Paintings / Painting', medium: 'Oil', object_end, width: 3000, height: 2000,
+    who: peopleFromMet({ artistDisplayName: 'Jane Doe', artistDisplayBio: '', artistEndDate: end }),
+  })
+  assert.ok(failsOn(clear(met('9999', 1700), { cutoff: CUT }), /listed as living/))
+  assert.equal(clear(met('4713', 1950), { cutoff: CUT }).pass, false)
+  assert.equal(clear(met('4713', 1700), { cutoff: CUT }).pass, true)
+})
+
+test('artist names say the attribution qualifier once', () => {
+  const name = (artist_display, artist_title) => {
+    const a = { artist_display, artist_title, artist_ids: [1] }
+    return aicArtistName(a, peopleFromAic(a, new Map()))
+  }
+  // aic:16246, aic:16958, aic:22857
+  assert.equal(name('Workshop of Apollonio di Giovanni (Italian, 1415/17–1465)\nMarco del Buono Giamberti (Italian, 1403–1489)', 'Workshop of Apollonio di Giovanni'), 'Workshop of Apollonio di Giovanni')
+  assert.equal(name('Circle of Agnolo Bronzino (Italian, 1503–1572)', 'Circle of Agnolo Bronzino'), 'Circle of Agnolo Bronzino')
+  assert.equal(name('Workshop of Hieronymus Bosch (Netherlandish, c. 1450–1516)', 'Workshop of Hieronymus Bosch'), 'Workshop of Hieronymus Bosch')
+  // The label's qualifier wins over the agent's (aic:85628, aic:42450, aic:114916)...
+  assert.equal(name('After Raffaello Sanzio, called Raphael\nItalian, 1483-1520', 'Workshop of Raphael'), 'After Raphael')
+  assert.equal(name('after Raffaello Sanzio, called Raphael, and his workshop\nItalian, 1483-1520', 'Workshop of Raphael'), 'After Raphael')
+  assert.equal(name('Circle of Domenico Campagnola\nItalian, c. 1500-1564', 'Workshop of Domenico Campagnola'), 'Circle of Domenico Campagnola')
+  // ...and is kept whole when it is a chain (aic:95779).
+  assert.equal(name('After Workshop of Raffaello Sanzio, called Raphael\nItalian, 1483-1520', 'Workshop of Raphael'), 'After workshop of Raphael')
+  // Agent-only and inverted qualifiers (aic:59971, aic:105764, aic:81969).
+  assert.equal(name('Paolo Veneziano (Italian, active 1333–1358)', 'Workshop of Paolo Veneziano'), 'Workshop of Paolo Veneziano')
+  assert.equal(name('Northern Italian (Milan)\nWorkshop of Bonfacio Bembo (active 1447-1478, died before 1482)', 'Bonifacio Bembo, workshop of'), 'Workshop of Bonifacio Bembo')
+  assert.equal(name('Workshop of Vicencio Carducho\nItalian, 1570-1638', 'Workshop of  Vicencio Carducho'), 'Workshop of Vicencio Carducho')
+  assert.equal(name('Workshop of X (Dutch, 1600–1650)', null), 'Workshop of X')
+  assert.equal(name('Georges Seurat (French, 1859–1891)', 'Georges Seurat'), 'Georges Seurat')
+  assert.equal(name('El Greco (Doménikos Theotokópoulos; Greek, active in Spain, 1541–1614)\nWorkshop of El Greco (Doménikos Theotokópoulos; Greek, active in Spain, 1541–1614)', 'El Greco (Doménikos Theotokópoulos) and workshop'), 'El Greco (Doménikos Theotokópoulos) and workshop')
+
+  const met = (o) => metArtistName(o, peopleFromMet(o))
+  assert.equal(met({ artistPrefix: '', artistDisplayName: 'Workshop of Fra Filippo Lippi', artistDisplayBio: 'Italian, Florence ca. 1406–1469 Spoleto' }), 'Workshop of Fra Filippo Lippi')
+  assert.equal(met({ artistPrefix: 'Workshop of', artistDisplayName: 'Lucas Cranach the Elder', artistDisplayBio: 'German, Kronach 1472–1553 Weimar' }), 'Workshop of Lucas Cranach the Elder')
+  assert.equal(met({ artistPrefix: 'Workshop of', artistDisplayName: 'Workshop of Lucas Cranach the Elder', artistDisplayBio: 'German, Kronach 1472–1553 Weimar' }), 'Workshop of Lucas Cranach the Elder')
+  assert.equal(met({ artistPrefix: 'possibly', artistDisplayName: 'workshop of Giovanni Maria Vasaro', artistDisplayBio: '' }), 'possibly workshop of Giovanni Maria Vasaro')
+
+  const cma = (creators) => cmaArtistName({ creators }, peopleFromCma({ creators }))
+  assert.equal(cma([{ qualifier: 'workshop of', description: 'Hans Memling (Netherlandish, 1494)', role: 'artist' }]), 'Workshop of Hans Memling')
+  assert.equal(cma([{ qualifier: 'workshop of', description: 'Workshop of Hans Memling (Netherlandish, 1494)', role: 'artist' }]), 'Workshop of Hans Memling')
+  assert.equal(cma([{ description: 'Jacob Matham (Dutch, 1571–1631)', role: 'artist' }, { qualifier: 'after', description: 'Hendrick Goltzius (Dutch, 1558–1617)', role: 'artist' }]), 'Jacob Matham after Hendrick Goltzius')
+})
+
+test('the gate still sees every qualifier the artist field shows', () => {
+  const aicQ = (artist_display, artist_title) => peopleFromAic({ artist_display, artist_title, artist_ids: [1] }, new Map()).qualified
+  assert.ok(aicQ('Workshop of Hieronymus Bosch (Netherlandish, c. 1450–1516)', 'Workshop of Hieronymus Bosch'))
+  assert.ok(aicQ('Paolo Veneziano (Italian, active 1333–1358)', 'Workshop of Paolo Veneziano')) // agent only
+  assert.ok(aicQ('Northern Italian (Milan)', 'Bonifacio Bembo, workshop of'))
+  assert.equal(aicQ('Georges Seurat (French, 1859–1891)', 'Georges Seurat'), null)
+  const veneziano = clear(aic('', {
+    object_end: 1925,
+    who: peopleFromAic({ artist_display: 'Paolo Veneziano (Italian, active 1333–1358)', artist_title: 'Workshop of Paolo Veneziano', artist_ids: [1] }, new Map()),
+  }), { cutoff: CUT })
+  assert.ok(failsOn(veneziano, /^attribution "Workshop": object date 1925 is not < 1900/))
+  // Met: the qualifier in the name alone.
+  assert.ok(peopleFromMet({ artistPrefix: '', artistDisplayName: 'Workshop of Fra Filippo Lippi', artistDisplayBio: 'Italian, Florence ca. 1406–1469 Spoleto' }).qualified)
+  assert.equal(peopleFromMet({ artistPrefix: 'Workshop of', artistDisplayName: 'Lucas Cranach the Elder' }).qualified, 'Workshop of')
+  assert.equal(peopleFromMet({ artistDisplayName: 'Lucas Cranach the Elder and Workshop' }).qualified, 'and workshop')
+  // CMA: in the description, with no qualifier field.
+  assert.ok(peopleFromCma({ creators: [{ description: 'Attributed to X (Dutch, 1600–1650)', role: 'artist' }] }).qualified)
+  assert.equal(peopleFromCma({ creators: [{ qualifier: 'circle of', description: 'Leonardo da Vinci (Italian, 1452–1519)', role: 'artist' }] }).qualified, 'circle of')
 })

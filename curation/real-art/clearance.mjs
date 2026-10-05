@@ -168,9 +168,15 @@ const PRODUCTION_PHRASES = /\b(published by|publisher|printed by|printer|carved 
 const NOT_AUTHOR_ROLE = /\b(sitter|subject|owner|former attribution|formerly attributed|patron|dedicatee|donor|commissioner|lender|depicted|honou?ree|recipient)\b/i
 const PRODUCTION_ROLE = /\b(printer|publisher|manufacturer|retailer|distributor|foundry|block ?cutter|cutter|carver)\b/i
 
-const toYear = (v) => {
-  const n = Number(String(v ?? '').trim())
-  return Number.isFinite(n) && n !== 0 && String(v ?? '').trim() !== '' ? n : null
+// A structured life year outside this range is a placeholder, so it counts as unknown and
+// the conservative rules apply. AIC's undated agents carry birth = death = 4713
+// (apparently Julian Day 0, 4713 BC): as a date it rejects wrongly, and a negative
+// one would pass wrongly.
+export const MIN_LIFE_YEAR = -3000
+export const toYear = (v, now = new Date().getFullYear()) => {
+  const s = String(v ?? '').trim()
+  const n = Number(s)
+  return s !== '' && Number.isInteger(n) && n !== 0 && n >= MIN_LIFE_YEAR && n <= now ? n : null
 }
 
 /** AIC: parse artist_display; corroborate with /agents birth_date/death_date. */
@@ -190,9 +196,11 @@ export function peopleFromAic(a, agentsById = new Map()) {
     if (ag.agent_type_title === 'Culture') continue
     // The agent record corroborates artist_display; it only adds a check when it
     // says something different (e.g. a later death year than the label).
-    const same = facts.some((f) => (f.death ?? null) === (ag.death_date ?? null) && (ag.death_date != null || f.birth === ag.birth_date))
-    if (!same && (ag.death_date != null || ag.birth_date != null)) {
-      people.push({ name: ag.title, from: 'aic agent', ...UNDATED, birth: ag.birth_date ?? null, death: ag.death_date ?? null })
+    const birth = toYear(ag.birth_date)
+    const death = toYear(ag.death_date)
+    const same = facts.some((f) => (f.death ?? null) === death && (death != null || f.birth === birth))
+    if (!same && (death != null || birth != null)) {
+      people.push({ name: ag.title, from: 'aic agent', ...UNDATED, birth, death })
     }
   }
   // Everyone we can see named (agents + "after X"/"engraved by Y" phrases) must be
@@ -207,7 +215,10 @@ export function peopleFromAic(a, agentsById = new Map()) {
     people.push({ name: `undated contributor in "${flat}"`, from: 'artist_display', ...UNDATED })
   }
   const undatedProduction = facts.length < expected + production ? [`printer/publisher in "${flat}"`] : []
-  return { people, anonymous, undatedProduction, qualified: (display.match(QUALIFIER) || [null])[0], raw: display }
+  // The qualifier can sit on the agent alone ("Workshop of Paolo Veneziano" over a
+  // plain "Paolo Veneziano" label); the artist field shows it, so the gate sees it too.
+  const qualified = (display.match(QUALIFIER) || String(a.artist_title ?? '').match(QUALIFIER) || [null])[0]
+  return { people, anonymous, undatedProduction, qualified, raw: display }
 }
 
 const UNDATED = { birth: null, birthApprox: false, death: null, deathApprox: false, deathAfter: null, floruit: null, floruitApprox: false, floruitEnd: null }
@@ -227,12 +238,15 @@ export function peopleFromMet(o) {
   let qualified = null
   names.forEach((name, i) => {
     const prefix = prefixes[i] || ''
-    if (QUALIFIER.test(prefix) || /\band (workshop|studio|assistants?)\b/i.test(name)) qualified ||= prefix || 'and workshop'
+    if (QUALIFIER.test(prefix)) qualified ||= prefix
+    else if (/\band (workshop|studio|assistants?)\b/i.test(name)) qualified ||= 'and workshop'
+    // The Met also writes it into the name alone: "Workshop of Fra Filippo Lippi".
+    else if (QUALIFIER.test(name)) qualified ||= name
     if (ANON_MET.test(name)) { anonymous = true; return }
+    // 9999 = still living, per the Met (checked before toYear, which drops it as implausible).
+    if (Number(ends[i]) === 9999) { people.push({ name, from: 'artistEndDate = 9999', ...UNDATED, living: true }); return }
     const end = toYear(ends[i])
     const facts = parseLifeFacts(bios[i] || '')
-    // 9999 = still living, per the Met.
-    if (end === 9999) { people.push({ name, from: 'artistEndDate = 9999', ...UNDATED, living: true }); return }
     if (facts.length) {
       for (const f of facts) {
         // artistEndDate corroborates a death the bio states; it is NOT a death
@@ -274,7 +288,9 @@ export function peopleFromCma(a) {
     const desc = c.description || ''
     const q = c.qualifier || ''
     if (NOT_AUTHOR_ROLE.test(c.role || '')) continue
+    const bare = desc.replace(/\s*\(.*$/s, '').trim()
     if (QUALIFIER.test(q)) qualified ||= q
+    else if (QUALIFIER.test(bare)) qualified ||= bare // "Attributed to X (…)" with no qualifier field
     if (ANON_NAME.test(desc) || /^(studio|workshop|assistants?|circle|school|followers?)\b/i.test(desc.trim())) {
       anonymous = true
       if (/^(studio|workshop|assistants?|circle|school|followers?)\b/i.test(desc.trim())) qualified ||= desc.trim()

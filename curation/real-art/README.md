@@ -37,7 +37,8 @@ Each output record has:
 2. **Life + 70:** every listed artist died in or before the current year − 71.
    - A "circa" death year counts as 10 years later.
    - An unknown death year passes only if the artist must have been dead by the cutoff, assuming a 110-year lifespan from their birth, active years or the work's date. So an unknown death on a post-1900 work always fails.
-   - Anonymous works, "attributed to / workshop of / after / circle of" works, and works with undated printers need a work date before 1900.
+   - A structured birth or death year after the current year or before 3000 BC is a placeholder and counts as unknown. AIC gives undated agents `4713` for both.
+   - Anonymous works, "attributed to / workshop of / after / circle of" works, and works with undated printers need a work date before 1900. The qualifier counts wherever the museum puts it: the label, the AIC agent title, the Met's prefix or name, or CMA's qualifier or description.
 3. **Flat art:** paintings, prints (including ukiyo-e), drawings and watercolours. Not sculpture, textiles, decorative arts or photographs.
 4. **Size:** the long edge is at least 2000 px. The Met's sizes are read from the JPEG header.
 

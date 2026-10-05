@@ -10,25 +10,18 @@ import { useUpdate } from '../lib/UpdateProvider'
 import { useErrorReport } from '../lib/useErrorReport'
 
 interface AppBannersProps {
-  /** Whether to show the "unlock the full gallery" upsell — each page decides
-      from its own subscription source (gallery response vs. verify endpoint). */
+  /** Each page decides from its own subscription source. */
   showUpsell: boolean
-  /** How many pieces are locked for this (non-subscriber) viewer. When known,
-      the upsell quantifies the wall ("Unlock N more artworks") instead of a
-      vague "full gallery". Omit (0/undefined) on pages that don't compute it. */
+  /** If set, the upsell says "Unlock N more artworks". */
   lockedCount?: number
 }
 
-// The single top-of-app banner stack, shared by every page so the order (and
-// priority) lives in one place. Priority, highest first:
+// The banners at the top of every page, highest priority first:
 //   1. app update ready ("Relaunch to update")
 //   2. screensaver setup error (registration failed) — needs a report
 //   3. "set your screensaver" prompt (registered but not active)
-//   3b. screensaver status (active) — when it'll show + "Preview now" (the
-//       active counterpart to the Set prompt; the two are mutually exclusive)
+//   3b. screensaver status (active), with "Preview now"
 //   4. unlock-the-gallery upsell
-// The screensaver/update banners read state from context; the upsell gate is
-// page-specific and passed in.
 export function AppBanners({ showUpsell, lockedCount }: AppBannersProps) {
   const { installer, needsActivation, activating, activate, error, timing, preview, previewing } =
     useInstaller()
@@ -40,13 +33,12 @@ export function AppBanners({ showUpsell, lockedCount }: AppBannersProps) {
   const handleRelaunch = async () => {
     setRelaunching(true)
     await relaunch()
-    // The app is quitting; if it somehow returns (e.g. install failed), re-enable.
+    // Quitting; re-enable if the install fails.
     setRelaunching(false)
   }
 
-  // A registration failure (not registered at all) is a setup error we surface
-  // up top with a report button. An activation failure (registered but couldn't
-  // be made active) is shown inline on the Set banner, where the retry lives.
+  // Registration failures get a banner with a report button; activation
+  // failures show on the Set banner, next to the retry.
   const setupFailed = !!error && !!installer && !installer.registered
 
   return (

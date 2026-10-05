@@ -4,16 +4,12 @@ import { MonitorCheck, AlertTriangle, Play, Loader2, ExternalLink, Info } from '
 import { Button } from '@screensaver-art/ui'
 import type { ScreensaverTiming } from '../../../preload'
 
-// "System Settings ↗" deep-links to the Lock Screen pane — it opens directly and
-// holds the display-off control. The screensaver start delay lives elsewhere
-// (Wallpaper ▸ Screen Saver, a sheet with no pane of its own on Tahoe), so the
-// info popover explains how to reach each one rather than us trying to deep-link
-// a sheet that has no stable URL.
+// "System Settings ↗" opens the Lock Screen pane (display-off delay). The start
+// delay is in a sheet with no stable URL, so the info popover explains the way.
 export const LOCK_SCREEN_SETTINGS_URL =
   'x-apple.systempreferences:com.apple.Lock-Screen-Settings.extension'
 
-// Info-popover dimensions, used to position it (fixed) below the icon and flip
-// above near the bottom edge.
+// Popover size, for placing it below the icon (or above, near the bottom edge).
 const INFO_W = 300
 const INFO_H = 156
 
@@ -28,10 +24,8 @@ export interface TimingStatus {
   displayOffMin: number | null
 }
 
-// Decide what to tell the user from the two raw thresholds. Compared in seconds
-// so a fractional start delay can't round into the wrong bucket. The display
-// turning off at/before the saver starts (displayOff*60 ≤ startSec) is exactly
-// when they never see it.
+// If the display turns off at or before the screensaver starts, the user never
+// sees it. Compared in seconds to avoid rounding errors.
 export function screensaverTimingStatus(t: ScreensaverTiming | null): TimingStatus {
   const startSec = t?.screensaverStartSec ?? null
   const displayOffMin = t?.displayOffMin ?? null
@@ -45,9 +39,7 @@ export function screensaverTimingStatus(t: ScreensaverTiming | null): TimingStat
   return { kind: 'healthy', tone: 'ok', startMin, displayOffMin }
 }
 
-// A short bold title states the situation; the body carries the live timings.
-// "min" is dropped from the second number to keep the line compact. The trailing
-// "Can change in System Settings ↗" + info icon is appended by the component.
+// A short title, then the timings. The component appends the settings link.
 function describe(s: TimingStatus): { title: string; text: string } {
   switch (s.kind) {
     case 'conflict':
@@ -82,20 +74,15 @@ function describe(s: TimingStatus): { title: string; text: string } {
 interface ScreensaverStatusBannerProps {
   timing: ScreensaverTiming | null
   onPreview: () => void
-  // A "Preview now" launch is in flight (cleared as soon as the engine starts).
+  // A "Preview now" launch is in progress.
   previewing: boolean
   // Opens System Settings ▸ Lock Screen.
   onOpenSettings: () => void
 }
 
-// Shown at the top of the app once Living Art IS the active screensaver. Replaces
-// the old behaviour where the "Set" banner simply vanished, leaving the user with
-// no idea what happens next. A bold title states the situation; the body reports
-// when the saver will actually appear (or warns when the display sleeps first so
-// it never does), then offers a "System Settings" link + an info popover that
-// explains how to change each delay and notes the login-screen limitation.
-// "Preview now" launches it immediately for instant feedback. Amber when the user
-// likely won't see it, emerald when they will — matching the Set / Update banners.
+// Shown once Living Art is the active screensaver: when it will appear (or a
+// warning that the display sleeps first), a settings link, help, and
+// "Preview now". Amber when the user likely won't see it, green when they will.
 export function ScreensaverStatusBanner({
   timing,
   onPreview,
@@ -110,8 +97,7 @@ export function ScreensaverStatusBanner({
   const Icon = warn ? AlertTriangle : MonitorCheck
   const { title, text } = describe(status)
 
-  // Info popover — instant hover (no native title delay), portaled to <body> so
-  // nothing clips it. Holds the how-to-change-it help + login-screen note.
+  // Shows on hover with no delay; portaled to <body> so nothing clips it.
   const [infoPos, setInfoPos] = useState<{ top: number; left: number } | null>(null)
   const showInfo = (e: React.SyntheticEvent<HTMLElement>): void => {
     const r = e.currentTarget.getBoundingClientRect()
@@ -181,8 +167,7 @@ export function ScreensaverStatusBanner({
   )
 }
 
-// The two things the info icon explains: how to change each delay in System
-// Settings (they live in different panes), and the login-screen caveat.
+// How to change each delay, and the login-screen caveat.
 function InfoContent(): ReactNode {
   return (
     <>

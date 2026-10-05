@@ -9,21 +9,13 @@ import {
 import { SITE_URL } from '@/lib/seo'
 
 /**
- * The sitemap is generated from `gallery.json`, so it grows itself: the nightly
- * curation job commits a new piece to `master`, the push auto-deploys the site
- * (CLAUDE.md → Website), and the new URL is in the sitemap on the next crawl.
- * Nothing to remember, no per-release step.
- *
- * The 262 `/art/<slug>` URLs are included **only when `INDEX_ART_PAGES` is on**
- * — listing pages we simultaneously tell Google not to index would be an
- * incoherent signal. Flipping that one constant turns both on together. See
- * lib/gallery-catalog.ts for the reasoning behind the default.
+ * Built from gallery.json, so it grows with each nightly deploy. `/art/*` pages
+ * are listed only when `INDEX_ART_PAGES` is on.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = SITE_URL
 
-  // The catalog's newest piece — a good proxy for "when did the browse surfaces
-  // last actually change", which is nightly.
+  // The newest piece's date approximates when the browse pages last changed.
   const lastModified = ALL_PIECES[0]?.date ? new Date(ALL_PIECES[0].date) : undefined
 
   const galleryPages: MetadataRoute.Sitemap = Array.from({ length: GALLERY_PAGE_COUNT }, (_, i) => ({

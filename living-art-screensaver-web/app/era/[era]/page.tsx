@@ -13,18 +13,9 @@ import { ALL_ERAS, ALL_PIECES, eraBySlug } from '@/lib/gallery-catalog'
 import { SITE_OG_IMAGE, SITE_URL } from '@/lib/seo'
 
 /**
- * `/era/<tag>` — the 15 museum "wings" from the closed tag vocabulary in
- * `@screensaver-art/constants`.
- *
- * These are the indexable tier: 15 pages, each with hand-written copy
- * (lib/era-copy.ts) and ~17 pieces, i.e. a real browse surface rather than
- * generated filler. They're also the main internal-linking layer — every piece
- * page points at its wing, and every wing points at every other.
- *
- * Note `/style/<movement>` is deliberately NOT built: the catalog carries 203
- * distinct movement labels, 158 of them attached to a single piece, so a page
- * per raw label would be thin by construction. It needs curated grouping first
- * (docs/growth-and-marketing-strategy.md §4.3).
+ * `/era/<tag>`: one page per museum wing, with hand-written copy from
+ * lib/era-copy.ts. These are indexable. There are no per-movement pages: most
+ * movements have a single piece.
  */
 
 // Rendered on first visit and cached, like `/art/<slug>` (see there).
@@ -45,11 +36,9 @@ export async function generateMetadata({ params }: { params: Promise<{ era: stri
       title: `${era.era} — ${era.headline}`,
       description: era.blurb,
       url,
-      // Explicit — overriding `openGraph` drops the inherited site card (see
-      // SITE_OG_IMAGE). Prefer a real piece from the wing; fall back to the
-      // branded card when the wing's cover has no still on R2.
+      // Overriding `openGraph` drops the site card, so set it: the wing's cover, or the site card.
       images: era.cover.posterUrl?.startsWith('http')
-        ? [{ url: era.cover.posterUrl, alt: `${era.cover.name} — ${era.cover.movement}` }]
+        ? [{ url: era.cover.posterUrl, alt: `${era.cover.name} — ${era.cover.subtitle || era.era}` }]
         : [{ url: SITE_OG_IMAGE, width: 1200, height: 630 }],
     },
   }
@@ -103,7 +92,7 @@ export default async function EraPage({ params }: { params: Promise<{ era: strin
           {era.headline}
         </h1>
         <p className="m-0 mb-[20px] max-w-[680px] text-[17px] leading-[1.6] text-muted-foreground">{era.blurb}</p>
-        <AiDisclosure className="mb-[26px] max-w-[680px]" />
+        <AiDisclosure pieces={era.pieces} className="mb-[26px] max-w-[680px]" />
         <EraPills activeSlug={era.slug} />
       </section>
 

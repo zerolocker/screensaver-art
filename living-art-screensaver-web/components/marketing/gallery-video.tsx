@@ -3,11 +3,7 @@
 import { useEffect, useRef, type CSSProperties } from "react"
 import { ArtVideo } from "@screensaver-art/ui"
 
-/**
- * One shared observer for every gallery clip: play the ones near the viewport,
- * pause the rest. This keeps a video-heavy page from fetching and decoding
- * dozens of clips at once, without polling the DOM or scanning globally.
- */
+/** One observer for every clip: play those near the viewport, pause the rest. */
 let sharedObserver: IntersectionObserver | null = null
 
 function galleryObserver(): IntersectionObserver | null {
@@ -32,15 +28,9 @@ function galleryObserver(): IntersectionObserver | null {
 }
 
 /**
- * A gallery clip (used by the collection marquee tiles). These MP4s ship with
- * an audio track, so we force `muted` via a ref (React's `muted` attribute
- * alone is unreliable). Playback is gated on visibility by the shared observer
- * above — no `autoPlay`, so an off-screen clip is never fetched until it
- * scrolls close. Pass a `poster` (see lib/gallery-showcase.ts `posterImage`)
- * so real art paints before the clip buffers.
- *
- * The featured players (hero/CTA Monitors, art-styles) don't use this — they
- * need readiness-gated rotation and use ReelPlayer instead.
+ * A clip for the collection marquee. It only loads near the viewport, is
+ * forced muted (React's `muted` attribute is unreliable), and shows `poster`
+ * until it plays. The rotating players use ReelPlayer instead.
  */
 export function AutoVideo({
   src,

@@ -1,15 +1,7 @@
-// electron-builder `afterSign` hook — staple the notarization ticket.
-//
-// By the time this runs, electron-builder has signed the app and (when Apple
-// notary creds are configured) notarized it via @electron/notarize — which
-// submits + waits but does NOT staple. We staple the ticket onto the .app here,
-// before the DMG target is built, so the DMG contains a Gatekeeper-clean app
-// that verifies even offline.
-//
-// electron-builder only invokes afterSign when signing actually occurred, so
-// this never runs for ad-hoc/local builds. We additionally gate on notary creds
-// being present (mirroring electron-builder's getNotarizeOptions) because
-// stapling fails if the app wasn't notarized.
+// electron-builder `afterSign` hook: staple the notarization ticket to the .app
+// before the DMG is built, so it passes Gatekeeper offline. electron-builder
+// notarizes but doesn't staple. Skipped without notary credentials, since an
+// app that wasn't notarized can't be stapled.
 
 const { execFileSync } = require('child_process')
 const { existsSync } = require('fs')

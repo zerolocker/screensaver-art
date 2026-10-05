@@ -4,30 +4,21 @@ import { stripe } from '@/lib/stripe'
 import type { PaidPlan } from '@screensaver-art/constants'
 
 export interface CheckoutSessionOptions {
-  /** Which paid offer: the recurring subscription or the one-time lifetime purchase. */
   plan: PaidPlan
-  /** Supabase user id — stamped into Stripe metadata so the webhook can attribute the sub. */
+  /** Stored in Stripe metadata so the webhook can find the user. */
   userId: string
   userEmail?: string | null
-  /** Reuse this Stripe customer if the user already has one; otherwise we create one. */
+  /** Reused if set; otherwise a new Stripe customer is created. */
   existingCustomerId?: string | null
   successUrl: string
   cancelUrl: string
 }
 
 /**
- * Creates a Stripe Checkout Session for either paid offer. Shared by the
- * website server action (cookie-authed) and the `/api/checkout` route
- * (Bearer-authed, called by the Electron app) so there's one place that knows
- * how the session is built.
- *
- * The charged amounts are Stripe catalog Prices, set per-environment in Vercel
- * (test vs live differ by ID): `STRIPE_PRICE_ID` (recurring, quarterly) and
- * `STRIPE_LIFETIME_PRICE_ID` (one-time, $15.99). See docs/stripe-webhooks.md.
- *
- * Lifetime sessions run in `payment` mode and carry `purpose: 'lifetime'` in
- * metadata — that's what the webhook keys on to record the purchase (and cancel
- * any running subscription, so an upgrading subscriber is never double-billed).
+ * Create a Stripe Checkout Session, for the website's server action and for
+ * the app's `/api/checkout`. Lifetime sessions use `payment` mode and
+ * `metadata.purpose = 'lifetime'`, which the webhook keys on. See
+ * docs/stripe-webhooks.md.
  */
 export async function createSubscriptionCheckoutSession(
   opts: CheckoutSessionOptions,
@@ -61,9 +52,7 @@ export async function createSubscriptionCheckoutSession(
     customer: customerId,
     mode: opts.plan === 'lifetime' ? 'payment' : 'subscription',
     payment_method_types: ['card'],
-    // Lets users enter a Stripe promotion code at checkout. Doubles as the
-    // zero-cost way to smoke-test the *live* flow: a 100%-off live coupon runs
-    // the full checkout → webhook → Supabase path without a real charge.
+    // Also lets a 100%-off live coupon test the live flow for free.
     allow_promotion_codes: true,
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: opts.successUrl,

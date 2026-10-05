@@ -7,27 +7,14 @@ import { ArtVideo } from '@screensaver-art/ui'
 import type { CatalogPiece } from '@/lib/gallery-catalog'
 
 /**
- * WHY THIS FILE IS CAREFUL ABOUT BYTES
- *
- * The gallery clips are ~9 MB each. A 48-tile page that autoplays whatever is on
- * screen pulls ~90 MB if you park mid-page, and ~425 MB if you flick to the
- * bottom — measured, not guessed. That is unshippable for a landing page whose
- * traffic arrives from Pinterest, on a phone. So a tile earns its video:
- *
- *  1. **It has a still** (185 of 262 pieces — and 100% of the two newest pages,
- *     which is what most visitors see). The still is the tile. The clip loads
- *     only on deliberate hover/focus, and unloads the moment you leave, so
- *     scrolling the whole page costs zero video bytes.
- *  2. **It has no still** (77 older pieces, with no poster on R2 and none in
- *     public/posters/ — media is never committed to this repo, see CLAUDE.md →
- *     Repo rules). Here the clip is the only way to show the art at all, so it
- *     autoplays — but only after the tile has sat *fully* on screen for a beat
- *     (a fast scroll-past loads nothing) and only if one of a small number of
- *     global slots is free.
- *
- * Either way the <video> element is created on demand and destroyed on exit, so
- * the page never holds more than a few decoders — which also keeps it inside
- * mobile Safari's simultaneous-media limits.
+ * Clips are ~9 MB each, and visitors are mostly on phones, so tiles are careful
+ * with bytes:
+ *  - A tile with a still shows the still. Its clip loads only on hover or focus,
+ *    so scrolling the page downloads no video.
+ *  - A tile without a still autoplays its clip, but only after sitting fully on
+ *    screen for a moment, and only if one of a few page-wide slots is free.
+ * The <video> is created on demand and removed on exit, which also keeps mobile
+ * Safari under its limit on simultaneous media.
  */
 
 /** Continuous on-screen time a poster-less tile must earn before it loads. */
@@ -36,8 +23,7 @@ const DWELL_MS = 600
 const MAX_AUTOPLAY = 4
 
 // --- Global autoplay slots -------------------------------------------------
-// A tiny counter + waiter queue, module-scoped so every tile on the page shares
-// it. Tiles that can't get a slot simply stay on their gradient until one frees.
+// Shared by every tile. A tile without a slot stays on its gradient.
 let liveCount = 0
 const waiting: Array<() => void> = []
 
@@ -71,8 +57,7 @@ let sharedObserver: IntersectionObserver | null = null
 function tileObserver(): IntersectionObserver | null {
   if (typeof IntersectionObserver === 'undefined') return null
   if (!sharedObserver) {
-    // threshold 0.6 + no rootMargin: "actually on screen", not "nearby". A tile
-    // half off the bottom edge hasn't been looked at yet.
+    // Actually on screen, not merely nearby.
     sharedObserver = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) callbacks.get(entry.target)?.(entry.isIntersecting)
@@ -90,11 +75,7 @@ export interface PieceTileProps {
   aspect?: string
 }
 
-/**
- * A gallery tile: the piece's still (or its gradient) with the clip fading in
- * over it, wrapped in a link to the piece page. Mirrors the homepage marquee
- * tile's bezel/scrim/label treatment so the gallery reads as the same product.
- */
+/** A gallery tile linking to the piece page, styled like the homepage marquee tile. */
 export function PieceTile({ piece, priority = false, aspect = '16 / 10' }: PieceTileProps) {
   const rootRef = useRef<HTMLAnchorElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -139,9 +120,7 @@ export function PieceTile({ piece, priority = false, aspect = '16 / 10' }: Piece
     }
   }, [hasPoster])
 
-  // Playback can't be started from render — the element only exists once `live`
-  // has flipped, and the MP4s carry an audio track, so `muted` has to be forced
-  // on the element itself or the autoplay policy rejects play().
+  // The MP4s have audio, so force `muted` on the element or autoplay is refused.
   useEffect(() => {
     if (!live) return
     const video = videoRef.current
@@ -150,9 +129,7 @@ export function PieceTile({ piece, priority = false, aspect = '16 / 10' }: Piece
     video.play().catch(() => {})
   }, [live])
 
-  // Poster tiles: hover/focus is a deliberate "show me this one", so it's the
-  // only thing that loads a clip. Mouse only — a tap on a phone means "open the
-  // piece page", and firing a 9 MB download on the way there would be rude.
+  // Mouse hover only: on a phone a tap opens the piece page instead.
   const onPointerEnter = useCallback(
     (e: React.PointerEvent) => {
       if (hasPoster && e.pointerType === 'mouse') setLive(true)
@@ -179,12 +156,10 @@ export function PieceTile({ piece, priority = false, aspect = '16 / 10' }: Piece
       }}
     >
       {piece.thumbUrl && (
-        // next/image, not a raw <img>: the R2 stills are 4K WebPs of 1.4–3.3 MB
-        // and a tile is ~240px wide. `sizes` is what actually caps the bytes —
-        // it tells the optimizer which variant to serve at each breakpoint.
+        // next/image with `sizes`, so a ~240px tile gets a small variant.
         <Image
           src={piece.thumbUrl}
-          alt={`${piece.name} — ${piece.movement || piece.era}`}
+          alt={`${piece.name} — ${piece.subtitle || piece.era}`}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
           priority={priority}
@@ -214,7 +189,7 @@ export function PieceTile({ piece, priority = false, aspect = '16 / 10' }: Piece
       <span className="absolute inset-x-0 bottom-0 flex flex-col gap-px p-[11px]">
         <span className="truncate text-[13.5px] font-semibold tracking-[0.2px] text-white">{piece.name}</span>
         <span className="truncate font-mono text-[10.5px] tracking-[0.5px] text-white/60">
-          {piece.movement || piece.era}
+          {piece.subtitle || piece.era}
         </span>
       </span>
       <span

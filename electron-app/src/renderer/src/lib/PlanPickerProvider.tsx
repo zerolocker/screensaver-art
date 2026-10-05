@@ -12,11 +12,8 @@ const PlanPickerContext = createContext<PlanPickerContextValue>({
   openPlanPicker: () => {},
 })
 
-// App-wide owner of the plan-picker modal. Every unlock CTA (upsell banner,
-// gallery locks, fullscreen preview, tooltips) funnels through openPlanPicker
-// so there's exactly one picker, rendered above whatever opened it; only the
-// Account card's explicit per-plan buttons skip it and call startCheckout
-// directly.
+// The one plan-picker modal, opened by every unlock button except the Account
+// card's per-plan buttons, which call startCheckout directly.
 export function PlanPickerProvider({ children }: { children: ReactNode }) {
   // The source that opened the picker; null = closed.
   const [source, setSource] = useState<string | null>(null)

@@ -1,10 +1,5 @@
-// PostHog product analytics for the Electron main process.
-//
-// posthog-node runs in the long-running main process (it batches + flushes on
-// its own timer; we flush once more on quit via `shutdownPosthog`). The renderer
-// has no PostHog SDK of its own — UI events are forwarded here over the
-// `analytics:capture` IPC and captured with the *same* identity, so the desktop
-// app is one person in PostHog whether the event originated in main or renderer.
+// PostHog analytics for the main process. Renderer events arrive over the
+// `analytics:capture` IPC, so the whole app shares one identity.
 
 import { PostHog } from 'posthog-node'
 import { app } from 'electron'
@@ -13,26 +8,20 @@ import { join } from 'path'
 import { randomUUID } from 'crypto'
 import { log } from './logger'
 
-// The PostHog *project* API key is a publishable client key (write-only
-// ingestion) — safe to embed in a shipped binary, exactly like the Supabase
-// anon key already hardcoded in src/renderer/src/lib/supabase.ts. An env
-// override is honored for local dev or a future key rotation.
+// A public write-only key, safe to ship. Override with LART_POSTHOG_KEY.
 const POSTHOG_KEY = process.env.LART_POSTHOG_KEY || 'phc_sQvME5Z2zN2dXSiciUqhkAvDPkq9bu8VahCXPP5NnKKy'
 const POSTHOG_HOST = process.env.LART_POSTHOG_HOST || 'https://us.i.posthog.com'
 
 export const posthog = new PostHog(POSTHOG_KEY, {
   host: POSTHOG_HOST,
-  // This is a desktop client, not a server, so PostHog should treat it as one
-  // device/person and not strip device context.
+  // A desktop client, so keep device context.
   isServer: false,
   enableExceptionAutocapture: true,
 })
 
 // ── Identity ─────────────────────────────────────────────────────────────────
-// Anonymous events (e.g. `app_launched` before sign-in) key off a stable device
-// UUID stored in userData; once the user signs in we `identify()` to link it to
-// their Supabase user id. `_currentUserId` remembers the signed-in id so events
-// forwarded from the renderer use the same distinct id without re-decoding a JWT.
+// Before sign-in, events use a device UUID stored in userData. After sign-in,
+// `identify()` links it to the Supabase user id.
 const DEVICE_ID_FILE = (): string => join(app.getPath('userData'), 'posthog-device-id.json')
 
 let _deviceId: string | null = null
@@ -50,7 +39,7 @@ export function getDeviceId(): string {
       }
     }
   } catch {
-    /* unreadable — fall through and mint a fresh id */
+    /* unreadable: mint a new id */
   }
   _deviceId = randomUUID()
   try {
@@ -67,12 +56,8 @@ export function currentDistinctId(): string {
 }
 
 /**
- * Link this device to a signed-in user. Idempotent — only emits an `identify`
- * (and aliases the device id) the first time we see a given user id this run.
- *
- * `email` is set as a person property so PostHog labels the person by email
- * instead of showing the raw user-id UUID. Without this the whole person is
- * unlabeled in the dashboard.
+ * Link this device to a signed-in user, once per user per run. `email` labels
+ * the person in PostHog.
  */
 export function identifyUser(userId: string, email?: string | null): void {
   if (!userId || _currentUserId === userId) {
@@ -81,12 +66,8 @@ export function identifyUser(userId: string, email?: string | null): void {
   }
   _currentUserId = userId
   posthog.identify({ distinctId: userId, properties: email ? { email } : undefined })
-  // Merge the pre-login anonymous device id into the user so their first-launch
-  // events aren't stranded on a separate anonymous person. The device id is
-  // reset on sign-out (see `resetIdentity`), so each account on a shared machine
-  // aliases a *fresh* anon id — PostHog aliases are immutable, so without that
-  // reset a second account's alias would be silently dropped and its anonymous
-  // events would stay attributed to the first user.
+  // Merge pre-login events into the user. PostHog aliases are permanent, which
+  // is why sign-out mints a new device id (see `resetIdentity`).
   try {
     posthog.alias({ distinctId: userId, alias: getDeviceId() })
   } catch (err) {
@@ -94,11 +75,7 @@ export function identifyUser(userId: string, email?: string | null): void {
   }
 }
 
-/**
- * Forget the current identity and mint a fresh anonymous device id. Call on
- * sign-out so the next account starts from a clean anon id that can be aliased
- * to it (rather than reusing the previous user's already-aliased device id).
- */
+/** On sign-out: forget the user and mint a new device id for the next account. */
 export function resetIdentity(): void {
   _currentUserId = null
   _deviceId = randomUUID()
@@ -109,8 +86,7 @@ export function resetIdentity(): void {
   }
 }
 
-// Decodes a claim from the Supabase access token (no signature check — auth is
-// verified server-side; we only need claims for analytics attribution).
+// Read a claim from the access token without verifying it; this is only for analytics.
 function tokenClaims(token: string | null | undefined): Record<string, unknown> | null {
   if (!token) return null
   try {
@@ -122,13 +98,13 @@ function tokenClaims(token: string | null | undefined): Record<string, unknown> 
   }
 }
 
-/** The Supabase user id (`sub` claim) for analytics attribution. */
+/** The Supabase user id (`sub`). */
 export function userIdFromToken(token: string | null | undefined): string | null {
   const sub = tokenClaims(token)?.sub
   return typeof sub === 'string' ? sub : null
 }
 
-/** The signed-in user's email (`email` claim), used to label the PostHog person. */
+/** The user's email. */
 export function emailFromToken(token: string | null | undefined): string | null {
   const email = tokenClaims(token)?.email
   return typeof email === 'string' ? email : null

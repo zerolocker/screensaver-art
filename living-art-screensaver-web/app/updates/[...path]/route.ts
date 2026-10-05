@@ -2,22 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getLatestRelease, fetchAssetBody, mintSignedAssetUrl } from '@/lib/github-release'
 
 /**
- * GET /updates/<asset-name>   →  the auto-update feed for the Electron app.
- *
- * electron-updater (generic provider, configured in electron-builder.cjs) points
- * here. It fetches `/updates/latest-mac.yml`, reads the zip's filename out of
- * that manifest, then fetches `/updates/<that-name>` (+ a `.blockmap`). This
- * route serves each by EXACT name from the latest GitHub release, through the
- * same GITHUB_RELEASE_TOKEN proxy as /download — so updates keep working
- * identically whether the repo is public or private (no token in the app).
- *
- *   - latest-mac.yml      → proxied inline (tiny manifest; always fresh)
- *   - *.zip / *.blockmap  → 302 to a signed CDN URL (bytes never touch Vercel)
- *
- * The catch-all `[...path]` lets the manifest reference assets by their exact
- * built filenames (incl. any %20). Token missing → 500; unknown asset → 404
- * (electron-updater treats a 404 blockmap as "no differential" and falls back to
- * a full download).
+ * GET /updates/<asset-name>: electron-updater's feed. Serves each file by exact
+ * name from the latest GitHub release:
+ *   - latest-mac.yml      → proxied inline, always fresh
+ *   - *.zip / *.blockmap  → 302 to a signed CDN URL
+ * An unknown asset is a plain 404, which electron-updater handles (a missing
+ * blockmap means a full download).
  */
 
 export async function GET(
@@ -40,8 +30,7 @@ export async function GET(
     )
   }
 
-  // ── Resolve the latest release (always fresh: a stale "latest" here delays
-  // every installed app's update banner — see getLatestRelease) ──────────────
+  // Always fresh: a stale answer delays every installed app's update.
   let release
   try {
     release = await getLatestRelease(token, { fresh: true })
@@ -55,12 +44,9 @@ export async function GET(
 
   const asset = release.assets.find((a) => a.name === assetName)
   if (!asset) {
-    // 404 (no JSON body): electron-updater expects a plain 404 for a missing
-    // manifest/blockmap and falls back gracefully.
     return new NextResponse(null, { status: 404 })
   }
 
-  // ── The manifest: proxy bytes inline so the updater always parses fresh ─────
   if (assetName.endsWith('.yml')) {
     try {
       const res = await fetchAssetBody(asset.url, token)
@@ -82,7 +68,6 @@ export async function GET(
     }
   }
 
-  // ── The binaries (.zip / .blockmap): 302 to the signed CDN URL ─────────────
   try {
     const signed = await mintSignedAssetUrl(asset.url, token)
     if (signed) {

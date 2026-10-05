@@ -1,10 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { cn } from './utils'
 
-// `cn()` is the canonical class-name helper — every component in this package
-// runs through it. It composes clsx (conditional concatenation) with twMerge
-// (tailwind conflict resolution). The behaviors below are the contracts the
-// rest of the codebase relies on.
+// `cn()` combines clsx with tailwind-merge. Every component relies on this behaviour.
 
 describe('cn', () => {
   it('joins string arguments with spaces', () => {

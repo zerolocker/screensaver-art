@@ -1,7 +1,5 @@
-// Renderer-side glue for the shared FeedbackForm. The form owns its own
-// submitting/result state, so this is just the transport: fetch a fresh token
-// (see getAccessToken) and hand the message + already-downsampled image to the
-// main process, which attaches the diagnostics block and uploads it.
+// Sends FeedbackForm's message and image to the main process, which adds
+// diagnostics and uploads them.
 
 import type { ResizedImage } from '@screensaver-art/ui'
 import { FEEDBACK_ENDPOINT } from './api'

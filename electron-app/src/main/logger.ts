@@ -1,14 +1,6 @@
-// Dependency-free structured logger for the Electron main process.
-//
-// Three sinks, all best-effort (logging must never throw / crash the app):
-//   1. console — human-readable, shows up in `pnpm dev` and Console.app.
-//   2. a JSONL file in <userData>/logs/main.log — survives quit, the durable
-//      record we point users at and read back for error reports.
-//   3. an in-memory ring buffer of the most recent entries — embedded verbatim
-//      in the uploaded error report so we don't have to read the whole file.
-//
-// Renderer logs are forwarded here over IPC (see recordRendererLog), so a
-// single report captures both processes.
+// The main process logger. It writes to the console, to <userData>/logs/main.log
+// (JSONL), and to a ring buffer that goes into error reports. Renderer logs
+// arrive through recordRendererLog. Logging never throws.
 
 import { app } from 'electron'
 import { appendFile, mkdir, rename, stat } from 'fs/promises'
@@ -33,9 +25,7 @@ let logFilePath: string | null = null
 let logDir: string | null = null
 let writeChain: Promise<void> = Promise.resolve()
 
-// Resolve the log file path lazily and defensively. In unit tests electron's
-// `app` is mocked without getPath(), so file logging is simply disabled while
-// console + ring-buffer logging keep working.
+// Without app.getPath (unit tests), file logging is off.
 function ensurePaths(): string | null {
   if (logFilePath) return logFilePath
   try {
@@ -84,8 +74,7 @@ function appendToFile(entry: LogEntry): void {
   const file = ensurePaths()
   if (!file || !logDir) return
   const dir = logDir
-  // Serialize writes so concurrent log calls don't interleave or race the dir
-  // creation / rotation.
+  // Serialize writes so they don't interleave or race rotation.
   writeChain = writeChain
     .then(async () => {
       if (!existsSync(dir)) await mkdir(dir, { recursive: true })
@@ -112,8 +101,7 @@ export const log = {
   error: (scope: string, msg: string, data?: unknown) => record('error', scope, msg, data),
 }
 
-// A renderer-originated entry. We re-stamp the timestamp scope so reports make
-// it obvious which process a line came from, but otherwise trust the payload.
+// A log entry from the renderer, marked as such.
 export function recordRendererLog(input: {
   level?: LogLevel
   scope?: string

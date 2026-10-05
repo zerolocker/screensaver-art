@@ -8,6 +8,9 @@ import {
   matchesQuery,
   isItemFree,
   isItemLocked,
+  isRealArtwork,
+  ART_LICENSES,
+  REQUIRED_PROVENANCE_FIELDS,
   MISC_TAG,
   FREE_ITEM_COUNT,
   type ArtItem,
@@ -91,6 +94,29 @@ describe('isItemFree / isItemLocked', () => {
   it('non-subscribers only unlock free pieces', () => {
     expect(isItemLocked(free, false)).toBe(false)
     expect(isItemLocked(paid, false)).toBe(true)
+  })
+})
+
+describe('isRealArtwork', () => {
+  it('is true only for source: real_artwork', () => {
+    expect(isRealArtwork({ src: 'r', title: 'R', type: 'video', source: 'real_artwork' })).toBe(true)
+  })
+
+  it('treats a missing source as AI-generated', () => {
+    expect(isRealArtwork({ src: 'a', title: 'A', type: 'video' })).toBe(false)
+  })
+
+  it('every real artwork in gallery.json carries the required provenance', () => {
+    const galleryPath = join(dirname(fileURLToPath(import.meta.url)), '../../../gallery.json')
+    const items = JSON.parse(readFileSync(galleryPath, 'utf8')) as ArtItem[]
+    for (const item of items.filter(isRealArtwork)) {
+      for (const key of REQUIRED_PROVENANCE_FIELDS) expect(item[key], `${item.title}: ${key}`).toBeTruthy()
+      expect(ART_LICENSES, item.title).toContain(item.license)
+    }
+    // AI pieces carry no provenance at all (a stray field would mislabel them).
+    for (const item of items.filter((i) => !isRealArtwork(i))) {
+      expect(item.source, item.title).toBeUndefined()
+    }
   })
 })
 

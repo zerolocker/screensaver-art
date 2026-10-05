@@ -5,27 +5,16 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { CheckCircle2, AlertCircle } from 'lucide-react'
 
-// The desktop (Electron) app listens for the OAuth result on this custom scheme.
 const DEEP_LINK = 'livingart://auth-callback'
 
 /**
- * Desktop OAuth hand-off page.
- *
- * The Electron app does OAuth in the system browser. We can't use the
- * `livingart://` deep link directly as Supabase's `redirect_to` — the browser
- * would be left sitting on a half-finished navigation to a custom scheme,
- * spinning forever even though the app already signed in. So the provider
- * redirects *here* with the PKCE `?code=` (or `?error=`), and this page:
- *   1. Forwards the whole query string to the app via the deep link, and
- *   2. Tells the user they can close the tab and return to the app.
- *
- * We only *forward* the code — we must NOT exchange it. The PKCE code verifier
- * lives in the Electron app's supabase-js instance, so only the app can complete
- * the exchange (that's what makes this distinct from /auth/callback, which is the
- * website's own session).
+ * Where the app's OAuth sign-in lands in the browser. Redirecting straight to
+ * the `livingart://` deep link leaves the browser spinning, so the provider
+ * comes here and this page forwards the query string to the app, then says the
+ * tab can be closed. It must not exchange the code itself: only the app holds
+ * the PKCE verifier.
  */
 export default function DesktopCallbackPage() {
-  // The query string carrying the code/error, captured client-side.
   const [search, setSearch] = useState<string | null>(null)
   const [isError, setIsError] = useState(false)
 
@@ -34,13 +23,11 @@ export default function DesktopCallbackPage() {
     setSearch(query)
     const params = new URLSearchParams(query)
     setIsError(Boolean(params.get('error') || params.get('error_description')))
-    // Hand off to the app. Custom-scheme navigation doesn't replace this
-    // document, so the message below stays visible afterwards.
+    // A custom-scheme navigation leaves this page visible.
     window.location.href = `${DEEP_LINK}${query}`
   }, [])
 
-  // Re-trigger the hand-off — browsers may block the automatic one above when it
-  // isn't tied to a user gesture, so the button is the reliable fallback.
+  // Browsers may block the automatic hand-off without a user gesture.
   const reopenApp = (): void => {
     if (search !== null) window.location.href = `${DEEP_LINK}${search}`
   }

@@ -16,10 +16,7 @@ import {
   galleryPageHref,
 } from '@/lib/gallery-catalog'
 
-/**
- * `/gallery` and `/gallery/page/N` render the same component — page 1 just gets
- * the full intro. Split out here so the two routes can't drift.
- */
+/** Shared by `/gallery` and `/gallery/page/N`; page 1 also gets the intro. */
 export function GalleryIndex({ page }: { page: number }) {
   const pieces = galleryPage(page)
   const isFirst = page === 1

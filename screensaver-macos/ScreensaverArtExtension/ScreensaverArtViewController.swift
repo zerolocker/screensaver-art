@@ -1,12 +1,8 @@
 import AppKit
 import ScreenSaver
 
-// Main view controller for the screensaver. Specified as
-// ScreenSaverViewControllerClass in Info.plist as
-// `$(PRODUCT_MODULE_NAME).ScreensaverArtViewController`.
-//
-// Mirrors Apple's Arabesque.appex pattern: only override init and loadView,
-// and let the framework drive everything else.
+// The ScreenSaverViewControllerClass in Info.plist. Like Apple's Arabesque.appex,
+// it overrides only init and loadView.
 
 private let logger = LartLog.logger("ViewController")
 

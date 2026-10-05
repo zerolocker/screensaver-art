@@ -12,32 +12,20 @@ interface MonitorProps {
   stand?: boolean
   /** Eagerly load the reel (use for the above-the-fold hero). */
   priority?: boolean
-  /** Minimum dwell of ACTUAL playback per clip, ms — not a wall-clock cadence.
-   * The reel only rotates once the next clip is buffered enough to play, so on
-   * slow networks the current clip keeps looping instead of exposing a poster. */
+  /** Minimum actual playback per clip before rotating, in ms. */
   interval?: number
 }
 
-/**
- * A realistic Studio-Display-style monitor that cross-fades the gallery reel,
- * with an ambient "the screen lights the wall behind it" glow and a frosted
- * title pill (mirrors the in-screensaver placard).
- * Playback/rotation is delegated to ReelPlayer (readiness-gated, poster-first).
- */
+/** A monitor playing the gallery reel (via ReelPlayer), with a glow behind it and a title pill. */
 export function Monitor({ stand = true, priority = false, interval = 5200 }: MonitorProps) {
   const [idx, setIdx] = useState(0)
-  // Bumped whenever the glow poster loads, to force a repaint of the blur — see glow comment.
+  // Bumped when the glow image loads, to force the blur to repaint.
   const [glowKick, setGlowKick] = useState(0)
   const glowImgRef = useRef<HTMLImageElement>(null)
   const cur = REEL[idx] ?? REEL[0]
 
-  // Force a repaint of the blurred glow once its poster is loaded. React's
-  // synthetic onLoad does NOT fire for an image that was already `complete` when
-  // the handler attached — and the eager/SSR'd hero poster is exactly that
-  // (cached before hydration) — so drive it from an effect instead: bump now if
-  // already loaded, otherwise on the native `load` event (which, unlike rAF,
-  // fires even while the tab is backgrounded). Re-runs when the reel advances
-  // (`cur` changes) to keep the glow in sync.
+  // React's onLoad doesn't fire for an image already loaded before hydration,
+  // so check `complete` and listen for the native `load` event instead.
   useEffect(() => {
     const img = glowImgRef.current
     if (!img) return
@@ -52,18 +40,10 @@ export function Monitor({ stand = true, priority = false, interval = 5200 }: Mon
 
   return (
     <div style={{ position: "relative", width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      {/* ambient art-glow: the current art bleeding onto the wall. A static
-          poster image (the clip's first frame) under heavy blur — deliberately
-          not a second video, which used to double the hero's bandwidth.
-          The async poster load doesn't invalidate the blur's output region, so
-          the glow paints clipped to the layout box until something forces a
-          repaint (e.g. a scroll). Both nudges below are required — verified by
-          testing, dropping either regresses one engine: `willChange: transform`
-          promotes it to its own compositing layer (Chrome needs this), and once
-          the poster loads (see the glowKick effect above) we toggle a no-op
-          `brightness(1)` into the filter string — mutating the filter value (a
-          paint property) forces Safari to recompute the blur region. Both are
-          visually identical to the base. */}
+      {/* The glow: the clip's first frame, heavily blurred (not a second video).
+          Browsers don't repaint the blur when the image loads, so two nudges:
+          `willChange: transform` (Chrome) and a no-op `brightness(1)` toggled in
+          after load (Safari). */}
       <div
         style={{
           position: "absolute", zIndex: 0, left: "50%", top: "5%",

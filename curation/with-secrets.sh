@@ -1,15 +1,8 @@
 #!/usr/bin/env bash
-# Run a command with named secrets loaded from curation/.env and verified present.
+# Run a command with secrets from curation/.env, failing if any named one is
+# missing or blank. Name each secret before `--`, so every call shows what it needs:
 #
-# Every secret the command needs is listed explicitly BEFORE `--`, so the call is
-# self-documenting and fails fast (non-zero exit) if any is missing or blank —
-# unlike a generic "load everything" wrapper, you can see at the call site which
-# secret each command depends on:
-#
-#   bash curation/with-secrets.sh CLOUDFLARE_API_TOKEN -- npx --yes wrangler r2 object put …
-#   bash curation/with-secrets.sh GEMINI_API_KEY -- python .claude/skills/nano-banana-pro/generate.py …
-#
-# (.env lives next to this script; template is .env.example.)
+#   bash curation/with-secrets.sh GEMINI_API_KEY -- python .claude/skills/nano-banana-pro/scripts/generate.py …
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

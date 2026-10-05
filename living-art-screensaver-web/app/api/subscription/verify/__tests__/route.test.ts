@@ -1,11 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { NextRequest } from 'next/server'
 
-// /api/subscription/verify is a thin auth check used by the Electron app to
-// surface "your subscription expired" UI. Behavior we lock in:
+// /api/subscription/verify, used by the app's Account page:
 //   - 401 when the user can't be resolved from the Bearer token
 //   - 200 with { isActive, subscription } when they can
-//   - subscription is forwarded as-is so the client can render dates etc.
+//   - the subscription row is passed through, for dates and status
 
 const { authMock } = vi.hoisted(() => ({
   authMock: vi.fn(),
@@ -50,7 +49,7 @@ describe('GET /api/subscription/verify', () => {
     expect(res.status).toBe(200)
     const body = await res.json()
     expect(body.isActive).toBe(true)
-    // The full subscription row gets forwarded so the client can render dates
+    // The whole row is passed through
     expect(body.subscription).toEqual(subscription)
   })
 

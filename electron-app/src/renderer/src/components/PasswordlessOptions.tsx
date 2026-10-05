@@ -10,11 +10,7 @@ interface PasswordlessOptionsProps {
   emailCodeLabel?: string
 }
 
-/**
- * The passwordless sign-in block: social buttons (Apple / Google / Microsoft)
- * plus an "email me a code" option. All of these create the account on first
- * use, so this single block serves as both sign-in and sign-up.
- */
+/** Social sign-in buttons plus "email me a code". Each creates the account on first use. */
 export function PasswordlessOptions({
   error,
   onStart,

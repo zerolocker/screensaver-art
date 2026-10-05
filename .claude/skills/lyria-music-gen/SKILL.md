@@ -5,40 +5,15 @@ description: Generate instrumental music with Google's Lyria 3 (google-genai SDK
 
 # lyria-music-gen (Google Lyria 3)
 
-A thin CLI over Lyria 3. **Each run is exactly one API call**: a text prompt in,
-an MP3 out.
+A thin CLI over Lyria 3. Each run is exactly one call: a text prompt in, an MP3 out.
 
-Script: `.claude/skills/lyria-music-gen/scripts/generate.py`
-Always run it through the secrets wrapper (loads `curation/.env`, fails fast if
-`GEMINI_API_KEY` is missing). Requires the `google-genai` SDK. The script prints
-the output path on the **last stdout line**.
+Script: `.claude/skills/lyria-music-gen/scripts/generate.py`. Run it through the secrets wrapper, which fails fast if `GEMINI_API_KEY` is missing. Needs the `google-genai` SDK. The output path is printed on the **last stdout line**.
 
-## ⚠️ Ask for instrumental, or you will get singing
+## Ask for instrumental, or you'll get singing
 
-**Lyria writes and performs lyrics by default.** This is the single thing to get
-right. A perfectly innocent prompt:
+Lyria writes and sings lyrics by default. "A warm, nostalgic song about a summer evening" comes back fully sung, with a lyric sheet. **Put "instrumental, no vocals" in every prompt** for a backing track or anything under video. "Ambient background music" alone isn't enough.
 
-> "A warm, nostalgic song about a summer evening"
-
-comes back as a **fully sung track**, with the model returning its own lyric
-sheet:
-
-```
-[0.0:] Long shadows on the uncut lawn
-[2.7:] The day is holdin' its last breath
-[5.4:] Smell of barbecue on the breeze
-```
-
-So **put "instrumental, no vocals" in the prompt** whenever you want a backing
-track, a background bed, or anything that sits under other audio or under video.
-
-The script backs this up two ways, but the prompt is your responsibility:
-1. It **warns before spending a call** if the prompt has no instrumental wording.
-2. It **checks the result** — Lyria's text part reads `<instrumental>` for an
-   instrumental take, and returns timestamped lyrics when it sang. If lyrics turn
-   up, the audio is still written (the call is already paid for) but the script
-   **exits non-zero**, so automation can't ship vocals by accident. Use
-   `--allow-vocals` when you genuinely want singing.
+The script helps: it warns before the call if the prompt has no instrumental wording, and if Lyria returns lyrics it still saves the audio but **exits non-zero**, so automation can't ship vocals by accident. Pass `--allow-vocals` when you want singing.
 
 ## Usage
 
@@ -49,39 +24,21 @@ bash curation/with-secrets.sh GEMINI_API_KEY -- \
     --out bed.mp3
 ```
 
-### Flags
 | Flag | Default | Meaning |
 |---|---|---|
-| `--prompt <text>` | required | What to generate. **Say "instrumental, no vocals"** unless you want singing. |
-| `--out <path>` | required | Output MP3 (192 kbps, 44.1 kHz stereo). |
-| `--model clip\|pro` | `clip` | `clip` ≈ 30 s. `pro` ≈ 3 min, arranged into sections. |
-| `--allow-vocals` | off | Accept a sung track instead of failing when lyrics are detected. |
+| `--prompt <text>` | required | What to generate |
+| `--out <path>` | required | Output MP3 (192 kbps, 44.1 kHz stereo) |
+| `--model clip\|pro` | `clip` | `clip` is about 30 s; `pro` is about 3 minutes, arranged into sections |
+| `--allow-vocals` | off | Accept a sung track |
 
-### Which model
-- **`clip`** (~30 s) — background beds, loops, social-clip scoring. Cheaper and
-  faster; loop or trim it to length with ffmpeg.
-- **`pro`** (~3 min) — a full arranged piece. Its text part lists section markers
-  (`[[A0]] [[B1]] …`), which are structure, not lyrics.
+`clip` suits background music and social clips; trim it with ffmpeg. `pro`'s text output lists section markers (`[[A0]] [[B1]] …`), which aren't lyrics.
 
-## Writing a good prompt
-Describe **instrumentation, mood, tempo and texture** — Lyria responds to
-musical direction, not adjectives alone.
+## Writing a prompt
 
-- Good: *"Airy sustained string pad, gentle and spacious, like a slow exhale;
-  distant soft harp touches. Slow, even dynamics, no build or drop. Instrumental,
-  no vocals."*
-- Weak: *"Nice calm music."*
+Describe instruments, mood, tempo and texture; Lyria follows musical direction better than adjectives.
+- Good: "Airy sustained string pad, gentle and spacious, like a slow exhale; distant soft harp touches. Slow, even dynamics, no build or drop. Instrumental, no vocals."
+- Weak: "Nice calm music."
 
-For anything playing **under** visuals, ask for **even dynamics with no build,
-drop or swell** — a dramatic swell pulls attention off the picture. And say
-`instrumental, no vocals` even when it feels obvious; "ambient background music"
-alone is **not** enough to stop the singing.
+For music under visuals, ask for **even dynamics with no build or drop**; a swell pulls attention off the picture.
 
-## Repo notes
-- **Never commit the generated MP3s** (`CLAUDE.md` → *Repo rules*: media is never
-  committed without the founder's explicit approval). Write them to a scratch
-  path, or upload to R2 and reference the URL.
-- Context for why this exists: `docs/growth-and-marketing-strategy.md` §11.2 —
-  the social clips ship silent, and platform trending audio is licence-restricted
-  for commercial accounts *and* can't be attached by a posting API, so we score
-  the clips with our own music instead.
+Never commit the MP3s (media rule in `CLAUDE.md`). Write them to a scratch path.

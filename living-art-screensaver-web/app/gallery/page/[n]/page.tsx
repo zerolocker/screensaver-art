@@ -5,12 +5,8 @@ import { ALL_PIECES, GALLERY_PAGE_COUNT } from '@/lib/gallery-catalog'
 import { SITE_URL } from '@/lib/seo'
 
 /**
- * `/gallery/page/2…N` — the rest of the paginated index. Page 1 lives at
- * `/gallery` (no `/page/1`), so there is exactly one URL per set of pieces.
- *
- * `dynamicParams = false`: the page count is a pure function of gallery.json, so
- * anything outside the generated range is a typo and should 404 rather than be
- * rendered on demand.
+ * `/gallery/page/2…N`. Page 1 is `/gallery`. Pages outside the range 404
+ * (`dynamicParams = false`).
  */
 export const dynamicParams = false
 

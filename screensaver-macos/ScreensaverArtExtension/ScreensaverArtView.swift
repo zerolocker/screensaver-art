@@ -4,18 +4,12 @@ import AVFoundation
 
 // MARK: - Screensaver View
 //
-// Pure player. Reads the manifest written by the Electron companion app,
-// decrypts each video to a temp file, and crossfades between them.
+// A pure player: reads the manifest the Electron app writes, decrypts each video
+// to a temp file, and crossfades between them. Shows a hint if the cache is empty.
 //
-// All auth, subscription, gallery-fetching, upsell, and configure-sheet logic
-// lives in the Electron app now. If the cache is empty (user hasn't synced
-// yet), we show a black screen with a hint.
-//
-// Lifecycle: this is an appex (.appex) ScreenSaverView, created by
-// ScreensaverArtViewController.loadView(). We drive start/stop from
-// viewDidMoveToWindow — robust across both ScreenSaverEngine and the System
-// Settings preview — and keep startAnimation/stopAnimation so the framework
-// can drive them too.
+// Start/stop is driven from viewDidMoveToWindow, which works in both
+// ScreenSaverEngine and the System Settings preview, as well as from
+// startAnimation/stopAnimation.
 
 @objc(ScreensaverArtView)
 class ScreensaverArtView: ScreenSaverView {
@@ -27,8 +21,7 @@ class ScreensaverArtView: ScreenSaverView {
     private var orderPos:      Int          = 0
     private var isSubscribed:  Bool         = true
 
-    // mtime of the manifest at last load — used to detect mid-session syncs
-    // by the Electron app and reload without waiting for stopAnimation.
+    // Manifest mtime at last load, to pick up a sync mid-session.
     private var lastManifestMtime: Date? = nil
 
     // MARK: A/B crossfade layers
@@ -57,10 +50,7 @@ class ScreensaverArtView: ScreenSaverView {
     private let displayDuration: TimeInterval = 7.8
     private let fadeDuration:    TimeInterval = 1.5
 
-    // Gentle subscribe nudge for free users: the pill is visible for
-    // `nudgeInterval`, then hidden for `nudgeInterval`, repeating — so the art
-    // gets equal time uninterrupted. A time-based cycle (not loop-based) keeps it
-    // predictable regardless of how many pieces are selected.
+    // Free users' subscribe pill shows for `nudgeInterval`, then hides for as long.
     private var nudgeTimer:      Timer?
     private let nudgeInterval:   TimeInterval = 16
     private let nudgeFade:       TimeInterval = 1.0
@@ -102,27 +92,20 @@ class ScreensaverArtView: ScreenSaverView {
         lastManifestMtime = manifestMtime()
         teardownUpsell()
         if newItems.isEmpty {
-            // Distinguish "never synced" (no manifest yet) from "synced but nothing
-            // selected" (manifest present, empty list) so the prompt is accurate.
+            // "Never synced" and "nothing selected" get different hints.
             showEmptyState(synced: manifest != nil)
         } else {
             hideEmptyState()
             showCurrent()
         }
-        // Always run the timer — even in the empty-state case it serves as a
-        // heartbeat so reloadIfManifestChanged() can pick up a sync in progress
-        // and transition us out of the empty state.
+        // Run the timer even when empty, so a sync in progress gets picked up.
         startTimer()
-        // Free users get the gentle nudge cycle; subscribers (and the System
-        // Settings preview, and the empty state) get nothing. Re-evaluated on
-        // every load, so subscribing mid-session (manifest rewrite) stops it.
+        // Re-evaluated on every load, so subscribing mid-session stops the nudge.
         startUpsellNudge()
     }
 
-    /// If the Electron app has rewritten the manifest since we last loaded it
-    /// (sync just finished, or is still in flight), pick up the new list.
-    /// Returns true if a reload happened — the caller should not advance again
-    /// in the same tick.
+    /// Reload if the app rewrote the manifest since we loaded it. Returns true on
+    /// reload, in which case the caller shouldn't also advance.
     @discardableResult
     private func reloadIfManifestChanged() -> Bool {
         guard let mod = manifestMtime() else { return false }
@@ -230,8 +213,6 @@ class ScreensaverArtView: ScreenSaverView {
     private func showEmptyState(synced: Bool) {
         guard !isPreview else { return }
         pillContainer?.isHidden = true
-        // When synced but empty, the user has deselected everything; otherwise the
-        // gallery just hasn't been synced yet.
         let message = synced
             ? "No artwork selected. Open the Living Art Screensaver app to choose what plays."
             : "Open the Living Art Screensaver app to sync your gallery."
@@ -306,28 +287,22 @@ class ScreensaverArtView: ScreenSaverView {
     }
 
     private func advance() {
-        // If a sync just landed, reload the manifest first so newly-downloaded
-        // items appear within the current screensaver session. loadFromCache
-        // handles re-shuffling and starts playback itself.
+        // A reload reshuffles and starts playback itself.
         if reloadIfManifestChanged() { return }
 
         guard !items.isEmpty else { return }
-        // The subscribe nudge runs on its own cadence (see startUpsellNudge), so
-        // the art advances continuously and is never paused for an upsell.
         orderPos = (orderPos + 1) % shuffledOrder.count
         showCurrent()
     }
 
     // MARK: Upsell nudge
 
-    /// Begin the gentle fade cycle for free users. No-op when subscribed, in the
-    /// System Settings preview, or when nothing is playing. Idempotent — always
-    /// preceded by teardownUpsell() so a reload restarts cleanly.
+    /// Start the pill's fade cycle for free users. No-op when subscribed, in the
+    /// System Settings preview, or when nothing is playing.
     private func startUpsellNudge() {
         guard !isSubscribed, !isPreview, !items.isEmpty else { return }
         ensureUpsellPill()
-        // Start hidden; the first tick (one interval in) fades the pill in, so the
-        // art is alone on screen first. Thereafter it alternates 16s on / 16s off.
+        // Start hidden, so the art is alone on screen first.
         nudgeTimer = Timer.scheduledTimer(withTimeInterval: nudgeInterval, repeats: true) {
             [weak self] _ in self?.toggleUpsellNudge()
         }
@@ -350,7 +325,7 @@ class ScreensaverArtView: ScreenSaverView {
         addSubview(pill)
         upsellPill = pill
         NSLayoutConstraint.activate([
-            // Centered, just above the title pill — "near the title", never over art.
+            // Just above the title pill, never over the art.
             pill.centerXAnchor.constraint(equalTo: centerXAnchor),
             pill.bottomAnchor.constraint(equalTo: title.topAnchor, constant: -14),
             pill.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, multiplier: 0.85),
@@ -454,8 +429,7 @@ class ScreensaverArtView: ScreenSaverView {
 
     override func startAnimation() {
         super.startAnimation()
-        // Re-read the manifest every time we wake up so a fresh sync from the
-        // Electron app is picked up without rebooting the screensaver.
+        // Re-read the manifest on every start to pick up the latest sync.
         loadFromCache()
     }
 

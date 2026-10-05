@@ -2,22 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyNativeAuth } from '@/lib/auth/verify-native-auth'
 
-// Stores user feedback (free-form message + optional downsampled image, embedded
-// as base64) in the `user-error-reports` Supabase Storage bucket under a
-// `feedback/` prefix, so it's separable from the auto-generated error reports
-// written by app/api/error-report/route.ts.
-//
-// One endpoint serves both surfaces: the Electron app and the website each POST a
-// fully-assembled JSON body with a Bearer token. The image is downsampled
-// client-side (see packages/ui/src/image-resize.ts) to stay under the cap.
-//
-// Uses the service role so writes bypass storage RLS; the bucket stays private
-// and is never read by clients. Feedback is namespaced per user id.
+// Stores feedback from the app and the website (a message plus an optional
+// image, downsized by the client) in the private `user-error-reports` bucket
+// under `feedback/<user id>/`. Requires a Bearer token.
 
 const BUCKET = 'user-error-reports'
 const MAX_BYTES = 1_000_000 // ~1 MB cap — matches the bucket's per-file limit
 
-// Service role client (server-only) — bypasses RLS for the private bucket.
+// Service role: bypasses RLS.
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,

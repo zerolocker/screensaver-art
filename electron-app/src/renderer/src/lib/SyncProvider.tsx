@@ -12,9 +12,7 @@ import { getAccessToken } from './supabase'
 import { log } from './log'
 import type { CacheProgress, CacheStats } from '../../../preload'
 
-// Re-sync on window focus only if the cache is at least this old. Catches the
-// "app left open for days" case without hammering the API every time the user
-// alt-tabs back.
+// On focus, re-sync only if the cache is at least this old.
 const STALE_MS = 30 * 60 * 1000
 
 export type SyncTrigger = 'auto' | 'manual'
@@ -38,11 +36,8 @@ export function useGallerySync(): SyncContextValue {
   return ctx
 }
 
-// Single source of truth for gallery sync. Wraps the authenticated app so the
-// auto-sync fires once on open / sign-in, and so the sidebar indicator and the
-// Account page read the same state (one progress listener, one in-flight guard)
-// instead of each managing their own. The main process additionally dedupes
-// concurrent syncs, so this is the friendly front-end to that single run.
+// Gallery sync state for the signed-in app, shared by the sidebar and the
+// Account page. Syncs once on open or sign-in.
 export function SyncProvider({ children }: { children: ReactNode }) {
   const [syncing, setSyncing] = useState(false)
   const [progress, setProgress] = useState<CacheProgress | null>(null)
@@ -51,8 +46,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null)
   const [lastTrigger, setLastTrigger] = useState<SyncTrigger | null>(null)
 
-  // Synchronous guard against firing two syncs from the renderer (StrictMode
-  // double-mount, a focus event mid-sync, a manual click during auto-sync).
+  // Prevents a second sync from StrictMode, focus, or a click mid-sync.
   const syncingRef = useRef(false)
   const lastSyncedMsRef = useRef(0)
 
@@ -60,7 +54,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
     try {
       setCacheStats(await window.electronAPI.cache.getStats())
     } catch {
-      // Stats are cosmetic — never let them fail a render.
+      // Cosmetic; never fail on them.
     }
   }, [])
 
@@ -75,9 +69,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
       setProgress(null)
       try {
         const accessToken = await getAccessToken()
-        // A manual "Sync Now" also tidies deselected files off disk; an auto
-        // sync (on open / after toggling / on focus) keeps them cached so
-        // re-adding a piece is instant.
+        // Only a manual sync deletes deselected files.
         const result = await window.electronAPI.cache.sync(
           GALLERY_ENDPOINT,
           accessToken,
@@ -104,8 +96,7 @@ export function SyncProvider({ children }: { children: ReactNode }) {
   )
 
   useEffect(() => {
-    // A sync may already be running in the main process (auto-sync kicked off by
-    // a previous provider mount, or still finishing after a quick sign-out/in).
+    // A sync may already be running in the main process.
     window.electronAPI.cache
       .getSyncState()
       .then((state) => {
@@ -116,10 +107,9 @@ export function SyncProvider({ children }: { children: ReactNode }) {
     const off = window.electronAPI.cache.onProgress((p) => {
       setProgress(p)
       if (p.phase === 'cached' || p.phase === 'downloading') {
-        // Tick the cache stats up live as videos arrive.
         window.electronAPI.cache.getStats().then(setCacheStats).catch(() => {})
       } else if (p.phase === 'done') {
-        // Reconcile state even for a run this provider didn't start itself.
+        // Also for runs this provider didn't start.
         syncingRef.current = false
         setSyncing(false)
         lastSyncedMsRef.current = Date.now()
@@ -129,7 +119,6 @@ export function SyncProvider({ children }: { children: ReactNode }) {
     })
 
     void refreshStats()
-    // Initial auto-sync on app open / sign-in.
     void syncNow({ trigger: 'auto' })
 
     // Re-sync on focus once the cache has gone stale.

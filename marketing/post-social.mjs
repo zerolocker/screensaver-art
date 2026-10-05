@@ -1,25 +1,9 @@
 #!/usr/bin/env node
-// Daily social posting — publish the rendered clips to all four channels.
-//
-// This is the last mile of the content flywheel (growth backlog #1): the nightly
-// curation makes the art, `make-social-assets.mjs` stitches the night's pieces into
-// one scored clip, and this publishes it while nobody is awake. Founder time budget
-// is ~0 h/week, so every decision here favours "survives an unattended run" over
-// "clever". A "piece" below is one rendered post: a single piece, or a set.
-//
-// One vendor, four channels (strategy §11.1 — all four are equal priority):
-//   Zernio  →  Instagram, YouTube, TikTok, Pinterest
-// Each clip is uploaded once (a single landscape piece's 9:16 serves three
-// channels and its 2:3 the pin; a set, or a portrait piece, has only the 9:16,
-// which serves all four), then published as one Zernio post per channel. We buy
-// this rather than building it because TikTok restricts *unaudited* API clients
-// to private posting, and Zernio
-// holds an audited client (§11). Until 2026-09-12 Instagram + YouTube went through
-// upload-post; consolidating onto Zernio is cheaper at four accounts and leaves one
-// API to keep working.
-//
-// TikTok also gets the site's address as a pinned comment under each video,
-// because that account has no bio link (see "TikTok's link comment" below).
+// Posts a clip rendered by make-social-assets.mjs to Instagram, YouTube, TikTok
+// and Pinterest through Zernio. The clip is usually the night's set, all its
+// pieces stitched into one; a "piece" below means one rendered post, a single
+// piece or a set. It runs unattended every night, so it favours safe over
+// clever. See marketing/README.md.
 //
 // Usage:
 //   bash curation/with-secrets.sh ZERNIO_API_KEY -- \
@@ -30,49 +14,42 @@
 //
 // Flags:
 //   --check           verify the key, accounts and the Pinterest board, then exit
-//   --dry-run         do everything except publish (incl. TikTok's own dry-run check)
+//   --dry-run         do everything except publish
 //   --latest [N]      consider the N most recently rendered posts (default 4)
-//   --count <K>       how many of them to actually post (default 1 — one post a night)
+//   --count <K>       how many of them to post (default 1)
 //   --slug <s>        post this specific rendered post (its marketing/out/<slug> dir)
 //   --channels <list> comma list of instagram,youtube,tiktok,pinterest (default: all)
-//   --format <fmt>    post this rendered clip everywhere (default: 9x16, and 2x3 for Pinterest
-//                     when the piece has one)
+//   --format <fmt>    post this shape everywhere (default: 9x16, and 2x3 for Pinterest
+//                     when the post has one)
 //   --force           post again even if the ledger says it already went out
 //   --out <dir>       where the rendered clips live (default: marketing/out)
 //
-// No npm deps (Node ≥18 built-ins + fetch).
+// No npm deps (Node ≥18).
 
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { buildCaptions } from './lib/captions.mjs'
-import { REPO_ROOT, loadGallery } from './lib/pieces.mjs'
+import { REPO_ROOT, artworkOf, loadGallery } from './lib/pieces.mjs'
 
 const ZERNIO_BASE = 'https://zernio.com/api/v1'
 
 const ALL_CHANNELS = ['instagram', 'youtube', 'tiktok', 'pinterest']
 
 /**
- * Which rendered clip each channel gets. Instagram, TikTok and YouTube play video
- * in a 9:16 player, so any other shape gets black bars; 2:3 is Pinterest's
- * recommended pin shape, and a taller pin can be cut off in its feed. A piece with
- * no 2:3 pins its 9:16 instead (see clipFor).
+ * Clip shape per channel. The 9:16 players letterbox anything else; 2:3 is
+ * Pinterest's pin shape. A post with no 2:3 pins its 9:16 (see clipFor).
  */
 const FORMAT_FOR = { instagram: '9x16', youtube: '9x16', tiktok: '9x16', pinterest: '2x3' }
 
 /**
- * The board pins land on. A *name*, not an id, on purpose: a board that gets
- * recreated keeps its name but not its id, and a missing board should degrade to
- * the account default rather than fail the night. Override with PINTEREST_BOARD
- * (a name or a raw id).
+ * The Pinterest board, by name: a recreated board keeps its name but not its id.
+ * A missing board falls back to the account default. Override with PINTEREST_BOARD.
  */
 const DEFAULT_PINTEREST_BOARD = 'Daily Curation'
 
 /**
- * Zernio takes media as a URL, so the clip has to be hosted before it can be
- * posted. We use the presigned-upload path (5 GB) rather than the simpler
- * /media/upload-direct: that one is documented at 25 MB but is served by a
- * serverless function that rejects anything over ~4.5 MB
- * (FUNCTION_PAYLOAD_TOO_LARGE), and an 8s 1080x1920 clip is ~8 MB.
+ * Limit of Zernio's presigned upload. Its /media/upload-direct claims 25 MB but
+ * rejects anything over ~4.5 MB, and a clip is ~8 MB.
  */
 const ZERNIO_MAX_UPLOAD = 5 * 1024 * 1024 * 1024
 
@@ -112,9 +89,8 @@ const warn = (s) => process.stderr.write(`${s}\n`)
 // ── http ────────────────────────────────────────────────────────────────────
 
 /**
- * One fetch with retries. Only 429 and 5xx are retried — a 4xx is our bug or a
- * disconnected account, and hammering it just burns quota. Never logs a header:
- * the API key must not reach stdout, a log file or a debug dump.
+ * Fetch with retries on 429 and 5xx only; a 4xx won't fix itself. Never log
+ * headers, which carry the API key.
  */
 async function request(url, init = {}, { retries = 2, label = 'request' } = {}) {
   let last
@@ -164,16 +140,14 @@ function discover(outDir) {
     if (Object.keys(clips).length === 0) continue
     pieces.push({ ...meta, dir: path.join(outDir, name), clips })
   }
-  // Gallery date first (that's the piece's identity), render time as the
-  // tie-break for a night's four pieces, which all share a date.
+  // Gallery date first; render time breaks ties within a night.
   return pieces.sort((a, b) =>
     (b.date ?? '').localeCompare(a.date ?? '') || (b.renderedAt ?? '').localeCompare(a.renderedAt ?? ''))
 }
 
 /**
- * The clip one channel gets: FORMAT_FOR's, or `--format` for every channel. A piece
- * with no 2:3 clip pins its 9:16 instead, which Pinterest also accepts. A set and a
- * portrait piece are both rendered only in 9:16, and their meta.json lists just that.
+ * The clip a channel gets. Falls back to 9:16 when a post has no 2:3 render, as a
+ * set or a portrait piece never does.
  */
 function clipFor(piece, platform, override) {
   const wanted = override || FORMAT_FOR[platform]
@@ -182,36 +156,34 @@ function clipFor(piece, platform, override) {
   return null
 }
 
-/**
- * A piece's gallery tag, which its hashtags and pin wording build on. Clips
- * rendered before meta.json recorded `era` (2026-09-14) look it up in gallery.json.
- */
+/** The piece's gallery tag, from meta.json or else gallery.json. */
 function eraOf(piece) {
   if (piece.era !== undefined) return piece.era
   return loadGallery().find((e) => e.src === piece.src)?.tags?.[0] ?? null
 }
 
+/** A real artwork's provenance, from meta.json or else gallery.json. */
+function artworkFor(piece) {
+  if (piece.artwork !== undefined) return piece.artwork
+  return artworkOf(loadGallery().find((e) => e.src === piece.src))
+}
+
 /** The pieces a rendered post shows, in order: a set's own list, or the one piece. */
 function piecesOf(post) {
-  return post.pieces ?? [{ title: post.title, style: post.style, era: eraOf(post), webSlug: post.webSlug }]
+  if (post.pieces) return post.pieces.map((p) => ({ ...p, artwork: artworkFor(p) }))
+  return [{ title: post.title, style: post.style, era: eraOf(post), webSlug: post.webSlug, artwork: artworkFor(post) }]
 }
 
 /**
- * Refuse to pin a link that isn't live yet.
- *
- * The nightly order is: curation pushes gallery.json → Vercel rebuilds → the new
- * `/art/<slug>` page exists. Pinning inside that build window would put a 404 in
- * a pin whose destination URL can never be edited. So check first, and give the
- * deploy a couple of minutes to finish before giving up on the pin. (Only the pin
- * carries a link; the other channels don't wait on this.)
+ * Wait for the piece's page to go live. It appears only after Vercel rebuilds
+ * from the new gallery.json, and a pin's link can't be edited later.
  */
 async function landingIsLive(url, { attempts = 6, waitMs = 30_000 } = {}) {
   for (let i = 0; i < attempts; i++) {
     try {
       const res = await fetch(url, { redirect: 'follow', signal: AbortSignal.timeout(20_000) })
       if (res.ok) return true
-      // A 404 right after a push is the deploy still building; anything else
-      // (500, 403) is worth waiting on too, and costs us only the retry.
+      // Probably the deploy still building; any error is worth waiting on.
       if (i === 0) log(`  … landing page not live yet (HTTP ${res.status}) — waiting for the deploy`)
     } catch (err) {
       if (i === 0) log(`  … landing page unreachable (${err.message}) — retrying`)
@@ -223,11 +195,8 @@ async function landingIsLive(url, { attempts = 6, waitMs = 30_000 } = {}) {
 
 // ── the ledger ──────────────────────────────────────────────────────────────
 //
-// An unattended job gets re-run: by a retry, by a cron that overlapped, by a
-// human debugging at 1am. The ledger is what stops the same clip going out
-// twice. (Zernio also rejects duplicate content within 24h, and we send an
-// idempotency key — but that key only holds for ~5 minutes, so this file is the
-// defence that covers a re-run the next night.)
+// Stops a re-run from posting the same clip twice. Zernio's own duplicate check
+// lasts 24h and its idempotency key ~5 minutes; this covers the next night too.
 
 const ledgerPath = (outDir) => path.join(outDir, '.posted.json')
 
@@ -306,12 +275,9 @@ async function zernioUpload(file) {
 }
 
 /**
- * One platform's entry in a post. `customContent` replaces the post's `content`
- * for that platform — the caption on Instagram and TikTok, the video description
- * on YouTube, the pin description on Pinterest.
- *
- * The art *is* AI-generated, so every platform that has a disclosure flag gets it
- * set, rather than waiting to be caught by the platform's own detection.
+ * One platform's entry in a post. `customContent` is the caption (Instagram,
+ * TikTok), description (YouTube) or pin description. Every platform with an
+ * AI-disclosure flag gets it set.
  */
 function zernioPlatformEntry(platform, accountId, captions, boardId) {
   if (platform === 'instagram') {
@@ -319,7 +285,7 @@ function zernioPlatformEntry(platform, accountId, captions, boardId) {
       platform, accountId,
       customContent: captions.instagram.text,
       platformSpecificData: {
-        // A single video publishes as a Reel; this keeps it on the profile grid too.
+        // Also show the Reel on the profile grid.
         shareToFeed: true,
         thumbOffset: 1000,
         isAiGenerated: true,
@@ -331,8 +297,8 @@ function zernioPlatformEntry(platform, accountId, captions, boardId) {
       platform, accountId,
       customContent: captions.youtube.description,
       platformSpecificData: {
-        // Without this Zernio titles the video with the description's first line.
-        // (There is no Shorts flag: YouTube classifies a vertical clip ≤3 min itself.)
+        // Otherwise Zernio uses the description's first line. (YouTube makes
+        // a vertical clip under 3 minutes a Short by itself.)
         title: captions.youtube.title,
         visibility: 'public',
         // Film & Animation. Zernio's default is "22", People & Blogs.
@@ -366,8 +332,6 @@ function zernioPlatformEntry(platform, accountId, captions, boardId) {
     platformSpecificData: {
       title: captions.pinterest.title,
       ...(boardId ? { boardId } : {}),
-      // The whole reason the /art/<slug> pages exist (§4.3): a pin needs a
-      // destination, and a pin's link cannot be edited after publishing.
       link: captions.pinterest.link,
       coverImageKeyFrameTime: 1,
     },
@@ -400,8 +364,7 @@ async function postViaZernio({ piece, captions, platforms, dryRun, format }) {
   if (dryRun) {
     log(`  [dry-run] zernio → ${targets.map((p) => `${p} (${clips[p].format}, ${megabytes(clips[p].file)})`).join(', ')}`)
     if (targets.includes('tiktok')) {
-      // TikTok's own preflight: can this account Direct Post right now? (Zernio's
-      // dryRun is TikTok-only — the other three have nothing to ask in advance.)
+      // Ask TikTok whether this account can post now. Only TikTok supports a dry run.
       const { body } = await request(`${ZERNIO_BASE}/posts`, {
         method: 'POST',
         headers: { ...zernioAuth(), 'Content-Type': 'application/json' },
@@ -419,10 +382,8 @@ async function postViaZernio({ piece, captions, platforms, dryRun, format }) {
     return out
   }
 
-  // Each distinct clip goes up once (the 9:16 is shared by three channels), then
-  // each channel gets its own post rather than one post for all: a payload one
-  // platform rejects fails the whole request with a 400, and that must not take
-  // the other channels down with it.
+  // Upload each clip once, then post per channel: one platform rejecting a
+  // combined post would fail it for all of them.
   const uploads = new Map()
   const upload = (file) => {
     if (!uploads.has(file)) uploads.set(file, zernioUpload(file))
@@ -445,7 +406,7 @@ async function publishOne({ piece, file, captions, platform, account, boardId, m
   const payload = {
     mediaItems: [{ type: 'video', url: mediaUrl, filename: path.basename(file), mimeType: 'video/mp4' }],
     platforms: [zernioPlatformEntry(platform, account._id, captions, boardId)],
-    // A top-level field that only YouTube reads — and this post only targets YouTube.
+    // Only YouTube reads this top-level field.
     ...(platform === 'youtube' ? { tags: captions.youtube.tags } : {}),
     publishNow: true,
     metadata: { source: 'post-social.mjs', assetSlug: piece.assetSlug, webSlug: piece.webSlug },
@@ -455,8 +416,7 @@ async function publishOne({ piece, file, captions, platform, account, boardId, m
     headers: {
       ...zernioAuth(),
       'Content-Type': 'application/json',
-      // Same clip + same channel + same night = same key, so a retried call gets
-      // the original post back instead of creating a second one.
+      // Same clip, channel and night give the same key, so a retry returns the original post.
       'x-request-id': `lart-${piece.assetSlug}-${platform}-${new Date().toISOString().slice(0, 10)}`,
     },
     body: JSON.stringify(payload),
@@ -468,9 +428,8 @@ async function publishOne({ piece, file, captions, platform, account, boardId, m
   }
   if (status >= 400) return { ok: false, error: body.error || `HTTP ${status}` }
 
-  // 207 is a 2xx but means the publish attempt failed or is still going — read
-  // the platform's own state rather than trusting the status code. A retry that
-  // matched the idempotency key comes back as 200 with `existingPost`.
+  // A 207 means the publish failed or is still running, so read the platform's
+  // state instead. An idempotent retry returns 200 with `existingPost`.
   const post = body.post || body.existingPost
   const postId = post?._id || null
   const e = await settleZernio(postId, post?.platforms?.[0] || {})
@@ -478,21 +437,17 @@ async function publishOne({ piece, file, captions, platform, account, boardId, m
   if (inFlight) warn(`  … ${platform}: still ${e.status} on Zernio (it retries on its own)` +
     (e.errorMessage ? ` — last error: ${e.errorMessage}` : ''))
   const result = {
-    // An in-flight platform counts as sent: Zernio owns the retry from here, and
-    // calling it a failure would make the next run publish a duplicate.
+    // In-flight counts as sent: Zernio retries it, and marking it failed would repost it.
     ok: e.status === 'published' || inFlight,
     pending: inFlight || undefined,
-    // TikTok's permalink lands on Zernio's record minutes after the post is
-    // already published, so a null url here is normal, not a problem. `postId`
-    // is the handle for looking it up later: GET /v1/posts/<postId>.
+    // TikTok's URL arrives minutes later, so null is normal. Look it up with GET /v1/posts/<postId>.
     url: e.platformPostUrl || null,
     id: e.platformPostId || null,
     error: inFlight ? null : (e.errorMessage || (e.status !== 'published' ? `status: ${e.status ?? 'unknown'}` : null)),
     postId,
   }
   if (platform === 'tiktok' && (e.status === 'published' || inFlight)) {
-    // The comment's failure must never become the post's: the video is already
-    // out, and a post recorded as failed would be published again the next night.
+    // A comment failure must not fail the post, or it would be reposted next night.
     result.linkComment = inFlight
       ? { ok: false, error: 'the video was still publishing, so nothing was commented under it' }
       : await pinLinkComment({ accountId: account._id, postId, videoId: e.platformPostId, message: captions.tiktok.linkComment })
@@ -502,14 +457,8 @@ async function publishOne({ piece, file, captions, platform, account, boardId, m
 }
 
 /**
- * Wait for the platform to reach a terminal state.
- *
- * Zernio's per-platform status is NOT settled when the create call returns:
- * `pending` / `processing` / `uploading` mean it is still working, and a
- * platform that transiently 400s is reset to `pending` and retried — a real pin
- * did exactly that and published a minute later. Treating those as failures
- * would print a false alarm *and* leave the ledger thinking the channel is
- * unposted, so the next night would publish the same clip again.
+ * Zernio is still working while a platform is in these states, including when
+ * it retries after a transient error. Treating them as failures would repost.
  */
 const IN_FLIGHT = new Set(['pending', 'processing', 'uploading'])
 
@@ -521,7 +470,7 @@ async function settleZernio(postId, entry) {
         { label: 'zernio post status', retries: 1 })
       entry = (body.post || body).platforms?.[0] || entry
     } catch {
-      break // the post exists; a failed status read shouldn't fail the run
+      break // the post exists; a failed read shouldn't fail the run
     }
   }
   return entry
@@ -529,17 +478,11 @@ async function settleZernio(postId, entry) {
 
 // ── TikTok's link comment ───────────────────────────────────────────────────
 //
-// TikTok is the one channel with nowhere to put a clickable link. The account has
-// no Business switch, and a personal account gets no bio link until 1,000
-// followers. So each video gets a comment carrying the address, pinned to the top,
-// and its caption says "Link in comment and bio". The comment is plain text, since
-// TikTok doesn't make URLs in comments clickable, but it sits where people read.
-//
-// Comments need the account on Zernio's TikTok Business app connection (every
-// connection since 2026-09-10). One still on the old developer app gets
-// 400 PLATFORM_LIMITATION; reconnecting the account in Zernio moves it over.
+// The TikTok account can't have a bio link, so each video gets a pinned comment
+// with the site's address. This needs Zernio's TikTok Business app connection;
+// an older connection gets 400 PLATFORM_LIMITATION until it's reconnected.
 
-/** A real TikTok video id. Until TikTok reports it, Zernio holds a `v_pub_url~…` publish id. */
+/** A real TikTok video id, as opposed to Zernio's interim `v_pub_url~…` publish id. */
 const TIKTOK_VIDEO_ID = /^\d+$/
 
 /** The video id lands on Zernio's record minutes after the post publishes, so wait for it. */
@@ -553,7 +496,7 @@ async function tiktokVideoId(postId, known, { attempts = 20, waitMs = 30_000 } =
       const id = (body.post || body).platforms?.[0]?.platformPostId
       if (TIKTOK_VIDEO_ID.test(id ?? '')) return id
     } catch {
-      // one failed read isn't a verdict; keep waiting
+      // keep waiting
     }
   }
   return null
@@ -569,7 +512,7 @@ async function pinLinkComment({ accountId, postId, videoId, message }) {
     headers: {
       ...zernioAuth(),
       'Content-Type': 'application/json',
-      // One comment per video: a retried call within 24h replays the first instead.
+      // One comment per video, even if retried.
       'Idempotency-Key': `lart-link-comment-${id}`,
     },
     body: JSON.stringify({ accountId, message }),
@@ -577,9 +520,7 @@ async function pinLinkComment({ accountId, postId, videoId, message }) {
   const commentId = body.data?.commentId
   if (!ok || !commentId) return { ok: false, videoId: id, error: body.error || `HTTP ${status}` }
 
-  // A pin sent the instant the comment lands fails with a bare platform_error,
-  // because TikTok hasn't registered the comment yet. In the live test the same
-  // call succeeded ~30s later.
+  // Pinning right away fails because TikTok hasn't registered the comment yet; retry.
   let error
   for (let i = 0; i < 6; i++) {
     await sleep(15_000)
@@ -639,8 +580,8 @@ async function main() {
   let candidates = a.slug ? all.filter((p) => p.assetSlug === a.slug) : all.slice(0, a.latest)
   if (a.slug && candidates.length === 0) die(`no rendered piece with assetSlug "${a.slug}" under ${a.out}`)
   if (!a.slug) {
-    // One post a night, newest first: four posts a day is four times the cadence
-    // anyone wants in a feed, which is why a night's pieces go out as one set.
+    // Newest unposted posts first, `--count` of them (one a night, which is why
+    // a night's pieces go out as one set).
     const pending = candidates.filter((p) => a.force || a.channels.some((c) => !alreadyPosted(ledger, p.assetSlug, c)))
     candidates = pending.slice(0, a.count)
   }
@@ -670,7 +611,7 @@ async function main() {
       try {
         Object.assign(results, await postViaZernio({ piece, captions, platforms, dryRun: a.dryRun, format: a.format }))
       } catch (err) {
-        // Zernio down or the key rejected: nothing went out.
+        // Zernio is down or rejected the key: nothing went out.
         for (const p of platforms) results[p] = { ok: false, error: err.message }
       }
     }

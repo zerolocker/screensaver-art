@@ -33,8 +33,7 @@ import wave
 from array import array
 
 RATE = 24000
-# A dedicated speech-to-text model (verbatim mode by default) rather than a
-# general model alias that gets hot-swapped between releases.
+# A dedicated speech-to-text model, not a general alias that changes between releases.
 VERIFY_MODEL = os.environ.get("EXPLAINER_VERIFY_MODEL", "gemini-3.5-transcribe")
 RETRY_CODES = {429, 500, 502, 503, 504}
 

@@ -10,13 +10,11 @@ import type { UpdateState } from '../../../preload'
 import { log } from './log'
 
 interface UpdateContextValue {
-  // Current auto-update state. Starts 'idle'; the main process pushes changes.
   state: UpdateState
-  // A downloaded update is waiting — the "Relaunch to update" banner shows.
+  // An update is downloaded; the relaunch banner shows.
   updateReady: boolean
-  // Trigger a manual check (no-op in dev / unpackaged builds).
+  // No-op unless packaged.
   check: () => Promise<void>
-  // Quit + install the downloaded update, then relaunch.
   relaunch: () => Promise<void>
 }
 
@@ -28,18 +26,15 @@ export function useUpdate(): UpdateContextValue {
   return ctx
 }
 
-// Owns auto-update state for the whole app. Mounted high in the tree so the
-// state survives navigation and a download that finished while the user was on
-// another page still surfaces the banner. Downloads happen silently in the main
-// process (autoDownload); this just reflects status and offers the relaunch.
+// Auto-update state, mounted high so it survives navigation. The main process
+// downloads; this shows the status and offers the relaunch.
 export function UpdateProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<UpdateState>({ status: 'idle' })
 
   useEffect(() => {
     let cancelled = false
 
-    // Seed from the main process in case an event (e.g. 'ready') fired before
-    // this mounted, then subscribe to subsequent pushes.
+    // Read the current state first, in case events fired before mount.
     void window.electronAPI.update.getState().then((s) => {
       if (!cancelled) setState(s)
     })

@@ -2,18 +2,13 @@ import Foundation
 import OSLog
 import PaperSaverKit
 
-// Logs to the unified log (NOT stdout — stdout carries the JSON the Electron app
-// parses). Watch with:
+// Logs go to the unified log; stdout is for the JSON the app parses. Watch with:
 //   log stream --predicate 'subsystem == "com.livingart.screensaver.app"' --level debug
 private let logger = Logger(subsystem: "com.livingart.screensaver.app", category: "helper")
 
-// Tiny CLI the Electron app shells out to for everything that can only be done
-// from Swift: detecting/setting the active screensaver, and registering /
-// unregistering / discovering our screensaver .appex. All of it goes through
-// PaperSaver (PaperSaverKit) — `PaperSaver` for the active-screensaver
-// read/write, and `PluginkitManager` for the pluginkit surgery + output
-// parsing — so the Electron app never shells out to `pluginkit` or parses its
-// output itself.
+// The Electron app calls this for the Swift-only work: reading and setting the
+// active screensaver, and registering or finding our .appex. It wraps
+// PaperSaver (`PaperSaver` and `PluginkitManager`).
 //
 //   lart-screensaver-helper status [module]        -> {"active":true|false}
 //   lart-screensaver-helper activate [module]       -> {"active":true}; exit 0 on success
@@ -21,10 +16,8 @@ private let logger = Logger(subsystem: "com.livingart.screensaver.app", category
 //   lart-screensaver-helper unregister <appex-path> -> {"unregistered":true}; exit 0 on success
 //   lart-screensaver-helper find [bundle-id]        -> {"registered":bool,"path":string|null}
 //
-// `module` is the extension's bundle name (ScreensaverArtExtension.appex),
-// matching how Aerial/AppexSaverMinimal name theirs, and defaults to ours.
-// `bundle-id` defaults to our extension's bundle identifier. The Electron app
-// always passes explicit values; the optional defaults exist for testing.
+// `module` (the bundle name) and `bundle-id` default to ours, for testing; the
+// app always passes them.
 
 @main
 struct Helper {
@@ -63,8 +56,7 @@ struct Helper {
             do {
                 logger.info("register: pluginkit -a \(path, privacy: .public)")
                 try pluginkit.registerExtension(at: URL(fileURLWithPath: path))
-                // `pluginkit -a` can report odd exit states, so confirm the
-                // extension actually landed by re-querying instead of trusting it.
+                // Don't trust `pluginkit -a`'s exit status; query instead.
                 let result = registration(pluginkit, bundleID: defaultBundleID)
                 logger.info("register: registered=\(String(describing: result["registered"]), privacy: .public)")
                 emit(result)
@@ -102,8 +94,7 @@ struct Helper {
         return info.identifier == module || info.name == module
     }
 
-    // Look up our extension by bundle id and report whether pluginkit knows it
-    // and (if so) the path it has registered. PaperSaver does the parsing.
+    // Whether pluginkit knows the extension, and its registered path.
     static func registration(_ pluginkit: PluginkitManager, bundleID: String) -> [String: Any] {
         let ext = try? pluginkit.findExtension(byBundleIdentifier: bundleID)
         return ["registered": ext != nil, "path": ext?.path.path ?? NSNull()]

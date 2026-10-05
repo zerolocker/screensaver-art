@@ -1,30 +1,17 @@
-// Poster-frame engine — keeps the gallery grid cheap to render even with
-// hundreds of clips.
-//
-// The problem: a live <video> element owns a full media pipeline (demuxer +
-// decoder + network buffer). Hundreds of them at once freezes the renderer and
-// saturates the network. The fix: each grid cell shows a <canvas> holding the
-// clip's *first frame*. We load a video once, draw frame 0 onto the canvas, then
-// tear the video down — so at rest the page has zero live videos and scrolling
-// is as cheap as moving images. Motion only appears on hover (one video, spun up
-// on intent and destroyed on leave) and in the detail modal.
-//
-// This is the client-side approximation of shipping a thumb.jpg per piece; if we
-// add real poster images on R2 later, the grid becomes plain <img>s and this
-// engine goes away.
-//
-// A portrait (9:16) clip is never stretched or cropped to the 16:9 cell: both
-// the poster and the hover preview show it whole, centred on the dark wall.
+// Keeps the gallery grid cheap: each card draws its clip's first frame onto a
+// <canvas> and then drops the video, so at rest no videos are live. Hundreds of
+// live videos would freeze the renderer. A video plays only on hover and in the
+// preview. (The `thumb` stills on R2 could replace this if the app read them.)
+// A portrait (9:16) clip is never cropped to the 16:9 cell: its poster and hover
+// preview show it whole on the dark wall.
 
 import { PORTRAIT_WALL, isPortraitVideo } from '@screensaver-art/constants'
 
-// Cap on simultaneous first-frame captures, so fast scrolling can't stampede the
-// network/decoders. Jobs queue and drain as earlier ones finish.
+// Max simultaneous captures; the rest queue.
 const POSTER_CONCURRENCY = 5
-// Capture cells within this margin of the viewport, so a poster is usually ready
-// by the time the cell scrolls in.
+// Capture slightly ahead of the viewport.
 const ROOT_MARGIN = '600px'
-// Give a stuck load this long before drawing whatever (possibly nothing) decoded.
+// After this, draw whatever has decoded (possibly nothing).
 const CAPTURE_TIMEOUT_MS = 12_000
 
 const queue: (() => void)[] = []
@@ -91,8 +78,8 @@ function capturePoster(canvas: HTMLCanvasElement): void {
   video.addEventListener('error', () => finish(false), { once: true })
 }
 
-// A landscape frame fills the canvas as it always has; a portrait one is drawn
-// whole (contained), centred on the wall.
+// Draw a landscape frame to fill the canvas, a portrait one whole and centred
+// on the wall.
 function drawFrame(canvas: HTMLCanvasElement, video: HTMLVideoElement): void {
   const ctx = canvas.getContext('2d')
   if (!ctx) return
@@ -110,16 +97,14 @@ function drawFrame(canvas: HTMLCanvasElement, video: HTMLVideoElement): void {
   ctx.drawImage(video, (cw - w) / 2, (ch - h) / 2, w, h)
 }
 
-// Register a canvas for lazy first-frame capture. Returns a cleanup that
-// unobserves it (call on unmount).
+// Capture a canvas's first frame when it nears the viewport. Returns a cleanup.
 export function observePoster(canvas: HTMLCanvasElement, src: string): () => void {
   canvas.dataset.src = src
   observer.observe(canvas)
   return () => observer.unobserve(canvas)
 }
 
-// Spawn a live, looping, muted preview video layered over a poster — used on
-// hover. Returns a teardown that stops the video and releases its pipeline.
+// Play a looping, muted video over a poster on hover. Returns a teardown.
 export function spawnPreview(src: string, onPlaying?: () => void): { video: HTMLVideoElement; destroy: () => void } {
   const video = document.createElement('video')
   video.muted = true

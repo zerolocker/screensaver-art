@@ -2,17 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyNativeAuth } from '@/lib/auth/verify-native-auth'
 
-// Stores Electron-app debug reports in the `user-error-reports` Supabase Storage
-// bucket. Reports are uploaded by the desktop app (Bearer-authenticated) for
-// later diagnosis — see electron-app/src/main/report.ts.
-//
-// Uses the service role so writes bypass storage RLS; the bucket stays private
-// and is never read by clients. Reports are namespaced per user id.
+// Stores the app's error reports (electron-app/src/main/report.ts) in the
+// private `user-error-reports` bucket, under the user's id. Requires a Bearer token.
 
 const BUCKET = 'user-error-reports'
 const MAX_BYTES = 1_000_000 // ~1 MB cap; reports are small JSON
 
-// Service role client (server-only) — bypasses RLS for the private bucket.
+// Service role: bypasses RLS.
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,

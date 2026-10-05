@@ -5,6 +5,7 @@ import { PieceStage } from '@/components/gallery/piece-stage'
 import { PieceGrid } from '@/components/gallery/piece-grid'
 import {
   AiDisclosure,
+  ArtworkCredit,
   Breadcrumbs,
   DownloadBand,
   GalleryPageShell,
@@ -23,13 +24,9 @@ import { SITE_OG_IMAGE, SITE_URL } from '@/lib/seo'
 import { greenGlow } from '@/lib/brand'
 
 /**
- * `/art/<slug>` — one page per piece. **This is the tier the whole feature is
- * for**: a Pinterest pin (or a YouTube description, or any social clip) points
- * here, the visitor lands on the exact art they clicked, sees it moving at full
- * width, and gets one obvious Mac download.
- *
- * The slug is permanent by construction — see `slugForSrc` in
- * lib/gallery-catalog.ts for why that is a hard requirement and how it's held.
+ * `/art/<slug>`: one page per piece, where social posts land. The visitor sees
+ * the piece moving and one Mac download button. The slug must never change
+ * (see `slugForSrc`).
  */
 
 // Rendered on first visit, then cached for the life of the deployment — the
@@ -47,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!piece) return {}
 
   const url = `${SITE_URL}/art/${piece.slug}`
-  // Absolute, because the poster may live on R2 rather than this origin.
+  // Absolute, because the poster is on R2.
   const image = piece.cardUrl
     ? piece.cardUrl.startsWith('http')
       ? piece.cardUrl
@@ -55,30 +52,20 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     : null
 
   return {
-    title: piece.movement ? `${piece.name} — ${piece.movement}, animated` : `${piece.name}, animated`,
+    title: piece.subtitle ? `${piece.name} — ${piece.subtitle}, animated` : `${piece.name}, animated`,
     description: pieceSummary(piece),
     alternates: { canonical: url },
-    // See INDEX_ART_PAGES in lib/gallery-catalog.ts. `follow` stays on either
-    // way, so the links out to /gallery and /era/<tag> still count even while
-    // these pages are held back from the index. This is a search-engine
-    // directive only — it does not stop anyone linking to, sharing or pinning
-    // the page, which is the traffic these pages were actually built for.
+    // See INDEX_ART_PAGES. `follow` stays on so links out still count.
     robots: INDEX_ART_PAGES ? undefined : { index: false, follow: true },
     openGraph: {
       type: 'website',
       url,
-      title: `${piece.name}${piece.movement ? ` — ${piece.movement}` : ''}`,
+      title: `${piece.name}${piece.subtitle ? ` — ${piece.subtitle}` : ''}`,
       description: pieceSummary(piece),
-      // `images` MUST be set explicitly: overriding `openGraph` at all drops the
-      // root opengraph-image Next would otherwise attach (see SITE_OG_IMAGE).
-      // The 77 pieces with no still fall back to the site-wide branded card —
-      // not ideal, a piece-specific card unfurls far better, but posters can't
-      // be generated here (media is never committed to this repo, CLAUDE.md →
-      // Repo rules) and a branded card beats no card at all.
-      // Dimensions matter: the old raw 5504x3072 still exceeded X's 4096px cap
-      // and was silently rejected. og_img is generated at exactly 1280x720.
+      // Overriding `openGraph` drops the default site card, so set `images`
+      // explicitly. og_img is 1280x720; X rejects images over 4096px.
       images: image
-        ? [{ url: image, width: 1280, height: 720, alt: `${piece.name} — ${piece.movement}` }]
+        ? [{ url: image, width: 1280, height: 720, alt: `${piece.name} — ${piece.subtitle || piece.era}` }]
         : [{ url: SITE_OG_IMAGE, width: 1200, height: 630 }],
       videos: [{ url: piece.src, type: 'video/mp4' }],
     },
@@ -94,6 +81,7 @@ export default async function ArtPiecePage({ params }: { params: Promise<{ slug:
   const paragraphs = pieceParagraphs(piece)
   const related = relatedPieces(piece)
   const added = formatMonth(piece.date)
+  const artwork = piece.artwork
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -105,15 +93,28 @@ export default async function ArtPiecePage({ params }: { params: Promise<{ slug:
     uploadDate: piece.date || undefined,
     isFamilyFriendly: true,
     genre: piece.movement || piece.era,
+    // For a real artwork, credit the artist and museum.
     creator: { '@type': 'Organization', name: 'Living Art Screensaver' },
+    ...(artwork
+      ? {
+          isBasedOn: {
+            '@type': 'VisualArtwork',
+            name: artwork.originalTitle,
+            creator: { '@type': 'Person', name: artwork.artist },
+            ...(artwork.originalDate ? { dateCreated: artwork.originalDate } : {}),
+            url: artwork.sourceUrl,
+            license: LICENSE_URLS[artwork.license] ?? artwork.license,
+            creditText: [artwork.museum, artwork.creditLine].filter(Boolean).join(', '),
+          },
+        }
+      : {}),
   }
 
   return (
     <GalleryPageShell>
       <script
         type="application/ld+json"
-        // Escape "<" so no value can break out of the script block (Next.js
-        // JSON-LD guide — JSON.stringify alone doesn't sanitize).
+        // Escape "<" so no value can break out of the script tag.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
 
@@ -138,8 +139,9 @@ export default async function ArtPiecePage({ params }: { params: Promise<{ slug:
               {piece.name}
             </h1>
             <p className="m-0 mt-[8px] text-[17px] text-muted-foreground">
-              {piece.movement && <span className="text-muted-foreground-strong">{piece.movement}</span>}
-              {piece.movement && era && <span className="text-muted-foreground-subtle"> · </span>}
+              {piece.subtitle && <span className="text-muted-foreground-strong">{piece.subtitle}</span>}
+              {artwork?.originalDate && <span className="text-muted-foreground-strong">, {artwork.originalDate}</span>}
+              {piece.subtitle && era && <span className="text-muted-foreground-subtle"> · </span>}
               {era && (
                 <Link href={`/era/${era.slug}`} className="text-primary no-underline hover:underline">
                   {era.era}
@@ -148,12 +150,12 @@ export default async function ArtPiecePage({ params }: { params: Promise<{ slug:
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-[8px]">
+            {artwork && <Chip label="Real artwork" />}
             <Chip label="AI-animated" />
+            {artwork && <Chip label={artwork.license === 'CC0' ? 'CC0' : 'Public domain'} />}
             {piece.looping && <Chip label="Seamless loop" />}
             {added && <Chip label={`Added ${added}`} />}
-            {/* Only free pieces get a badge. Locked pieces get no badge rather
-                than a "subscriber only" scold — but nothing anywhere implies
-                they're free either; the prose below says which is which. */}
+            {/* Only free pieces get a badge; the prose covers the rest. */}
             {piece.free && <Chip label="In the free tier" accent />}
           </div>
         </header>
@@ -165,7 +167,8 @@ export default async function ArtPiecePage({ params }: { params: Promise<{ slug:
                 {text}
               </p>
             ))}
-            <AiDisclosure className="mt-[22px] border-t border-white/[0.07] pt-[18px]" />
+            {artwork && <ArtworkCredit artwork={artwork} className="mt-[22px]" />}
+            <AiDisclosure piece={piece} className="mt-[22px] border-t border-white/[0.07] pt-[18px]" />
           </div>
 
           {era && (
@@ -201,6 +204,12 @@ export default async function ArtPiecePage({ params }: { params: Promise<{ slug:
       />
     </GalleryPageShell>
   )
+}
+
+/** schema.org wants a licence URL. */
+const LICENSE_URLS: Record<string, string> = {
+  'Public Domain': 'https://creativecommons.org/publicdomain/mark/1.0/',
+  CC0: 'https://creativecommons.org/publicdomain/zero/1.0/',
 }
 
 function Chip({ label, accent = false }: { label: string; accent?: boolean }) {

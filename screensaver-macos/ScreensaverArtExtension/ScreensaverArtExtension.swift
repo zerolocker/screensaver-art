@@ -1,12 +1,8 @@
 import Foundation
 import ScreenSaver
 
-// Principal class for the screensaver extension. Specified as
-// NSExtensionPrincipalClass in Info.plist as
-// `$(PRODUCT_MODULE_NAME).ScreensaverArtExtension`.
-//
-// Following Apple's own screensavers (e.g. Arabesque.appex) we keep this
-// minimal — only implement init() and let the framework drive lifecycle.
+// The NSExtensionPrincipalClass in Info.plist. Like Apple's Arabesque.appex, it
+// only implements init().
 
 private let logger = LartLog.logger("Extension")
 

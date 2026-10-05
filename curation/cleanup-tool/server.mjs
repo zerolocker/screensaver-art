@@ -1,17 +1,12 @@
-// Living Art Screensaver — Gallery Curation Tool (local server)
-//
-// Zero-dependency Node HTTP server. Serves a local web UI that lets you browse
-// every piece in gallery.json (video + prompts) and mark them "undesirable"
-// (remove) or "great" (want more), each with an optional note. Your flags are
-// written to curation/cleanup-tool/selections.json, which Claude then processes
-// (delete undesirable from gallery.json + refine the nightly-curation prompt
-// guidance from your notes — what to avoid and what to make more of).
+// The review tool's local server (no dependencies). Lists every piece in
+// gallery.json so you can flag it "undesirable" or "great", with a note. Flags
+// are saved to curation/cleanup-tool/selections.json.
 //
 //   node curation/cleanup-tool/server.mjs           # serve + open browser
 //   PORT=5000 node curation/cleanup-tool/server.mjs # custom port
 //   NO_OPEN=1 node curation/cleanup-tool/server.mjs # don't auto-open the browser
 //
-// Videos stream directly from the public R2 bucket, so nothing is downloaded.
+// Videos stream straight from R2.
 
 import { createServer } from 'node:http';
 import { readFile, writeFile } from 'node:fs/promises';

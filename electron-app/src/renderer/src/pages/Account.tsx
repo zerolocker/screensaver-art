@@ -29,8 +29,7 @@ export function AccountPage({ session }: AccountPageProps) {
 
   const [clearing, setClearing] = useState(false)
 
-  // Gallery sync is owned by the app-wide SyncProvider (auto-sync on open +
-  // sidebar status). The Account page just surfaces the detail + a manual button.
+  // Sync state lives in SyncProvider; this page shows it and a manual button.
   const {
     syncing,
     progress,
@@ -44,12 +43,8 @@ export function AccountPage({ session }: AccountPageProps) {
 
   useEffect(() => {
     fetchSubscription()
-    // Re-check the subscription whenever the window regains focus. This is what
-    // makes a just-completed purchase show up "instantly": after the user
-    // finishes the browser checkout flow and switches back to the app, the focus
-    // event fires and we re-verify — no tab toggle or restart needed. (Installer
-    // status has its own focus refresh in the InstallerProvider; cache stats +
-    // sync progress are owned by the SyncProvider.)
+    // Re-check on focus, so a purchase made in the browser shows up when the
+    // user switches back.
     const onFocus = () => {
       fetchSubscription()
     }
@@ -68,18 +63,14 @@ export function AccountPage({ session }: AccountPageProps) {
       })
       if (res.ok) {
         const data = await res.json()
-        // Always mirror the server's answer (including null) so a refetch
-        // reflects the *current* state — a brand-new purchase flips us to
-        // subscribed, a cancellation flips us back.
+        // Mirror the server's answer, including null.
         setSubscription(data.subscription ?? null)
       } else {
-        // Don't fail silently. A 401 here (e.g. a stale token) is exactly why a
-        // real subscription can look "stuck" on the free tier — log it so it
-        // shows up in the diagnostics report instead of vanishing.
+        // Log it: a 401 here makes a real subscription look like the free tier.
         log.warn('account', 'subscription verify failed', { status: res.status })
       }
     } catch (err) {
-      // Offline — keep showing whatever we last had, but record it.
+      // Offline: keep the last answer.
       log.warn('account', 'subscription verify threw', {
         error: err instanceof Error ? err.message : String(err),
       })
@@ -108,8 +99,7 @@ export function AccountPage({ session }: AccountPageProps) {
   }
 
   return (
-    // No top padding: content starts flush under the app shell's titlebar strip
-    // so it lines up with the sidebar title (matches the Gallery tab).
+    // No top padding, to line up with the sidebar title.
     <div className="px-6 pb-6">
       <AppBanners showUpsell={!subLoading && !isSubscriptionActive(subscription)} />
 
@@ -144,10 +134,7 @@ export function AccountPage({ session }: AccountPageProps) {
           <SubscriptionCard
             subscription={subscription}
             onCheckout={async (plan) => {
-              // Skip the website re-login + extra click: create a Stripe checkout
-              // from the app's session and open it directly. The card's buttons
-              // are per-plan ("Buy once - own it forever" / "Subscribe" / "Upgrade to Lifetime"),
-              // so no plan picker here.
+              // Straight to Stripe. The card's buttons are per plan, so no picker.
               await startCheckout('account_card', plan)
               return {}
             }}
@@ -158,10 +145,6 @@ export function AccountPage({ session }: AccountPageProps) {
             openExternal={(url) => void window.electronAPI.shell.openExternal(url)}
           />
         )}
-
-        {/* The screensaver is registered automatically on launch (see
-            InstallerProvider), and the one-click "Set" prompt lives in the
-            top-of-app banner — so there's no Screensaver card to manage here. */}
 
         {/* Gallery sync */}
         <Card className="bg-card border-border">
@@ -204,9 +187,7 @@ export function AccountPage({ session }: AccountPageProps) {
                 )}
               </p>
             )}
-            {/* Only surface the error inline for an explicit manual sync; an
-                auto-sync failure (e.g. offline at launch) is shown quietly in
-                the sidebar instead of as a red error here. */}
+            {/* Only for a manual sync; auto-sync errors show quietly in the sidebar. */}
             {syncError && lastTrigger === 'manual' && (
               <p className="text-xs text-red-500">{syncError}</p>
             )}

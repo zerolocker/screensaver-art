@@ -2,31 +2,21 @@ import Foundation
 
 // MARK: - Constants
 
-/// Cache layout — populated and managed entirely by the Electron companion app.
-/// The screensaver only reads.
-///
-/// Unlike the old legacy `.saver` (which ran inside the legacyScreenSaver
-/// sandbox container and read `.cachesDirectory`), this appex reads from a
-/// fixed, shared path under `/Users/Shared/`. `/Users/Shared/` is nobody's
-/// app container, so the un-sandboxed Electron app can write there with no
-/// "access data from other apps" TCC prompt, and this sandboxed extension can
-/// read it via a `temporary-exception.files.absolute-path.read-only`
-/// entitlement (see ScreensaverArtExtension.entitlements). The absolute path
-/// MUST match `getCacheDir()` in electron-app/src/main/cache-sync.ts.
+/// The cache, written by the Electron app and only read here. The sandbox can
+/// read /Users/Shared through an entitlement, and writing there triggers no
+/// privacy prompt. MUST match `getCacheDir()` in electron-app/src/main/cache-sync.ts.
 enum Cache {
     static let baseDir = URL(fileURLWithPath: "/Users/Shared/LivingArtScreensaver", isDirectory: true)
 
-    /// `<baseDir>/videos/` — `.bin` files, XOR-obfuscated.
+    /// Obfuscated `.bin` files.
     static let videosDir: URL = baseDir.appendingPathComponent("videos", isDirectory: true)
 
-    /// `<baseDir>/gallery.json` — manifest written by Electron.
+    /// The manifest.
     static let manifestFile: URL = baseDir.appendingPathComponent("gallery.json")
 }
 
-/// Cache-file obfuscation. Mirrors electron-app/src/main/obfuscation.ts —
-/// if you change either, change both. Not real cryptography; the goal is to
-/// make the `.bin` files in the cache directory inert without our reader,
-/// to deter casual extraction for a $0.99 product.
+/// Cache obfuscation. MUST match electron-app/src/main/obfuscation.ts. It deters
+/// casual copying; it isn't encryption.
 enum Obfuscation {
     static let magic: [UInt8] = Array("LARTV001".utf8)
     static let key: [UInt8] = [

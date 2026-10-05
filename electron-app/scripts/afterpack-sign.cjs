@@ -1,35 +1,13 @@
-// electron-builder `afterPack` hook — make the embedded screensaver .appex have
-// a VALID code signature in the packaged app.
+// electron-builder `afterPack` hook: give the embedded .appex a valid signature.
 //
-// WHY THIS EXISTS
-// For a `universal` mac build, electron-builder builds an x64 and an arm64 app
-// and merges them with @electron/universal. That merge rewrites nested
-// `Info.plist` files AFTER the .appex was signed, invalidating its signature:
-//
-//     codesign --verify …/ScreensaverArtExtension.appex
-//     → "invalid Info.plist (plist or signature have been modified)"
-//
-// `pluginkit -a` silently refuses to register a screensaver extension whose
-// signature is broken — it exits 0 but the extension never shows up in
-// `pluginkit -m`. In the app that surfaced as the install error
-//     "Failed to register the screensaver (helper exit 0)."
-//
-// macPackager calls afterPack once for the merged universal app, after the merge
-// and before electron-builder's own signing — so this is where we fix the appex.
-//
-// TWO MODES (driven by LART_CODESIGN_IDENTITY; kept in lockstep with
-// electron-builder.cjs):
-//
-//   ad-hoc ("-" / unset): electron-builder does NOT sign (identity:null), so we
-//     sign the WHOLE bundle ourselves: deep ad-hoc sign, re-sign the appex with
-//     its entitlements, re-seal the outer app, verify. Matches the locally-valid
-//     signature Xcode gives the dev DevHost build (registers fine on this Mac).
-//
-//   Developer ID: electron-builder signs the frameworks/helpers/outer app with
-//     the hardened runtime AND notarizes — but it ignores Contents/PlugIns, so
-//     it never touches the appex. We pre-sign ONLY the appex (with its sandbox
-//     entitlements) + the helper (insurance) here, hardened runtime + secure
-//     timestamp; electron-builder then seals the outer app over them.
+// The universal merge rewrites the appex's Info.plist after it was signed, and
+// `pluginkit -a` silently ignores an appex with a broken signature. This runs
+// after the merge and before electron-builder signs. LART_CODESIGN_IDENTITY
+// picks the mode (matching electron-builder.cjs):
+//   - Ad-hoc (unset or "-"): electron-builder doesn't sign, so sign the whole
+//     bundle here.
+//   - Developer ID: electron-builder signs everything except Contents/PlugIns,
+//     so sign only the appex and helper here.
 
 const { execFileSync } = require('child_process')
 const { existsSync } = require('fs')
@@ -41,14 +19,8 @@ const HELPER_REL = path.join('Contents', 'Resources', 'lart-screensaver-helper')
 module.exports = async function afterPack(context) {
   if (context.electronPlatformName !== 'darwin') return
 
-  // afterPack fires for BOTH the per-arch sub-builds of a universal build
-  // (electron-builder packs them into `<appOutDir>-<arch>-temp` dirs) AND the
-  // final merged app. We must NOT sign the per-arch temp builds: @electron/
-  // universal merges them and requires their non-binary files (including each
-  // framework's `_CodeSignature/CodeResources`) to be byte-identical across
-  // arches. Signing them independently diverges those files and the merge fails
-  // with "Expected all non-binary files to have identical SHAs…". Sign only the
-  // merged universal app (and standalone single-arch builds), never the temps.
+  // Skip the per-arch temp builds: the universal merge needs their non-binary
+  // files identical, and signing them separately breaks that.
   if (/-(x64|arm64|armv7l|ia32)-temp$/.test(context.appOutDir)) {
     console.log(`[afterpack-sign] skipping per-arch temp build ${context.appOutDir}`)
     return
@@ -73,8 +45,7 @@ module.exports = async function afterPack(context) {
 
   const identity = process.env.LART_CODESIGN_IDENTITY || '-'
   const adhoc = identity === '-'
-  // Ad-hoc signatures carry no secure timestamp; a Developer ID build needs a
-  // timestamp + the hardened runtime for notarization.
+  // Notarization needs a timestamp and the hardened runtime.
   const opts = adhoc ? ['--timestamp=none'] : ['--timestamp', '--options', 'runtime']
 
   const codesign = (args) =>
@@ -83,25 +54,19 @@ module.exports = async function afterPack(context) {
     })
 
   if (adhoc) {
-    // 1. Sign all nested code + the app in one pass.
     codesign(['--deep', appPath])
-    // 2. Give the appex back its entitlements (deep signing dropped them).
+    // Deep signing dropped the appex's entitlements.
     codesign(['--entitlements', entitlements, appexPath])
-    // 3. Re-seal the outer app over the re-signed appex.
+    // Re-seal the app over the re-signed appex.
     codesign([appPath])
   } else {
-    // Developer ID: only the appex (+ helper) need our intervention; electron-
-    // builder signs and seals everything else afterwards.
     if (existsSync(helperPath)) {
       codesign([helperPath])
     }
     codesign(['--entitlements', entitlements, appexPath])
   }
 
-  // Verify the appex regardless of mode — a broken appex signature is the exact
-  // condition that makes the screensaver impossible to register. (The outer app
-  // is only fully signed at this point in ad-hoc mode; electron-builder signs +
-  // verifies it in Developer ID mode.)
+  // A broken appex signature makes registration fail, so always verify it.
   execFileSync('/usr/bin/codesign', ['--verify', '--deep', '--strict', '--verbose=2', appexPath], {
     stdio: 'inherit',
   })

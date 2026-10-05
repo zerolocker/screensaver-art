@@ -202,39 +202,9 @@ Complete worked example covering every template: [`examples/demo.yaml`](examples
 
 ## Notes
 
-- TTS: `gemini-3.8-flash-tts` + `Sulafat` is the default. In blind listening tests
-  judged by Gemini Pro, it beat the previous default (`gemini-3.1-flash-tts-preview`
-  + `Vindemiatrix`) in 9 of 12 comparisons. Across voices, 3.8 and 3.1 came out
-  about even (3.8 won 10 of 18), but 3.8 lost every round with `Vindemiatrix`, so
-  the voice changed with the model. `gemini-3.8-flash-lite-tts` is a little faster
-  and close behind, and is the fallback: Google names it the replacement for the
-  legacy-preview 3.1, and it takes the same request shape and style.
-  `gemini-2.5-pro-preview-tts` sounded stiffer than both.
-- 3.8 models go through the Interactions API (with `store=False`) and read the text
-  **strictly as a verbatim transcript**: any direction placed in the text gets
-  spoken. `tts.py` sends the `style` as speech metadata instead, so keep narration
-  pure speech. There is no numeric speaking-rate setting; the docs steer pace only
-  through `style` ("speaking rapidly"), which is coarse, so `speed` time-stretches
-  the audio instead. An earlier
-  note here said 3.8 "reads the style direction aloud and drops sentences". That was
-  the old call path prepending the style to the text. Invoked correctly, 3.8 passed
-  the transcription check on every demo beat. Style matters for 3.8: with no style
-  it sounds flat, and `friendly, warm and engaging` tested best.
-- Each new clip gets a duration sanity check and a transcription check
-  (re-synthesised once on mismatch; warns if still off). The transcriber is
-  `gemini-3.5-transcribe`, a dedicated speech-to-text model. On the 24 demo beats
-  the general `gemini-flash-latest` used before returned one empty transcript (a
-  false "missing speech"), prefixed another with "thought", and was 2.5× slower.
-  Mishearings of rare words ("Veo", "tarantella") stay within the tolerance.
-- `video` clips are always **muted** (narration is the only audio), normalised to
-  1080p30 whatever their fps/size/rotation, letterboxed (never cropped), and play
-  continuously across the scene's beats: looped by default when the narration runs
-  longer (`loop: false` freezes on the last frame). `layout: full` keeps the scene
-  progress bar and caption on a gradient over the clip.
-- Output: 1920×1080 30 fps H.264 (yuv420p, faststart, CRF 30 `stillimage`) + AAC
-  96k, loudness-normalised to −16 LUFS, burned-in captions — plays in
-  QuickTime and on phones. Keep the file **under 30 MB** so it can be delivered
-  to a phone (≈15 MB for 4 min at these settings).
-- Needs Google Chrome, ffmpeg, Python with `google-genai` ≥ 2.25 (the Interactions
-  API, for 3.8 models), `PyYAML`, `Pillow`.
-  Fonts are macOS system fonts (New York, Avenir Next) — no network fonts.
+- **TTS:** the default is `gemini-3.8-flash-tts` with the `Sulafat` voice, which won blind listening tests. `gemini-3.8-flash-lite-tts` is the fallback.
+- 3.8 models use the Interactions API (`store=False`) and read the text as a strict verbatim transcript: any direction in the text gets spoken. So `tts.py` sends `style` as speech metadata; keep narration pure speech. 3.8 sounds flat without a style, and `friendly, warm and engaging` tested best. There's no speaking-rate setting, so `speed` time-stretches the audio.
+- Each new clip gets a duration check and a transcription check with `gemini-3.5-transcribe`, and is re-synthesised once on a mismatch. Mishearings of rare words ("Veo", "tarantella") stay within tolerance.
+- `video` clips are always muted, normalised to 1080p30, letterboxed (never cropped), and play across all of the scene's beats: looped by default, or frozen on the last frame with `loop: false`. `layout: full` keeps the progress bar and caption on a gradient over the clip.
+- Output: 1920×1080 30 fps H.264 + AAC 96k, loudness-normalised to −16 LUFS, with burned-in captions. Plays in QuickTime and on phones. Keep it under 30 MB (about 15 MB for 4 minutes).
+- Needs Google Chrome, ffmpeg, and Python with `google-genai` ≥ 2.25, `PyYAML` and `Pillow`. Fonts are macOS system fonts (New York, Avenir Next).

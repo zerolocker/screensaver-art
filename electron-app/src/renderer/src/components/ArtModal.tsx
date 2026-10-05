@@ -1,20 +1,17 @@
 import { useEffect, useRef } from 'react'
 import { X, Check, Lock } from 'lucide-react'
-import { type ArtItem, tagsOf } from '@screensaver-art/constants'
+import { type ArtItem, isRealArtwork, tagsOf } from '@screensaver-art/constants'
 import { ArtVideo } from '@screensaver-art/ui'
 
 interface ArtModalProps {
   item: ArtItem
   selected: boolean
-  // Locked = a non-subscriber's non-free piece: the add action becomes an
-  // "Unlock" that opens the plan picker.
+  // Locked: the add button becomes "Unlock", which opens the plan picker.
   locked: boolean
   onToggle: () => void
   onSubscribe: () => void
   onClose: () => void
-  // When true, also push the app window into native macOS fullscreen while the
-  // preview is open, so the piece fills the whole display (the "Fullscreen"
-  // preview mode). When false the preview just fills the app window ("In-app").
+  // Use native fullscreen while open ("Fullscreen" mode), rather than just the window ("In-app").
   osFullscreen?: boolean
 }
 
@@ -25,13 +22,24 @@ function formatDate(date?: string): string | null {
   return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
-// Full-screen preview of a single piece so the art reads the way it will as a
-// screensaver. The video fills the viewport with object-cover (mirroring the
-// screensaver's AVLayerVideoGravity.resizeAspectFill), except a portrait (9:16)
-// piece, which ArtVideo hangs whole on the dark wall; the title/tags/date and
-// the add/remove (or "Unlock") action float over a bottom gradient
-// scrim. Clicking anywhere (except that action button), Escape, or the close
-// button dismisses — so it's a quick tap back to the gallery.
+// A real artwork's credit, e.g. "Original by Gustave Caillebotte, 1877 · Art
+// Institute of Chicago · Public domain · Motion by AI". Null for AI pieces.
+// "Original" rather than "Painting", since prints and drawings qualify too.
+function artworkCredit(item: ArtItem): string | null {
+  if (!isRealArtwork(item) || !item.artist) return null
+  return [
+    `Original by ${[item.artist, item.original_date].filter(Boolean).join(', ')}`,
+    item.museum,
+    item.license === 'CC0' ? 'CC0' : 'Public domain',
+    'Motion by AI',
+  ]
+    .filter(Boolean)
+    .join(' · ')
+}
+
+// A full-screen preview of one piece, filling the view like the screensaver
+// does. A portrait (9:16) piece is shown whole on the dark wall (ArtVideo).
+// Clicking anywhere but the action button, Escape, or close dismisses it.
 export function ArtModal({
   item,
   selected,
@@ -51,12 +59,9 @@ export function ArtModal({
     return () => document.removeEventListener('keydown', onKey)
   }, [onClose])
 
-  // Release the media pipeline only when the modal actually unmounts. This MUST
-  // stay out of the keydown effect above: onClose is a fresh closure on every
-  // parent render, so a combined effect would re-run its cleanup on any Gallery
-  // re-render (tapping "Add to screensaver", or supabase refreshing the session
-  // on window focus) and strip the <video> src — which React never restores,
-  // leaving a black frame with the controls still visible.
+  // Release the video only on unmount. Keep this separate from the keydown
+  // effect: onClose changes on every parent render, and a shared cleanup would
+  // strip the <video> src mid-preview, leaving a black frame.
   useEffect(() => {
     return () => {
       const v = videoRef.current
@@ -67,8 +72,7 @@ export function ArtModal({
     }
   }, [])
 
-  // Drive native macOS fullscreen for the lifetime of the preview, restoring the
-  // windowed state on close. No-op (and no IPC) in "In-app" mode.
+  // Fullscreen while open, windowed again on close. Nothing in "In-app" mode.
   useEffect(() => {
     if (!osFullscreen) return
     window.electronAPI?.window?.setFullScreen(true)
@@ -81,6 +85,7 @@ export function ArtModal({
   const meta = [tagsOf(item).join(' · '), dateStr ? `Added ${dateStr}` : null]
     .filter(Boolean)
     .join('  ·  ')
+  const credit = artworkCredit(item)
 
   return (
     <div
@@ -97,7 +102,7 @@ export function ArtModal({
         className="absolute inset-0 w-full h-full object-cover bg-black"
       />
 
-      {/* Close — top-right, clear of the macOS traffic lights (top-left). */}
+      {/* Top-right, clear of the traffic lights. */}
       <button
         onClick={onClose}
         aria-label="Close preview"
@@ -106,11 +111,11 @@ export function ArtModal({
         <X className="w-5 h-5" />
       </button>
 
-      {/* Metadata + action float over a gradient scrim so they stay legible
-          over any frame of the art without obscuring it. */}
+      {/* Title and action over a gradient, legible on any frame. */}
       <div className="absolute inset-x-0 bottom-0 z-10 flex items-end gap-4 p-6 pt-20 bg-gradient-to-t from-black/85 via-black/40 to-transparent">
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-semibold text-white truncate">{item.title}</h3>
+          {credit && <p className="text-sm text-white/85 mt-1">{credit}</p>}
           {meta && <p className="text-sm text-white/70 mt-1">{meta}</p>}
         </div>
         {locked && !selected ? (
@@ -138,8 +143,7 @@ export function ArtModal({
             }`}
           >
             {selected ? (
-              // A locked-but-selected piece (subscription lapsed) won't play until
-              // they re-subscribe; the action just lets them remove it.
+              // Locked but selected (subscription lapsed): only removal is offered.
               locked ? (
                 <>
                   <Lock className="w-4 h-4" /> Locked — remove

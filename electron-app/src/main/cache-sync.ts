@@ -1,6 +1,5 @@
-// Cache sync — fetches the gallery from the website's API, downloads each
-// MP4, obfuscates it, and writes it to the shared screensaver cache dir.
-// The Swift screensaver only ever reads this dir.
+// Fetches the gallery from the website, downloads and obfuscates each MP4, and
+// writes it to the cache dir that the screensaver reads.
 
 import { existsSync, createWriteStream } from 'fs'
 import { mkdir, writeFile, readdir, unlink, rename } from 'fs/promises'
@@ -14,10 +13,6 @@ import { obfuscateChunk, filenameForUrl, MAGIC } from './obfuscation'
 import { log } from './logger'
 import { isItemFree, type ArtItem, type GalleryApiResponse } from '@screensaver-art/constants'
 
-// The /api/gallery item + response shape lives in @screensaver-art/constants so
-// the website (producer) and this client (consumer) share one definition.
-// Free-ness is per-item (`ArtItem.free`); a non-subscriber may only play/cache
-// the free pieces.
 export type ApiItem = ArtItem
 export type ApiResponse = GalleryApiResponse
 
@@ -33,36 +28,19 @@ export type CachedManifest = {
   syncedAt: string
 }
 
-// How long to wait for the gallery JSON before giving up. The list is tiny, so
-// this is really just a guard against a hung connection.
 const GALLERY_TIMEOUT_MS = 20_000
-// A *stall* timeout, not a total timeout: we abort a download only if NO bytes
-// arrive for this long. A slow-but-progressing download (small pipe, big video)
-// is never killed — the timer resets on every chunk.
+// Abort a download only if no bytes arrive for this long; slow downloads are fine.
 const STALL_TIMEOUT_MS = 30_000
-// Transient failures (a stalled connection, an R2 hiccup) get a couple of
-// retries before we give up on an item and move on.
 const DOWNLOAD_RETRIES = 2
 const RETRY_BACKOFF_MS = 400
 
-// The free pieces (those flagged `free` in the gallery) are the default play set
-// for a never-customized (null) selection — so a fresh install plays a sensible
-// set before the user ever opens the gallery.
-
 export function getCacheDir(): string {
-  // Test-only override (the test suite points this at a tmp dir so it never
-  // touches the real /Users/Shared). NOT a user-facing setting: the Swift
-  // screensaver hardcodes /Users/Shared/LivingArtScreensaver, so overriding
-  // this in production would desync the writer from the reader.
+  // Tests only. The screensaver hardcodes the real path.
   if (process.env.LART_CACHE_DIR) return process.env.LART_CACHE_DIR
   if (process.platform === 'darwin') {
-    // Shared, un-sandboxed location that both the Electron app (writer) and the
-    // .appex screensaver (reader, via a temporary-exception.files.absolute-path
-    // entitlement) can reach. /Users/Shared/ is nobody's app container, so
-    // writing here triggers no "access data from other apps" TCC prompt — which
-    // is exactly why the old legacyScreenSaver-container path is gone.
-    // MUST match `Cache.baseDir` in
-    // screensaver-macos/ScreensaverArtExtension/Constants.swift.
+    // The sandboxed screensaver can read /Users/Shared through an entitlement,
+    // and writing here triggers no privacy prompt. MUST match `Cache.baseDir`
+    // in screensaver-macos/ScreensaverArtExtension/Constants.swift.
     return '/Users/Shared/LivingArtScreensaver'
   }
   return join(process.env.LOCALAPPDATA || join(homedir(), 'AppData', 'Local'), 'ScreensaverArt')
@@ -78,8 +56,7 @@ function emit(window: BrowserWindow | null, event: string, payload: unknown): vo
   }
 }
 
-// A cancellable sleep — resolves after `ms`, or rejects immediately if the sync
-// is cancelled while we're backing off between retries.
+// A sleep that rejects as soon as the sync is cancelled.
 function delay(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
     if (signal.aborted) {
@@ -98,20 +75,16 @@ function delay(ms: number, signal: AbortSignal): Promise<void> {
   })
 }
 
-// Stream the video to a temp file, obfuscating on the fly, then atomically
-// rename it into place. The final `<hash>.bin` therefore only ever appears
-// fully written — a download killed mid-flight (app quit, stall, network drop)
-// leaves at most a `<hash>.bin.tmp`, which is swept on the next sync, NOT a
-// truncated `.bin` that would be skipped forever by the existsSync() check.
+// Stream the video to a temp file, obfuscating as it goes, then rename it into
+// place. An interrupted download leaves a `.tmp` (swept next sync), never a
+// truncated `.bin` that the existsSync() check would skip forever.
 async function downloadAndObfuscate(
   item: ApiItem,
   dest: string,
   signal: AbortSignal,
 ): Promise<void> {
   const tmp = dest + '.tmp'
-  // Per-download stall guard. Reset on every chunk; if it fires, abort the
-  // fetch + pipeline. Combined with the sync-wide signal so a quit/cancel also
-  // tears the download down.
+  // Stall guard, reset on every chunk, combined with the sync-wide cancel signal.
   const stall = new AbortController()
   const combined = AbortSignal.any([signal, stall.signal])
   let timer: NodeJS.Timeout | undefined
@@ -130,7 +103,7 @@ async function downloadAndObfuscate(
     let wroteMagic = false
     const obfuscator = new Transform({
       transform(chunk: Buffer, _enc: BufferEncoding, cb: TransformCallback): void {
-        armStall() // bytes are flowing — reset the stall timer
+        armStall()
         const obf = obfuscateChunk(chunk, offset)
         offset += chunk.length
         if (wroteMagic) {
@@ -141,8 +114,7 @@ async function downloadAndObfuscate(
         }
       },
       flush(cb: TransformCallback): void {
-        // Zero-byte body: still emit the magic header so the file is a valid
-        // (empty) obfuscated payload rather than a 0-byte file.
+        // Empty body: still write the header.
         if (!wroteMagic) cb(null, MAGIC)
         else cb()
       },
@@ -157,14 +129,11 @@ async function downloadAndObfuscate(
     await rename(tmp, dest)
   } finally {
     clearTimeout(timer)
-    // Best-effort: any partial temp file from a failed/aborted run must not
-    // linger as a half-written sibling.
     if (existsSync(tmp)) await unlink(tmp).catch(() => {})
   }
 }
 
-// Download with a few retries for transient failures. A real cancel (app quit
-// or a superseding manual sync) is NOT retried — we bail out immediately.
+// Retry transient failures, but not a cancel.
 async function downloadWithRetry(item: ApiItem, dest: string, signal: AbortSignal): Promise<void> {
   let lastErr: unknown
   for (let attempt = 0; attempt <= DOWNLOAD_RETRIES; attempt++) {
@@ -173,7 +142,7 @@ async function downloadWithRetry(item: ApiItem, dest: string, signal: AbortSigna
       await downloadAndObfuscate(item, dest, signal)
       return
     } catch (err) {
-      if (signal.aborted) throw err // cancelled — don't burn retries
+      if (signal.aborted) throw err
       lastErr = err
       if (attempt < DOWNLOAD_RETRIES) await delay(RETRY_BACKOFF_MS * (attempt + 1), signal)
     }
@@ -193,21 +162,15 @@ async function sweepTempFiles(): Promise<void> {
 }
 
 // ─── Public API ──────────────────────────────────────────────────────────────
-// syncGallery is re-entrancy-guarded: a second caller (e.g. a manual "Sync Now"
-// click while the on-open auto-sync is running) joins the in-flight run instead
-// of kicking off a duplicate. cancelSync() aborts the current run (used on app
-// quit); isSyncing() lets the renderer reflect a sync already underway.
+// A second syncGallery() call while one is running joins it. cancelSync() is
+// used on quit.
 
 let inFlight: Promise<CachedManifest> | null = null
 let inFlightAbort: AbortController | null = null
 
-// `selectedSrcs` is the user's chosen subset (a list of item `src` URLs). A null
-// selection (the user has never customized it) defaults to the free pieces.
-// Locked items (a non-subscriber's non-free pieces) are never downloaded. By
-// default a deselected-but-unlocked item is KEPT on disk so re-adding it is
-// instant ("cache" is decoupled from "what plays"); set `pruneDeselected` (a
-// manual "Sync Now") to also evict those, tidying the cache down to exactly the
-// play set.
+// `selectedSrcs` is the user's selection; null (never customized) means the free
+// pieces. Locked pieces are never downloaded. Deselected unlocked pieces stay on
+// disk so re-adding is instant, unless `pruneDeselected` (manual "Sync Now").
 export function syncGallery(
   apiUrl: string,
   accessToken: string | null,
@@ -263,8 +226,6 @@ async function runSync(
     throw new Error(`Gallery API returned HTTP ${res.status}`)
   }
   const api: ApiResponse = await res.json()
-  // Free pieces (per-item `free` flag) — the unlocked set for a non-subscriber
-  // and the default play set for a never-customized selection.
   const freeItems = api.items.filter(isItemFree)
   log.info('cache-sync', 'gallery fetched', {
     count: api.items.length,
@@ -272,16 +233,11 @@ async function runSync(
     free: freeItems.length,
   })
 
-  // Unlocked = what this user is allowed to play/cache: everything for a
-  // subscriber, only the free pieces otherwise. Locked items are never
-  // downloaded and never kept on disk (so an expired subscription evicts them).
+  // Locked pieces are never downloaded and are evicted (e.g. when a subscription expires).
   const unlockedItems = api.isSubscribed ? api.items : freeItems
   const unlockedSrcs = new Set(unlockedItems.map((it) => it.src))
 
-  // Narrow to the user's selection ∩ unlocked. A null selection (never
-  // customized) defaults to the free pieces (all unlocked). We preserve the API
-  // order so the manifest and the download loop iterate in the same order the
-  // gallery is presented in.
+  // Selected ∩ unlocked, in gallery order.
   const selectedSet =
     selectedSrcs === null
       ? new Set(freeItems.map((it) => it.src))
@@ -304,19 +260,13 @@ async function runSync(
   }))
   const wantedFilenames = new Set(cached.map((i) => i.filename))
 
-  // What to KEEP on disk after this sync. On a manual sync (`pruneDeselected`)
-  // we tidy down to exactly the play set; otherwise we keep every unlocked item
-  // already cached, so deselecting a piece doesn't delete its `.bin` (re-adding
-  // is then instant). Either way, locked + removed-from-gallery files are pruned.
+  // Files to keep after this sync. Locked and removed pieces always go.
   const keepFilenames = pruneDeselected
     ? wantedFilenames
     : new Set(unlockedItems.map((it) => filenameForUrl(it.src)))
 
-  // Write the manifest BEFORE doing any file I/O so the screensaver sees the
-  // new list immediately. As `.bin` files appear during the download loop, the
-  // screensaver picks them up live; items whose `.bin` isn't there yet are
-  // skipped at play time (CachedGallery.playableURL returns nil and
-  // ScreensaverArtView.show calls advance()).
+  // Write the manifest first so the screensaver sees the new list at once. It
+  // skips items whose `.bin` hasn't downloaded yet.
   const manifest: CachedManifest = {
     items: cached,
     isSubscribed: api.isSubscribed,
@@ -324,9 +274,7 @@ async function runSync(
   }
   await writeManifestAtomic(manifest)
 
-  // Download anything missing. Serial — we're talking dozens of items, and
-  // parallel fetches were saturating my home network in testing. Only the
-  // selected ∩ unlocked items are downloaded; locked pieces are never fetched.
+  // Download one at a time; parallel downloads saturated a home network.
   let i = 0
   for (const item of chosen) {
     i++
@@ -341,7 +289,7 @@ async function runSync(
     try {
       await downloadWithRetry(item, dest, signal)
     } catch (err) {
-      if (signal.aborted) break // cancelled — stop quietly, leave the cache as-is
+      if (signal.aborted) break
       log.error('cache-sync', 'item download failed', {
         title: item.title,
         src: item.src,
@@ -357,18 +305,13 @@ async function runSync(
     }
   }
 
-  // If we were cancelled mid-run, leave the existing playlist intact — don't
-  // prune orphans (we may not have finished downloading the new set) and don't
-  // emit `done`. The manifest is already on disk; the next sync resumes.
+  // Cancelled: don't prune or emit `done`. The next sync resumes.
   if (signal.aborted) {
     log.info('cache-sync', 'sync cancelled', { processed: i, total: chosen.length })
     return manifest
   }
 
-  // Delete what we're no longer keeping (locked pieces, items removed from the
-  // gallery, and — on a manual sync — deselected ones). We do this LAST, after
-  // downloads succeed, so the cache size only grows mid-sync. An interrupted
-  // sync leaves the existing playlist intact rather than half-pruned.
+  // Prune last, so an interrupted sync never leaves the cache half-pruned.
   const existing = existsSync(VIDEOS_DIR) ? await readdir(VIDEOS_DIR) : []
   for (const name of existing) {
     if (!keepFilenames.has(name)) {
@@ -381,8 +324,7 @@ async function runSync(
   return manifest
 }
 
-// Atomic manifest write — temp + rename, so the screensaver never reads a
-// half-written JSON file.
+// Temp file + rename, so the screensaver never reads a half-written manifest.
 async function writeManifestAtomic(manifest: CachedManifest): Promise<void> {
   const tmp = MANIFEST_PATH + '.tmp'
   await writeFile(tmp, JSON.stringify(manifest, null, 2))

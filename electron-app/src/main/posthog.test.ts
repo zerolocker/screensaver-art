@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
-// posthog.ts persists the device id under app.getPath('userData'); point that at
-// a throwaway temp dir so the test never touches real userData.
+// Keep the device id file out of the real userData.
 const USERDATA = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const fs = require('fs') as typeof import('fs')
@@ -14,8 +13,7 @@ const USERDATA = vi.hoisted(() => {
 
 vi.mock('electron', () => ({ app: { getPath: () => USERDATA } }))
 
-// Capture the calls the posthog-node client would make. Hoisted so they exist
-// before the (also-hoisted) vi.mock factory instantiates PostHog at import time.
+// Record posthog-node calls. Hoisted so they exist before the vi.mock factory runs.
 const { identify, alias, capture } = vi.hoisted(() => ({
   identify: vi.fn(),
   alias: vi.fn(),

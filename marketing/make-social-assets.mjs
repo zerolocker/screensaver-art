@@ -1,29 +1,14 @@
 #!/usr/bin/env node
-// Marketing asset engine — turn gallery pieces into a ready-to-post social clip.
+// Renders gallery pieces as vertical social clips, plus their captions and
+// `meta.json`, the hand-off to post-social.mjs. The nightly post is all of the
+// night's pieces in one 9:16 clip, each dissolving into the next under one music
+// bed, for Instagram, TikTok, YouTube and Pinterest alike. A single piece renders
+// on its own, in 9:16 and (if landscape) 2:3 for Pinterest.
 //
-// The nightly post is ALL of the night's pieces in one 9:16 clip, for Instagram,
-// TikTok, YouTube and Pinterest alike: each piece in the order given, dissolving
-// into the next, under one music bed written for the set. A single piece still
-// renders on its own, in 9:16 and in 2:3 for Pinterest. It writes the
-// per-platform captions too.
-//
-// Each piece is framed for a phone. A landscape (16:9) piece is reframed: the art
-// zoomed over a blurred copy of itself, the piece's title in a pill just under it.
-// A portrait piece (taller than wide, e.g. a tall painting animated at 9:16)
-// already fills a phone, so its frames go out as they are, scaled to the canvas,
-// and it never gets a 2:3; the poster pins its 9:16. Each piece keeps its own
-// length and plays exactly once — these are authored pieces, and half of them are
-// deliberately non-looping. Reuses art you already generate: the marginal cost of
-// a day's social content is ~one ffmpeg run plus one Lyria call.
-//
-// There is no brand or marketing text in the clip (founder call, 2026-09-12): a
-// post that reads as an ad gets scrolled past, and words on screen pull attention
-// off the art. The title pill is the only text, and it mirrors the one the
-// screensaver itself shows. The caption carries the pitch (lib/captions.mjs).
-//
-// It also writes a `meta.json` next to the clips: the hand-off to
-// `post-social.mjs`, which publishes them. That file is why the poster never has
-// to re-derive a title, a style or (critically) a landing-page slug.
+// A landscape piece is zoomed over a blurred copy of itself, with its title in a
+// pill underneath. A portrait piece already fills a phone, so it goes out as is.
+// Each piece plays once, at its own length. No brand text in the clip: the
+// caption sells. See marketing/README.md.
 //
 // Usage:
 //   node marketing/make-social-assets.mjs --titles "Mount Fuji" "The Milkmaid" "Irises" "Haystacks" \
@@ -41,38 +26,35 @@
 //   --style <text>   override the derived art style (after --src: that source's style)
 //   --formats <list> one piece only: comma list of 9x16,2x3 (default: both). A set is 9:16 only.
 //   --duration <sec> trim each piece to at most N seconds (default: its own length)
-//   --music-prompt <text>  generate one bed from this prompt (Lyria) and score the clip with it;
-//                          also records it as `music_prompt` on every piece's gallery.json entry
+//   --music-prompt <text>  generate music from this prompt (Lyria) and record it
+//                          as `music_prompt` on every piece's gallery.json entry
 //   --audio <file|url>     score with an existing audio file instead of generating one
-//   --gain <dB>            bed level, negative = quieter (default: -9)
+//   --gain <dB>            music level (default: -9)
 //   --out <dir>      output base dir (default: marketing/out)
 //
-// Requires: ffmpeg on PATH, and python3 with Pillow for the title pill (Pillow is
-// already a curation dependency; without it the title falls back to ffmpeg's own
-// square text box). No npm deps (Node ≥18 built-ins + fetch).
+// Requires ffmpeg, and python3 with Pillow for the title pill (without Pillow the
+// title falls back to a plain ffmpeg text box). No npm deps (Node ≥18).
 
 import { spawnSync } from 'node:child_process'
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { captionsMarkdown, postName, titleLine } from './lib/captions.mjs'
-import { assetSlug, deriveMeta, galleryVideos, REPO_ROOT, webSlugForSrc } from './lib/pieces.mjs'
+import { artworkOf, assetSlug, deriveMeta, galleryVideos, REPO_ROOT, webSlugForSrc } from './lib/pieces.mjs'
 import { DEFAULT_GAIN_DB, fitBed, generateBed } from './lib/music.mjs'
 
-/** Renders the title pill PNG; see the script for how it mirrors the screensaver's. */
+/** Renders the title pill PNG. */
 const TITLE_PILL = path.join(REPO_ROOT, 'marketing', 'lib', 'title_pill.py')
 
-/** Font for the fallback title, when the pill can't be rendered. Both ship with macOS. */
+/** Font for the fallback title. Both ship with macOS. */
 const FALLBACK_FONT = ['/System/Library/Fonts/SFNS.ttf', '/System/Library/Fonts/Helvetica.ttc'].find(existsSync)
 
 const CANVAS_W = 1080
 
 /**
- * One canvas per format. The poster sends 9:16 to Instagram, TikTok and YouTube,
- * whose players are 9:16 (any other shape gets black bars), and 2:3 to Pinterest,
- * whose recommended pin shape it is (a taller pin can be cut off in the feed).
- * A set, or a portrait piece, has only a 9:16, which Pinterest also takes: a set
- * can't mix shapes, and cropping a tall painting to 2:3 would cut the art.
+ * 9:16 for Instagram, TikTok and YouTube; 2:3 for Pinterest. A set or a portrait
+ * piece gets only a 9:16, which Pinterest also takes: cropping a tall painting to
+ * 2:3 would cut the art.
  */
 const FORMATS = {
   '9x16': { w: CANVAS_W, h: 1920 },
@@ -80,21 +62,15 @@ const FORMATS = {
 }
 
 /**
- * How far past the canvas width the art is zoomed. At 1.5× the clip keeps the
- * middle two-thirds of the piece and shows it half again as large. In a feed the
- * width is fixed, so a letterbox never makes the art bigger; only cropping does.
- * Founder call, 2026-09-12. The curation agent opens its set with a piece whose
- * subject survives the crop (AUTOMATED_CURATION.md step 8a).
+ * Art width as a multiple of the canvas width. 1.5 shows the middle two-thirds
+ * of the piece, bigger: in a fixed-width feed only cropping enlarges the art.
  */
 const ART_ZOOM = 1.5
 
 /** Space between the bottom of the art and the top of the title pill, in canvas px. */
 const TITLE_GAP = 20
 
-/**
- * Seconds one piece takes to dissolve into the next in a set. The screensaver
- * crossfades between pieces too, over 1.5s; a feed moves faster.
- */
+/** Seconds one piece takes to dissolve into the next in a set (the screensaver takes 1.5s). */
 const CROSSFADE = 1
 
 /** A landscape piece's frame rate on its own, and a set's when its pieces' rates differ. */
@@ -185,12 +161,8 @@ async function resolveSource(src, tmp) {
 }
 
 /**
- * Write the score's prompt onto the `gallery.json` entry of every piece it scored.
- *
- * `music_prompt` sits alongside `image_prompt` and `video_prompt` as a
- * curation-only field — the shared `ArtItem` type deliberately omits all three,
- * because no client reads them. A set shares one bed, so each of its pieces
- * carries the same prompt: the field always says what played under that piece.
+ * Record the music prompt on the `gallery.json` entry of every piece it scored (a
+ * curation-only field). A set shares one bed, so its pieces share the prompt.
  */
 function recordMusicPrompt(srcs, prompt) {
   const galleryPath = path.join(REPO_ROOT, 'gallery.json')
@@ -208,18 +180,9 @@ function recordMusicPrompt(srcs, prompt) {
 }
 
 /**
- * How long the source clip is, its frame size as displayed (the zoomed art's
- * height follows from it), its frame rate, and whether it is portrait.
- *
- * The length is the clip's length, full stop. An earlier version looped the
- * source to a fixed 12s target, which meant every 8s piece silently replayed its
- * first four seconds — on pieces `gallery.json` explicitly marks `looping: false`,
- * i.e. ones authored *not* to repeat. The art decides the length; we don't pad it.
- *
- * The size is the displayed one: a clip stored sideways with a 90° rotation flag
- * is turned upright by ffmpeg as it decodes, so that is the frame the filters
- * see, and the one that decides portrait. There is no aspect field in
- * gallery.json; the video itself is the source of truth.
+ * The source clip's duration, frame rate, and frame size as displayed (ffmpeg
+ * turns a clip with a 90° rotation flag upright, so that size decides portrait).
+ * The clip is never looped to pad it.
  */
 function probeVideo(file) {
   const r = spawnSync('ffprobe', [
@@ -252,16 +215,12 @@ const rateValue = (rate) => {
 const even = (n) => 2 * Math.round(n / 2)
 
 /**
- * Where the zoomed art and its title sit on one canvas.
- *
- * The art is centred vertically and the title hangs just under it. On 9:16 that
- * puts the title near the top of the area Instagram's caption covers; lifting the
- * art would clear it, but the founder chose to see a real post first (2026-09-12).
+ * Where the art and its title sit: art centred vertically, title just under it.
+ * On 9:16 the title may fall under Instagram's caption; lifting the art would fix that.
  */
 function layout({ w, h }, video) {
-  // Veo's clips carry ~3 near-black rows along the top and bottom edges, which the
-  // zoom would thicken into visible lines. Trim ~0.55% off each edge (4 rows of a
-  // 720p clip) before anything else sees the frame.
+  // Veo clips have a few near-black rows at the top and bottom, which the zoom
+  // would turn into visible lines. Trim ~0.55% off each edge.
   const edge = Math.ceil(video.height / 180)
   const srcH = video.height - 2 * edge
   const zoomW = even(w * ART_ZOOM)
@@ -272,9 +231,8 @@ function layout({ w, h }, video) {
 }
 
 /**
- * Render the title pill once per piece: both canvases are the same width, so one
- * PNG serves every format. Returns null if python3 or Pillow isn't available, and
- * the render falls back to ffmpeg's text box rather than dropping the title.
+ * Render the title pill once; both canvases share a width. Returns null without
+ * python3 or Pillow, and the caller falls back to ffmpeg's text box.
  */
 function renderTitlePill(text, dir) {
   const out = path.join(dir, 'title-pill.png')
@@ -291,10 +249,8 @@ function renderTitlePill(text, dir) {
 }
 
 /**
- * The title without Pillow: ffmpeg's own text box. Square corners instead of the
- * pill, but the title still ships. Nothing measures the text here, so the size
- * comes from the character count (SF Pro averages ~0.55 em a character) to stay
- * inside the pill's 85%-of-width cap.
+ * Fallback title: ffmpeg's text box. Font size is estimated from the character
+ * count (~0.55 em each) to stay within 85% of the width.
  */
 function titleDrawtext({ w, y, titleFile, titleText }) {
   if (!FALLBACK_FONT) return null
@@ -305,24 +261,23 @@ function titleDrawtext({ w, y, titleFile, titleText }) {
 }
 
 // ── filters ─────────────────────────────────────────────────────────────────
-// Each piece's filter reads its inputs (`src`, `pillSrc`) and writes `out`; in a
-// set, `tag` keeps one piece's intermediate labels apart from the next one's.
+// Each filter reads `src` (and `pillSrc`) and writes `out`. In a set, `tag`
+// keeps each piece's intermediate labels distinct.
 
-/** A landscape piece, reframed: the art zoomed over a blurred copy of itself, its title under it. */
+/** A landscape piece: the art zoomed over a blurred copy of itself, its title under it. */
 function reframeFilter({ w, h, lay, pill, titleFile, titleText, src = '0:v', pillSrc = '1:v', out = 'outv', tag = '' }) {
   const [bg, fg, bgb, art, base] = ['bg', 'fg', 'bgb', 'art', 'base'].map((label) => `[${label}${tag}]`)
   const chain = [
-    // Trim the clip's dark edge rows (see layout) before either copy is made.
+    // Trim the dark edge rows (see layout).
     `[${src}]crop=iw:${lay.srcH}:0:${lay.edge},split=2${bg}${fg}`,
-    // A blurred, darkened copy of the clip fills the canvas…
+    // A blurred, darkened copy fills the canvas…
     `${bg}scale=${w}:${h}:force_original_aspect_ratio=increase,crop=${w}:${h},gblur=sigma=26,eq=brightness=-0.12:saturation=1.08${bgb}`,
-    // …and the art sits on it, zoomed and cropped to the canvas width (crop keeps the centre).
+    // …and the art sits on it, zoomed and centre-cropped to the canvas width.
     `${fg}scale=${lay.zoomW}:${lay.zoomH},crop=${w}:${lay.artH}${art}`,
     `${bgb}${art}overlay=0:${lay.artY}${base}`,
   ]
   if (pill) {
-    // The PNG carries a transparent margin for the pill's shadow; offset by it so
-    // the visible pill starts TITLE_GAP below the art.
+    // Offset by the PNG's transparent shadow margin.
     chain.push(`${base}[${pillSrc}]overlay=(W-w)/2:${lay.titleY - pill.margin},format=yuv420p[${out}]`)
   } else {
     const text = titleDrawtext({ w, y: lay.titleY, titleFile, titleText })
@@ -332,9 +287,8 @@ function reframeFilter({ w, h, lay, pill, titleFile, titleText, src = '0:v', pil
 }
 
 /**
- * A portrait piece, as it is: no crop, zoom, blur or title, only scaled to the
- * canvas. It fits inside rather than fills, so a portrait clip that isn't exactly
- * 9:16 keeps its own shape instead of being cropped or stretched.
+ * A portrait piece as is: no crop, zoom, blur or title, only scaled to fit inside
+ * the canvas, so a clip that isn't exactly 9:16 keeps its shape.
  */
 function asIsFilter({ w, h, src = '0:v', out = 'outv' }) {
   return [`[${src}]scale=${w}:${h}:force_original_aspect_ratio=decrease:force_divisible_by=2:flags=lanczos,` +
@@ -342,11 +296,9 @@ function asIsFilter({ w, h, src = '0:v', out = 'outv' }) {
 }
 
 /**
- * The bed under `duration` seconds of art. It arrives fitted to at least that
- * length, so it only needs levelling and a fade at each end — a hard cut on a
- * sustained pad is very audible. The fades scale with the clip so a short piece
- * doesn't end up nearly all fade. It sits well under the art on purpose (§11.2:
- * the picture leads).
+ * The music under `duration` seconds of art, already fitted to at least that
+ * length: levelled, with a fade at each end (a hard cut is audible). Fades scale
+ * with the clip so short pieces aren't all fade.
  */
 function bedFilter({ index, gain, duration }) {
   const fadeIn = Math.min(1, duration / 8).toFixed(2)
@@ -370,8 +322,7 @@ async function preparePiece(entry, a, tmp) {
   const { title, style } = deriveMeta(entry, entry.styleOverride ?? a.style)
   log(`• ${title}  [${style}]`)
   const input = await resolveSource(entry.src, tmp)
-  // The source's own length is the piece's length. --duration only ever trims:
-  // with no looping there is nothing to pad a longer target with.
+  // --duration can only trim.
   const video = probeVideo(input)
   const duration = a.duration ? Math.min(a.duration, video.duration) : video.duration
   if (a.duration && a.duration > video.duration) {
@@ -385,15 +336,15 @@ async function preparePiece(entry, a, tmp) {
   if (titleFile) writeFileSync(titleFile, titleText)
   return {
     entry, title, style,
-    // The gallery tag ("Japanese", "Modern"…) the hashtags and the pin's wording build on.
     era: entry.tags?.[0] ?? null,
     webSlug: entry.fromSrc ? null : webSlugForSrc(entry.src),
+    artwork: artworkOf(entry),
     input, video, duration, titleText, pill, titleFile,
   }
 }
 
 /** What the captions need to know about a piece. */
-const captionPiece = ({ title, style, era, webSlug }) => ({ title, style, era, webSlug })
+const captionPiece = ({ title, style, era, webSlug, artwork }) => ({ title, style, era, webSlug, artwork })
 
 function renderFormat({ piece, fmtKey, outFile, bed, gain }) {
   const { input, video, duration, pill } = piece
@@ -401,10 +352,10 @@ function renderFormat({ piece, fmtKey, outFile, bed, gain }) {
   const asIs = video.portrait
   const chain = asIs ? asIsFilter(fmt)
     : reframeFilter({ ...fmt, lay: layout(fmt, video), pill, titleFile: piece.titleFile, titleText: piece.titleText })
-  // Input order decides the filter's stream indices: art, [title pill], [bed].
+  // Input order sets the stream indices: art, [title pill], [music].
   if (bed) chain.push(bedFilter({ index: pill ? 2 : 1, gain, duration }))
   ffmpeg([
-    // The art plays once, at its own length. The still title pill repeats, and -t bounds it.
+    // The art plays once. The still pill loops, bounded by -t.
     '-i', input,
     ...(pill ? ['-loop', '1', '-i', pill.file] : []),
     ...(bed ? ['-i', bed] : []),
@@ -412,22 +363,21 @@ function renderFormat({ piece, fmtKey, outFile, bed, gain }) {
     '-map', '[outv]',
     ...(bed ? ['-map', '[outa]', ...AUDIO_OUT] : ['-an']),
     '-t', String(duration),
-    // A portrait piece keeps its own frame rate, so every source frame appears
-    // exactly once; 24 → 30 would repeat every fourth one.
+    // A portrait piece keeps its own frame rate, so no source frame repeats.
     ...(asIs ? [] : ['-r', DEFAULT_RATE]),
     ...VIDEO_OUT,
     outFile,
   ], fmtKey)
 }
 
-/** One piece on its own: a 9:16 and (landscape only) a 2:3, its captions and its meta.json. */
+/** One piece on its own: a 9:16 and (landscape only) a 2:3, its captions and meta.json. */
 function writePiecePost({ piece, a, bed, scratch }) {
-  const { entry, title, style, era, webSlug, video, duration } = piece
+  const { entry, title, style, era, webSlug, artwork, video, duration } = piece
   const slug = assetSlug(title) || 'piece'
   const dir = path.join(a.out, slug)
   mkdirSync(dir, { recursive: true })
   const fitted = bed && fitBed({ bed, length: duration, outFile: path.join(scratch, 'bed-fitted.wav') })
-  // A portrait piece never gets a 2:3: the poster pins its 9:16, uncropped.
+  // A portrait piece gets no 2:3; the poster pins its 9:16.
   const fmtKeys = video.portrait ? ['9x16'] : (a.formats ?? Object.keys(FORMATS))
   const formats = {}
   for (const fmtKey of fmtKeys) {
@@ -438,9 +388,7 @@ function writePiecePost({ piece, a, bed, scratch }) {
     log(`  ✓ ${path.relative(REPO_ROOT, outFile)} (${(statSync(outFile).size / 1e6).toFixed(1)} MB)`)
   }
   writeFileSync(path.join(dir, 'captions.md'), captionsMarkdown([captionPiece(piece)]))
-  // The hand-off to post-social.mjs. Everything it needs to publish this
-  // piece — above all `webSlug`, the permanent landing page — is recorded
-  // here at render time, so the poster never re-derives it.
+  // The hand-off to post-social.mjs, which never recomputes these (above all `webSlug`).
   writeFileSync(path.join(dir, 'meta.json'), JSON.stringify({
     schema: 1,
     assetSlug: slug,
@@ -448,6 +396,7 @@ function writePiecePost({ piece, a, bed, scratch }) {
     title,
     style,
     era,
+    artwork,
     galleryTitle: entry.title ?? null,
     src: entry.src,
     date: entry.date ?? null,
@@ -462,9 +411,9 @@ function writePiecePost({ piece, a, bed, scratch }) {
 // ── a set ───────────────────────────────────────────────────────────────────
 
 /**
- * A set's timing. Every segment is brought to one frame rate and an exact frame
- * count, so each dissolve starts exactly where its offset says. The rate is the
- * pieces' own when they all share one, so no frame is repeated; else 30.
+ * A set's timing. Every piece gets one frame rate and an exact frame count, so
+ * each dissolve starts exactly on its offset. The rate is the pieces' own if they
+ * share one (no repeated frames), else 30.
  */
 function planSet(pieces) {
   const rates = new Set(pieces.map((p) => p.video.rate))
@@ -478,7 +427,7 @@ function planSet(pieces) {
   return { rate, fps, fadeFrames, frames, duration: total / fps }
 }
 
-/** The set as one 9:16 clip, in one ffmpeg run, so the art is encoded only once. */
+/** The set as one 9:16 clip, in one ffmpeg run, so the art is encoded once. */
 function renderSet({ pieces, plan, outFile, bed, gain }) {
   const fmt = FORMATS['9x16']
   const { rate, fps, fadeFrames, frames } = plan
@@ -492,14 +441,14 @@ function renderSet({ pieces, plan, outFile, bed, gain }) {
     if (p.video.portrait) {
       chain.push(...asIsFilter({ ...fmt, src, out: `seg${i}` }))
     } else {
-      // The pill is a still looped into a stream; -t ends it with its piece.
+      // The still pill loops; -t ends it with its piece.
       const pillSrc = p.pill ? `${input('-loop', '1', '-t', String(Math.ceil(p.duration) + 1), '-i', p.pill.file)}:v` : null
       chain.push(...reframeFilter({
         ...fmt, lay: layout(fmt, p.video), pill: p.pill, titleFile: p.titleFile, titleText: p.titleText,
         src, pillSrc, out: `seg${i}`, tag: i,
       }))
     }
-    // tpad clones the last frame in case a source ends a frame short of its stated length.
+    // tpad clones the last frame in case a source ends a frame short.
     chain.push(`[seg${i}]fps=${rate},tpad=stop_mode=clone:stop_duration=1,trim=end_frame=${frames[i]},` +
       `setpts=PTS-STARTPTS,setsar=1[n${i}]`)
     if (i === 0) {
@@ -543,8 +492,7 @@ function writeSetPost({ pieces, a, bed, scratch }) {
   writeFileSync(path.join(dir, 'meta.json'), JSON.stringify({
     schema: 1,
     assetSlug: slug,
-    // The pin links to the first piece's page: a pin has one link, and the
-    // first piece is the one its title names.
+    // A pin has one link: the first piece's page, which its title names.
     webSlug: first.webSlug,
     title,
     style: first.style,
@@ -588,8 +536,7 @@ async function main() {
 
   const scratch = mkdtempSync(path.join(tmpdir(), 'lart-social-'))
   try {
-    // Fetch and measure every piece first: a missing source then costs nothing,
-    // rather than a paid music call.
+    // Fetch every piece before the paid music call, so a missing source wastes nothing.
     log(`Preparing ${entries.length} piece(s) → ${a.out}`)
     const pieces = []
     for (const [i, entry] of entries.entries()) pieces.push(await preparePiece(entry, a, path.join(scratch, String(i))))
@@ -607,14 +554,10 @@ async function main() {
     if (isSet) writeSetPost({ pieces, a, bed, scratch })
     else writePiecePost({ piece: pieces[0], a, bed, scratch })
 
-    // The prompt is the durable half of the score: record it on the pieces
-    // themselves so the catalog says how each one sounded, and the MP3 can stay
-    // disposable.
+    // Keep the prompt, not the MP3.
     if (a.musicPrompt && !a.srcs.length) recordMusicPrompt(pieces.map((p) => p.entry.src), a.musicPrompt)
     log('Done.')
   } finally {
-    // Sources, pills and the bed are scratch by design — the prompt in
-    // gallery.json is what makes the score reproducible.
     rmSync(scratch, { recursive: true, force: true })
   }
 }

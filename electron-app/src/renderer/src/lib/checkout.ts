@@ -4,26 +4,13 @@ import { log } from './log'
 import { track } from './analytics'
 import type { PaidPlan } from '@screensaver-art/constants'
 
-// Fallback target when we can't open a direct Stripe checkout (offline, already
-// subscribed, server error, no token): the website's account page, where the
-// user can sign in and subscribe/manage the old way.
+// Opened when a direct checkout isn't possible.
 const ACCOUNT_URL = 'https://living-art-screensaver.com/account'
 
 /**
- * Start a purchase (subscription or one-time lifetime) from inside the app.
- *
- * The app is already signed in, so rather than sending the user to the website
- * (where they'd have to log in again and click "Subscribe" a second time) we
- * exchange their Supabase access token at `/api/checkout` for a Stripe Checkout
- * URL and open that directly — straight to payment. The purchase is synced
- * by the Stripe webhook; the Account page re-verifies on window focus, so the
- * app reflects the new status when the user returns.
- *
- * Any failure falls back to opening the website account page, so the button
- * always does *something* useful.
- *
- * `source` records which CTA the user clicked (gallery lock, upsell banner,
- * account card) so PostHog can break the conversion funnel down by entry point.
+ * Open Stripe checkout directly, using the app's session (`/api/checkout`), so
+ * the user never signs in to the website. Any failure opens the website's
+ * account page instead. `source` is the button clicked, for analytics.
  */
 export async function startCheckout(source: string, plan: PaidPlan): Promise<void> {
   track('subscribe_clicked', { source, plan })

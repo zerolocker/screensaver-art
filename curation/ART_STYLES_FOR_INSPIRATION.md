@@ -1,10 +1,6 @@
-# Art Styles for Inspiration
+# Art styles for inspiration
 
-Menu of styles for the nightly curation bot. **Pick one style per piece**, favouring
-the high-end, museum-canon spirit described in
-[`PROMPT_GUIDANCE.md`](PROMPT_GUIDANCE.md) (the "Brand & taste"
-section). The `##` headings are categories, **not** styles — never pick a heading.
-When you add a new style, append it under the section it best fits.
+Styles for the nightly curation agent. Pick one style per piece, held to the taste bar in *Brand & taste* in [`PROMPT_GUIDANCE.md`](PROMPT_GUIDANCE.md). The `##` headings are categories, not styles. Add new styles under the best-fitting heading.
 
 ## Western fine art — Classical to 19th century
 
@@ -157,10 +153,9 @@ When you add a new style, append it under the section it best fits.
 - Spanish Modernist festival mural (mid-20th-c bold flattened planes of saturated colour with thick confident outlines, luminous and high-contrast — fiestas, processions, running of the bulls; a vivid public-mural register, bright even sunlight)
 - Modernist / Cubo-Futurist sporting oil (bold early-20th-c figurative sporting painting — flat saturated colour planes, strong confident dark outlines, dynamic angular geometry; stadium and match subjects — a rugby lineout/scrum, boxing, cycling, the crowd in tiered bright colour; legible, not abstract; bright even daylight)
 
-## Contemporary & atmospheric genre looks (reopened 2026-07-25)
+## Contemporary & atmospheric genre looks
 
-The "pre-21st-century only" rule was lifted — these are on the menu again. The bar
-is the **AI-cliché** test in `PROMPT_GUIDANCE.md` ("Brand & taste"), not recency.
+These must pass the AI-cliché test in *Brand & taste*.
 
 - Contemporary Realism (large-scale figurative oil)
 - Contemporary Ink Painting (post-war Chinese/Japanese experimental ink)

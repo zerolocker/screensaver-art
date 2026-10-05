@@ -1,8 +1,5 @@
-/* Brand fonts for the Living Art design system.
- * Inter (sans), Playfair Display (serif), Geist Mono (mono) — the families the
- * shared globals.css / @theme reference. The website serves these via next/font
- * at runtime; the DS bundle ships them as woff2 so designs render on-brand.
- * Files: fontsource latin subsets (OFL-licensed). Wired via cfg.extraFonts. */
+/* Brand fonts for the design-system bundle: Inter, Playfair Display, Geist Mono
+ * (fontsource latin subsets, OFL). The website loads them with next/font. */
 
 @font-face { font-family: 'Inter'; font-style: normal; font-weight: 400; font-display: swap; src: url('./inter-400.woff2') format('woff2'); }
 @font-face { font-family: 'Inter'; font-style: normal; font-weight: 500; font-display: swap; src: url('./inter-500.woff2') format('woff2'); }

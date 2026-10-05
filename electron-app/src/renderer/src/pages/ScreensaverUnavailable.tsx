@@ -3,11 +3,8 @@ import { AlertTriangle, Bug, Loader2, RotateCw, CheckCircle2 } from 'lucide-reac
 import { useErrorReport } from '../lib/useErrorReport'
 import type { InstallerStatus } from '../../../preload'
 
-// Shown (post-login, full screen) when the embedded screensaver component is
-// missing from the app bundle — a should-never-happen state that means an
-// incomplete download or a damaged install. We block here because the app can't
-// deliver its one job without it. Rendered after sign-in so the error report
-// carries the user id (lets us de-dup reports of the same broken build).
+// Full screen, when the embedded screensaver is missing (a damaged install).
+// Shown after sign-in so the error report includes the user id.
 export function ScreensaverUnavailable({ installer }: { installer: InstallerStatus }) {
   const { reporting, reportResult, sendReport } = useErrorReport()
 

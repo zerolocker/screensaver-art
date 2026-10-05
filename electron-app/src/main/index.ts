@@ -43,8 +43,7 @@ let mainWindow: BrowserWindow | null = null
 // ---------------------------------------------------------------------------
 function createWindow(): void {
   mainWindow = new BrowserWindow({
-    // Roomy default so the gallery shows several columns at once (the selection
-    // grid is the main surface users browse).
+    // Wide enough for several gallery columns.
     width: 1280,
     height: 880,
     minWidth: 960,
@@ -52,9 +51,7 @@ function createWindow(): void {
     show: false,
     titleBarStyle: 'hiddenInset',
     backgroundColor: '#141414',
-    // macOS uses the .icns baked into the .app bundle (via electron-builder
-    // and build/icon.png). For Windows/Linux dev runs, point at the same
-    // source PNG so window/taskbar icons are branded.
+    // Packaged macOS builds use the bundle's .icns; dev runs need the PNG.
     icon: is.dev ? join(__dirname, '../../build/icon.png') : undefined,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -83,7 +80,7 @@ function createWindow(): void {
 }
 
 // ---------------------------------------------------------------------------
-// Cache stats — reads from the directory the Swift screensaver reads from
+// Cache stats
 // ---------------------------------------------------------------------------
 async function getDirSize(dirPath: string): Promise<number> {
   if (!existsSync(dirPath)) return 0
@@ -110,9 +107,6 @@ async function countFiles(dirPath: string): Promise<number> {
 // IPC
 // ---------------------------------------------------------------------------
 ipcMain.handle('cache:getStats', async () => {
-  // The cache lives at /Users/Shared/LivingArtScreensaver — our own shared
-  // directory, not another app's container — so there's no TCC prompt to
-  // explain or recover from anymore.
   const sizeBytes = await getDirSize(PATHS.VIDEOS_DIR)
   const fileCount = await countFiles(PATHS.VIDEOS_DIR)
   return { sizeBytes, fileCount, path: PATHS.VIDEOS_DIR }
@@ -130,24 +124,18 @@ ipcMain.handle('cache:clear', async () => {
 
 ipcMain.handle('cache:getDir', () => PATHS.CACHE_DIR)
 
-// Lets a renderer that mounts mid-sync (e.g. the auto-sync kicked off before the
-// Account tab was opened) reflect the in-progress state instead of showing an
-// idle "Sync Now" button.
+// For a renderer that mounts while a sync is already running.
 ipcMain.handle('cache:getSyncState', () => ({ syncing: isSyncing() }))
 
 ipcMain.handle(
   'cache:sync',
   async (_evt, payload: { apiUrl: string; accessToken: string | null; pruneDeselected?: boolean }): Promise<{ ok: true; manifest: CachedManifest } | { ok: false; error: string }> => {
-    // A sync is the first authenticated action each launch, so it's where we
-    // link the device to the signed-in user for analytics.
+    // The first authenticated action each launch: link the device to the user.
     const userId = userIdFromToken(payload.accessToken)
     if (userId) identifyUser(userId, emailFromToken(payload.accessToken))
     try {
-      // The selection lives in the main process (cache-sync needs it, and the
-      // renderer persists it via selection:set before triggering a sync). A null
-      // selection means "use the default (the free pieces)". `pruneDeselected`
-      // is set on a manual "Sync Now" so it tidies deselected files off disk; an
-      // auto sync leaves them cached for instant re-add.
+      // The renderer saves the selection (selection:set) before syncing.
+      // `pruneDeselected` is set by a manual "Sync Now".
       const manifest = await syncGallery(
         payload.apiUrl,
         payload.accessToken,
@@ -170,9 +158,8 @@ ipcMain.handle(
   },
 )
 
-// Selection: which gallery pieces the user has chosen to play. The renderer reads
-// it to paint ticks (null → it applies the default free pieces itself) and
-// writes the full explicit list on every change.
+// The pieces the user chose to play. Null means never customized (the free
+// pieces). The renderer writes the full list on every change.
 ipcMain.handle('selection:get', () => ({ selected: readSelection() }))
 ipcMain.handle('selection:set', (_evt, selected: string[]) => {
   try {
@@ -187,10 +174,8 @@ ipcMain.handle('selection:set', (_evt, selected: string[]) => {
 
 ipcMain.handle('installer:status', () => getStatus())
 
-// Records which appex version we last registered, so ensureRegistered can tell
-// "already current" from "the app was updated, re-register". Lives in userData
-// (not the bundle) so it survives app updates. Best-effort: a read/write failure
-// just means we re-register once more than strictly necessary.
+// The appex version we last registered, kept in userData so it survives updates.
+// A read or write failure only costs an extra re-register.
 const INSTALLER_STATE_FILE = join(app.getPath('userData'), 'installer-state.json')
 function readRegisteredVersion(): string | null {
   try {
@@ -210,8 +195,7 @@ function writeRegisteredVersion(version: string | null): void {
   }
 }
 
-// Auto-register the screensaver (called once per launch by the renderer, post
-// sign-in). Persists the version only when we actually (re)registered.
+// Called once per launch by the renderer, after sign-in.
 ipcMain.handle('installer:ensureRegistered', async () => {
   const result = await ensureRegistered(readRegisteredVersion())
   if (result.ok && result.didRegister) {
@@ -227,14 +211,12 @@ ipcMain.handle('installer:activate', async () => {
   return result
 })
 
-// Reads the macOS idle thresholds the "Screensaver is set" banner explains, and
-// starts the screensaver on demand for an instant preview. macOS-only; both
-// degrade to null / a not-supported error elsewhere.
+// For the "Screensaver is set" banner. macOS only.
 ipcMain.handle('screensaver:timing', () => getScreensaverTiming())
 ipcMain.handle('screensaver:preview', () => startScreensaverPreview())
 
 // ---------------------------------------------------------------------------
-// Auto-update (electron-updater). No-op in dev / unpackaged builds.
+// Auto-update. No-op unless packaged.
 // ---------------------------------------------------------------------------
 ipcMain.handle('update:getState', () => getUpdateState())
 ipcMain.handle('update:check', () => checkForUpdates('manual'))
@@ -243,19 +225,14 @@ ipcMain.handle('update:quitAndInstall', () => quitAndInstall())
 ipcMain.handle('shell:openExternal', (_evt, url: string) => shell.openExternal(url))
 ipcMain.handle('shell:openPath', (_evt, path: string) => shell.openPath(path))
 
-// Lets the gallery's "Fullscreen" preview mode push the app window into native
-// macOS fullscreen so a piece fills the whole display. (Native fullscreen has
-// an unavoidable ~0.5s Space animation; users who dislike it can switch the
-// preview to "In-app" in the gallery options menu, which never calls this.)
+// The gallery's "Fullscreen" preview mode.
 ipcMain.handle('window:setFullScreen', (_evt, value: boolean) => {
   mainWindow?.setFullScreen(Boolean(value))
 })
 
-// App info — version comes from the bundled package.json (release.sh bumps it).
 ipcMain.handle('app:getVersion', () => app.getVersion())
 
-// Relaunch the app — the recovery action on the "screensaver component missing"
-// screen (a fresh launch re-runs the auto-register).
+// Recovery action on the "screensaver component missing" screen.
 ipcMain.handle('app:restart', () => {
   app.relaunch()
   app.exit(0)
@@ -264,33 +241,27 @@ ipcMain.handle('app:restart', () => {
 // ---------------------------------------------------------------------------
 // Logging + error reporting
 // ---------------------------------------------------------------------------
-// Renderer forwards its logs + uncaught errors here so a single report captures
-// both processes.
+// The renderer forwards its logs here, so one report covers both processes.
 ipcMain.handle('log:record', (_evt, entry: { level?: 'debug' | 'info' | 'warn' | 'error'; scope?: string; msg?: string; data?: unknown }) => {
   recordRendererLog(entry)
 })
 ipcMain.handle('log:getFilePath', () => getLogFilePath())
 
-// Assemble a debug snapshot and upload it to the website's error-report bucket.
 ipcMain.handle('report:send', (_evt, input: SendReportInput) => sendReport(input))
 
-// Upload user feedback (message + optional image) with the same diagnostics block.
 ipcMain.handle('feedback:send', async (_evt, input: SendFeedbackInput) => {
   const result = await sendFeedback(input)
   if (result.ok) capture('feedback_submitted', { source: 'app', has_image: Boolean(input.image) })
   return result
 })
 
-// Renderer → main analytics bridge. The renderer has no PostHog SDK; it forwards
-// UI events here so they're captured with the same device/user identity as the
-// main-process events (one person in PostHog). Best-effort; never throws.
+// The renderer has no PostHog SDK; its events go through here so they share
+// the main process's identity.
 ipcMain.handle('analytics:capture', (_evt, event: string, properties?: Record<string, unknown>) => {
   if (typeof event === 'string' && event) capture(event, properties)
 })
 
-// The renderer signals sign-out here so we drop the current identity and mint a
-// fresh anonymous device id — keeping accounts separate when more than one signs
-// in on the same machine (see `resetIdentity`).
+// On sign-out, start a fresh anonymous identity.
 ipcMain.handle('analytics:reset', () => {
   resetIdentity()
 })
@@ -298,9 +269,8 @@ ipcMain.handle('analytics:reset', () => {
 // ---------------------------------------------------------------------------
 // Lifecycle
 // ---------------------------------------------------------------------------
-// A single instance lock is required for OAuth deep links on Windows/Linux,
-// where the callback URL is delivered as argv to a *second* launch. The first
-// (primary) instance receives it via the 'second-instance' event.
+// On Windows/Linux the OAuth deep link arrives as argv to a second launch,
+// which the first instance receives via 'second-instance'.
 const gotSingleInstanceLock = app.requestSingleInstanceLock()
 
 if (!gotSingleInstanceLock) {
@@ -330,14 +300,11 @@ if (!gotSingleInstanceLock) {
 
   app.whenReady().then(() => {
     createWindow()
-    // Start checking for updates in the background (downloads silently, then the
-    // renderer shows a "Relaunch to update" banner). No-op unless packaged.
     initUpdater(() => mainWindow)
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
-    // Anonymous until a sync identifies the user (see cache:sync) — keyed off the
-    // stable device id, so first-launch funnels stay intact.
+    // Anonymous until a sync identifies the user.
     capture('app_launched', {
       version: app.getVersion(),
       platform: process.platform,
@@ -351,13 +318,10 @@ if (!gotSingleInstanceLock) {
     if (process.platform !== 'darwin') app.quit()
   })
 
-  // Abort any in-flight sync on quit. The manifest is written before downloads and
-  // each video is written via a temp file + atomic rename, so an interrupted sync
-  // can't corrupt the cache — cancelSync just stops the in-flight fetch/stream
-  // promptly so quit isn't delayed. The next launch auto-syncs and resumes.
+  // Stop any sync so quitting isn't delayed. It can't corrupt the cache, and the
+  // next launch resumes.
   app.on('before-quit', () => {
     cancelSync()
-    // Best-effort flush of any queued analytics before the process exits.
     void shutdownPosthog()
   })
 }

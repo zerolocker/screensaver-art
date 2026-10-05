@@ -1,12 +1,7 @@
 /**
- * Brand tokens for contexts that CANNOT read the CSS design tokens in
- * app/globals.css — i.e. anything rendered outside the Tailwind / CSS-variable
- * pipeline: the OG image (next/og · satori resolves neither CSS variables nor
- * oklch()), inline JSX `style` glows/tints, and (later) the Electron app or
- * HTML emails.
- *
- * app/globals.css stays the source of truth for the CSS-variable UI; the values
- * here MIRROR its brand green (`--primary`) as literal sRGB. Keep them in sync.
+ * Brand colours as literals, for places that can't read the CSS tokens in
+ * app/globals.css: the OG image (satori supports neither CSS variables nor
+ * oklch) and inline styles. Keep them in sync with globals.css.
  */
 export const brand = {
   /** Mint green — mirrors `--primary` in app/globals.css. */

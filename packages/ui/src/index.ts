@@ -33,5 +33,8 @@ export type { FeedbackFormProps } from './components/feedback-form'
 export { resizeImageToWebp } from './image-resize'
 export type { ResizedImage, ResizeOptions } from './image-resize'
 
+// Gallery playback (shared by the Electron app + website)
+export { ArtVideo } from './components/art-video'
+
 // Utilities
 export { cn } from './utils'

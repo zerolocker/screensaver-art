@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { X, Check, Lock } from 'lucide-react'
 import { type ArtItem, tagsOf } from '@screensaver-art/constants'
+import { ArtVideo } from '@screensaver-art/ui'
 
 interface ArtModalProps {
   item: ArtItem
@@ -26,7 +27,8 @@ function formatDate(date?: string): string | null {
 
 // Full-screen preview of a single piece so the art reads the way it will as a
 // screensaver. The video fills the viewport with object-cover (mirroring the
-// screensaver's AVLayerVideoGravity.resizeAspectFill); the title/tags/date and
+// screensaver's AVLayerVideoGravity.resizeAspectFill), except a portrait (9:16)
+// piece, which ArtVideo hangs whole on the dark wall; the title/tags/date and
 // the add/remove (or "Unlock") action float over a bottom gradient
 // scrim. Clicking anywhere (except that action button), Escape, or the close
 // button dismisses — so it's a quick tap back to the gallery.
@@ -85,7 +87,7 @@ export function ArtModal({
       className="fixed inset-0 z-50 bg-black animate-[fadeIn_150ms_ease-out]"
       onClick={onClose}
     >
-      <video
+      <ArtVideo
         ref={videoRef}
         src={item.src}
         autoPlay

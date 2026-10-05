@@ -12,6 +12,11 @@
 // This is the client-side approximation of shipping a thumb.jpg per piece; if we
 // add real poster images on R2 later, the grid becomes plain <img>s and this
 // engine goes away.
+//
+// A portrait (9:16) clip is never stretched or cropped to the 16:9 cell: both
+// the poster and the hover preview show it whole, centred on the dark wall.
+
+import { PORTRAIT_WALL, isPortraitVideo } from '@screensaver-art/constants'
 
 // Cap on simultaneous first-frame captures, so fast scrolling can't stampede the
 // network/decoders. Jobs queue and drain as earlier ones finish.
@@ -68,7 +73,7 @@ function capturePoster(canvas: HTMLCanvasElement): void {
     clearTimeout(timer)
     if (draw) {
       try {
-        canvas.getContext('2d')?.drawImage(video, 0, 0, canvas.width, canvas.height)
+        drawFrame(canvas, video)
         canvas.dataset.ready = '1'
         canvas.dispatchEvent(new CustomEvent('poster:ready'))
       } catch {
@@ -84,6 +89,25 @@ function capturePoster(canvas: HTMLCanvasElement): void {
   const timer = setTimeout(() => finish(true), CAPTURE_TIMEOUT_MS)
   video.addEventListener('loadeddata', () => finish(true), { once: true })
   video.addEventListener('error', () => finish(false), { once: true })
+}
+
+// A landscape frame fills the canvas as it always has; a portrait one is drawn
+// whole (contained), centred on the wall.
+function drawFrame(canvas: HTMLCanvasElement, video: HTMLVideoElement): void {
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+  const { width: cw, height: ch } = canvas
+  const { videoWidth: vw, videoHeight: vh } = video
+  if (!isPortraitVideo(vw, vh)) {
+    ctx.drawImage(video, 0, 0, cw, ch)
+    return
+  }
+  const scale = Math.min(cw / vw, ch / vh)
+  const w = vw * scale
+  const h = vh * scale
+  ctx.fillStyle = PORTRAIT_WALL
+  ctx.fillRect(0, 0, cw, ch)
+  ctx.drawImage(video, (cw - w) / 2, (ch - h) / 2, w, h)
 }
 
 // Register a canvas for lazy first-frame capture. Returns a cleanup that
@@ -103,6 +127,17 @@ export function spawnPreview(src: string, onPlaying?: () => void): { video: HTML
   video.playsInline = true
   video.autoplay = true
   video.src = src
+  // Inline style beats the caller's object-cover class. The metadata arrives
+  // before any frame, so a portrait preview never shows cropped.
+  video.addEventListener(
+    'loadedmetadata',
+    () => {
+      if (!isPortraitVideo(video.videoWidth, video.videoHeight)) return
+      video.style.objectFit = 'contain'
+      video.style.backgroundColor = PORTRAIT_WALL
+    },
+    { once: true },
+  )
   if (onPlaying) video.addEventListener('playing', onPlaying, { once: true })
   return {
     video,

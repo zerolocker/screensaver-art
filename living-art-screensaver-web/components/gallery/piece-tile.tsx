@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { ArtVideo } from '@screensaver-art/ui'
 import type { CatalogPiece } from '@/lib/gallery-catalog'
 
 /**
@@ -192,7 +193,7 @@ export function PieceTile({ piece, priority = false, aspect = '16 / 10' }: Piece
         />
       )}
       {live && (
-        <video
+        <ArtVideo
           ref={videoRef}
           src={piece.src}
           poster={piece.thumbUrl ?? undefined}

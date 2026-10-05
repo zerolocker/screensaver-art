@@ -97,7 +97,7 @@ pnpm dev                  # localhost:3000
 
 ## Shared UI library (packages/ui)
 - Package name: `@screensaver-art/ui`
-- Exports: `LoginForm`, `SignUpForm`, `SubscriptionCard`, base UI components (`Button`, `Card`, `Input`, `Label`), `cn()` utility
+- Exports: `LoginForm`, `SignUpForm`, `SubscriptionCard`, base UI components (`Button`, `Card`, `Input`, `Label`), `cn()` utility, and `ArtVideo` — the `<video>` every gallery player uses, which hangs a portrait (9:16) clip whole on the `#0b0b0d` wall (`PORTRAIT_WALL` in constants) instead of cropping it
 - Also exports `globals.css` with shared design tokens (OKLch color palette, fonts, radii)
 - Components are **framework-agnostic** — no Next.js imports; auth forms accept `onSubmit` callbacks
 - No build step — consuming apps (Next.js, Vite) compile the TSX source directly
@@ -239,7 +239,7 @@ lives in its own file under `screensaver-macos/ScreensaverArtExtension/`:
 |---|---|---|
 | `ScreensaverArtExtension.swift` | `ScreensaverArtExtension` | Principal class (`ScreenSaverExtension` subclass), set as `NSExtensionPrincipalClass` in Info.plist |
 | `ScreensaverArtViewController.swift` | `ScreensaverArtViewController` | `ScreenSaverViewController` subclass; `loadView()` builds the view |
-| `ScreensaverArtView.swift` | `ScreensaverArtView` | Main view — A/B CALayer crossfade, timer, empty-state hint. Starts/stops from `viewDidMoveToWindow` (robust across ScreenSaverEngine + System Settings preview) and `startAnimation`/`stopAnimation` |
+| `ScreensaverArtView.swift` | `ScreensaverArtView` | Main view — A/B CALayer crossfade, timer, empty-state hint. A portrait (9:16) clip plays `.resizeAspect` on the `#0b0b0d` wall; landscape stays `.resizeAspectFill`. Starts/stops from `viewDidMoveToWindow` (robust across ScreenSaverEngine + System Settings preview) and `startAnimation`/`stopAnimation` |
 | `CachedGallery.swift` | `CachedGallery` | Reads the manifest; decrypts a `.bin` to a temp `.mp4` for AVPlayer |
 | `Models.swift` | `CachedItem`, `CachedManifest` | Decodable types matching the manifest the Electron app writes |
 | `Constants.swift` | `Cache`, `Obfuscation` | Cache path (`/Users/Shared/LivingArtScreensaver/`) + XOR key/magic shared with the Electron app |

@@ -2,15 +2,18 @@
 // Daily social posting — publish the rendered clips to all four channels.
 //
 // This is the last mile of the content flywheel (growth backlog #1): the nightly
-// curation makes the art, `make-social-assets.mjs` reframes + scores it, and this
-// publishes it while nobody is awake. Founder time budget is ~0 h/week, so every
-// decision here favours "survives an unattended run" over "clever".
+// curation makes the art, `make-social-assets.mjs` stitches the night's pieces into
+// one scored clip, and this publishes it while nobody is awake. Founder time budget
+// is ~0 h/week, so every decision here favours "survives an unattended run" over
+// "clever". A "piece" below is one rendered post: a single piece, or a set.
 //
 // One vendor, four channels (strategy §11.1 — all four are equal priority):
 //   Zernio  →  Instagram, YouTube, TikTok, Pinterest
-// Each clip is uploaded once (the 9:16 serves three channels, the 2:3 the pin), then
-// published as one Zernio post per channel. We buy this rather than building it
-// because TikTok restricts *unaudited* API clients to private posting, and Zernio
+// Each clip is uploaded once (a single landscape piece's 9:16 serves three
+// channels and its 2:3 the pin; a set, or a portrait piece, has only the 9:16,
+// which serves all four), then published as one Zernio post per channel. We buy
+// this rather than building it because TikTok restricts *unaudited* API clients
+// to private posting, and Zernio
 // holds an audited client (§11). Until 2026-09-12 Instagram + YouTube went through
 // upload-post; consolidating onto Zernio is cheaper at four accounts and leaves one
 // API to keep working.
@@ -23,16 +26,17 @@
 //     node marketing/post-social.mjs --check          # preflight, posts nothing
 //
 //   bash curation/with-secrets.sh ZERNIO_API_KEY -- \
-//     node marketing/post-social.mjs --latest 4       # the nightly call
+//     node marketing/post-social.mjs --slug <s>       # the nightly call: the night's set
 //
 // Flags:
 //   --check           verify the key, accounts and the Pinterest board, then exit
 //   --dry-run         do everything except publish (incl. TikTok's own dry-run check)
-//   --latest [N]      consider the N most recently rendered pieces (default 4)
-//   --count <K>       how many of them to actually post (default 1 — one piece a night)
-//   --slug <s>        post this specific rendered piece (its marketing/out/<slug> dir)
+//   --latest [N]      consider the N most recently rendered posts (default 4)
+//   --count <K>       how many of them to actually post (default 1 — one post a night)
+//   --slug <s>        post this specific rendered post (its marketing/out/<slug> dir)
 //   --channels <list> comma list of instagram,youtube,tiktok,pinterest (default: all)
-//   --format <fmt>    post this rendered clip everywhere (default: 9x16, and 2x3 for Pinterest)
+//   --format <fmt>    post this rendered clip everywhere (default: 9x16, and 2x3 for Pinterest
+//                     when the piece has one)
 //   --force           post again even if the ledger says it already went out
 //   --out <dir>       where the rendered clips live (default: marketing/out)
 //
@@ -50,7 +54,8 @@ const ALL_CHANNELS = ['instagram', 'youtube', 'tiktok', 'pinterest']
 /**
  * Which rendered clip each channel gets. Instagram, TikTok and YouTube play video
  * in a 9:16 player, so any other shape gets black bars; 2:3 is Pinterest's
- * recommended pin shape, and a taller pin can be cut off in its feed.
+ * recommended pin shape, and a taller pin can be cut off in its feed. A piece with
+ * no 2:3 pins its 9:16 instead (see clipFor).
  */
 const FORMAT_FOR = { instagram: '9x16', youtube: '9x16', tiktok: '9x16', pinterest: '2x3' }
 
@@ -167,8 +172,8 @@ function discover(outDir) {
 
 /**
  * The clip one channel gets: FORMAT_FOR's, or `--format` for every channel. A piece
- * rendered before the 2:3 format existed pins its 9:16 clip instead, which
- * Pinterest also accepts.
+ * with no 2:3 clip pins its 9:16 instead, which Pinterest also accepts. A set and a
+ * portrait piece are both rendered only in 9:16, and their meta.json lists just that.
  */
 function clipFor(piece, platform, override) {
   const wanted = override || FORMAT_FOR[platform]
@@ -184,6 +189,11 @@ function clipFor(piece, platform, override) {
 function eraOf(piece) {
   if (piece.era !== undefined) return piece.era
   return loadGallery().find((e) => e.src === piece.src)?.tags?.[0] ?? null
+}
+
+/** The pieces a rendered post shows, in order: a set's own list, or the one piece. */
+function piecesOf(post) {
+  return post.pieces ?? [{ title: post.title, style: post.style, era: eraOf(post), webSlug: post.webSlug }]
 }
 
 /**
@@ -629,8 +639,8 @@ async function main() {
   let candidates = a.slug ? all.filter((p) => p.assetSlug === a.slug) : all.slice(0, a.latest)
   if (a.slug && candidates.length === 0) die(`no rendered piece with assetSlug "${a.slug}" under ${a.out}`)
   if (!a.slug) {
-    // One piece a night, newest first: a nightly batch of four posted in full
-    // would be four times the cadence anyone wants in a feed.
+    // One post a night, newest first: four posts a day is four times the cadence
+    // anyone wants in a feed, which is why a night's pieces go out as one set.
     const pending = candidates.filter((p) => a.force || a.channels.some((c) => !alreadyPosted(ledger, p.assetSlug, c)))
     candidates = pending.slice(0, a.count)
   }
@@ -643,9 +653,10 @@ async function main() {
     log(`\n▸ ${piece.title} [${piece.style}] → ${todo.join(', ') || '(nothing)'}` +
         (skipped.length ? `  (already posted: ${skipped.join(', ')})` : ''))
     if (todo.length === 0) continue
+    if (piece.pieces) log(`  ${piece.pieces.length} pieces: ${piece.pieces.map((p) => p.title).join(' · ')}`)
     if (!piece.webSlug && todo.includes('pinterest')) warn('  ⚠ no gallery slug for this piece — the pin will link to the home page')
 
-    const captions = buildCaptions({ title: piece.title, style: piece.style, era: eraOf(piece), webSlug: piece.webSlug })
+    const captions = buildCaptions(piecesOf(piece))
     const results = {}
 
     // Only the pin carries a link, so only the pin waits on the landing page.

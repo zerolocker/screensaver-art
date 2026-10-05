@@ -336,6 +336,10 @@ reopened on 2026-07-25 and new pieces may use it.
 ### The rule: the music must belong to the picture
 Match **era/culture, mood, and energy**. ~10-35 words.
 
+The night's pieces share one clip and one bed, so write one prompt that sits under all
+of them: lean on the first piece's world, and pick a mood and energy none of the others
+contradicts. When their worlds clash, choose plainer instruments over pastiche.
+
 - **Era/culture** — let the instruments live in the piece's world without tipping
   into pastiche: koto/shakuhachi and sparse percussion for Ukiyo-e; harpsichord and
   small string consort for Baroque; warm brass and upright bass for Art Deco;

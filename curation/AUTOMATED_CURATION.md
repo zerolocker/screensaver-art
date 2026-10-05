@@ -70,45 +70,51 @@ You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't
     *   Run: `git add gallery.json curation/ART_STYLES_FOR_INSPIRATION.md && git commit -m "AUTO_CURATION: Added [Style 1, Style 2, Style 3, Style 4] collections"`
     *   Run: `git push` to sync changes to the remote. Remember your task is to curate, so don't push other stuff you generated to the repo.
 
-8.  **Post the day's art to social — you choose the piece and score it.**
+8.  **Post all of tonight's pieces to social as one clip — you order them and score it.**
 
-    **8a. Pick the one piece of the four to post.** Pick the one
-    that will do best as a **vertical clip on a phone, seen for three seconds, muted**:
-    *   **One obvious subject in the middle two-thirds of the width.** The clip zooms the
-        art to 1.5× and crops the sides, then shows it on a phone. A piece whose appeal is
-        fine detail across a wide composition, or whose subject sits near an edge, loses it.
+    **8a. Order tonight's pieces.** All of them go out, in one 9:16 clip, in the order you
+    give. **Put first the one most likely to stop a thumb**: a vertical clip on a phone,
+    seen for three seconds, muted.
+    *   **The most recognizable artwork leads**, else the one with one obvious subject.
+        A landscape piece is zoomed to 1.5× with its sides cropped, so a piece whose
+        subject sits near an edge, or whose appeal is fine detail across a wide
+        composition, makes a weak opener. A portrait piece is shown whole.
     *   **Colour and light that pop in a feed**, which is a brighter, higher-contrast bar
         than "looks good framed on a wall".
-    *   **Something different from the last few nights.** `marketing/out/.posted.json`
+    *   **A different opener from the last few nights.** `marketing/out/.posted.json`
         lists what has already gone out; avoid a third consecutive misty landscape.
 
-    **8b. Write its music prompt.** Read **"Music prompts"** in
+    **8b. Write one music prompt for the set.** Read **"Music prompts"** in
     [`curation/PROMPT_GUIDANCE.md`](PROMPT_GUIDANCE.md) first.
 
-    **8c. Render and post it:**
+    **8c. Render and post the set:**
     ```bash
-    MUSIC_PROMPT="Bright, playful summer daytime music: pizzicato strings and warm marimba …
+    MUSIC_PROMPT="Warm, unhurried chamber music: soft strings and a gentle harp …
     Even dynamics, no build or drop. Instrumental, no vocals."
 
-    node marketing/make-social-assets.mjs --title "<the piece you picked>" \
+    node marketing/make-social-assets.mjs \
+      --titles "<first piece>" "<second>" "<third>" "<fourth>" \
       --music-prompt "$MUSIC_PROMPT"
 
     bash curation/with-secrets.sh ZERNIO_API_KEY -- \
-      node marketing/post-social.mjs --slug <asset-slug-from-the-render>
+      node marketing/post-social.mjs --slug <set-slug-from-the-render>
     ```
-    The first generates the music (one Lyria call), renders a 9:16 clip (Instagram, TikTok,
-    YouTube) and a 2:3 clip (Pinterest) with the art zoomed, the piece's title in a pill
-    under it and the music mixed at −9 dB, writes `captions.md` + `meta.json`, and
-    **records `music_prompt` on that piece's `gallery.json` entry**. The second publishes it
-    through Zernio to all four channels: Instagram and YouTube lead with the fixed caption
-    *Animated art screensaver app - Link in bio*, and the pin links to that piece's own
-    `/art/<slug>` page. TikTok, whose profile can't carry a link, says *Link in comment and
-    bio* instead and gets the site's address as a pinned comment under the video. Details in
-    [`marketing/README.md`](../marketing/README.md).
+    Each `--titles` value is a piece's exact title, or a part of it no other title
+    contains (the script lists the matches if it's ambiguous). The first command generates
+    the music (one Lyria call) and renders one 9:16 clip: each piece framed for a phone
+    (landscape zoomed with its title in a pill under it, portrait as it is), dissolving
+    into the next, with the music mixed at −9 dB. It writes `captions.md` + `meta.json`
+    into `marketing/out/<set-slug>/` (e.g. `mount-fuji-and-3-more`) and **records
+    `music_prompt` on every piece's `gallery.json` entry**. The second publishes that clip
+    through Zernio to all four channels. Instagram and YouTube lead with the fixed caption
+    *Animated art screensaver app - Link in bio*, then name each piece. The pin links to
+    the first piece's `/art/<slug>` page. TikTok, whose profile can't carry a link, says
+    *Link in comment and bio* instead and gets the site's address as a pinned comment
+    under the video. Details in [`marketing/README.md`](../marketing/README.md).
 
     **8d. Commit the recorded prompt:**
     ```bash
-    git add gallery.json && git commit -m "AUTO_CURATION: music_prompt for <piece>" && git push
+    git add gallery.json && git commit -m "AUTO_CURATION: music_prompt for tonight's set" && git push
     ```
 
     Things to know:
@@ -117,13 +123,12 @@ You must use the **nano-banana-pro** and **veo3-video-gen** skills. If you can't
         The poster checks the page is live before pinning (a pin's destination URL can
         never be edited) and waits out the deploy; the other three channels carry no link
         and don't wait.
-    *   **Only the posted piece gets scored**, so only it carries `music_prompt` — the
-        other three stay silent and unposted. `make-social-assets.mjs` refuses
-        `--music-prompt` when more than one piece matches, so this can't drift.
+    *   **One post a night, with every piece in it.** The set shares one bed, so every
+        piece in it carries the same `music_prompt`.
     *   **Never commit anything from `marketing/out/`** — clips are media (repo rules in
         `CLAUDE.md`) and the directory is gitignored. The generated MP3 is written to a
         temp dir and deleted after the render; the prompt in `gallery.json` is what makes
         the score reproducible.
     *   If posting exits non-zero, report which channel failed and carry on; a missed post
-        is not worth failing the curation run over. Still do 8d — the piece was scored.
+        is not worth failing the curation run over. Still do 8d — the set was scored.
 

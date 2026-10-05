@@ -8,8 +8,9 @@
 //
 // One vendor, four channels (strategy §11.1 — all four are equal priority):
 //   Zernio  →  Instagram, YouTube, TikTok, Pinterest
-// Each clip is uploaded once (the 9:16 serves three channels, the 2:3 the pin), then
-// published as one Zernio post per channel. We buy this rather than building it
+// Each clip is uploaded once (the 9:16 serves three channels, the 2:3 the pin; a
+// portrait piece has only the 9:16, which serves all four), then published as one
+// Zernio post per channel. We buy this rather than building it
 // because TikTok restricts *unaudited* API clients to private posting, and Zernio
 // holds an audited client (§11). Until 2026-09-12 Instagram + YouTube went through
 // upload-post; consolidating onto Zernio is cheaper at four accounts and leaves one
@@ -32,7 +33,8 @@
 //   --count <K>       how many of them to actually post (default 1 — one piece a night)
 //   --slug <s>        post this specific rendered piece (its marketing/out/<slug> dir)
 //   --channels <list> comma list of instagram,youtube,tiktok,pinterest (default: all)
-//   --format <fmt>    post this rendered clip everywhere (default: 9x16, and 2x3 for Pinterest)
+//   --format <fmt>    post this rendered clip everywhere (default: 9x16, and 2x3 for Pinterest
+//                     when the piece has one)
 //   --force           post again even if the ledger says it already went out
 //   --out <dir>       where the rendered clips live (default: marketing/out)
 //
@@ -50,7 +52,8 @@ const ALL_CHANNELS = ['instagram', 'youtube', 'tiktok', 'pinterest']
 /**
  * Which rendered clip each channel gets. Instagram, TikTok and YouTube play video
  * in a 9:16 player, so any other shape gets black bars; 2:3 is Pinterest's
- * recommended pin shape, and a taller pin can be cut off in its feed.
+ * recommended pin shape, and a taller pin can be cut off in its feed. A piece with
+ * no 2:3 pins its 9:16 instead (see clipFor).
  */
 const FORMAT_FOR = { instagram: '9x16', youtube: '9x16', tiktok: '9x16', pinterest: '2x3' }
 
@@ -167,8 +170,9 @@ function discover(outDir) {
 
 /**
  * The clip one channel gets: FORMAT_FOR's, or `--format` for every channel. A piece
- * rendered before the 2:3 format existed pins its 9:16 clip instead, which
- * Pinterest also accepts.
+ * with no 2:3 clip pins its 9:16 instead, which Pinterest also accepts. A portrait
+ * piece is one: make-social-assets.mjs renders it only as its as-is 9:16, and its
+ * meta.json lists just that.
  */
 function clipFor(piece, platform, override) {
   const wanted = override || FORMAT_FOR[platform]

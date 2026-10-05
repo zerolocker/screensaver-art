@@ -8,8 +8,9 @@ them**. The nightly curation agent produces landscape (16:9) art; social feeds a
 vertical. `make-social-assets.mjs` reframes a piece into **9:16** (Instagram, TikTok,
 YouTube) and **2:3** (Pinterest): the art zoomed over a blurred copy of itself, the
 piece's title in a pill under it, and a music bed written for that artwork. It writes
-the per-platform captions too. **The clip keeps the source's own length and plays
-once** — these are authored pieces, and many are deliberately non-looping.
+the per-platform captions too. **A portrait piece is posted as-is** (see *Portrait
+pieces*). **The clip keeps the source's own length and plays once** — these are
+authored pieces, and many are deliberately non-looping.
 `post-social.mjs` then publishes it to **Instagram, YouTube, TikTok and Pinterest**.
 
 | Script | What it does |
@@ -54,7 +55,7 @@ node marketing/make-social-assets.mjs --src ./clip.mp4 --title "Stormy Sea" --st
 | `--title <substr>` | — | Process the gallery entry whose title contains `<substr>`. |
 | `--src <path\|url>` | — | Use this MP4 directly (skips gallery lookup). Pair with `--title`/`--style`. |
 | `--style <text>` | derived | Override the art style shown in the title pill and captions. |
-| `--formats <list>` | `9x16,2x3` | Comma list of `9x16`, `2x3`. |
+| `--formats <list>` | `9x16,2x3` | Comma list of `9x16`, `2x3`. A portrait piece always renders just `9x16`. |
 | `--duration <sec>` | source length | Trim to at most N seconds. Only ever trims — nothing is looped to pad a longer target. |
 | `--music-prompt <text>` | off | Generate a bed from this prompt (one Lyria call) and score the clip with it. Also records the prompt as `music_prompt` on the piece's `gallery.json` entry. Refused when more than one piece matches. |
 | `--audio <file\|url>` | off | Score with an existing audio file instead of generating one. |
@@ -65,7 +66,7 @@ node marketing/make-social-assets.mjs --src ./clip.mp4 --title "Stormy Sea" --st
 ```
 marketing/out/<slug>/
   <slug>_9x16.mp4     # 1080×1920 — Instagram, TikTok, YouTube
-  <slug>_2x3.mp4      # 1080×1620 — Pinterest
+  <slug>_2x3.mp4      # 1080×1620 — Pinterest (landscape pieces only)
   captions.md         # the exact per-platform copy the poster will publish
   meta.json           # the hand-off to post-social.mjs (incl. the music prompt used)
 marketing/out/.posted.json   # ledger: what has already been published where
@@ -76,7 +77,7 @@ marketing/out/.posted.json   # ledger: what has already been published where
 style, the rendered formats and — the important one — `webSlug`, the piece's
 permanent `/art/<slug>` landing page. The poster never re-derives any of it.
 
-## How it reframes
+## How it reframes a landscape piece
 A blurred, darkened copy of the clip fills the canvas, and the art sits on it **zoomed
 to 1.5× the canvas width**, so the clip shows the middle two-thirds of the piece. That
 is deliberate: in a feed every tile has the same width, so a letterboxed piece is the
@@ -98,6 +99,20 @@ Which clip goes where: Instagram, TikTok and YouTube get **9:16**, because their
 are 9:16 and give any other shape black bars. Pinterest gets **2:3**, its recommended pin
 shape. On 9:16 the title lands near the top of the area Instagram's caption covers; the
 art is deliberately not lifted until a real post shows whether that matters.
+
+## Portrait pieces
+**A portrait piece goes out as it is.** A tall painting animated at 9:16 already fills a
+phone, so there is nothing to reframe: no zoom, no blurred background, no title pill. Its
+frames are only scaled to the 1080×1920 canvas, at their own frame rate. The music bed
+and `--duration` work as for any piece.
+
+**Portrait means taller than wide**, read from the video itself with ffprobe (after any
+rotation flag). `gallery.json` has no aspect field.
+
+**Pinterest gets the same 9:16 clip.** It accepts 9:16 video, and a 2:3 crop would cut
+the painting the as-is clip keeps whole. So a portrait piece renders one file, its
+`meta.json` lists only `9x16`, and the poster's rule does the rest: Pinterest gets the
+2:3 when a piece has one, otherwise the 9:16. One upload serves all four channels.
 
 ## Audio — the per-piece music bed
 `--music-prompt` makes one Lyria call, then cuts the ~30s result to the clip's own
@@ -154,8 +169,9 @@ bash curation/with-secrets.sh ZERNIO_API_KEY -- \
 
 One vendor, four channels, all equal priority: **Zernio** posts to Instagram, YouTube,
 TikTok and Pinterest (strategy **§11.1**). Each clip goes up once through Zernio's
-presigned media upload (the 9:16 serves three channels, the 2:3 the pin), then each
-channel gets its own `POST /v1/posts` with `publishNow`. That is one post per channel
+presigned media upload (the 9:16 serves three channels, the 2:3 the pin; a portrait
+piece's 9:16 serves all four), then each channel gets its own `POST /v1/posts` with
+`publishNow`. That is one post per channel
 rather than one post for all four, because a payload that one platform rejects fails
 the whole request, and it must not take the other three down with it. (Until
 2026-09-12, Instagram + YouTube went through upload-post.)
@@ -169,7 +185,7 @@ the whole request, and it must not take the other three down with it. (Until
 | `--count <K>` | 1 | How many of them to actually post. |
 | `--slug <s>` | — | Post one specific rendered piece (its `marketing/out/<slug>` dir). |
 | `--channels <list>` | all four | `instagram,youtube,tiktok,pinterest`. |
-| `--format <fmt>` | `9x16`; `2x3` for Pinterest | Post this rendered clip to every channel instead. A piece rendered before 2:3 existed pins its 9:16 clip. |
+| `--format <fmt>` | `9x16`; `2x3` for Pinterest | Post this rendered clip to every channel instead. A piece with no 2:3 (a portrait piece) pins its 9:16 clip. |
 | `--force` | off | Post again even if the ledger says it already went out. |
 
 Env override: `PINTEREST_BOARD` (a board **name** or id; defaults to *Daily Curation*,

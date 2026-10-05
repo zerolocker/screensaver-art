@@ -6,6 +6,10 @@
 // 9:16 (Instagram, TikTok, YouTube) and 2:3 (Pinterest): the art zoomed over a
 // blurred copy of itself, the piece's title in a pill just under it, and a music
 // bed written for that specific artwork. It writes the per-platform captions too.
+// A portrait source (taller than wide, e.g. a tall painting animated at 9:16) is
+// already the shape of a phone feed, so it skips all of that: its frames go out
+// as they are, scaled to the 9:16 canvas, with only the music added. That one
+// 9:16 clip serves all four channels, Pinterest included; there is no 2:3.
 // The clip keeps the source's own length and plays exactly once — these are
 // authored pieces, and half of them are deliberately non-looping. Reuses art you
 // already generate: the marginal cost of a day's social content is ~one ffmpeg
@@ -33,7 +37,7 @@
 //   --title <substr> process the gallery entry whose title contains <substr> (case-insensitive)
 //   --src <path|url> use this MP4 directly (skip gallery lookup); pair with --title/--style
 //   --style <text>   override the derived art style (shown in the title pill + captions)
-//   --formats <list> comma list of 9x16,2x3 (default: both)
+//   --formats <list> comma list of 9x16,2x3 (default: both; a portrait source only ever renders 9x16)
 //   --duration <sec> trim to at most N seconds (default: the source clip's own length)
 //   --music-prompt <text>  generate a bed from this prompt (Lyria) and score the clip with it;
 //                          also records it as `music_prompt` on the piece's gallery.json entry
@@ -65,6 +69,8 @@ const CANVAS_W = 1080
  * One canvas per format. The poster sends 9:16 to Instagram, TikTok and YouTube,
  * whose players are 9:16 (any other shape gets black bars), and 2:3 to Pinterest,
  * whose recommended pin shape it is (a taller pin can be cut off in the feed).
+ * A portrait source renders only 9:16, which Pinterest also takes: cropping a tall
+ * painting to 2:3 would cut the art the as-is clip exists to keep whole.
  */
 const FORMATS = {
   '9x16': { w: CANVAS_W, h: 1920 },
@@ -148,27 +154,39 @@ function recordMusicPrompt(src, prompt) {
 }
 
 /**
- * How long the source clip is, and its frame size (the zoomed art's height
- * follows from it).
+ * How long the source clip is, its frame size as displayed (the zoomed art's
+ * height follows from it), and whether it is portrait.
  *
  * The length is the clip's length, full stop. An earlier version looped the
  * source to a fixed 12s target, which meant every 8s piece silently replayed its
  * first four seconds — on pieces `gallery.json` explicitly marks `looping: false`,
  * i.e. ones authored *not* to repeat. The art decides the length; we don't pad it.
+ *
+ * The size is the displayed one: a clip stored sideways with a 90° rotation flag
+ * is turned upright by ffmpeg as it decodes, so that is the frame the filters
+ * see, and the one that decides portrait. There is no aspect field in
+ * gallery.json; the video itself is the source of truth.
  */
 function probeVideo(file) {
   const r = spawnSync('ffprobe', [
     '-v', 'error', '-select_streams', 'v:0',
-    '-show_entries', 'stream=width,height:format=duration', '-of', 'json', file,
+    '-show_entries', 'stream=width,height:stream_tags=rotate:stream_side_data=rotation:format=duration',
+    '-of', 'json', file,
   ], { encoding: 'utf8' })
   let info = {}
   try { info = JSON.parse(r.stdout || '{}') } catch { /* reported below */ }
   const duration = parseFloat(info.format?.duration)
-  const { width, height } = info.streams?.[0] ?? {}
+  const stream = info.streams?.[0] ?? {}
+  // Newer files carry a display matrix, older ones a `rotate` tag.
+  const rotation = Number(stream.side_data_list?.find((d) => d.rotation !== undefined)?.rotation ??
+    stream.tags?.rotate ?? 0)
+  const sideways = Math.abs(rotation) % 180 === 90
+  const width = sideways ? stream.height : stream.width
+  const height = sideways ? stream.width : stream.height
   if (r.status !== 0 || !(duration > 0) || !(width > 0) || !(height > 0)) {
     throw new Error(`could not read the duration and frame size of ${path.basename(file)}`)
   }
-  return { duration, width, height }
+  return { duration, width, height, portrait: height > width }
 }
 
 const even = (n) => 2 * Math.round(n / 2)
@@ -226,7 +244,8 @@ function titleDrawtext({ w, y, titleFile, titleText }) {
     `:box=1:boxcolor=0x141414@0.6:boxborderw=${pad}:x=(w-text_w)/2:y=${y + pad}`
 }
 
-function buildFilter({ w, h, lay, pill, titleFile, titleText, audio, audioIndex, gain, duration }) {
+/** A landscape source, reframed: the art zoomed over a blurred copy of itself, its title under it. */
+function reframeFilter({ w, h, lay, pill, titleFile, titleText }) {
   const chain = [
     // Trim the clip's dark edge rows (see layout) before either copy is made.
     `[0:v]crop=iw:${lay.srcH}:0:${lay.edge},split=2[bg][fg]`,
@@ -244,6 +263,21 @@ function buildFilter({ w, h, lay, pill, titleFile, titleText, audio, audioIndex,
     const text = titleDrawtext({ w, y: lay.titleY, titleFile, titleText })
     chain.push(`[base]${text ? `${text},` : ''}format=yuv420p[outv]`)
   }
+  return chain
+}
+
+/**
+ * A portrait source, as it is: no crop, zoom, blur or title, only scaled to the
+ * canvas. It fits inside rather than fills, so a portrait clip that isn't exactly
+ * 9:16 keeps its own shape instead of being cropped or stretched.
+ */
+function asIsFilter({ w, h }) {
+  return [`[0:v]scale=${w}:${h}:force_original_aspect_ratio=decrease:force_divisible_by=2:flags=lanczos,` +
+    'setsar=1,format=yuv420p[outv]']
+}
+
+function buildFilter({ asIs, audio, audioIndex, gain, duration, ...video }) {
+  const chain = asIs ? asIsFilter(video) : reframeFilter(video)
   if (audio) {
     // The bed is a ~30s take cut to the clip's length, so it only needs levelling
     // and a fade at each end — a hard cut on a sustained pad is very audible. The
@@ -260,10 +294,12 @@ function buildFilter({ w, h, lay, pill, titleFile, titleText, audio, audioIndex,
 
 function renderFormat({ input, video, fmtKey, outFile, duration, pill, titleFile, titleText, bed, gain }) {
   const fmt = FORMATS[fmtKey]
-  const lay = layout(fmt, video)
+  const asIs = video.portrait
+  const lay = asIs ? null : layout(fmt, video)
   // Input order decides the filter's stream indices: art, [title pill], [bed].
+  // A portrait source has no pill.
   const audioIndex = pill ? 2 : 1
-  const filter = buildFilter({ ...fmt, lay, pill, titleFile, titleText, audio: !!bed, audioIndex, gain, duration })
+  const filter = buildFilter({ ...fmt, lay, pill, titleFile, titleText, asIs, audio: !!bed, audioIndex, gain, duration })
   const args = [
     '-y', '-hide_banner', '-loglevel', 'error',
     // The art plays once, at its own length — no -stream_loop here. Only the
@@ -275,7 +311,9 @@ function renderFormat({ input, video, fmtKey, outFile, duration, pill, titleFile
     '-map', '[outv]',
     ...(bed ? ['-map', '[outa]', '-c:a', 'aac', '-b:a', '128k', '-ar', '44100', '-ac', '2'] : ['-an']),
     '-t', String(duration),
-    '-r', '30',
+    // A portrait source keeps its own frame rate, so every source frame appears
+    // exactly once; 24 → 30 would repeat every fourth one.
+    ...(asIs ? [] : ['-r', '30']),
     '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-pix_fmt', 'yuv420p',
     '-movflags', '+faststart',
     outFile,
@@ -358,12 +396,16 @@ async function main() {
           process.stderr.write(`  ⚠ --duration ${a.duration}s exceeds the source (${sourceDuration.toFixed(1)}s) — using the source length\n`)
         }
         process.stdout.write(`  ${duration.toFixed(1)}s${duration < sourceDuration ? ` (trimmed from ${sourceDuration.toFixed(1)}s)` : ''}\n`)
+        // A portrait source goes out as it is: one 9:16 clip, no title pill. The
+        // poster pins that same clip, so there is no 2:3 to render.
+        if (video.portrait) process.stdout.write(`  portrait (${video.width}×${video.height}): 9:16 as-is, no reframe or title\n`)
+        const fmtKeys = video.portrait ? ['9x16'] : a.formats
         const titleText = titleLine(title, style)
-        const pill = renderTitlePill(titleText, tmp)
-        const titleFile = pill ? null : path.join(tmp, 'title.txt')
+        const pill = video.portrait ? null : renderTitlePill(titleText, tmp)
+        const titleFile = pill || video.portrait ? null : path.join(tmp, 'title.txt')
         if (titleFile) writeFileSync(titleFile, titleText)
         const formats = {}
-        for (const fmtKey of a.formats) {
+        for (const fmtKey of fmtKeys) {
           const name = `${slug}_${fmtKey}.mp4`
           const outFile = path.join(dir, name)
           renderFormat({ input, video, fmtKey, outFile, duration, pill, titleFile, titleText, bed, gain: a.gain })

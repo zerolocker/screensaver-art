@@ -2,7 +2,7 @@
 
 The runbook when `curation/CURATION_MODE` is `real-paintings`. Each night, add **four famous public-domain paintings, animated with Gemini Omni**. Only the motion is generated. Famous works come first, because people recognize them and search for them by name.
 
-Run every command from the repo root. The fixed video prompt and the review checklist are in [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md).
+Run every command from the repo root. The fixed animation config, its prompt and the review checklist are in [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md).
 
 ## Prerequisites
 
@@ -37,22 +37,29 @@ The museum APIs need no keys. If one is down, use the others; if all are down, a
    - **No nudity or graphic violence**, however famous. Pieces are posted to social media and play on screens others can see.
    - If Omni's safety filter refuses a painting, take the next pick.
 
-4. **Frame each pick on a dark wall.**
+4. **Prepare each pick.**
    ```bash
    node curation/real-art/frame-painting.mjs --candidates /tmp/lart-candidates.json \
      --id aic:20684 --stem caillebotte_paris_street_rainy_day
    ```
-   This writes `gallery/<stem>_4k.webp` (the whole painting, centred on a 3840×2160 near-black wall, never cropped or extended) and `gallery/<stem>.provenance.json`. **Look at the still.** If it's soft, discoloured or a detail crop, pick another painting.
+   This writes three files:
+   - `gallery/<stem>_src.jpg`: the bare painting at 1920 px. This is what Omni animates.
+   - `gallery/<stem>_4k.webp`: the whole painting on a 3840×2160 near-black wall. The web images are cut from this.
+   - `gallery/<stem>.provenance.json`: the credit fields.
 
-5. **Animate with Omni** (the `omni-video-gen` skill), using the fixed prompt from the guidance:
+   Its last line of output also gives `omni_aspect` (16:9 or 9:16). **Look at the stills.** If one is soft, discoloured or a detail crop, pick another painting.
+
+5. **Animate with Omni** (the `omni-video-gen` skill), using the config and prompt in the guidance:
    ```bash
-   VID_PROMPT="Animate this; keep the camera still."
+   VID_PROMPT="Animate this artwork in a single unbroken scene. No camera movements or zooms.
+   This artwork is titled <title>, by <artist>, completed in the year of <year>."
    bash curation/with-secrets.sh GEMINI_API_KEY -- \
      python .claude/skills/omni-video-gen/scripts/generate.py \
-       --prompt "$VID_PROMPT" --image gallery/<stem>_4k.webp --resolution 1080p \
+       --prompt "$VID_PROMPT" --image gallery/<stem>_src.jpg --max-edge 1920 \
+       --aspect <omni_aspect> --task image_to_video --resolution 1080p \
        --out gallery/<stem>_animated.mp4
    ```
-   Don't change the prompt per painting.
+   Fill in only the title, artist and year (rules in the guidance). Don't change anything else.
 
 6. **Check the clip before publishing.** Pull the first, middle and last frames and go through the guidance's *Fidelity checklist*. Compare fixed landmarks (a lamppost, a wall edge, the signature, the painting's border) across the frames before you describe how anything moved. If it fails, reroll once with the same prompt. If that fails too, drop the painting and take the next pick.
 
@@ -64,7 +71,7 @@ The museum APIs need no keys. If one is down, use the others; if all are down, a
      --title "<original title> - <artist> (AI Animated)" \
      --tag "19th Century" --video-prompt "$VID_PROMPT"
    ```
-   Use the painting's real title and the artist's usual name, e.g. "Paris Street; Rainy Day - Gustave Caillebotte (AI Animated)". `--tag` takes exactly one wing from *Gallery tags* (era for European works, culture or region for the rest). Don't set `free`. Then delete `gallery/<stem>.provenance.json`.
+   Use the painting's real title and the artist's usual name, e.g. "Paris Street; Rainy Day - Gustave Caillebotte (AI Animated)". `--tag` takes exactly one wing from *Gallery tags* (era for European works, culture or region for the rest). Don't set `free`. Then delete `gallery/<stem>_src.jpg` and `gallery/<stem>.provenance.json`.
 
 8. **Repeat** steps 4–7 until four pieces are published.
 

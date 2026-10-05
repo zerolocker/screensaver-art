@@ -7306,7 +7306,8 @@
     "source_url": "https://www.metmuseum.org/art/collection/search/437394",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Aristotle with a Bust of Homer, by Rembrandt, completed in the year of 1653.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Unhurried candlelit chamber music: string quartet with soft harpsichord, warm and dignified, gentle Baroque-to-Classical phrasing, intimate portrait-gallery calm. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_juan_de_pareja_animated.mp4",
@@ -7329,7 +7330,8 @@
     "source_url": "https://www.metmuseum.org/art/collection/search/437869",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Juan de Pareja, by Diego Velázquez, completed in the year of 1650.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Unhurried candlelit chamber music: string quartet with soft harpsichord, warm and dignified, gentle Baroque-to-Classical phrasing, intimate portrait-gallery calm. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/david_lavoisier_and_his_wife_animated.mp4",
@@ -7352,7 +7354,8 @@
     "source_url": "https://www.metmuseum.org/art/collection/search/436106",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Antoine Laurent Lavoisier and Marie Anne Lavoisier, by Jacques-Louis David, completed in the year of 1788.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Unhurried candlelit chamber music: string quartet with soft harpsichord, warm and dignified, gentle Baroque-to-Classical phrasing, intimate portrait-gallery calm. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/ingres_princesse_de_broglie_animated.mp4",
@@ -7375,6 +7378,7 @@
     "source_url": "https://www.metmuseum.org/art/collection/search/459106",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Princesse de Broglie, by Jean-Auguste-Dominique Ingres, completed in the year of 1851.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Unhurried candlelit chamber music: string quartet with soft harpsichord, warm and dignified, gentle Baroque-to-Classical phrasing, intimate portrait-gallery calm. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

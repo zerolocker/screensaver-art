@@ -25,6 +25,11 @@ Fixed for every painting. The founder chose it after iterating side by side on 1
 
 **9:16 results are expected** for tall paintings. The screensaver, the app and the website hang them on a dark wall, and social posts use them as-is.
 
+## Picking for Omni
+
+- **Prefer one to three large figures.** Single-figure and close-group scenes (Vermeer, Sargent, Caillebotte's foreground couple) stay faithful. Wide landscapes whose only motion is sky or water (El Greco's *View of Toledo*, Church's *Heart of the Andes*) and crowded scenes of many small figures (Seurat's *Grande Jatte*, Bruegel's *Harvesters*, Toulouse-Lautrec's *At the Moulin Rouge*) get repainted, recomposed or sprout new boats, carts and people.
+- **Skip museum photos that include the physical frame** (Bonheur's *Horse Fair* at the Met). The gilt frame shows up on the wall still and in Omni's input.
+
 ## Fidelity checklist
 
 Step 6 of the runbook. Pull the first, middle and last frames, e.g. `ffmpeg -ss <t> -i clip.mp4 -frames:v 1 f<t>.png`.

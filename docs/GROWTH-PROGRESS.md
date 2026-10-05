@@ -20,9 +20,9 @@ The reasoning behind the plan is in [`growth-and-marketing-strategy.md`](growth-
 | Platform demand probe | Live | `components/marketing/platform-interest.tsx`. Results are PostHog events only. |
 | Brand-name SEO | Live | Title, meta description, JSON-LD |
 | Gallery landing pages | Live | `/gallery`, `/art/<slug>`, `/era/<tag>`. `/art/*` is `noindex`. |
-| Daily social posts | Live since 2026-09-07 | One piece a night to Instagram, YouTube, TikTok and Pinterest through Zernio (about $12/month). See `marketing/README.md`. |
-| Per-piece music for clips | Live | Lyria, prompt written by the nightly agent |
-| Real-paintings curation | Built, not switched on | `curation/REAL_PAINTINGS_CURATION.md`. Switch with `curation/CURATION_MODE`. |
+| Daily social posts | Live since 2026-09-07 | All of each night's pieces, stitched into one 9:16 clip, to Instagram, YouTube, TikTok and Pinterest through Zernio (about $12/month). See `marketing/README.md`. |
+| Music for clips | Live | Lyria. One prompt per night's set, written by the nightly agent. |
+| Real-paintings curation | Switching on (PR #105, after app 1.4.10 ships) | Famous public-domain paintings animated with Gemini Omni replace AI art. `curation/REAL_PAINTINGS_CURATION.md`. Switch back with `curation/CURATION_MODE`. |
 | Lifetime price ($15.99) | Live | Pricing work is closed until there is traffic. |
 | Product Hunt | Failed, 2026-07-26 | 5 upvotes, no traffic. Can't be rerun for months. |
 | Show HN | Blocked | HN refused new Show HN posts. Don't plan on it. |
@@ -76,10 +76,11 @@ Fix music problems in `curation/PROMPT_GUIDANCE.md` (Music prompts) and piece-ch
 
 Don't reverse these without asking the founder.
 
-- Post one piece a night, to all four channels equally, and let the UTM data rank them.
-- Pins link to the piece's own page. Other captions have no link and say "Link in bio" (TikTok: "Link in comment and bio", with the address in a pinned comment).
+- Nightly art is famous public-domain paintings, animated. The AI-art curation is paused, not deleted.
+- Post all of a night's pieces as one clip, to all four channels equally, and let the UTM data rank them.
+- Pins link to the first piece's own page. Other captions have no link and say "Link in bio" (TikTok: "Link in comment and bio", with the address in a pinned comment).
 - Clips carry no brand or marketing text. The caption does the selling, and it leaves out "Mac" so interest from other platforms shows up.
-- Music is written for each piece. Music that clashes with the picture is worse than none.
+- Music is written for each night's set. Music that clashes with the pictures is worse than none.
 - Buy social posting rather than build it (see the strategy doc).
 - `/art/*` pages exist for social, not search, and stay `noindex`.
 - Pricing stays as it is until there is traffic.

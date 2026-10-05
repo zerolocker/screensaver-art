@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { ArtVideo } from "@screensaver-art/ui"
 import { poster, posterImage, type Piece } from "@/lib/gallery-showcase"
 import {
   DwellClock,
@@ -351,7 +352,7 @@ export function ReelPlayer({
         const idx = view.layerIdx[layer]
         const piece = idx !== null ? pieces[idx] : null
         return (
-          <video
+          <ArtVideo
             key={layer}
             ref={videoRef(layer)}
             src={piece && view.loadAllowed ? piece.src : undefined}

@@ -22,3 +22,6 @@ export {
 // the paid-plan vocabulary, and the single full-access rule.
 export { PRICING, isSubscriptionActive } from './pricing'
 export type { PaidPlan, SubscriptionAccess } from './pricing'
+
+// Portrait (9:16) clips: shown whole on a dark wall, never cropped.
+export { PORTRAIT_WALL, isPortraitVideo } from './video'

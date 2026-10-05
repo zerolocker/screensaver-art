@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { useEffect, useRef } from 'react'
+import { ArtVideo } from '@screensaver-art/ui'
 import type { CatalogPiece } from '@/lib/gallery-catalog'
 
 /**
@@ -18,6 +19,10 @@ import type { CatalogPiece } from '@/lib/gallery-catalog'
  * doesn't (77 of 262 pieces have no still — media isn't committed to this repo,
  * see CLAUDE.md → Repo rules), the deterministic gradient carries the frame so
  * the layout is never empty or broken while the clip buffers.
+ *
+ * A portrait (9:16) clip plays whole on the dark wall inside the same 16:9
+ * screen (see ArtVideo). Its still is already the painting on that wall, so the
+ * hand-off from still to clip lines up.
  */
 export function PieceStage({ piece }: { piece: CatalogPiece }) {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -80,7 +85,7 @@ export function PieceStage({ piece }: { piece: CatalogPiece }) {
                 className="object-cover"
               />
             )}
-            <video
+            <ArtVideo
               ref={videoRef}
               src={piece.src}
               poster={piece.posterUrl ?? undefined}

@@ -28,6 +28,8 @@ Fixed for every painting. The founder chose it after iterating side by side on 1
 ## Picking for Omni
 
 - **Prefer one to three large figures.** Single-figure and close-group scenes (Vermeer, Sargent, Caillebotte's foreground couple) stay faithful. Wide landscapes whose only motion is sky or water (El Greco's *View of Toledo*, Church's *Heart of the Andes*) and crowded scenes of many small figures (Seurat's *Grande Jatte*, Bruegel's *Harvesters*, Toulouse-Lautrec's *At the Moulin Rouge*) get repainted, recomposed or sprout new boats, carts and people.
+- **Prefer tightly finished paint over loose brushwork.** Smooth academic and Old Master surfaces (Rembrandt, Velázquez, David, Ingres) hold. Sketchy Impressionist handling gets repainted as smooth realism, with the camera pulling back and new props appearing (Degas's *Millinery Shop* and Manet's *Boating* failed twice each).
+- **Avoid scenes with several animals.** Omni adds more of them: Goya's *Manuel Osorio* gained extra cats in both takes, and a caged bird got out.
 - **Skip museum photos that include the physical frame** (Bonheur's *Horse Fair* at the Met). The gilt frame shows up on the wall still and in Omni's input.
 
 ## Fidelity checklist

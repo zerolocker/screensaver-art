@@ -7284,5 +7284,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Madame X, by John Singer Sargent, completed in the year of 1883.",
     "looping": false,
     "music_prompt": "Calm, flowing chamber piece for solo piano and soft strings, a gentle lyrical melody, warm and spacious, unhurried mid-tempo, quietly elegant. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_aristotle_with_a_bust_of_homer_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_aristotle_with_a_bust_of_homer_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_aristotle_with_a_bust_of_homer_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_aristotle_with_a_bust_of_homer_640w.webp",
+    "title": "Aristotle with a Bust of Homer - Rembrandt (AI Animated)",
+    "type": "video",
+    "date": "2026-10-05",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Rembrandt",
+    "artist_dates": "1606–1669",
+    "original_title": "Aristotle with a Bust of Homer",
+    "original_date": "1653",
+    "museum": "The Metropolitan Museum of Art",
+    "credit_line": "Purchase, special contributions and funds given or bequeathed by friends of the Museum, 1961",
+    "source_url": "https://www.metmuseum.org/art/collection/search/437394",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Aristotle with a Bust of Homer, by Rembrandt, completed in the year of 1653.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_juan_de_pareja_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_juan_de_pareja_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_juan_de_pareja_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_juan_de_pareja_640w.webp",
+    "title": "Juan de Pareja - Diego Velázquez (AI Animated)",
+    "type": "video",
+    "date": "2026-10-05",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Diego Velázquez",
+    "artist_dates": "1599–1660",
+    "original_title": "Juan de Pareja (ca. 1608–1670)",
+    "original_date": "1650",
+    "museum": "The Metropolitan Museum of Art",
+    "credit_line": "Purchase, Fletcher and Rogers Funds, and Bequest of Miss Adelaide Milton de Groot (1876-1967), by exchange, supplemented by gifts from friends of the Museum, 1971",
+    "source_url": "https://www.metmuseum.org/art/collection/search/437869",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Juan de Pareja, by Diego Velázquez, completed in the year of 1650.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/david_lavoisier_and_his_wife_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/david_lavoisier_and_his_wife_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/david_lavoisier_and_his_wife_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/david_lavoisier_and_his_wife_640w.webp",
+    "title": "Antoine Laurent Lavoisier and Marie Anne Lavoisier - Jacques-Louis David (AI Animated)",
+    "type": "video",
+    "date": "2026-10-05",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Jacques-Louis David",
+    "artist_dates": "1748–1825",
+    "original_title": "Antoine Laurent Lavoisier (1743–1794) and Marie Anne Lavoisier (Marie Anne Pierrette Paulze, 1758–1836)",
+    "original_date": "1788",
+    "museum": "The Metropolitan Museum of Art",
+    "credit_line": "Purchase, Mr. and Mrs. Charles Wrightsman Gift, in honor of Everett Fahy, 1977",
+    "source_url": "https://www.metmuseum.org/art/collection/search/436106",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Antoine Laurent Lavoisier and Marie Anne Lavoisier, by Jacques-Louis David, completed in the year of 1788.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/ingres_princesse_de_broglie_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/ingres_princesse_de_broglie_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/ingres_princesse_de_broglie_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/ingres_princesse_de_broglie_640w.webp",
+    "title": "Princesse de Broglie - Jean-Auguste-Dominique Ingres (AI Animated)",
+    "type": "video",
+    "date": "2026-10-05",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Jean-Auguste-Dominique Ingres",
+    "artist_dates": "1780–1867",
+    "original_title": "Joséphine-Éléonore-Marie-Pauline de Galard de Brassac de Béarn (1825–1860), Princesse de Broglie",
+    "original_date": "1851–53",
+    "museum": "The Metropolitan Museum of Art",
+    "credit_line": "Robert Lehman Collection, 1975",
+    "source_url": "https://www.metmuseum.org/art/collection/search/459106",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Princesse de Broglie, by Jean-Auguste-Dominique Ingres, completed in the year of 1851.",
+    "looping": false
   }
 ]

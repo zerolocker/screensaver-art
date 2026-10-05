@@ -6,8 +6,10 @@
 //   node curation/real-art/frame-painting.mjs --candidates /tmp/cands.json --id aic:20684
 //   node curation/real-art/frame-painting.mjs --record piece.json --stem monet_haystacks --margin 0.04
 //
-// Writes gallery/<stem>_4k.webp + gallery/<stem>.provenance.json (the gallery
-// provenance keys only) and deletes the raw download. gallery/ is gitignored.
+// Writes gallery/<stem>_4k.webp (the wall still: published as the web images),
+// gallery/<stem>_src.jpg (the whole painting, unframed, 1920px long edge: what
+// Omni animates) and gallery/<stem>.provenance.json (the gallery provenance keys
+// only), and deletes the raw download. gallery/ is gitignored.
 
 import { spawnSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs'
@@ -85,6 +87,8 @@ const outDir = path.resolve(opts['out-dir'] || path.join(ROOT, 'gallery'))
 mkdirSync(outDir, { recursive: true })
 const outStill = path.join(outDir, `${stem}_4k.webp`)
 const outProv = path.join(outDir, `${stem}.provenance.json`)
+const outSrc = path.join(outDir, `${stem}_src.jpg`)
+const SRC_EDGE = 1920
 
 // ---- which URL(s) to try ---------------------------------------------------
 
@@ -123,7 +127,7 @@ if (!attempts.length) die(`no served size of ${rec.object_id} reaches ${MIN_LONG
 let src = null
 let failure = null
 let encoding = false
-const tmp = path.join(outDir, `${stem}_src.download`)
+const tmp = path.join(outDir, `${stem}_raw.download`)
 // Throw instead of process.exit(), so the cleanup below runs.
 const fail = (msg) => { throw new Error(msg) }
 try {
@@ -131,7 +135,7 @@ try {
     try {
       const got = await download(a.url, tmp, { redirect: a.redirect || 'follow' })
       const ext = /png/i.test(got.contentType) ? 'png' : /tiff?/i.test(got.contentType) ? 'tif' : 'jpg'
-      src = path.join(outDir, `${stem}_src.${ext}`)
+      src = path.join(outDir, `${stem}_raw.${ext}`)
       renameSync(tmp, src)
       break
     } catch (e) {
@@ -165,14 +169,21 @@ try {
   const out = probe(outStill)
   if (out?.width !== W || out?.height !== H) fail(`unexpected output size ${out?.width}×${out?.height}`)
 
+  // Omni gets the bare painting; it picks its own 16:9 or 9:16 crop.
+  const k = Math.min(1, SRC_EDGE / long)
+  const srcVf = `scale=${2 * Math.round((dims.width * k) / 2)}:${2 * Math.round((dims.height * k) / 2)}:flags=lanczos`
+  const rs = spawnSync('ffmpeg', ['-v', 'error', '-y', '-i', src, '-vf', srcVf, '-frames:v', '1', '-q:v', '2', outSrc], { encoding: 'utf8' })
+  if (rs.status !== 0 || !existsSync(outSrc)) fail(`ffmpeg failed writing the Omni input:\n${rs.stderr || rs.stdout || ''}`)
+  const omniAspect = dims.width > dims.height ? '16:9' : '9:16'
+
   writeFileSync(outProv, `${JSON.stringify(pickProvenance(rec), null, 2)}\n`)
   const kind = scale < 1 ? `lanczos downscale ×${scale.toFixed(3)}` : 'native size (smaller than the fit box; never upscaled)'
   const fit = scale === 1 ? 'hung at native size' : sw === W - 2 * inset ? (sh < H - 2 * inset ? 'letterboxed' : 'full-bleed') : 'pillarboxed'
   log(`  placed ${sw}×${sh} at (${x},${y}) — ${fit}, ${kind}`)
-  log(`  wrote ${path.relative(ROOT, outStill)} (${(statSync(outStill).size / 1e6).toFixed(1)} MB) + ${path.relative(ROOT, outProv)}`)
-  process.stdout.write(`${JSON.stringify({ still: outStill, provenance: outProv, stem, source: dims, placed: { width: sw, height: sh, x, y }, scale: Number(scale.toFixed(4)) })}\n`)
+  log(`  wrote ${path.relative(ROOT, outStill)} (${(statSync(outStill).size / 1e6).toFixed(1)} MB), ${path.relative(ROOT, outSrc)} (Omni input, --aspect ${omniAspect}) + ${path.relative(ROOT, outProv)}`)
+  process.stdout.write(`${JSON.stringify({ still: outStill, omni_input: outSrc, omni_aspect: omniAspect, provenance: outProv, stem, source: dims, placed: { width: sw, height: sh, x, y }, scale: Number(scale.toFixed(4)) })}\n`)
 } catch (e) {
-  if (encoding) rmSync(outStill, { force: true }) // a half-written still; never an older good one
+  if (encoding) { rmSync(outStill, { force: true }); rmSync(outSrc, { force: true }) } // half-written outputs; never older good ones
   failure = e
 } finally {
   // Never leave the raw download around.

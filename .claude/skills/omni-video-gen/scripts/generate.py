@@ -69,11 +69,20 @@ def with_retry(fn, attempts=4, base=15):
             time.sleep(wait)
 
 
-def image_part(path, resolution):
+AS_IS_MIME = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp"}
+
+
+def image_part(path, resolution, as_is=False, max_edge=None):
     if not os.path.exists(path):
         sys.exit(f"image not found: {path}")
+    if as_is:  # the caller already sized/encoded it: send these exact bytes
+        mime = AS_IS_MIME.get(os.path.splitext(path)[1].lower())
+        if not mime:
+            sys.exit(f"--image-as-is needs a .jpg/.png/.webp file: {path}")
+        with open(path, "rb") as f:
+            return {"type": "image", "data": base64.b64encode(f.read()).decode(), "mime_type": mime}
     im = Image.open(path).convert("RGB")
-    edge = SEND_EDGE[resolution]
+    edge = max_edge or SEND_EDGE[resolution]
     if max(im.size) > edge:
         im.thumbnail((edge, edge), Image.LANCZOS)
     buf = BytesIO()
@@ -91,6 +100,15 @@ def main():
     ap.add_argument("--resolution", default="1080p", choices=list(SEND_EDGE))
     ap.add_argument("--aspect", default="16:9", choices=["16:9", "9:16"])
     ap.add_argument("--model", default=MODEL)
+    ap.add_argument("--task", choices=["text_to_video", "image_to_video", "reference_to_video", "edit", "extend"],
+                    help="generation_config.video_config.task (optional; the docs advise prompting first)")
+    ap.add_argument("--seed", type=int,
+                    help="generation_config.seed. Undocumented for Omni but honoured (same seed + inputs -> near-identical clip)")
+    ap.add_argument("--duration", help="response_format.duration, e.g. 6s. Undocumented but honoured (3-10s)")
+    ap.add_argument("--image-as-is", action="store_true",
+                    help="send each --image file's bytes untouched (no resize/re-encode)")
+    ap.add_argument("--max-edge", type=int,
+                    help="long edge to downscale --image to before sending (default: per --resolution)")
     args = ap.parse_args()
 
     if not os.environ.get("GEMINI_API_KEY"):
@@ -99,10 +117,20 @@ def main():
 
     body = {
         "model": args.model,
-        "input": [image_part(p, args.resolution) for p in args.image] + [{"type": "text", "text": args.prompt}],
+        "input": [image_part(p, args.resolution, args.image_as_is, args.max_edge) for p in args.image]
+                 + [{"type": "text", "text": args.prompt}],
         "response_format": {"type": "video", "aspect_ratio": args.aspect,
                             "resolution": args.resolution, "delivery": "uri"},
     }
+    gen_config = {}
+    if args.task:
+        gen_config["video_config"] = {"task": args.task}
+    if args.seed is not None:
+        gen_config["seed"] = args.seed
+    if gen_config:
+        body["generation_config"] = gen_config
+    if args.duration:
+        body["response_format"]["duration"] = args.duration if args.duration.endswith("s") else args.duration + "s"
     if args.edit:
         side = args.edit if args.edit.endswith(".json") else args.edit + ".json"
         with open(side) as f:
@@ -114,7 +142,11 @@ def main():
     it = with_retry(lambda: client.interactions.create(**body))
     video = getattr(it, "output_video", None)
     if video is None:
-        sys.exit(f"no video in response (status={getattr(it, 'status', None)})")
+        # Say why: a refusal shows up here as a failed status / errors, not an exception.
+        detail = {k: getattr(it, k, None) for k in ("id", "status", "errors", "output_text")}
+        print(f"  response without video: {json.dumps(detail, default=str)[:4000]}", file=sys.stderr)
+        sys.exit(f"no video in response (status={getattr(it, 'status', None)}"
+                 f"{', errors=' + json.dumps(detail['errors'], default=str)[:600] if detail['errors'] else ''})")
 
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
     if getattr(video, "uri", None):
@@ -136,8 +168,8 @@ def main():
 
     with open(args.out + ".json", "w") as f:
         json.dump({"interaction_id": it.id, "model": args.model, "prompt": args.prompt,
-                   "images": args.image, "resolution": args.resolution,
-                   "edited_from": body.get("previous_interaction_id")}, f, indent=1)
+                   "images": args.image, "resolution": args.resolution, "aspect": args.aspect,
+                   "task": args.task, "seed": args.seed, "duration": args.duration, "edited_from": body.get("previous_interaction_id")}, f, indent=1)
     print(f"done in {time.time() - t0:.0f}s", file=sys.stderr)
     print(args.out)
 

@@ -31,7 +31,11 @@ bash curation/with-secrets.sh GEMINI_API_KEY -- \
 
 ## Flags
 `--resolution` `360p|720p|1080p|4k` (default `1080p`; `360p` is a cheap smoke test) ·
-`--aspect` `16:9|9:16` · `--model` (`$OMNI_MODEL`, default `gemini-omni-1.1-flash`).
+`--aspect` `16:9|9:16` · `--model` (`$OMNI_MODEL`, default `gemini-omni-1.1-flash`) ·
+`--task image_to_video|reference_to_video|…` (`generation_config.video_config.task`) ·
+`--image-as-is` (send pre-sized images untouched) · `--max-edge N`.
+Undocumented but honoured by the API (checked 2026-10-04): `--duration 4s` (`response_format.duration`;
+without it Omni made 10 s clips) and `--seed N` (`generation_config.seed`: same seed + inputs → near-identical clip).
 
 ## Differences from Veo
 - **There is no negative prompt** (Omni rejects one), so put every "don't" in the prompt in

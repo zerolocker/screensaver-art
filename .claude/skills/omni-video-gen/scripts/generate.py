@@ -38,6 +38,10 @@ from google import genai
 from google.genai import errors
 from PIL import Image
 
+if not hasattr(genai.Client, "interactions") and not hasattr(genai, "interactions"):
+    sys.exit(f"google-genai {getattr(genai, '__version__', '?')} is too old: Omni needs the Interactions API "
+             "(2.25+). Run: python3 -m pip install -U google-genai")
+
 MODEL = os.environ.get("OMNI_MODEL", "gemini-omni-1.1-flash")
 # Long edge we send per output resolution. A bigger seed only bloats the request.
 SEND_EDGE = {"360p": 1280, "720p": 1280, "1080p": 1920, "4k": 3840}

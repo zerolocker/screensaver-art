@@ -6,7 +6,7 @@ Run every command from the repo root. The fixed animation config, its prompt and
 
 ## Prerequisites
 
-The same secrets and wrapper as [`AUTOMATED_CURATION.md`](AUTOMATED_CURATION.md#prerequisites): `GEMINI_API_KEY` (Omni and the clip's music), `CLOUDFLARE_API_TOKEN` (used by `publish-piece.mjs`), and `ZERNIO_API_KEY` (social). No image generation. Needs Node 18+ and `ffmpeg`.
+The same secrets and wrapper as [`AUTOMATED_CURATION.md`](AUTOMATED_CURATION.md#prerequisites): `GEMINI_API_KEY` (Omni and the clip's music), `CLOUDFLARE_API_TOKEN` (used by `publish-piece.mjs`), and `ZERNIO_API_KEY` (social). No image generation. Needs Node 18+, `ffmpeg`, and `google-genai` 2.25 or newer for `python3`, because Omni uses the Interactions API. If the Omni script says the SDK is too old, run `python3 -m pip install -U google-genai` and retry.
 
 The museum APIs need no keys. If one is down, use the others; if all are down, abort and report. **Never take an image from anywhere else** (search engines, Wikimedia, stock sites): the museum's own public-domain flag is our legal evidence.
 

@@ -1,6 +1,7 @@
-// Generates a piece's music with one Lyria call. Music is written per piece
-// because music that clashes with the picture is worse than none. Only the
-// prompt is kept (as `music_prompt` in gallery.json); the MP3 is temporary.
+// Generates the music for one post (a piece, or a night's set stitched into one
+// clip) with one Lyria call. The music is written for the art because music that
+// clashes with the picture is worse than none. Only the prompt is kept (as
+// `music_prompt` on every piece it scored); the MP3 is temporary.
 
 import { spawnSync } from 'node:child_process'
 import { existsSync, statSync } from 'node:fs'
@@ -46,5 +47,43 @@ export function generateBed({ prompt, outFile, model = 'clip' }) {
   if (!existsSync(outFile) || statSync(outFile).size === 0) {
     throw new Error(`music generation produced no audio at ${outFile}`)
   }
+  return outFile
+}
+
+/**
+ * Seconds of crossfade where a looped bed meets its own start. Lyria returns ~30s
+ * and a night's set runs ~40s, so the bed repeats; a hard seam is very audible.
+ */
+const LOOP_CROSSFADE = 3
+
+function audioLength(file) {
+  const r = spawnSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file],
+    { encoding: 'utf8' })
+  const seconds = parseFloat(r.stdout)
+  if (r.status !== 0 || !(seconds > 0)) throw new Error(`could not read the length of ${path.basename(file)}`)
+  return seconds
+}
+
+/**
+ * Returns a bed at least `length` seconds long: the bed itself if long enough,
+ * else copies of it crossfaded end to start, written to `outFile` (WAV).
+ */
+export function fitBed({ bed, length, outFile }) {
+  const bedLength = audioLength(bed)
+  if (bedLength >= length) return bed
+  const overlap = Math.min(LOOP_CROSSFADE, bedLength / 3)
+  const copies = Math.ceil((length - overlap) / (bedLength - overlap))
+  const chain = []
+  let joined = '0:a'
+  for (let i = 1; i < copies; i++) {
+    chain.push(`[${joined}][${i}:a]acrossfade=d=${overlap.toFixed(3)}:c1=qsin:c2=qsin[a${i}]`)
+    joined = `a${i}`
+  }
+  const r = spawnSync('ffmpeg', [
+    '-y', '-hide_banner', '-loglevel', 'error',
+    ...Array.from({ length: copies }, () => ['-i', bed]).flat(),
+    '-filter_complex', chain.join(';'), '-map', `[${joined}]`, '-c:a', 'pcm_s16le', outFile,
+  ], { stdio: ['ignore', 'ignore', 'inherit'] })
+  if (r.status !== 0) throw new Error('ffmpeg could not loop the music bed')
   return outFile
 }

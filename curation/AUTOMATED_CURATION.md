@@ -62,34 +62,36 @@ The only files you change are `gallery.json`, `curation/ART_STYLES_FOR_INSPIRATI
    ```
    Don't commit anything else you generated.
 
-8. **Post one piece to social.**
+8. **Post tonight's pieces to social as one clip.** All four go out together, in one 9:16 clip, each dissolving into the next under one piece of music.
 
-   **8a. Pick the piece** most likely to work as a muted vertical clip seen for three seconds on a phone:
-   - One clear subject in the middle two-thirds of the width. The clip zooms the art 1.5× and crops the sides, so detail spread across a wide scene, or a subject near an edge, gets lost.
+   **8a. Order the pieces.** Put first the one most likely to stop a thumb: a muted vertical clip seen for three seconds on a phone.
+   - The most recognizable artwork leads, else the one with one clear subject. A landscape piece is zoomed 1.5× with its sides cropped, so a subject near an edge, or detail spread across a wide scene, makes a weak opener. A portrait piece is shown whole.
    - Colour and light that stand out in a feed. This is a brighter, higher-contrast bar than "looks good on a wall".
-   - Something different from the last few nights. `marketing/out/.posted.json` lists past posts; avoid a third misty landscape in a row.
+   - A different opener from the last few nights. `marketing/out/.posted.json` lists past posts; avoid a third misty landscape in a row.
 
-   **8b. Write its music prompt** following *Music prompts* in `PROMPT_GUIDANCE.md`.
+   **8b. Write one music prompt for the set** following *Music prompts* in `PROMPT_GUIDANCE.md`.
 
    **8c. Render and post.**
    ```bash
-   MUSIC_PROMPT="Bright, playful summer daytime music: pizzicato strings and warm marimba …
+   MUSIC_PROMPT="Warm, unhurried chamber music: soft strings and a gentle harp …
    Even dynamics, no build or drop. Instrumental, no vocals."
 
-   node marketing/make-social-assets.mjs --title "<the piece>" --music-prompt "$MUSIC_PROMPT"
+   node marketing/make-social-assets.mjs \
+     --titles "<first piece>" "<second>" "<third>" "<fourth>" \
+     --music-prompt "$MUSIC_PROMPT"
 
    bash curation/with-secrets.sh ZERNIO_API_KEY -- \
-     node marketing/post-social.mjs --slug <slug from the render>
+     node marketing/post-social.mjs --slug <set slug from the render>
    ```
-   The first command generates the music, renders the clips and captions, and records `music_prompt` on the piece's `gallery.json` entry. The second posts to Instagram, YouTube, TikTok and Pinterest. Details: [`marketing/README.md`](../marketing/README.md).
+   Each `--titles` value is a piece's exact title, or part of one that no other title contains; the script lists the matches if it's ambiguous. The first command generates the music, renders the clip and captions into `marketing/out/<set slug>/` (e.g. `mount-fuji-and-3-more`), and records `music_prompt` on every piece's `gallery.json` entry. The second posts the clip to Instagram, YouTube, TikTok and Pinterest; the pin links to the first piece's page. Details: [`marketing/README.md`](../marketing/README.md).
 
    **8d. Commit the music prompt.**
    ```bash
-   git add gallery.json && git commit -m "AUTO_CURATION: music_prompt for <piece>" && git push
+   git add gallery.json && git commit -m "AUTO_CURATION: music_prompt for tonight's set" && git push
    ```
 
    Notes:
-   - Step 8 must run after step 7's push. The pin links to the piece's web page, which exists only after Vercel rebuilds; the poster waits for it.
-   - Only the posted piece gets a music prompt. `make-social-assets.mjs` refuses `--music-prompt` if more than one piece matches.
+   - Step 8 must run after step 7's push. The pin links to the first piece's web page, which exists only after Vercel rebuilds; the poster waits for it.
+   - The set shares one piece of music, so every piece in it carries the same `music_prompt`.
    - Never commit anything from `marketing/out/`.
    - If posting fails, report which channel failed and carry on. Still do 8d.

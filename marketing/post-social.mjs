@@ -1,23 +1,26 @@
 #!/usr/bin/env node
 // Posts a clip rendered by make-social-assets.mjs to Instagram, YouTube, TikTok
-// and Pinterest through Zernio. It runs unattended every night, so it favours
-// safe over clever. See marketing/README.md.
+// and Pinterest through Zernio. The clip is usually the night's set, all its
+// pieces stitched into one; a "piece" below means one rendered post, a single
+// piece or a set. It runs unattended every night, so it favours safe over
+// clever. See marketing/README.md.
 //
 // Usage:
 //   bash curation/with-secrets.sh ZERNIO_API_KEY -- \
 //     node marketing/post-social.mjs --check          # preflight, posts nothing
 //
 //   bash curation/with-secrets.sh ZERNIO_API_KEY -- \
-//     node marketing/post-social.mjs --latest 4       # the nightly call
+//     node marketing/post-social.mjs --slug <s>       # the nightly call: the night's set
 //
 // Flags:
 //   --check           verify the key, accounts and the Pinterest board, then exit
 //   --dry-run         do everything except publish
-//   --latest [N]      consider the N most recently rendered pieces (default 4)
+//   --latest [N]      consider the N most recently rendered posts (default 4)
 //   --count <K>       how many of them to post (default 1)
-//   --slug <s>        post this specific rendered piece (its marketing/out/<slug> dir)
+//   --slug <s>        post this specific rendered post (its marketing/out/<slug> dir)
 //   --channels <list> comma list of instagram,youtube,tiktok,pinterest (default: all)
-//   --format <fmt>    post this shape everywhere (default: 9x16, and 2x3 for Pinterest)
+//   --format <fmt>    post this shape everywhere (default: 9x16, and 2x3 for Pinterest
+//                     when the post has one)
 //   --force           post again even if the ledger says it already went out
 //   --out <dir>       where the rendered clips live (default: marketing/out)
 //
@@ -32,7 +35,10 @@ const ZERNIO_BASE = 'https://zernio.com/api/v1'
 
 const ALL_CHANNELS = ['instagram', 'youtube', 'tiktok', 'pinterest']
 
-/** Clip shape per channel. The 9:16 players letterbox anything else; 2:3 is Pinterest's pin shape. */
+/**
+ * Clip shape per channel. The 9:16 players letterbox anything else; 2:3 is
+ * Pinterest's pin shape. A post with no 2:3 pins its 9:16 (see clipFor).
+ */
 const FORMAT_FOR = { instagram: '9x16', youtube: '9x16', tiktok: '9x16', pinterest: '2x3' }
 
 /**
@@ -139,7 +145,10 @@ function discover(outDir) {
     (b.date ?? '').localeCompare(a.date ?? '') || (b.renderedAt ?? '').localeCompare(a.renderedAt ?? ''))
 }
 
-/** The clip a channel gets. Falls back to 9:16 when a piece has no 2:3 render. */
+/**
+ * The clip a channel gets. Falls back to 9:16 when a post has no 2:3 render, as a
+ * set or a portrait piece never does.
+ */
 function clipFor(piece, platform, override) {
   const wanted = override || FORMAT_FOR[platform]
   if (piece.clips[wanted]) return { format: wanted, file: piece.clips[wanted] }
@@ -157,6 +166,12 @@ function eraOf(piece) {
 function artworkFor(piece) {
   if (piece.artwork !== undefined) return piece.artwork
   return artworkOf(loadGallery().find((e) => e.src === piece.src))
+}
+
+/** The pieces a rendered post shows, in order: a set's own list, or the one piece. */
+function piecesOf(post) {
+  if (post.pieces) return post.pieces.map((p) => ({ ...p, artwork: artworkFor(p) }))
+  return [{ title: post.title, style: post.style, era: eraOf(post), webSlug: post.webSlug, artwork: artworkFor(post) }]
 }
 
 /**
@@ -565,7 +580,8 @@ async function main() {
   let candidates = a.slug ? all.filter((p) => p.assetSlug === a.slug) : all.slice(0, a.latest)
   if (a.slug && candidates.length === 0) die(`no rendered piece with assetSlug "${a.slug}" under ${a.out}`)
   if (!a.slug) {
-    // Newest unposted pieces first, `--count` of them (one a night).
+    // Newest unposted posts first, `--count` of them (one a night, which is why
+    // a night's pieces go out as one set).
     const pending = candidates.filter((p) => a.force || a.channels.some((c) => !alreadyPosted(ledger, p.assetSlug, c)))
     candidates = pending.slice(0, a.count)
   }
@@ -578,11 +594,10 @@ async function main() {
     log(`\n▸ ${piece.title} [${piece.style}] → ${todo.join(', ') || '(nothing)'}` +
         (skipped.length ? `  (already posted: ${skipped.join(', ')})` : ''))
     if (todo.length === 0) continue
+    if (piece.pieces) log(`  ${piece.pieces.length} pieces: ${piece.pieces.map((p) => p.title).join(' · ')}`)
     if (!piece.webSlug && todo.includes('pinterest')) warn('  ⚠ no gallery slug for this piece — the pin will link to the home page')
 
-    const captions = buildCaptions({
-      title: piece.title, style: piece.style, era: eraOf(piece), webSlug: piece.webSlug, artwork: artworkFor(piece),
-    })
+    const captions = buildCaptions(piecesOf(piece))
     const results = {}
 
     // Only the pin carries a link, so only the pin waits on the landing page.

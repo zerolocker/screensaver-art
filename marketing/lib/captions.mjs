@@ -1,7 +1,8 @@
 // Caption text for the social clips, shared by make-social-assets.mjs (which
-// writes captions.md) and post-social.mjs (which posts it). The rules behind it
-// are in marketing/README.md ("Captions"). Everything depends only on the piece,
-// so a retried post is identical.
+// writes captions.md) and post-social.mjs (which posts it). A post shows one piece
+// or a night's set stitched into one clip, so every caption takes the list of
+// pieces and names each in order. The rules behind it are in marketing/README.md
+// ("Captions"). Everything depends only on the pieces, so a retried post is identical.
 
 import { artPhrase, artistMovement, artistShortName, artworkHashtags, pieceHashtags } from './hashtags.mjs'
 import { SITE_ORIGIN, landingUrl } from './pieces.mjs'
@@ -18,12 +19,30 @@ const TIKTOK_CAPTION = `${PITCH} - Link in comment and bio`
 /** Pinned under every TikTok video. */
 const LINK_COMMENT = `Get the screensaver app: ${SITE_ORIGIN.replace(/^https?:\/\//, '')}`
 
+/** Each platform's text limits, in characters. */
+const LIMIT = {
+  instagram: 2200,
+  tiktok: 2200,
+  youtubeTitle: 100,
+  youtubeDescription: 5000,
+  youtubeTags: 500,
+  pinTitle: 100,
+  pinDescription: 500,
+}
+
 /** The piece as the title pill names it, e.g. "The Street Food Stall · Contemporary Illustration". */
 export const titleLine = (title, style) => `${title} · ${style}`
+
+/** What a post is called: its piece's title, or for a set the first piece's plus a count. */
+export const postName = (pieces) =>
+  pieces.length === 1 ? pieces[0].title : `${pieces[0].title} and ${pieces.length - 1} more`
 
 const clamp = (s, n) => (s.length <= n ? s : `${s.slice(0, n - 1).trimEnd()}…`)
 
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1)
+
+/** "a", "a and b", "a, b and c". */
+const spoken = (items) => (items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} and ${items.at(-1)}`)
 
 /** Distinct hashtags, first `max` of them, as one line. */
 const hashtagLine = (tags, max) => [...new Set(tags)].slice(0, max).join(' ')
@@ -52,84 +71,126 @@ export function artworkCreditLine(artwork) {
 /** Shorten `lead` until `lead + tail` fits in `max`. */
 const fitWithTail = (lead, tail, max) => `${clamp(lead, max - tail.length)}${tail}`
 
+/** How a caption names one piece: its title and style, or a real artwork's lead and credit. */
+const pieceText = (p) =>
+  (p.artwork ? `${artworkLead(p.title, p.artwork)}\n${artworkCreditLine(p.artwork)}` : titleLine(p.title, p.style))
+
+/** The same on a pin, which runs as one paragraph. */
+const pinText = (p) =>
+  (p.artwork ? `${artworkLead(p.title, p.artwork)}. ${artworkCreditLine(p.artwork)}` : titleLine(p.title, p.style))
+
+/** A piece's own hashtags, most specific first; a real artwork's come from its artist. */
+const hashtagsOf = (p) => (p.artwork ? artworkHashtags({ artist: p.artwork.artist, era: p.era }) : pieceHashtags(p))
+
+/** How a pin names a piece's art: an artist's movement, else the style or era phrase. */
+const labelOf = (p) =>
+  (p.artwork ? artistMovement(p.artwork.artist) ?? artPhrase({ style: null, era: p.era }) : artPhrase(p))
+
 /**
- * Captions for a real artwork: the same fixed first lines, then the painting,
- * painter and museum, with hashtags from the artist.
+ * The pieces' own hashtags, every piece's most specific one before any piece's
+ * second, so a capped line shows the range of a set, not just its first piece.
  */
-function artworkCaptions({ title, era, webSlug, artwork }) {
-  const lead = artworkLead(title, artwork)
-  const credit = artworkCreditLine(artwork)
-  const own = artworkHashtags({ artist: artwork.artist, era })
-  const movement = artistMovement(artwork.artist)
-  const phrase = movement ? null : artPhrase({ style: null, era })
-  const body = `${lead}\n${credit}`
-  return {
-    instagram: { text: `${CAPTION}\n\n${body}\n${hashtagLine(['#screensaver', '#animatedart', ...own], 4)}` },
-    tiktok: {
-      text: `${TIKTOK_CAPTION}\n\n${body}\n${hashtagLine(['#screensaver', '#animatedart', ...own], 4)}`,
-      linkComment: LINK_COMMENT,
-    },
-    youtube: {
-      // Painting and painter, then as much of the fixed line as fits.
-      title: `${lead} | ${CAPTION}`.length <= 100
-        ? `${lead} | ${CAPTION}`
-        : fitWithTail(lead, ' - Link in bio', 100),
-      description: `${body}\n\n${hashtagLine([...own, '#animatedart'], 3)}`,
-      tags: ['screensaver app', 'animated art', artwork.artist, title, movement, 'art history']
-        .filter(Boolean).map((t) => t.replace(/[,<>]/g, '').trim()).filter(Boolean),
-    },
-    pinterest: {
-      // Painting and painter first: that's what people search for.
-      title: fitWithTail(`${title} by ${artwork.artist}, animated`, ' | Art screensaver app', 100),
-      // Pinterest ranks a pin's words, so name the movement (or era) too.
-      description: `${lead}. ${credit}.${movement ? ` ${movement}.` : phrase ? ` ${capitalize(phrase)}.` : ''} ` +
-        'The real artwork, gently animated with AI for your screensaver by Living Art Screensaver, ' +
-        'with a new piece every night.',
-      link: landingUrl(webSlug, 'pinterest'),
-    },
+function ownHashtags(pieces) {
+  const lists = pieces.map(hashtagsOf)
+  const ranked = []
+  for (let rank = 0; lists.some((tags) => rank < tags.length); rank++) {
+    for (const tags of lists) if (rank < tags.length) ranked.push(tags[rank])
   }
+  return [...new Set(ranked)]
 }
 
 /**
- * Every string the four platforms need for one piece. `era` is its gallery tag
- * ("Japanese", "Modern"…), or null for a clip rendered from outside the gallery.
- * `artwork` is a real artwork's provenance (`artworkOf` in lib/pieces.mjs), or
- * null for an AI piece.
+ * `render(lines)` with as many piece lines as fit in `max` characters, counting
+ * the rest ("+2 more"). Only a very long set reaches a limit.
  */
-export function buildCaptions({ title, style, era = null, webSlug, artwork = null }) {
-  if (artwork) return artworkCaptions({ title, era, webSlug, artwork })
-  const piece = titleLine(title, style)
-  const own = pieceHashtags({ style, era })
-  const phrase = artPhrase({ style, era })
+function fit(max, lines, render) {
+  for (let n = lines.length; n > 0; n--) {
+    const text = render(n === lines.length ? lines : [...lines.slice(0, n), `+${lines.length - n} more`])
+    if (text.length <= max) return text
+  }
+  return clamp(render(lines.slice(0, 1)), max)
+}
+
+/**
+ * YouTube splits tags on commas, rejects angle brackets, and caps them at 500
+ * characters in all, counting the quotes it adds around a tag with a space.
+ */
+function youtubeTags(pieces) {
+  const words = pieces.flatMap((p) =>
+    (p.artwork ? [p.artwork.artist, p.title, artistMovement(p.artwork.artist)] : [p.style, p.title]))
+  const tags = [...new Set(
+    ['screensaver app', 'animated art', ...words, ...(pieces.some((p) => p.artwork) ? ['art history'] : [])]
+      .filter(Boolean).map((t) => t.replace(/[,<>]/g, '').trim()).filter(Boolean),
+  )]
+  const size = (list) => list.reduce((n, t) => n + t.length + (t.includes(' ') ? 2 : 0), list.length - 1)
+  while (size(tags) > LIMIT.youtubeTags) tags.pop()
+  return tags
+}
+
+/**
+ * Every string the four platforms need for one post. `pieces` are in the order
+ * the clip shows them, each `{ title, style, era, webSlug, artwork }`: `era` is
+ * the gallery tag ("Japanese", "Modern"…) or null for a clip from outside the
+ * gallery; `artwork` is a real artwork's provenance (`artworkOf` in
+ * lib/pieces.mjs) or null for an AI piece. A post whose pieces are all real
+ * artworks names the paintings and painters in its titles.
+ */
+export function buildCaptions(pieces) {
+  const [first] = pieces
+  const realArt = pieces.every((p) => p.artwork)
+  const set = pieces.length > 1
+  const texts = pieces.map(pieceText)
+  const own = ownHashtags(pieces)
+  const feedTags = hashtagLine(['#screensaver', '#animatedart', ...own], 4)
+  const labels = [...new Set(pieces.map(labelOf).filter(Boolean))]
+  const name = postName(pieces)
+  const lead = realArt ? artworkLead(name, first.artwork) : null
   return {
-    instagram: { text: `${CAPTION}\n\n${piece}\n${hashtagLine(['#screensaver', '#animatedart', ...own], 4)}` },
+    instagram: { text: fit(LIMIT.instagram, texts, (l) => `${CAPTION}\n\n${l.join('\n')}\n${feedTags}`) },
     tiktok: {
-      text: `${TIKTOK_CAPTION}\n\n${piece}\n${hashtagLine(['#screensaver', '#animatedart', ...own], 4)}`,
+      text: fit(LIMIT.tiktok, texts, (l) => `${TIKTOK_CAPTION}\n\n${l.join('\n')}\n${feedTags}`),
       linkComment: LINK_COMMENT,
     },
     youtube: {
-      // The Shorts player shows the title, so the fixed line goes there. YouTube
-      // shows up to three hashtags, so the piece's own come first.
-      title: CAPTION,
-      description: `${piece}\n\n${hashtagLine([...own, '#animatedart'], 3)}`,
-      // YouTube splits tags on commas and rejects angle brackets.
-      tags: ['screensaver app', 'animated art', style, title].map((t) => t.replace(/[,<>]/g, '').trim()).filter(Boolean),
+      // The Shorts player shows the title: for real art the painting and painter,
+      // then as much of the fixed line as fits; else the fixed line, plus a set's
+      // name. YouTube shows up to three hashtags, so the pieces' own come first.
+      title: realArt
+        ? (`${lead} | ${CAPTION}`.length <= LIMIT.youtubeTitle
+          ? `${lead} | ${CAPTION}`
+          : fitWithTail(lead, ' - Link in bio', LIMIT.youtubeTitle))
+        : set ? clamp(`${CAPTION} · ${name}`, LIMIT.youtubeTitle) : CAPTION,
+      description: fit(LIMIT.youtubeDescription, texts,
+        (l) => `${l.join('\n')}\n\n${hashtagLine([...own, '#animatedart'], 3)}`),
+      tags: youtubeTags(pieces),
     },
     pinterest: {
-      // Style first: people search for styles, and search ranks the title.
-      title: clamp(`Animated ${style}: ${title} | Art screensaver app`, 100),
-      description: `${piece}. ${phrase ? `${capitalize(phrase)}, gently animated` : 'Gently animated art'} ` +
-        'for your screensaver by Living Art Screensaver, with a new piece every night.',
-      link: landingUrl(webSlug, 'pinterest'),
+      // Pin titles are what Pinterest search ranks, so they lead with what people
+      // search for: the painting and painter, or the style. A set's pin links to
+      // its first piece, so the title names that one.
+      title: realArt
+        ? fitWithTail(`${first.title} by ${first.artwork.artist}${set ? ` and ${pieces.length - 1} more` : ''}, animated`,
+          ' | Art screensaver app', LIMIT.pinTitle)
+        : clamp(`Animated ${first.style}: ${name} | Art screensaver app`, LIMIT.pinTitle),
+      description: fit(LIMIT.pinDescription, pieces.map(pinText), (l) => (realArt
+        ? `${l.join('. ')}.${labels.length ? ` ${capitalize(spoken(labels))}.` : ''} ` +
+          `The real ${set ? 'artworks' : 'artwork'}, gently animated with AI for your screensaver by ` +
+          `Living Art Screensaver, with ${set ? 'new pieces' : 'a new piece'} every night.`
+        : `${l.join('. ')}. ${labels.length ? `${capitalize(spoken(labels))}, gently animated` : 'Gently animated art'} ` +
+          `for your screensaver by Living Art Screensaver, with ${set ? 'new pieces' : 'a new piece'} every night.`)),
+      // Tagged with the channel so PostHog can attribute pin traffic.
+      link: landingUrl(first.webSlug, 'pinterest'),
     },
   }
 }
 
 /** The human-facing record written next to the rendered clips. */
-export function captionsMarkdown({ title, style, era = null, webSlug, artwork = null }) {
-  const c = buildCaptions({ title, style, era, webSlug, artwork })
-  const landing = webSlug ? `\`/art/${webSlug}\`` : 'the home page (no gallery entry for this source)'
-  return `# Social captions — ${title}
+export function captionsMarkdown(pieces) {
+  const c = buildCaptions(pieces)
+  const { webSlug } = pieces[0]
+  const page = webSlug ? `\`/art/${webSlug}\`` : 'the home page (no gallery entry for this source)'
+  const landing = webSlug && pieces.length > 1 ? `${page}, the first piece's page` : page
+  return `# Social captions — ${postName(pieces)}
 
 _These are exactly the strings \`post-social.mjs\` publishes, so what you read here
 is what went out. Instagram and YouTube lead with the same fixed line and leave

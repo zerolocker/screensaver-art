@@ -111,7 +111,7 @@ Each `gallery.json` entry has a `tags` array with **exactly one** tag from this 
 
 ## Music prompts
 
-The `music_prompt` field, for the one piece posted to social each night. 10–35 words.
+The `music_prompt` field, for the night's pieces posted to social as one clip. 10–35 words.
 
 **The music must belong to the picture.** Match:
 - **Era and culture**, without tipping into pastiche: koto, shakuhachi and sparse percussion for ukiyo-e; harpsichord and a small string group for Baroque; warm brass and upright bass for Art Deco; marimba, pizzicato strings and glockenspiel for bright contemporary illustration; low drones and bone flute for Prehistoric.
@@ -119,6 +119,8 @@ The `music_prompt` field, for the one piece posted to social each night. 10–35
 - **Palette.** Bright, saturated colour suggests major and airy; muted earth tones and low light suggest minor, warm and sparse.
 
 Add "Even dynamics, no build or drop." A crescendo pulls attention off the art.
+
+**Write one prompt for the whole set.** The night's pieces share one clip and one piece of music. Lean on the first piece's world, and pick a mood and energy none of the others contradicts. When their worlds clash, choose plainer instruments over pastiche.
 
 **End every prompt with "Instrumental, no vocals."** Lyria sings by default. `make-social-assets.mjs` refuses a prompt without it, and the skill fails if it hears lyrics.
 

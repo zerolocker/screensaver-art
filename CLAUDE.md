@@ -103,7 +103,7 @@ Building the app or screensaver needs Xcode and `brew install xcodegen`.
 
 ## Gallery data
 
-- Each `gallery.json` entry has `src`, `title`, `type`, `date`, `tags`, and the website-only images `img` (2K), `og_img` (1280×720 JPEG) and `thumb` (640w). AI pieces also have `image_prompt` and `video_prompt`; the posted piece each night has `music_prompt`.
+- Each `gallery.json` entry has `src`, `title`, `type`, `date`, `tags`, and the website-only images `img` (2K), `og_img` (1280×720 JPEG) and `thumb` (640w). AI pieces also have `image_prompt` and `video_prompt`; every piece in the night's posted set has `music_prompt`.
 - Real public-domain paintings have `source: "real_artwork"` and provenance fields instead of an image prompt (`isRealArtwork()`).
 - Clips are 16:9, except real paintings animated as portrait (9:16). There is no aspect field: each player reads the clip's size and shows a portrait clip whole on the `#0b0b0d` wall (`PORTRAIT_WALL`) instead of cropping it. That is `ArtVideo` on the website and in the app, and `ScreensaverArtView.swift` in the screensaver, which keeps its own copy of the colour.
 - Add pieces with `curation/publish-piece.mjs`. It uploads to R2 with immutable cache headers and never overwrites a key.

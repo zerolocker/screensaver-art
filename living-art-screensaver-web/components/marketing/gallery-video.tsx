@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, type CSSProperties } from "react"
+import { ArtVideo } from "@screensaver-art/ui"
 
 /** One observer for every clip: play those near the viewport, pause the rest. */
 let sharedObserver: IntersectionObserver | null = null
@@ -59,7 +60,7 @@ export function AutoVideo({
   }, [src])
 
   return (
-    <video
+    <ArtVideo
       ref={ref}
       key={src}
       src={src}

@@ -1,8 +1,10 @@
 /**
  * The data behind `/gallery`, `/art/<slug>` and `/era/<tag>`: a sorted view of
  * `gallery.json`, imported at build time. These pages are landing pages for
- * social posts (mainly Pinterest), not an SEO play. Each nightly push to
- * `master` redeploys the site, so new pieces get pages automatically.
+ * social posts (mainly Pinterest), not an SEO play. `/art` and `/era` render on
+ * first visit and are then cached, so a deploy doesn't prerender every piece.
+ * Each nightly push to `master` redeploys the site, so new pieces get pages
+ * automatically.
  */
 
 import {

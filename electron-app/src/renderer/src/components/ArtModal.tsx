@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { X, Check, Lock } from 'lucide-react'
 import { type ArtItem, isRealArtwork, tagsOf } from '@screensaver-art/constants'
+import { ArtVideo } from '@screensaver-art/ui'
 
 interface ArtModalProps {
   item: ArtItem
@@ -37,7 +38,8 @@ function artworkCredit(item: ArtItem): string | null {
 }
 
 // A full-screen preview of one piece, filling the view like the screensaver
-// does. Clicking anywhere but the action button, Escape, or close dismisses it.
+// does. A portrait (9:16) piece is shown whole on the dark wall (ArtVideo).
+// Clicking anywhere but the action button, Escape, or close dismisses it.
 export function ArtModal({
   item,
   selected,
@@ -90,7 +92,7 @@ export function ArtModal({
       className="fixed inset-0 z-50 bg-black animate-[fadeIn_150ms_ease-out]"
       onClick={onClose}
     >
-      <video
+      <ArtVideo
         ref={videoRef}
         src={item.src}
         autoPlay

@@ -2,12 +2,14 @@
 
 import Image from 'next/image'
 import { useEffect, useRef } from 'react'
+import { ArtVideo } from '@screensaver-art/ui'
 import type { CatalogPiece } from '@/lib/gallery-catalog'
 
 /**
  * The player on a piece page: one clip, loaded eagerly, in the same monitor
  * frame as the homepage but without rotating. The piece's still (or its
- * gradient) shows while the clip buffers.
+ * gradient) shows while the clip buffers. A portrait (9:16) clip plays whole on
+ * the dark wall (ArtVideo); its still already shows the painting on that wall.
  */
 export function PieceStage({ piece }: { piece: CatalogPiece }) {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -66,7 +68,7 @@ export function PieceStage({ piece }: { piece: CatalogPiece }) {
                 className="object-cover"
               />
             )}
-            <video
+            <ArtVideo
               ref={videoRef}
               src={piece.src}
               poster={piece.posterUrl ?? undefined}

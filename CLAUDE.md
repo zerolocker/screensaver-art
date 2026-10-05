@@ -12,7 +12,7 @@ A macOS screensaver that plays AI-animated art. Users install one Electron app. 
 | Path | What it is |
 |---|---|
 | `packages/constants/` | Shared pure-data package: `FREE_ITEM_COUNT`, `PRICING`, the `ArtItem` type, the `/api/gallery` response type, the tag list, and the gating rules (`isItemLocked`, `isSubscriptionActive`). No build step: the website's `transpilePackages` and the Electron main's `externalizeDepsPlugin({ exclude })` compile it. |
-| `packages/ui/` | Shared React components (auth forms, `SubscriptionCard`, base UI) and `globals.css` design tokens. No build step, no Next.js imports. |
+| `packages/ui/` | Shared React components (auth forms, `SubscriptionCard`, base UI, and `ArtVideo`, the shared gallery `<video>`) and `globals.css` design tokens. No build step, no Next.js imports. |
 | `electron-app/` | The app users install. Sign-in, payment, gallery sync, screensaver registration. Windows support is scaffolded but not built. |
 | `screensaver-macos/` | The screensaver: a sandboxed Swift ExtensionKit `.appex`. A pure player with no network or auth. |
 | `screensaver-helper/` | `lart-screensaver-helper`, a small Swift CLI wrapping [PaperSaver](https://github.com/AerialScreensaver/PaperSaver). The app calls it to register the `.appex` and set it as the active screensaver. |
@@ -105,6 +105,7 @@ Building the app or screensaver needs Xcode and `brew install xcodegen`.
 
 - Each `gallery.json` entry has `src`, `title`, `type`, `date`, `tags`, and the website-only images `img` (2K), `og_img` (1280×720 JPEG) and `thumb` (640w). AI pieces also have `image_prompt` and `video_prompt`; the posted piece each night has `music_prompt`.
 - Real public-domain paintings have `source: "real_artwork"` and provenance fields instead of an image prompt (`isRealArtwork()`).
+- Clips are 16:9, except real paintings animated as portrait (9:16). There is no aspect field: each player reads the clip's size and shows a portrait clip whole on the `#0b0b0d` wall (`PORTRAIT_WALL`) instead of cropping it. That is `ArtVideo` on the website and in the app, and `ScreensaverArtView.swift` in the screensaver, which keeps its own copy of the colour.
 - Add pieces with `curation/publish-piece.mjs`. It uploads to R2 with immutable cache headers and never overwrites a key.
 - Don't set `free` on new pieces. They are subscriber-only by design.
 

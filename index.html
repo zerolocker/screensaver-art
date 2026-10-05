@@ -33,6 +33,11 @@
             opacity: 0;
             transition: opacity 3s ease-in-out, transform 15s linear;
         }
+        /* A portrait (9:16) piece hangs whole on the dark wall, never cropped. */
+        .art-item.portrait {
+            object-fit: contain;
+            background: #0b0b0d;
+        }
         .ken-burns {
             transform: scale(1.1) translate(1%, 1%);
         }
@@ -294,6 +299,11 @@
             clearInterval(intervalId);
             intervalId = setInterval(nextArt, 8000);
         }
+
+        // gallery.json has no aspect field: each clip's own size decides.
+        document.getElementById('art-display-video').addEventListener('loadedmetadata', (e) => {
+            e.target.classList.toggle('portrait', e.target.videoHeight > e.target.videoWidth);
+        });
 
         // Initialize — load playlist from gallery.json then start
         fetch('gallery.json')

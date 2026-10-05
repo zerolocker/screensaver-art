@@ -361,7 +361,8 @@ class ScreensaverArtView: ScreenSaverView {
     }
 
     private func fillVideo(slot: CALayer, url: URL, isA: Bool) {
-        let player = AVPlayer(url: url)
+        let asset  = AVURLAsset(url: url)
+        let player = AVPlayer(playerItem: AVPlayerItem(asset: asset))
         player.isMuted = true
 
         let pLayer = AVPlayerLayer(player: player)
@@ -371,6 +372,7 @@ class ScreensaverArtView: ScreenSaverView {
         pLayer.backgroundColor  = NSColor.black.cgColor
         slot.addSublayer(pLayer)
         player.play()
+        hangIfPortrait(asset, in: pLayer)
 
         let obs = NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime,
@@ -381,6 +383,30 @@ class ScreensaverArtView: ScreenSaverView {
         if isA { playerA = player; loopObsA = obs; tmpURLA = url }
         else   { playerB = player; loopObsB = obs; tmpURLB = url }
     }
+
+    /// A portrait (9:16) piece is shown whole, centred on the dark wall, instead
+    /// of being cropped to a thin band by aspect-fill. Landscape pieces keep
+    /// filling the screen. The manifest carries no aspect, so the clip decides.
+    /// Its track loads from the local temp file in milliseconds, while the slot
+    /// is still near-transparent at the start of its 1.5s fade-in, and the wall
+    /// covers the whole slot, so the crossfade reads the same in every pairing.
+    private func hangIfPortrait(_ asset: AVURLAsset, in pLayer: AVPlayerLayer) {
+        Task { @MainActor [weak pLayer] in
+            guard let track = try? await asset.loadTracks(withMediaType: .video).first,
+                  let (size, transform) = try? await track.load(.naturalSize, .preferredTransform)
+            else { return }
+            let shown = size.applying(transform)    // rotation metadata can turn the frame
+            guard abs(shown.height) > abs(shown.width), let pLayer else { return }
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)   // snap, don't animate the switch
+            pLayer.videoGravity    = .resizeAspect
+            pLayer.backgroundColor = Self.wallColor
+            CATransaction.commit()
+        }
+    }
+
+    /// #0b0b0d, the near-black wall the curation hangs real paintings on.
+    private static let wallColor = CGColor(srgbRed: 11 / 255, green: 11 / 255, blue: 13 / 255, alpha: 1)
 
     // MARK: Timer
 

@@ -7210,7 +7210,8 @@
     "source_url": "https://www.artic.edu/artworks/24645",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Great Wave off Kanagawa, by Katsushika Hokusai, completed in the year of 1830.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Calm, flowing chamber piece for solo piano and soft strings, a gentle lyrical melody, warm and spacious, unhurried mid-tempo, quietly elegant. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/caillebotte_paris_street_rainy_day_animated.mp4",
@@ -7233,7 +7234,8 @@
     "source_url": "https://www.artic.edu/artworks/20684",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Paris Street; Rainy Day, by Gustave Caillebotte, completed in the year of 1877.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Calm, flowing chamber piece for solo piano and soft strings, a gentle lyrical melody, warm and spacious, unhurried mid-tempo, quietly elegant. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_young_woman_with_a_water_pitcher_animated.mp4",
@@ -7256,7 +7258,8 @@
     "source_url": "https://www.metmuseum.org/art/collection/search/437881",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Young Woman with a Water Pitcher, by Johannes Vermeer, completed in the year of 1662.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Calm, flowing chamber piece for solo piano and soft strings, a gentle lyrical melody, warm and spacious, unhurried mid-tempo, quietly elegant. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/sargent_madame_x_animated.mp4",
@@ -7279,6 +7282,7 @@
     "source_url": "https://www.metmuseum.org/art/collection/search/12127",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Madame X, by John Singer Sargent, completed in the year of 1883.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Calm, flowing chamber piece for solo piano and soft strings, a gentle lyrical melody, warm and spacious, unhurried mid-tempo, quietly elegant. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

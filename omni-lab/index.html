@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Omni Lab</title>
+<style>
+  :root {
+    --bg: #101012; --panel: #1a1a1e; --panel2: #222228; --line: #33333b; --text: #e8e8ec; --dim: #9a9aa6;
+    --accent: #7aa2ff; --ok: #4ade80; --bad: #f87171; --warn: #fbbf24; --diff: rgba(251, 191, 36, .22);
+    --card-w: 420px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  a { color: var(--accent); }
+  button, select, input, textarea { font: inherit; color: var(--text); background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; }
+  button { padding: 5px 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button:disabled { opacity: .45; cursor: default; }
+  button.on { background: var(--accent); color: #0b0b0d; border-color: var(--accent); }
+  select, input { padding: 4px 6px; }
+  textarea { width: 100%; padding: 6px 8px; resize: vertical; }
+  label { display: block; color: var(--dim); font-size: 12px; margin: 8px 0 3px; }
+  label.inline { display: inline-flex; gap: 6px; align-items: center; color: var(--text); margin: 6px 12px 0 0; font-size: 13px; }
+  .hint { color: var(--dim); font-size: 11px; }
+  code { background: var(--panel2); padding: 0 4px; border-radius: 4px; }
+
+  header { position: sticky; top: 0; z-index: 10; display: flex; gap: 14px; align-items: center; padding: 8px 16px; background: rgba(16,16,18,.94); border-bottom: 1px solid var(--line); backdrop-filter: blur(6px); flex-wrap: wrap; }
+  header h1 { font-size: 15px; margin: 0; }
+  #jobs { color: var(--dim); }
+  #jobs.busy { color: var(--accent); }
+  header .grow { flex: 1; }
+  .tabs button { border-radius: 0; margin-left: -1px; }
+  .tabs button:first-child { border-radius: 6px 0 0 6px; } .tabs button:last-child { border-radius: 0 6px 6px 0; }
+  #banner { margin: 10px 16px 0; padding: 8px 12px; border-radius: 6px; background: rgba(248,113,113,.15); border: 1px solid var(--bad); display: none; }
+
+  #gen { margin: 12px 16px; padding: 12px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+  .cols { display: grid; grid-template-columns: minmax(280px, 1.6fr) minmax(220px, 1fr) minmax(220px, 1fr); gap: 18px; }
+  @media (max-width: 1000px) { .cols { grid-template-columns: 1fr; } }
+  .cols h3 { margin: 0 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); }
+  .row2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0 10px; }
+  .row2 > div > select, .row2 > div > input { width: 100%; }
+  #arts { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 8px; margin-top: 12px; }
+  .art { display: flex; gap: 8px; padding: 6px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel2); align-items: flex-start; }
+  .art.off { opacity: .45; }
+  .art img.th { height: 64px; width: 86px; object-fit: contain; background: #000; border-radius: 4px; flex: none; }
+  .art .pv { height: 64px; max-width: 114px; object-fit: contain; background: #000; border-radius: 4px; flex: none; outline: 1px dashed var(--accent); }
+  .art .t { flex: 1; min-width: 0; }
+  .art .t b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .art textarea { margin-top: 4px; font-size: 12px; }
+  .art .ov { font-size: 11px; padding: 1px 6px; margin-top: 3px; }
+  .art .ov.set { border-color: var(--warn); color: var(--warn); }
+  .actions { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+  #go { font-size: 16px; font-weight: 600; padding: 10px 26px; background: var(--accent); color: #0b0b0d; border: 0; }
+  #go:disabled { background: var(--panel2); color: var(--dim); }
+
+  main { margin: 0 16px 60px; }
+  .run { margin: 14px 0; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+  .run > summary { list-style: none; cursor: pointer; padding: 10px 14px; }
+  .run > summary::-webkit-details-marker { display: none; }
+  .run-top { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .run-top .when { font-weight: 600; font-size: 14px; }
+  .run-top .counts { color: var(--dim); }
+  .run-top .btns { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+  .run-top .btns button { padding: 3px 8px; font-size: 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .chip { padding: 1px 7px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line); font-size: 12px; white-space: nowrap; }
+  .chip.diff, .ptxt.diff { background: var(--diff); border-color: var(--warn); }
+  .ptxt { margin-top: 6px; padding: 4px 8px; border-radius: 6px; border: 1px solid transparent; white-space: pre-wrap; font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+  .ptxt .lbl { color: var(--dim); font-family: -apple-system, sans-serif; }
+  .run-body { padding: 0 14px 14px; }
+  .note { margin: 4px 0 10px; display: flex; gap: 8px; align-items: flex-start; }
+  .note textarea { min-height: 34px; font-size: 12px; }
+  .note .saved { color: var(--dim); font-size: 11px; white-space: nowrap; padding-top: 8px; width: 44px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--card-w), 1fr)); gap: 10px; align-items: start; }
+
+  .card { border: 1px solid var(--line); border-radius: 8px; background: var(--panel2); padding: 8px; min-width: 0; }
+  .card .head { display: flex; gap: 8px; align-items: baseline; }
+  .card .head b { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .badge { font-size: 11px; padding: 0 6px; border-radius: 8px; border: 1px solid var(--line); white-space: nowrap; }
+  .badge.done { color: var(--ok); border-color: var(--ok); }
+  .badge.failed { color: var(--bad); border-color: var(--bad); }
+  .badge.running { color: var(--accent); border-color: var(--accent); animation: pulse 1.4s infinite; }
+  .badge.queued, .badge.canceled { color: var(--dim); }
+  @keyframes pulse { 50% { opacity: .45; } }
+  .elapsed { color: var(--dim); font-variant-numeric: tabular-nums; font-size: 12px; }
+  .media { display: flex; gap: 8px; margin-top: 6px; align-items: flex-start; }
+  .media .in { flex: none; width: 23%; min-width: 70px; }
+  .media .in img { width: 100%; display: block; border-radius: 4px; background: #000; cursor: zoom-in; }
+  .media .in .hint { display: block; text-align: center; }
+  .vids { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+  .vid { position: relative; }
+  .vid video { width: 100%; max-height: 62vh; display: block; background: #000; border-radius: 4px; }
+  .vid .tag { position: absolute; top: 4px; left: 4px; background: rgba(0,0,0,.7); font-size: 11px; padding: 0 6px; border-radius: 6px; pointer-events: none; }
+  .placeholder { aspect-ratio: 16/9; display: grid; place-items: center; background: #0b0b0d; border-radius: 4px; color: var(--dim); font-size: 12px; text-align: center; padding: 8px; }
+  .placeholder.tall { aspect-ratio: 9/16; max-height: 40vh; margin: 0 auto; width: auto; height: 40vh; }
+  .err { color: var(--bad); font-size: 12px; margin-top: 6px; font-family: ui-monospace, Menlo, monospace; word-break: break-word; }
+  .err.safety { font-family: inherit; font-weight: 600; }
+  .foot { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 6px; font-size: 11px; color: var(--dim); }
+  .foot .meta { flex: 1; min-width: 0; }
+  .rate { display: inline-flex; gap: 2px; align-items: center; }
+  .rate button { padding: 0 5px; font-size: 13px; background: transparent; border-color: transparent; filter: grayscale(1); opacity: .5; }
+  .rate button.on { filter: none; opacity: 1; border-color: var(--line); background: var(--panel); }
+  details.pr summary { cursor: pointer; color: var(--dim); font-size: 11px; }
+  details.pr pre { white-space: pre-wrap; margin: 4px 0 0; font-size: 11px; color: var(--text); }
+
+  #cmp-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 12px 0; padding: 10px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+  #cmp-bar select { max-width: 420px; }
+  .cmp-head { display: grid; grid-template-columns: 150px 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+  .cmp-head .side { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+  .cmp-row { display: grid; grid-template-columns: 150px 1fr 1fr; gap: 10px; margin-bottom: 10px; align-items: start; }
+  .cmp-row .who { position: sticky; top: 60px; }
+  .cmp-row .who img { width: 100%; border-radius: 4px; margin-top: 4px; }
+  .cmp-row .empty { color: var(--dim); padding: 20px; border: 1px dashed var(--line); border-radius: 8px; text-align: center; }
+  .AB { font-weight: 700; color: var(--accent); }
+  .muted { color: var(--dim); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Omni Lab</h1>
+  <span id="jobs">…</span>
+  <span class="grow"></span>
+  <span class="tabs"><button id="tab-history" class="on">History</button><button id="tab-compare">Compare</button></span>
+  <label class="inline" title="card size">size <input id="cardw" type="range" min="280" max="1100" step="20"></label>
+</header>
+<div id="banner"></div>
+
+<section id="gen">
+  <div class="cols">
+    <div>
+      <h3>Prompt</h3>
+      <textarea id="prompt" rows="4"></textarea>
+      <div class="hint">Placeholders: <code>{title}</code> <code>{artist}</code> <code>{year}</code> <code>{date}</code>. Omni has no negative prompt — write "no …" in here.</div>
+      <label for="editPrompt">Follow-up edit prompt (optional): re-edits each result once via <code>previous_interaction_id</code>; both clips are kept</label>
+      <textarea id="editPrompt" rows="2" placeholder="e.g. Keep the camera perfectly still. Keep everything else the same."></textarea>
+    </div>
+    <div>
+      <h3>Omni</h3>
+      <div class="row2">
+        <div><label>Resolution</label><select id="resolution"></select></div>
+        <div><label>Output aspect</label><select id="aspect"></select></div>
+        <div><label title="response_format.duration — not in the docs, but verified to work">Duration <span class="hint">(undocumented)</span></label><select id="duration"></select></div>
+        <div><label title="generation_config.seed — not in the docs, but verified: same seed + inputs = near-identical clip">Seed <span class="hint">(undocumented)</span></label><input id="seed" type="number" placeholder="random"></div>
+        <div><label title="generation_config.video_config.task — docs advise prompting first; it 'adds some constraints'">Task</label><select id="task"></select></div>
+      </div>
+      <label>Model</label><input id="model" style="width:100%">
+    </div>
+    <div>
+      <h3>Pre-processing</h3>
+      <label>Framing</label>
+      <div>
+        <label class="inline"><input type="radio" name="framing" value="raw"> raw</label>
+        <label class="inline"><input type="radio" name="framing" value="crop"> center crop</label>
+        <label class="inline" title="the whole painting, centred on a #0b0b0d canvas at the output aspect"><input type="radio" name="framing" value="wall"> dark wall</label>
+      </div>
+      <div class="row2">
+        <div><label>Input long edge</label><select id="longEdge"></select></div>
+      </div>
+      <div style="margin-top:10px"><button id="preview">Preview inputs</button> <span class="hint">free — no Omni call</span></div>
+    </div>
+  </div>
+  <div id="arts"></div>
+  <div class="actions">
+    <button id="go">Generate</button>
+    <button id="reset">Reset to defaults</button>
+    <button id="all">All</button><button id="none">None</button>
+    <span id="go-msg" class="hint"></span>
+  </div>
+</section>
+
+<main>
+  <div id="history"></div>
+  <div id="compare" hidden>
+    <div id="cmp-bar">
+      <span class="AB">A</span><select id="cmp-a"></select>
+      <span class="AB">B</span><select id="cmp-b"></select>
+      <button id="cmp-swap">⇄ swap</button>
+      <button id="cmp-sync">⟲ restart all videos together</button>
+      <span class="hint">Pick runs here or with the A / B buttons on any run.</span>
+    </div>
+    <div id="cmp-body"></div>
+  </div>
+</main>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s)
+const $$ = (s, el = document) => [...el.querySelectorAll(s)]
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v) } catch { return d } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)) } catch {} },
+}
+async function api(path, opts = {}) {
+  const r = await fetch(path, { ...opts, headers: { 'Content-Type': 'application/json' }, body: opts.body ? JSON.stringify(opts.body) : undefined })
+  const j = await r.json().catch(() => ({}))
+  if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`)
+  return j
+}
+
+let S = null // last /api/state
+let formReady = false
+let view = store.get('omni-lab-view', 'history')
+let cmp = store.get('omni-lab-cmp', { a: null, b: null })
+const RUNNING = new Set(['starting', 'preparing', 'generating', 'editing'])
+const LABEL = { starting: 'starting', preparing: 'preparing', generating: 'generating', editing: 'editing', queued: 'queued', done: 'done', failed: 'failed', canceled: 'canceled' }
+
+// ---------------------------------------------------------------- form
+
+const OPTS = {
+  resolution: (v) => v, aspect: (v) => v === 'auto' ? 'auto (16:9 if wider than tall)' : v,
+  duration: (v) => v ? `${v}s` : 'model decides', task: (v) => v || '(none — model infers)',
+  longEdge: (v) => `${v} px`,
+}
+function buildForm() {
+  for (const [k, fmt] of Object.entries(OPTS)) {
+    $('#' + k).innerHTML = S.enums[k].map((v) => `<option value="${esc(v)}">${esc(fmt(v))}</option>`).join('')
+  }
+  renderArts()
+  formReady = true
+  writeForm({ ...S.defaults, ...store.get('omni-lab-draft', {}) })
+  $('#gen').addEventListener('input', onFormChange)
+  $('#gen').addEventListener('change', onFormChange)
+}
+function renderArts() {
+  const ps = S.paintings
+  if (!ps.length) {
+    $('#arts').innerHTML = `<div class="muted">No paintings yet. <button id="fetch">Fetch the 10 paintings</button> ${S.fetching ? '(fetching… see omni-lab/paintings/fetch.log)' : ''}</div>`
+    $('#fetch').onclick = async () => { await api('/api/paintings/fetch', { method: 'POST' }); poll() }
+    return
+  }
+  $('#arts').innerHTML = ps.map((p) => `
+    <div class="art" data-id="${esc(p.id)}">
+      <input type="checkbox" class="inc" checked>
+      <img class="th" src="/files/paintings/${esc(p.thumb)}" title="${esc(p.title)}">
+      <img class="pv" hidden>
+      <div class="t">
+        <b title="${esc(p.title)}">${esc(p.short_title || p.title)}</b>
+        <div class="hint">${esc(p.artist)} · ${esc(p.year)}</div>
+        <div class="hint">${p.width}×${p.height} · ${esc(p.shape)} ${p.aspect} → <span class="outasp"></span> <span class="pvinfo"></span></div>
+        <button class="ov">override prompt</button>
+        <textarea class="ovt" rows="2" hidden placeholder="Prompt for this painting only (blank = use the main prompt)"></textarea>
+      </div>
+    </div>`).join('')
+  for (const el of $$('.art')) {
+    $('.ov', el).onclick = (e) => { e.preventDefault(); const t = $('.ovt', el); t.hidden = !t.hidden; if (!t.hidden) t.focus() }
+  }
+}
+function readForm() {
+  const c = {}
+  for (const k of ['prompt', 'editPrompt', 'model', 'resolution', 'aspect', 'duration', 'task']) c[k] = $('#' + k).value
+  c.seed = $('#seed').value === '' ? '' : Number($('#seed').value)
+  c.longEdge = Number($('#longEdge').value)
+  c.framing = ($('input[name=framing]:checked') || {}).value || 'raw'
+  c.artworks = $$('.art').filter((el) => $('.inc', el).checked).map((el) => el.dataset.id)
+  c.promptOverrides = Object.fromEntries($$('.art').map((el) => [el.dataset.id, $('.ovt', el).value.trim()]).filter(([, v]) => v))
+  return c
+}
+function writeForm(c) {
+  for (const k of ['prompt', 'editPrompt', 'model', 'resolution', 'aspect', 'duration', 'task', 'longEdge']) $('#' + k).value = c[k] ?? ''
+  $('#seed').value = c.seed ?? ''
+  for (const r of $$('input[name=framing]')) r.checked = r.value === c.framing
+  const sel = c.artworks ? new Set(c.artworks) : null
+  for (const el of $$('.art')) {
+    $('.inc', el).checked = !sel || sel.has(el.dataset.id)
+    const ov = (c.promptOverrides || {})[el.dataset.id] || ''
+    $('.ovt', el).value = ov
+    $('.ovt', el).hidden = !ov
+  }
+  onFormChange()
+}
+function onFormChange() {
+  if (!formReady) return
+  const c = readForm()
+  store.set('omni-lab-draft', c)
+  for (const el of $$('.art')) {
+    const p = S.paintings.find((x) => x.id === el.dataset.id)
+    el.classList.toggle('off', !$('.inc', el).checked)
+    $('.outasp', el).textContent = c.aspect !== 'auto' ? c.aspect : p.width > p.height ? '16:9' : '9:16'
+    $('.ov', el).classList.toggle('set', !!$('.ovt', el).value.trim())
+    $('.ov', el).textContent = $('.ovt', el).value.trim() ? 'prompt overridden ✎' : 'override prompt'
+  }
+  const n = c.artworks.length
+  $('#go').textContent = `Generate · ${n} artwork${n === 1 ? '' : 's'} · ${c.resolution}${c.editPrompt ? ' + edit' : ''}`
+  $('#go').disabled = !n || !c.prompt.trim() || (S.python && !S.python.ok)
+}
+
+$('#reset').onclick = () => { writeForm({ ...S.defaults }); flash('#go-msg', 'reset to defaults') }
+$('#all').onclick = () => { for (const el of $$('.art .inc')) el.checked = true; onFormChange() }
+$('#none').onclick = () => { for (const el of $$('.art .inc')) el.checked = false; onFormChange() }
+$('#go').onclick = async () => {
+  const c = readForm()
+  if (c.resolution === '4k' && !confirm(`4k on ${c.artworks.length} artworks is the expensive setting. Go?`)) return
+  $('#go').disabled = true
+  try {
+    const { id } = await api('/api/runs', { method: 'POST', body: { config: c } })
+    flash('#go-msg', `started run ${id}`)
+    await poll()
+    document.getElementById('run-' + id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  } catch (e) { alert(e.message) } finally { onFormChange() }
+}
+$('#preview').onclick = async () => {
+  const c = readForm()
+  $('#preview').disabled = true
+  await Promise.all(c.artworks.map(async (id) => {
+    const el = $(`.art[data-id="${CSS.escape(id)}"]`)
+    try {
+      const r = await api('/api/preview', { method: 'POST', body: { config: c, artId: id } })
+      $('.pv', el).src = r.url + '?t=' + Date.now(); $('.pv', el).hidden = false
+      $('.pv', el).title = `exact input: ${r.info.size.join('×')}\n${r.prompt}`
+      $('.pvinfo', el).textContent = `· in ${r.info.size.join('×')}${r.info.kept ? ` (keeps ${Math.round(r.info.kept * 100)}%)` : ''}`
+    } catch (e) { $('.pvinfo', el).textContent = '· preview failed: ' + e.message }
+  }))
+  $('#preview').disabled = false
+}
+function flash(sel, msg) { $(sel).textContent = msg; setTimeout(() => { if ($(sel).textContent === msg) $(sel).textContent = '' }, 5000) }
+
+// ---------------------------------------------------------------- run summaries
+
+// Old runs can carry options the lab no longer has (crop anchor, wall colour/margin,
+// first + last frame, role tags): their non-default values show read-only.
+const FIELDS = [
+  ['resolution', (c) => c.resolution],
+  ['aspect', (c) => `aspect ${c.aspect}`],
+  ['framing', (c) => c.framing === 'crop' ? (c.cropAnchor && c.cropAnchor !== 'center' ? `crop · ${c.cropAnchor}` : 'center crop')
+    : c.framing === 'wall' ? `dark wall${c.wallColor && c.wallColor.toLowerCase() !== '#0b0b0d' ? ` ${c.wallColor}` : ''}${c.wallMargin ? ` · margin ${c.wallMargin}` : ''}` : 'raw'],
+  ['longEdge', (c) => `input ${c.longEdge}px`],
+  ['duration', (c) => c.duration ? `${c.duration}s` : 'length: model'],
+  ['seed', (c) => c.seed === '' || c.seed == null ? 'no seed' : `seed ${c.seed}`],
+  ['task', (c) => c.task ? `task ${c.task}` : 'no task'],
+  ['firstLast', (c) => c.firstLast ? 'first+last frame (old option)' : ''],
+  ['roleTags', (c) => c.roleTags && c.roleTags !== 'none' ? `role tags ${c.roleTags} (old option)` : ''],
+  ['model', (c) => c.model],
+  ['overrides', (c) => { const n = Object.keys(c.promptOverrides || {}).length; return n ? `${n} prompt override${n > 1 ? 's' : ''}` : '' }],
+  ['artworks', (c) => `${(c.artworks || []).length} artworks`],
+]
+function summaryHTML(c, other) {
+  const d = (k, f) => other && f(other) !== f(c)
+  const chips = FIELDS.map(([k, f]) => { const v = f(c); return v ? `<span class="chip ${d(k, f) ? 'diff' : ''}">${esc(v)}</span>` : '' }).join('')
+  const pd = other && other.prompt !== c.prompt
+  const ed = other && (other.editPrompt || '') !== (c.editPrompt || '')
+  const ovd = other && JSON.stringify(other.promptOverrides || {}) !== JSON.stringify(c.promptOverrides || {})
+  return `<div class="ptxt ${pd ? 'diff' : ''}"><span class="lbl">prompt </span>${esc(c.prompt)}</div>` +
+    (c.editPrompt || ed ? `<div class="ptxt ${ed ? 'diff' : ''}"><span class="lbl">edit </span>${esc(c.editPrompt || '(none)')}</div>` : '') +
+    (Object.keys(c.promptOverrides || {}).length && ovd ? `<div class="ptxt diff"><span class="lbl">overrides </span>${esc(Object.entries(c.promptOverrides).map(([k, v]) => `${k}: ${v}`).join('\n'))}</div>` : '') +
+    `<div class="chips">${chips}</div>`
+}
+const when = (iso) => new Date(iso).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+function counts(run) {
+  const n = {}
+  for (const it of run.items) { const s = RUNNING.has(it.status) ? 'running' : it.status; n[s] = (n[s] || 0) + 1 }
+  const up = Object.values(run.ratings).filter((v) => v === 'up').length
+  const down = Object.values(run.ratings).filter((v) => v === 'down').length
+  return ['done', 'running', 'queued', 'failed', 'canceled'].filter((k) => n[k]).map((k) => `${n[k]} ${k}`).join(' · ') +
+    (up || down ? ` · 👍 ${up} 👎 ${down}` : '')
+}
+
+// ---------------------------------------------------------------- cards
+
+const fmtSec = (s) => s == null ? '' : s < 60 ? `${Math.round(s)}s` : `${Math.floor(s / 60)}m${String(Math.round(s % 60)).padStart(2, '0')}s`
+function elapsed(it) {
+  if (it.status === 'queued') return ''
+  if (!it.startedAt) return ''
+  return fmtSec((it.finishedAt || Date.now() / 1000) - it.startedAt)
+}
+const fileUrl = (run, it, f) => `/files/runs/${run.id}/${it.key}/${f}?v=${Math.round(it.finishedAt || it.genFinishedAt || it.startedAt || 0)}`
+
+function mediaSig(it) { return [it.input ? 1 : 0, it.video || '', it.editVideo || '', it.status, Math.round(it.finishedAt || 0), it.aspect].join('|') }
+function footSig(run, it) { return JSON.stringify([it.status, it.error, it.editError, it.prep, it.videoInfo, it.editInfo, run.ratings[`${it.key}/video`], run.ratings[`${it.key}/edit`], it.attempt]) }
+
+function mediaHTML(run, it) {
+  const tall = it.aspect === '9:16'
+  const input = it.input
+    ? `<a class="in" href="${fileUrl(run, it, 'input.jpg')}" target="_blank" title="the exact image sent to Omni${it.prep ? ` (${it.prep.size.join('×')})` : ''}"><img src="${fileUrl(run, it, 'input.jpg')}" loading="lazy"><span class="hint">input${it.prep ? ` ${it.prep.size.join('×')}` : ''}</span></a>`
+    : `<div class="in"><div class="placeholder ${tall ? '' : ''}" style="aspect-ratio:${tall ? '9/16' : '16/9'}">…</div></div>`
+  const vid = (f, tag) => `<div class="vid"><video muted loop playsinline controls autoplay preload="none" data-src="${fileUrl(run, it, f)}"></video>${tag ? `<span class="tag">${tag}</span>` : ''}</div>`
+  let vids = ''
+  if (it.video) vids += vid(it.video, it.editVideo || it.editPrompt ? 'original' : '')
+  if (it.editVideo) vids += vid(it.editVideo, 'edited')
+  else if (it.status === 'editing') vids += `<div class="placeholder">editing…</div>`
+  if (!it.video) vids = `<div class="placeholder" style="aspect-ratio:${tall ? '9/16' : '16/9'};${tall ? 'max-height:50vh;margin:0 auto;' : ''}">${esc(LABEL[it.status] || it.status)}${RUNNING.has(it.status) ? '…' : ''}</div>`
+  return input + `<div class="vids">${vids}</div>`
+}
+function footHTML(run, it) {
+  let err = ''
+  if (it.status === 'failed') err = it.errorKind === 'safety' ? `<div class="err safety">⛔ blocked by safety filter</div>` : `<div class="err">${esc(it.error || 'failed')}</div>`
+  if (it.editError) err += it.editErrorKind === 'safety' ? `<div class="err safety">edit: ⛔ blocked by safety filter</div>` : `<div class="err">edit failed: ${esc(it.editError)}</div>`
+  const bits = []
+  if (it.prep) bits.push(`in ${it.prep.size.join('×')}${it.prep.kept ? ` · keeps ${Math.round(it.prep.kept * 100)}%` : ''}`)
+  if (it.videoInfo?.width) bits.push(`out ${it.videoInfo.width}×${it.videoInfo.height} · ${it.videoInfo.duration}s`)
+  if (it.genStartedAt && it.genFinishedAt) bits.push(`omni ${fmtSec(it.genFinishedAt - it.genStartedAt)}`)
+  if (it.editStartedAt && it.editFinishedAt) bits.push(`edit ${fmtSec(it.editFinishedAt - it.editStartedAt)}`)
+  if (it.attempt > 1) bits.push(`attempt ${it.attempt}`)
+  const rate = (which, label) => {
+    const v = run.ratings[`${it.key}/${which}`]
+    return `<span class="rate" data-which="${which}">${label ? `<span>${label}</span>` : ''}<button data-v="up" class="${v === 'up' ? 'on' : ''}" title="good">👍</button><button data-v="down" class="${v === 'down' ? 'on' : ''}" title="bad">👎</button></span>`
+  }
+  const rates = (it.video ? rate('video', it.editVideo ? 'orig' : '') : '') + (it.editVideo ? rate('edit', 'edit') : '')
+  return err + `<div class="foot"><span class="meta">${esc(bits.join(' · '))} · <a href="/files/runs/${run.id}/${it.key}/log.txt" target="_blank">log</a></span>${rates}</div>` +
+    `<details class="pr"><summary>prompt sent</summary><pre>${esc(it.prompt)}${it.editPrompt ? `\n\nedit: ${esc(it.editPrompt)}` : ''}</pre></details>`
+}
+function badge(it) {
+  const cls = RUNNING.has(it.status) ? 'running' : it.status
+  const extra = it.status === 'done' && it.editError ? ' (edit failed)' : ''
+  return `<span class="badge ${cls}">${esc(LABEL[it.status] || it.status)}${extra}</span>`
+}
+
+/** Create or update one card in place (video elements survive polls). */
+function syncCard(el, run, it, title) {
+  if (!el.dataset.init) {
+    el.className = 'card'
+    el.innerHTML = `<div class="head"><b></b><span class="bd"></span><span class="elapsed"></span></div><div class="media"></div><div class="fx"></div>`
+    el.dataset.init = 1
+    el.addEventListener('click', (e) => onRate(e, run.id, it.key))
+  }
+  $('.head b', el).textContent = title ?? it.title
+  $('.head b', el).title = `${it.title} — ${it.artist} (${it.year})`
+  $('.bd', el).innerHTML = badge(it)
+  const t = $('.elapsed', el)
+  t.dataset.start = it.startedAt || ''; t.dataset.end = it.finishedAt || ''; t.dataset.status = it.status
+  t.textContent = elapsed(it)
+  const ms = mediaSig(it)
+  if (el.dataset.ms !== ms) {
+    el.dataset.ms = ms
+    $('.media', el).innerHTML = mediaHTML(run, it)
+    for (const v of $$('video', el)) io.observe(v)
+  }
+  const fs = footSig(run, it)
+  if (el.dataset.fs !== fs) { el.dataset.fs = fs; $('.fx', el).innerHTML = footHTML(run, it) }
+}
+async function onRate(e, runId, key) {
+  const b = e.target.closest('.rate button')
+  if (!b) return
+  const which = b.closest('.rate').dataset.which
+  const run = S.runs.find((r) => r.id === runId)
+  const cur = run.ratings[`${key}/${which}`]
+  const value = cur === b.dataset.v ? null : b.dataset.v
+  if (value) run.ratings[`${key}/${which}`] = value; else delete run.ratings[`${key}/${which}`]
+  render()
+  try { await api(`/api/runs/${runId}/rate`, { method: 'POST', body: { key, which, value } }) } catch (err) { alert('rating not saved: ' + err.message) }
+}
+
+// Lazy-load + play only what's on screen (dozens of autoplaying videos otherwise).
+const io = new IntersectionObserver((entries) => {
+  for (const e of entries) {
+    const v = e.target
+    if (e.isIntersecting) {
+      if (!v.src && v.dataset.src) v.src = v.dataset.src
+      v.play().catch(() => {})
+    } else if (!v.paused) v.pause()
+  }
+}, { rootMargin: '300px 0px' })
+
+setInterval(() => {
+  for (const t of $$('.elapsed')) {
+    if (RUNNING.has(t.dataset.status) && t.dataset.start) t.textContent = fmtSec(Date.now() / 1000 - Number(t.dataset.start))
+  }
+}, 1000)
+
+// ---------------------------------------------------------------- history
+
+const openRuns = new Set(store.get('omni-lab-open', []))
+function renderHistory() {
+  const box = $('#history')
+  if (!S.runs.length) { box.innerHTML = '<p class="muted" style="margin:20px 0">No runs yet. Set a config and hit Generate.</p>'; return }
+  box.querySelector(':scope > p')?.remove()
+  const keep = new Set(S.runs.map((r) => 'run-' + r.id))
+  for (const el of $$(':scope > .run', box)) if (!keep.has(el.id)) el.remove()
+  let prevEl = null
+  S.runs.forEach((run, i) => {
+    let el = document.getElementById('run-' + run.id)
+    if (!el) {
+      el = document.createElement('details')
+      el.className = 'run'; el.id = 'run-' + run.id
+      el.open = i < 3 || openRuns.has(run.id) || run.items.some((it) => RUNNING.has(it.status) || it.status === 'queued')
+      el.innerHTML = `<summary><div class="run-top"><span class="when"></span><span class="counts"></span><span class="btns"></span></div><div class="sum"></div></summary>
+        <div class="run-body"><div class="note"><textarea rows="1" placeholder="Notes on this run (saved automatically)"></textarea><span class="saved"></span></div><div class="grid"></div></div>`
+      el.addEventListener('toggle', () => { el.open ? openRuns.add(run.id) : openRuns.delete(run.id); store.set('omni-lab-open', [...openRuns]) })
+      wireNote($('.note textarea', el), $('.note .saved', el), run.id)
+      $('.btns', el).addEventListener('click', (e) => onRunButton(e, run.id))
+    }
+    if (prevEl ? prevEl.nextElementSibling !== el : box.firstElementChild !== el) prevEl ? prevEl.after(el) : box.prepend(el)
+    prevEl = el
+    const older = S.runs[i + 1]
+    $('.when', el).textContent = when(run.createdAt)
+    $('.when', el).title = run.id
+    $('.counts', el).textContent = counts(run)
+    const active = run.items.some((it) => RUNNING.has(it.status) || it.status === 'queued')
+    const failed = run.items.filter((it) => it.status === 'failed' || it.status === 'canceled').length
+    const btns = `<button data-a="load">Load this config</button>
+      <button data-a="A" class="${cmp.a === run.id ? 'on' : ''}">A</button><button data-a="B" class="${cmp.b === run.id ? 'on' : ''}">B</button>
+      ${failed && !active ? `<button data-a="retry">Retry ${failed} failed</button>` : ''}
+      ${active ? '<button data-a="cancel">Cancel</button>' : ''}<button data-a="delete">Delete</button>`
+    if ($('.btns', el).dataset.h !== btns) { $('.btns', el).innerHTML = btns; $('.btns', el).dataset.h = btns }
+    const sum = summaryHTML(run.config, older?.config) + (older ? '' : '')
+    if ($('.sum', el).dataset.h !== sum) { $('.sum', el).innerHTML = sum; $('.sum', el).dataset.h = sum }
+    const ta = $('.note textarea', el)
+    if (document.activeElement !== ta && !ta.dataset.dirty) ta.value = run.note
+    autosize(ta)
+    const grid = $('.grid', el)
+    for (const it of run.items) {
+      let c = document.getElementById(`c-${run.id}-${it.key}`)
+      if (!c) { c = document.createElement('div'); c.id = `c-${run.id}-${it.key}`; grid.append(c) }
+      syncCard(c, run, it)
+    }
+  })
+}
+function autosize(ta) { ta.style.height = 'auto'; ta.style.height = Math.min(200, ta.scrollHeight + 2) + 'px' }
+function wireNote(ta, saved, runId) {
+  let t = null
+  const save = async () => {
+    clearTimeout(t); t = null
+    try { await api(`/api/runs/${runId}/note`, { method: 'POST', body: { note: ta.value } }); delete ta.dataset.dirty; saved.textContent = 'saved'; const r = S.runs.find((x) => x.id === runId); if (r) r.note = ta.value }
+    catch (e) { saved.textContent = 'NOT saved' }
+  }
+  ta.addEventListener('click', (e) => e.stopPropagation())
+  ta.addEventListener('input', () => { ta.dataset.dirty = 1; saved.textContent = '…'; autosize(ta); clearTimeout(t); t = setTimeout(save, 700) })
+  ta.addEventListener('blur', () => { if (ta.dataset.dirty) save() })
+}
+async function onRunButton(e, runId) {
+  const b = e.target.closest('button')
+  if (!b) return
+  e.preventDefault(); e.stopPropagation()
+  const run = S.runs.find((r) => r.id === runId)
+  const a = b.dataset.a
+  try {
+    if (a === 'load') { writeForm({ ...S.defaults, ...run.config }); window.scrollTo({ top: 0, behavior: 'smooth' }); flash('#go-msg', `loaded the config of run ${when(run.createdAt)}`) }
+    if (a === 'A' || a === 'B') {
+      const k = a.toLowerCase(); cmp[k] = cmp[k] === runId ? null : runId; store.set('omni-lab-cmp', cmp)
+      if (cmp.a && cmp.b) setView('compare'); else render()
+    }
+    if (a === 'retry') await api(`/api/runs/${runId}/retry`, { method: 'POST' })
+    if (a === 'cancel' && confirm('Cancel the unfinished artworks of this run?')) await api(`/api/runs/${runId}/cancel`, { method: 'POST' })
+    if (a === 'delete' && confirm(`Delete run ${when(run.createdAt)} and all its files from disk? This can't be undone.`)) {
+      await api(`/api/runs/${runId}`, { method: 'DELETE' })
+      if (cmp.a === runId) cmp.a = null; if (cmp.b === runId) cmp.b = null; store.set('omni-lab-cmp', cmp)
+    }
+  } catch (err) { alert(err.message) }
+  poll()
+}
+
+// ---------------------------------------------------------------- compare
+
+function runLabel(r) { return `${when(r.createdAt)} — ${r.config.resolution} · ${r.config.framing} · ${r.config.aspect} — ${r.config.prompt.slice(0, 50)}` }
+function renderCompare() {
+  for (const k of ['a', 'b']) {
+    const sel = $('#cmp-' + k)
+    const html = `<option value="">— pick a run —</option>` + S.runs.map((r) => `<option value="${r.id}">${esc(runLabel(r))}</option>`).join('')
+    if (sel.dataset.h !== html) { sel.innerHTML = html; sel.dataset.h = html }
+    sel.value = cmp[k] || ''
+  }
+  const A = S.runs.find((r) => r.id === cmp.a), B = S.runs.find((r) => r.id === cmp.b)
+  const body = $('#cmp-body')
+  const key = `${cmp.a}|${cmp.b}`
+  if (body.dataset.key !== key) { body.innerHTML = ''; body.dataset.key = key }
+  if (!A || !B) { body.innerHTML = '<p class="muted">Pick two runs (A and B) to compare them side by side, one row per artwork. Differences in config are highlighted.</p>'; body.dataset.key = ''; return }
+  let head = $('.cmp-head', body)
+  if (!head) { head = document.createElement('div'); head.className = 'cmp-head'; body.append(head) }
+  const hh = `<div></div><div class="side"><span class="AB">A</span> ${esc(when(A.createdAt))} <span class="muted">${esc(counts(A))}</span>${summaryHTML(A.config, B.config)}${A.note ? `<div class="ptxt"><span class="lbl">note </span>${esc(A.note)}</div>` : ''}</div>
+    <div class="side"><span class="AB">B</span> ${esc(when(B.createdAt))} <span class="muted">${esc(counts(B))}</span>${summaryHTML(B.config, A.config)}${B.note ? `<div class="ptxt"><span class="lbl">note </span>${esc(B.note)}</div>` : ''}</div>`
+  if (head.dataset.h !== hh) { head.innerHTML = hh; head.dataset.h = hh }
+  const order = S.paintings.map((p) => p.key)
+  const keys = [...new Set([...A.items, ...B.items].map((it) => it.key))].sort((x, y) => order.indexOf(x) - order.indexOf(y))
+  for (const k of keys) {
+    let row = document.getElementById('cmp-' + k)
+    const p = S.paintings.find((x) => x.key === k) || {}
+    if (!row) {
+      row = document.createElement('div'); row.className = 'cmp-row'; row.id = 'cmp-' + k
+      row.innerHTML = `<div class="who"><b>${esc(p.short_title || k)}</b><div class="hint">${esc(p.artist || '')} · ${esc(p.year || '')}<br>${p.width}×${p.height} · ${esc(p.shape || '')}</div>${p.thumb ? `<img src="/files/paintings/${esc(p.thumb)}">` : ''}</div><div class="ca"></div><div class="cb"></div>`
+      body.append(row)
+    }
+    for (const [run, cls] of [[A, '.ca'], [B, '.cb']]) {
+      const it = run.items.find((x) => x.key === k)
+      const cell = $(cls, row)
+      if (!it) { if (!cell.dataset.empty) { cell.innerHTML = '<div class="empty">not in this run</div>'; cell.dataset.empty = 1 } continue }
+      let c = $('.card', cell)
+      if (!c) { cell.innerHTML = ''; delete cell.dataset.empty; c = document.createElement('div'); cell.append(c) }
+      syncCard(c, run, it, run === A ? 'A' : 'B')
+    }
+  }
+}
+$('#cmp-a').onchange = () => { cmp.a = $('#cmp-a').value || null; store.set('omni-lab-cmp', cmp); render() }
+$('#cmp-b').onchange = () => { cmp.b = $('#cmp-b').value || null; store.set('omni-lab-cmp', cmp); render() }
+$('#cmp-swap').onclick = () => { cmp = { a: cmp.b, b: cmp.a }; store.set('omni-lab-cmp', cmp); render() }
+$('#cmp-sync').onclick = () => {
+  const vs = $$('#cmp-body video')
+  for (const v of vs) { if (!v.src && v.dataset.src) v.src = v.dataset.src; v.pause(); v.currentTime = 0 }
+  setTimeout(() => vs.forEach((v) => v.play().catch(() => {})), 150)
+}
+
+// ---------------------------------------------------------------- view + polling
+
+function setView(v) {
+  view = v; store.set('omni-lab-view', v)
+  $('#tab-history').classList.toggle('on', v === 'history'); $('#tab-compare').classList.toggle('on', v === 'compare')
+  $('#history').hidden = v !== 'history'; $('#compare').hidden = v !== 'compare'
+  for (const vid of $$(`#${v === 'history' ? 'compare' : 'history'} video`)) vid.pause()
+  render()
+}
+$('#tab-history').onclick = () => setView('history')
+$('#tab-compare').onclick = () => setView('compare')
+const cw = store.get('omni-lab-cardw', 420)
+$('#cardw').value = cw; document.documentElement.style.setProperty('--card-w', cw + 'px')
+$('#cardw').oninput = () => { document.documentElement.style.setProperty('--card-w', $('#cardw').value + 'px'); store.set('omni-lab-cardw', Number($('#cardw').value)) }
+
+function render() {
+  if (!S) return
+  const busy = S.active || S.queued
+  $('#jobs').textContent = busy ? `● ${S.active} running · ${S.queued} queued (max ${S.concurrency} at once)` : `idle · ${S.runs.length} run${S.runs.length === 1 ? '' : 's'}`
+  $('#jobs').className = busy ? 'busy' : ''
+  const ban = $('#banner')
+  if (S.python && !S.python.ok) { ban.style.display = 'block'; ban.textContent = `The server's python can't import PIL + google.genai (${S.python.error}). Restart it with OMNI_PYTHON=/path/to/python3.` }
+  else ban.style.display = 'none'
+  if (view === 'history') renderHistory(); else renderCompare()
+}
+
+let pollT = null
+async function poll() {
+  clearTimeout(pollT)
+  try {
+    const hadPaintings = S?.paintings?.length
+    S = await api('/api/state')
+    if (!formReady && S.paintings.length) buildForm()
+    else if (!S.paintings.length) renderArts()
+    else if (!hadPaintings) buildForm()
+    render()
+  } catch (e) {
+    $('#jobs').textContent = `server unreachable (${e.message}) — retrying`
+  }
+  pollT = setTimeout(poll, S && (S.active || S.queued || S.fetching) ? 2000 : 8000)
+}
+setView(view)
+poll()
+</script>
+</body>
+</html>

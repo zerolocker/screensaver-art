@@ -15,6 +15,7 @@ import {
   INDEX_ART_PAGES,
   eraBySlug,
   formatMonth,
+  holderCredit,
   pieceBySlug,
   pieceParagraphs,
   pieceSummary,
@@ -104,7 +105,7 @@ export default async function ArtPiecePage({ params }: { params: Promise<{ slug:
             ...(artwork.originalDate ? { dateCreated: artwork.originalDate } : {}),
             url: artwork.sourceUrl,
             license: LICENSE_URLS[artwork.license] ?? artwork.license,
-            creditText: [artwork.museum, artwork.creditLine].filter(Boolean).join(', '),
+            creditText: holderCredit(artwork),
           },
         }
       : {}),

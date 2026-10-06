@@ -5,6 +5,7 @@
 //
 //   node curation/real-art/frame-painting.mjs --candidates /tmp/cands.json --id aic:20684
 //   node curation/real-art/frame-painting.mjs --record piece.json --stem monet_haystacks --margin 0.04
+//   node curation/real-art/frame-painting.mjs --candidates /tmp/cands.json --id wd:Q45585
 //
 // Writes gallery/<stem>_4k.webp (the wall still: published as the web images),
 // gallery/<stem>_src.jpg (the whole painting, unframed, 1920px long edge: what
@@ -16,6 +17,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, writ
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { MIN_LONG_EDGE } from './clearance.mjs'
+import { commonsImageInfo } from './commons.mjs'
 import { download, fold, http, HttpError, log, parseArgs, pickProvenance, slug } from './lib.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
@@ -111,6 +113,22 @@ async function aicAttempts(url) {
     .map((w) => ({ url: `${m[1]}/full/${w},/0/default.jpg`, redirect: 'manual' }))
 }
 
+/**
+ * Commons: a rendition about COMMONS_EDGE px on the long edge, not the original,
+ * which can be 40,000+ px and hundreds of MB. Commons serves standard widths only
+ * and rounds up to the next one (3840 today). A smaller original is taken as is.
+ */
+const COMMONS_EDGE = 4000
+async function commonsAttempts(r) {
+  const long = Math.max(r.width || 0, r.height || 0)
+  if (long <= COMMONS_EDGE) return [{ url: r.image_url }]
+  const file = decodeURIComponent(String(r.source_url).replace(/^.*\/wiki\/File:/, '')).replace(/_/g, ' ')
+  const info = (await commonsImageInfo([file], { width: Math.ceil((COMMONS_EDGE * r.width) / long) })).get(file)
+  if (!info?.thumb?.url) throw new Error(`Commons has no rendition of "${file}"`)
+  // The original as a fallback only while it's a reasonable download.
+  return [{ url: info.thumb.url }, ...(long <= 2 * COMMONS_EDGE ? [{ url: info.url }] : [])]
+}
+
 function probe(file) {
   const r = spawnSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'json', file], { encoding: 'utf8' })
   if (r.status !== 0) return null
@@ -121,7 +139,9 @@ function probe(file) {
 // ---- run -------------------------------------------------------------------
 
 log(`framing ${rec.object_id} "${rec.original_title}" — ${rec.artist} -> ${path.relative(ROOT, outStill)}`)
-const attempts = rec.object_id.startsWith('aic:') ? await aicAttempts(rec.image_url) : [{ url: rec.image_url }]
+const attempts = await (async () => (rec.object_id.startsWith('aic:') ? aicAttempts(rec.image_url)
+  : rec.object_id.startsWith('wd:') ? commonsAttempts(rec)
+  : [{ url: rec.image_url }]))().catch((e) => die(`can't find a download for ${rec.object_id}: ${e.message}`))
 if (!attempts.length) die(`no served size of ${rec.object_id} reaches ${MIN_LONG_EDGE}px`)
 
 let src = null

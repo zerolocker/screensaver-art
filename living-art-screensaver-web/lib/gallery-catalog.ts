@@ -51,10 +51,14 @@ export interface Artwork {
   originalTitle: string
   /** The work's own date ("1877", "c. 1660"), or '' — not when it joined the gallery. */
   originalDate: string
+  /** The holding institution ("Art Institute of Chicago", "Louvre Museum"). */
   museum: string
-  /** The museum's credit line ("Charles H. and Mary F. S. Worcester Collection"), or '' */
+  /**
+   * The museum's credit line ("Charles H. and Mary F. S. Worcester Collection"),
+   * "Image: Wikimedia Commons, <file>" for a Commons image, or ''.
+   */
   creditLine: string
-  /** The museum's object page. */
+  /** The museum's object page, or the image's Wikimedia Commons file page. */
   sourceUrl: string
   /** "Public Domain" | "CC0" */
   license: string
@@ -360,9 +364,30 @@ function when(artwork: Artwork): string {
   return /^\d/.test(d) ? `in ${d}` : d
 }
 
+/**
+ * The image came from Wikimedia Commons, not the museum's own open-access
+ * release, so no sentence may say the museum released it.
+ */
+export function fromCommons(artwork: Pick<Artwork, 'sourceUrl'>): boolean {
+  return /^https?:\/\/commons\.wikimedia\.org\//i.test(artwork.sourceUrl)
+}
+
+const PRIVATE = /^(a )?private collection$/i
+
 /** "the Art Institute of Chicago" — without doubling an institution's own "The". */
 export function theMuseum(museum: string): string {
+  if (PRIVATE.test(museum)) return 'a private collection'
   return /^the\s/i.test(museum) ? museum.replace(/^The\s/, 'the ') : `the ${museum}`
+}
+
+/** "the collection of the Louvre Museum", or "a private collection". */
+function collectionOf(museum: string): string {
+  return PRIVATE.test(museum) ? 'a private collection' : `the collection of ${theMuseum(museum)}`
+}
+
+/** Who holds the work, then where the image came from: the credit's middle sentence. */
+export function holderCredit(artwork: Artwork): string {
+  return [artwork.museum, artwork.creditLine].filter(Boolean).join(fromCommons(artwork) ? '. ' : ', ')
 }
 
 /** "in the public domain", noting a CC0 release. */
@@ -376,11 +401,13 @@ function artworkOpeners(piece: CatalogPiece, artwork: Artwork): string[] {
   const by = `${artwork.artist}${lifeDates(artwork)}`
   const made = when(artwork) ? `, made ${when(artwork)}` : ''
   const museum = theMuseum(artwork.museum)
+  const collection = collectionOf(artwork.museum)
+  const image = fromCommons(artwork) ? 'an image of that real work from Wikimedia Commons' : "the museum's image of that real work"
   const loop = looping ? ', as a seamless loop' : ''
   return [
-    `${name} is a real artwork by ${by}${made}. The original is in the collection of ${museum}, and its image is ${publicDomain(artwork)}. The motion was added with AI${loop}, so the scene moves while your Mac sits idle. It hangs in the ${era} wing of the Living Art collection.`,
-    `${by} made ${name}${when(artwork) ? ` ${when(artwork)}` : ''}, and the original belongs to ${museum}. This clip starts from the museum's image of that real work, which is ${publicDomain(artwork)}; the motion was added with AI${loop}. Filed under ${era}.`,
-    `Filed in the ${era} wing, ${name} is a genuine work by ${by}${made}, from the collection of ${museum}. Its image is ${publicDomain(artwork)}, and the motion was added with AI ${looping ? 'as a seamless loop ' : ''}for an idle display.`,
+    `${name} is a real artwork by ${by}${made}. The original is in ${collection}, and its image is ${publicDomain(artwork)}. The motion was added with AI${loop}, so the scene moves while your Mac sits idle. It hangs in the ${era} wing of the Living Art collection.`,
+    `${by} made ${name}${when(artwork) ? ` ${when(artwork)}` : ''}, and the original belongs to ${museum}. This clip starts from ${image}, which is ${publicDomain(artwork)}; the motion was added with AI${loop}. Filed under ${era}.`,
+    `Filed in the ${era} wing, ${name} is a genuine work by ${by}${made}, from ${collection}. Its image is ${publicDomain(artwork)}, and the motion was added with AI ${looping ? 'as a seamless loop ' : ''}for an idle display.`,
   ]
 }
 
@@ -388,11 +415,12 @@ function artworkOpeners(piece: CatalogPiece, artwork: Artwork): string[] {
  * The visible credit under a real artwork:
  * "Gustave Caillebotte (1848–1894), Paris Street; Rainy Day, 1877. Art Institute
  * of Chicago, Charles H. and Mary F. S. Worcester Collection. Public domain."
+ * A Commons image: "… The Starry Night, 1889. Museum of Modern Art. Image:
+ * Wikimedia Commons, <file>. Public domain."
  */
 export function artworkCredit(artwork: Artwork): string {
   const work = [artwork.originalTitle, artwork.originalDate].filter(Boolean).join(', ')
-  const museum = [artwork.museum, artwork.creditLine].filter(Boolean).join(', ')
-  return `${artwork.artist}${lifeDates(artwork)}, ${work}. ${museum}. ${artwork.license === 'CC0' ? 'CC0 (public domain)' : 'Public domain'}.`
+  return `${artwork.artist}${lifeDates(artwork)}, ${work}. ${holderCredit(artwork)}. ${artwork.license === 'CC0' ? 'CC0 (public domain)' : 'Public domain'}.`
 }
 
 /** ~150-character meta description / social summary for a piece. */

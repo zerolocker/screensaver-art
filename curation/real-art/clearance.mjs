@@ -10,6 +10,12 @@
 //      photos can carry their own copyright; no photographs, by product choice).
 //   4. Image long edge >= 2000 px.
 //
+// Wikimedia Commons images (see "Wikimedia Commons" below) also need:
+//   5. US safety: the work is dated <= (this year - 96): 1930 in 2026.
+//   6. A known holder that isn't an Italian public collection.
+//   7. If AIC, CMA or the Met holds it, that museum withholds a usable image of
+//      its own (no open flag, no image, or under 2000 px). Otherwise use theirs.
+//
 // When in doubt, reject: eligible works are plentiful.
 
 export const TERM_YEARS = 70 // life + 70 (US/EU)
@@ -22,12 +28,56 @@ export const MIN_LONG_EDGE = 2000
 /** Life+70 expires at the end of the 70th calendar year: in 2026 -> died <= 1955. */
 export const cutoffYear = (year = new Date().getFullYear()) => year - TERM_YEARS - 1
 
+export const US_TERM_YEARS = 95 // US works published before 1978: 95 years from publication
+/** In 2026 -> dated <= 1930. */
+export const usCutoffYear = (year = new Date().getFullYear()) => year - US_TERM_YEARS - 1
+
+// ---- Wikimedia Commons -----------------------------------------------------
+//
+// For works whose holders publish no open images (the Louvre, the Prado, MoMA…),
+// the image comes from Commons. The legal basis is an argument, not the museum's
+// own waiver: a faithful photo of a 2-D public-domain work adds no new copyright
+// (US: Bridgeman v. Corel, 1999; EU: DSM Directive Art. 14). Hence the extra
+// rules: Commons itself must mark the file public domain, the work must be old
+// enough for the US (check 5), and Italy is out (check 6), because its Cultural
+// Heritage Code restricts reproductions of works in public collections even
+// after copyright ends.
+
+const COMMONS_PD_LICENSES = new Set(['pd', 'cc0'])
+const COMMONS_PD_CATEGORY = /^(PD-Art|PD-old|PD-scan|CC-PD-Mark|CC-Zero)\b/i
+// Any of these on the file is a rights claim, e.g. a photographer's CC BY-SA
+// beside a PD-Art tag ("Licensed-PD-Art"): reject.
+const COMMONS_NONFREE_CATEGORY = /^(CC-BY|GFDL|FAL\b|Free Art License|Copyrighted free use|Attribution only)/i
+
+/**
+ * v = imageinfo extmetadata of the Commons file:
+ * {file, License, LicenseShortName, Copyrighted, categories[]}.
+ */
+export function commonsLicence(v) {
+  if (!v?.file) return { ok: false, why: 'no Commons image file (P18)', evidence: null }
+  const code = String(v.License ?? '').trim().toLowerCase()
+  const short = String(v.LicenseShortName ?? '').trim()
+  const cats = v.categories || []
+  const pdCats = cats.filter((c) => COMMONS_PD_CATEGORY.test(c))
+  const nonfree = cats.filter((c) => COMMONS_NONFREE_CATEGORY.test(c))
+  const evidence = { file: v.file, License: v.License ?? null, LicenseShortName: v.LicenseShortName ?? null, Copyrighted: v.Copyrighted ?? null, categories: [...pdCats, ...nonfree] }
+  const said = `License "${v.License ?? ''}", LicenseShortName "${short}"`
+  if (code && !COMMONS_PD_LICENSES.has(code)) return { ok: false, why: `Commons licence is not public domain (${said})`, evidence }
+  if (nonfree.length) return { ok: false, why: `the file also carries ${nonfree.join(', ')}`, evidence }
+  // Commons marks CC0 files Copyrighted (a rights holder waived them); that's fine.
+  if (v.Copyrighted === 'True' && code !== 'cc0') return { ok: false, why: `Commons marks the file Copyrighted (${said})`, evidence }
+  const pd = COMMONS_PD_LICENSES.has(code) || /^(public domain|cc0)\b/i.test(short) || pdCats.length
+  if (!pd) return { ok: false, why: `no public-domain licence on the file (${said})`, evidence }
+  return { ok: true, why: `${said}${pdCats.length ? `; ${pdCats.join(', ')}` : ''}`, evidence }
+}
+
 // ---- 1. licence ------------------------------------------------------------
 
 export const LICENSE_RULES = {
   aic: { field: 'is_public_domain', want: 'true', ok: (v) => v === true, label: 'Public Domain' },
   met: { field: 'isPublicDomain', want: 'true', ok: (v) => v === true, label: 'CC0' },
   cma: { field: 'share_license_status', want: '"CC0"', ok: (v) => v === 'CC0', label: 'CC0' },
+  commons: { field: 'Commons file licence', ok: (v) => commonsLicence(v).ok, check: commonsLicence, label: 'Public Domain' },
 }
 
 // ---- 2. life dates ---------------------------------------------------------
@@ -314,6 +364,38 @@ export function peopleFromCma(a) {
   return { people, anonymous, undatedProduction, qualified, raw: (a.creators || []).map((c) => [c.role, c.qualifier, c.description].filter(Boolean).join(' ')).join('; ') }
 }
 
+export const ANONYMOUS_QID = 'Q4233718'
+
+/** A P5102/P1480 qualifier's label as it reads before a name: "attribution" -> "attributed to". */
+export const natureWord = (n) =>
+  ({ attribution: 'attributed to', presumably: 'presumably', probably: 'probably', possibly: 'possibly' })[String(n).toLowerCase()] || 'attributed to'
+
+/**
+ * Wikidata (the Commons lane): persons = [{kind, qid, label, nature, birth,
+ * birthApprox, death, deathApprox}]. kind is "creator" (P170) or an attribution
+ * ("workshop of", "attributed to"…: P1774, P1773… on the item or on its P170).
+ * A creator with no item (unknown value) or Q4233718 is anonymous; one whose
+ * statement carries a nature/sourcing qualifier is qualified. Years are already
+ * the latest the date's precision allows.
+ */
+export function peopleFromWikidata(persons = []) {
+  const people = []
+  let anonymous = !persons.some((p) => p.kind === 'creator')
+  let qualified = null
+  for (const p of persons) {
+    const qual = p.kind !== 'creator' ? p.kind : p.nature ? natureWord(p.nature) : null
+    if (qual) qualified ||= `${qual} ${p.label || p.qid || 'unknown'}`
+    if (!p.qid || p.qid === ANONYMOUS_QID) { anonymous = true; continue }
+    people.push({
+      ...UNDATED, name: p.label || p.qid, from: `Wikidata ${p.qid} P569/P570`,
+      birth: p.birth ?? null, birthApprox: !!p.birthApprox, death: p.death ?? null, deathApprox: !!p.deathApprox,
+    })
+  }
+  const raw = persons.map((p) => `${p.kind === 'creator' ? '' : `${p.kind} `}${p.label || p.qid || 'unknown value'}` +
+    ` (${p.birth ?? '?'}–${p.death ?? '?'})${p.nature ? ` [${p.nature}]` : ''}`).join('; ')
+  return { people, anonymous, undatedProduction: [], qualified, raw }
+}
+
 /** The latest year by which this person is certainly dead, and why. */
 function diedBy(p, objectEnd) {
   if (p.living) return { by: Infinity, why: 'listed as living' }
@@ -345,6 +427,16 @@ const MET_FLAT = new Set(['Paintings', 'Paintings-Panels', 'Prints', 'Drawings',
 // Only consulted when the Met leaves classification empty. No screens: a carved,
 // lacquered or Coromandel screen is a 3-D object (painted byōbu are "Paintings").
 const MET_FLAT_NAME = /\b(painting|print|drawing|watercolou?r|pastel|hanging scroll|handscroll|album leaf)\b/i
+// Wikidata P31 classes the Commons lane takes. A triptych or altarpiece can be
+// carved (the Kefermarkt Altarpiece is limewood), so one needs a paint in P186
+// unless it's also typed as a painting.
+export const COMMONS_PAINTING_TYPES = {
+  Q3305213: 'painting', Q1400853: 'portrait painting', Q18761202: 'watercolor painting', Q16593391: 'tableau',
+}
+export const COMMONS_PANEL_TYPES = { Q79218: 'triptych', Q15711026: 'altarpiece' }
+const PAINTS = new Set(['Q296955', 'Q175166', 'Q174219', 'Q204330']) // oil paint, tempera, paint, gouache
+const SCULPTURE_TYPES = new Set(['Q860861', 'Q245117', 'Q179700']) // sculpture, relief sculpture, statue
+
 export const FLAT_RULES = {
   aic: { field: 'artwork_type_title', ok: (t) => ['Painting', 'Print', 'Drawing and Watercolor', 'Miniature Painting'].includes(t) },
   cma: { field: 'type', ok: (t) => ['Painting', 'Print', 'Drawing'].includes(t) },
@@ -356,6 +448,47 @@ export const FLAT_RULES = {
       return MET_FLAT_NAME.test(name)
     },
   },
+  commons: {
+    field: 'Wikidata P31 (P186)',
+    ok: (_, c) => {
+      const p31 = c.p31 || []
+      if (p31.some((t) => SCULPTURE_TYPES.has(t))) return false
+      if (p31.some((t) => COMMONS_PAINTING_TYPES[t])) return true
+      return p31.some((t) => COMMONS_PANEL_TYPES[t]) && (c.p186 || []).some((m) => PAINTS.has(m))
+    },
+  },
+}
+
+// ---- 6. Italian public collections (Commons only) --------------------------
+
+// Holder classes and owner/operator classes that mark the Italian public sector,
+// which the Cultural Heritage Code covers (State, regions, municipalities).
+const IT_PUBLIC_HOLDER_TYPES = {
+  Q3867560: 'Italian national museum', Q124830411: 'Museum of the Italian Ministry of Culture',
+  Q124830213: 'museum of a public entity', Q121076356: 'Istituto museale ad autonomia speciale', Q17431399: 'national museum',
+}
+const IT_PUBLIC_OWNER_TYPES = {
+  Q1112537: 'ministry of Italy', Q747074: 'comune of Italy', Q16110: 'region of Italy', Q15089: 'province of Italy', Q3726248: 'territorial body',
+}
+const ITALY = 'Q38'
+// State and civic museums by name, for holders Wikidata doesn't type or link to an owner.
+const IT_PUBLIC_NAME = /Uffizi|Palatina|Palazzo Pitti|Accademia|Capodimonte|Brera|Borghese|Nazionale|National|Bargello|Sabauda|Musei Reali|Estense|Barberini|Corsini|Castel Sant'Angelo|Ca' d'Oro|Ca' Pesaro|Palazzo Ducale|Doge's Palace|San Marco|Reggia|Villa Giulia|Cenacolo|Galleria Spada|Palazzo Venezia|Palazzo Vecchio|Castello Sforzesco|Capitolin|Polo Museale|Direzione regionale|Civic|Civico|Civica|Civici|Comunale|Regionale|Regional/i
+
+/**
+ * h = {qid, label, countries[], types[], runBy: [{qid, types[], label}]}.
+ * Returns why it's an Italian public collection, or null.
+ */
+export function italianPublic(h) {
+  if (!(h.countries || []).includes(ITALY)) return null
+  const type = (h.types || []).find((t) => IT_PUBLIC_HOLDER_TYPES[t])
+  if (type) return `a ${IT_PUBLIC_HOLDER_TYPES[type]}`
+  for (const w of h.runBy || []) {
+    if (w.qid === ITALY) return 'owned or run by Italy'
+    const t = (w.types || []).find((x) => IT_PUBLIC_OWNER_TYPES[x])
+    if (t) return `owned or run by ${w.label || w.qid} (${IT_PUBLIC_OWNER_TYPES[t]})`
+  }
+  if (IT_PUBLIC_NAME.test(h.label || '')) return 'a state or civic museum by name'
+  return null
 }
 
 // ---- the gate --------------------------------------------------------------
@@ -363,18 +496,27 @@ export const FLAT_RULES = {
 /**
  * c = { source, license_value, type_label, medium, object_end, who: {people,
  *       anonymous, qualified, raw}, width, height }
+ * Commons also: p31[], p186[] (Wikidata QIDs), holders[] (see italianPublic), and
+ *   open_museum {museum, object_id, releases, why} when AIC, CMA or the Met holds it.
  * opts.skipSize: run checks 1-3 only (to decide whether a size probe is worth it).
  */
-export function clear(c, { cutoff = cutoffYear(), skipSize = false } = {}) {
+export function clear(c, { cutoff = cutoffYear(), usCutoff = usCutoffYear(), skipSize = false } = {}) {
   const fails = []
   const passes = []
   const ev = { cutoff_year: cutoff }
+  const commons = c.source === 'commons'
 
   // 1. licence
   const lic = LICENSE_RULES[c.source]
-  ev.license_flag = { [lic.field]: c.license_value ?? null }
-  if (lic.ok(c.license_value)) passes.push(`licence: ${lic.field} = ${JSON.stringify(c.license_value)}`)
-  else fails.push(`licence: ${lic.field} = ${JSON.stringify(c.license_value ?? null)} (need ${lic.want})`)
+  if (lic.check) {
+    const v = lic.check(c.license_value)
+    ev.license_flag = { [lic.field]: v.evidence }
+    ;(v.ok ? passes : fails).push(`licence: ${v.why}`)
+  } else {
+    ev.license_flag = { [lic.field]: c.license_value ?? null }
+    if (lic.ok(c.license_value)) passes.push(`licence: ${lic.field} = ${JSON.stringify(c.license_value)}`)
+    else fails.push(`licence: ${lic.field} = ${JSON.stringify(c.license_value ?? null)} (need ${lic.want})`)
+  }
 
   // 2. life + 70
   const { people = [], anonymous = false, qualified = null, undatedProduction = [], raw = '' } = c.who || {}
@@ -410,9 +552,34 @@ export function clear(c, { cutoff = cutoffYear(), skipSize = false } = {}) {
   // 3. flat art
   const flat = FLAT_RULES[c.source]
   ev.classification = { [flat.field]: c.type_label ?? null, medium: c.medium ?? null }
-  if (!flat.ok(c.type_label || '')) fails.push(`medium: ${flat.field} "${c.type_label}" is not a painting/print/drawing`)
-  else if (PHOTO.test(c.medium || '') || PHOTO.test(c.type_label || '')) fails.push(`medium: photographic ("${c.medium}") — excluded by product choice`)
+  if (!flat.ok(c.type_label || '', c)) {
+    fails.push(`medium: ${flat.field} "${c.type_label}"${commons ? ` (${c.medium || 'no material'})` : ''} is not a ${commons ? 'painting' : 'painting/print/drawing'}`)
+  } else if (PHOTO.test(c.medium || '') || PHOTO.test(c.type_label || '')) fails.push(`medium: photographic ("${c.medium}") — excluded by product choice`)
   else passes.push(`flat art: ${c.type_label}`)
+
+  if (commons) {
+    // 5. US safety: the 1930 rule stands in for "published 95+ years ago".
+    ev.us_cutoff_year = usCutoff
+    if (oe == null) fails.push(`US: no inception date (P571) — can't show the work is from ${usCutoff} or earlier`)
+    else if (oe > usCutoff) fails.push(`US: dated ${oe} > ${usCutoff} — may still be in US copyright`)
+    else passes.push(`US: dated ${oe} <= ${usCutoff}`)
+
+    // 6. holder: known, and not an Italian public collection.
+    ev.holders = (c.holders || []).map((h) => ({ qid: h.qid, label: h.label ?? null, countries: h.countries || [], italian_public: italianPublic(h) }))
+    const italian = ev.holders.filter((h) => h.italian_public)
+    if (!ev.holders.length) fails.push('holder: no current collection (P195) on Wikidata — can\'t rule out an Italian public collection')
+    for (const h of italian) fails.push(`holder ${h.label || h.qid}: Italian public collection (${h.italian_public})`)
+    if (ev.holders.length && !italian.length) passes.push(`holder: ${ev.holders.map((h) => h.label || h.qid).join(', ')} — not an Italian public collection`)
+
+    // 7. A museum's own released image always wins over Commons.
+    const m = c.open_museum
+    if (m) {
+      ev.open_museum = m
+      if (m.releases === false) passes.push(`museum: ${m.museum} doesn't release a usable image (${m.why}); using Commons`)
+      else if (m.releases === true) fails.push(`museum: ${m.museum} releases its own image (${m.object_id}); use that, not Commons`)
+      else fails.push(`museum: held by ${m.museum}, but ${m.why}; can't confirm it withholds its own image`)
+    }
+  }
 
   // 4. resolution
   if (!skipSize) {

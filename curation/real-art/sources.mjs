@@ -1,6 +1,6 @@
-// The three museum adapters. They search and map records to the provenance keys
-// and the fields clearance.mjs judges; they don't decide eligibility. Server-side
-// licence filters just skip obvious rejects.
+// The three museum adapters (the Commons lane is commons.mjs). They search and
+// map records to the provenance keys and the fields clearance.mjs judges; they
+// don't decide eligibility. Server-side licence filters just skip obvious rejects.
 
 import { LICENSE_RULES, peopleFromAic, peopleFromCma, peopleFromMet } from './clearance.mjs'
 import { chunk, http, log, mapPool } from './lib.mjs'
@@ -46,7 +46,7 @@ export function formatDates(f) {
 }
 const mainDates = (who) => formatDates(who.people.find((p) => p.birth != null || p.death != null || p.floruit != null || p.deathAfter != null))
 
-function record({ objectId, gate, prov, image, highlight, wd, classification }) {
+export function record({ objectId, gate, prov, image, highlight, wd, classification }) {
   const lic = LICENSE_RULES[gate.source]
   return {
     source: 'real_artwork',

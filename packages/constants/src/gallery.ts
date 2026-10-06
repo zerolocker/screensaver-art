@@ -22,9 +22,9 @@ export interface ArtItem {
   artist_dates?: string // "1848–1894"
   original_title?: string // "Paris Street; Rainy Day"
   original_date?: string // "1877" — the painting's date, not when it joined the gallery
-  museum?: string // "Art Institute of Chicago"
-  credit_line?: string // "Charles H. and Mary F. S. Worcester Collection"
-  source_url?: string // the museum's object page
+  museum?: string // the holder: "Art Institute of Chicago", "Louvre Museum"
+  credit_line?: string // "Charles H. and Mary F. S. Worcester Collection", or "Image: Wikimedia Commons, <file>"
+  source_url?: string // the museum's object page, or a Commons image's file page
   license?: ArtLicense
 }
 

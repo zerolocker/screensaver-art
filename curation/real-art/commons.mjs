@@ -4,10 +4,11 @@
 // clearance.mjs decides, with two extra checks for this lane.
 
 import {
-  ANONYMOUS_QID, APPROX_MARGIN, COMMONS_PAINTING_TYPES, COMMONS_PANEL_TYPES, commonsLicence, natureWord, peopleFromWikidata,
+  ANONYMOUS_QID, APPROX_MARGIN, clear, COMMONS_PAINTING_TYPES, COMMONS_PANEL_TYPES, commonsLicence, LICENSE_RULES,
+  MIN_LONG_EDGE, natureWord, peopleFromWikidata,
 } from './clearance.mjs'
-import { chunk, http, log } from './lib.mjs'
-import { formatDates, record } from './sources.mjs'
+import { chunk, http, log, probeImageSize } from './lib.mjs'
+import { formatDates, record, SOURCES as MUSEUMS } from './sources.mjs'
 import { sparql, WD } from './wikidata.mjs'
 
 const COMMONS_API = 'https://commons.wikimedia.org/w/api.php'
@@ -16,10 +17,11 @@ const TYPE_LABELS = { ...COMMONS_PAINTING_TYPES, ...COMMONS_PANEL_TYPES }
 const TYPES = Object.keys(TYPE_LABELS)
 export const FAMOUS_MIN_WP = 10 // Wikipedia editions
 export const QUERY_MIN_WP = 3
-const BATCH = 150
+const BATCH = 100 // the creators query takes ~12 s per 100 items; the server stops at 60 s
 const CIRCA = 'Q5727902'
 
-// The open museums we source directly. Their works always come from the museum.
+// The open museums we source directly. A work they hold comes from the museum
+// whenever it releases a usable image (clearance.mjs, check 7).
 const OPEN_MUSEUM = Object.fromEntries(Object.entries(WD).map(([k, v]) => [v.museum, k]))
 const OPEN_MUSEUM_ID = Object.fromEntries(Object.entries(WD).map(([k, v]) => [v.idProp, k]))
 
@@ -127,10 +129,11 @@ export async function commonsImageInfo(files, { width } = {}) {
 
 /** Every painting with 10+ sitelinks (a cheap superset of 10+ Wikipedia editions), most-linked first. */
 async function famousQids(n) {
+  // ~20 s on a quiet server; it times out (504) when the service is loaded, so retry it longer.
   const rows = await sparql(`SELECT DISTINCT ?item ?links WHERE {
   VALUES ?type { ${TYPES.map((t) => `wd:${t}`).join(' ')} }
   ?item wdt:P31 ?type ; wikibase:sitelinks ?links . FILTER(?links >= ${FAMOUS_MIN_WP})
-}`)
+}`, { retries: 5 })
   // ORDER BY ... LIMIT times out on the server; ~1,700 rows sort fine here.
   const links = new Map(rows.map((r) => [qidOf(r.item), Number(r.links)]))
   return [...links].sort((a, b) => b[1] - a[1]).slice(0, n).map(([q]) => q)
@@ -149,7 +152,7 @@ async function searchQids(query) {
   return (d.query?.search || []).map((s) => s.title).filter((t) => /^Q\d+$/.test(t))
 }
 
-const blank = (qid) => ({ qid, wp: 0, label: null, images: [], types: [], materials: [], materialLabels: [], locations: [], museumIds: [], dates: [], persons: [], holders: [] })
+const blank = (qid) => ({ qid, wp: 0, label: null, images: [], types: [], materials: [], materialLabels: [], locations: [], museumRefs: [], dates: [], persons: [], holders: [] })
 
 /** Everything the gate and the record need, for items with at least `minWp` Wikipedia editions. */
 async function hydrate(qids, minWp) {
@@ -167,14 +170,13 @@ async function hydrate(qids, minWp) {
     for (const r of await sparql(`SELECT ?item (SAMPLE(?l) AS ?label)
   (GROUP_CONCAT(DISTINCT STR(?img); separator="\\t") AS ?images) (GROUP_CONCAT(DISTINCT ?ty) AS ?types)
   (GROUP_CONCAT(DISTINCT ?ma) AS ?materials) (GROUP_CONCAT(DISTINCT ?mal; separator=", ") AS ?materialLabels)
-  (GROUP_CONCAT(DISTINCT ?lo) AS ?locations) (GROUP_CONCAT(DISTINCT ?mid) AS ?museumIds)
+  (GROUP_CONCAT(DISTINCT ?lo) AS ?locations)
 WHERE { ${V}
   ${LABEL('?item', '?l')}
   OPTIONAL { ?item wdt:P18 ?img }
   OPTIONAL { ?item wdt:P31 ?t BIND(STRAFTER(STR(?t), STR(wd:)) AS ?ty) }
   OPTIONAL { ?item wdt:P186 ?m BIND(STRAFTER(STR(?m), STR(wd:)) AS ?ma) OPTIONAL { ?m rdfs:label ?mal FILTER(LANG(?mal) = "en") } }
   OPTIONAL { ?item wdt:P276 ?l BIND(STRAFTER(STR(?l), STR(wd:)) AS ?lo) }
-  OPTIONAL { VALUES ?mp { ${Object.keys(OPEN_MUSEUM_ID).map((p) => `wdt:${p}`).join(' ')} } ?item ?mp [] BIND(STRAFTER(STR(?mp), STR(wdt:)) AS ?mid) }
 } GROUP BY ?item`)) {
       const it = items.get(qidOf(r.item))
       it.label = r.label || null
@@ -183,7 +185,21 @@ WHERE { ${V}
       it.materials = split(r.materials)
       it.materialLabels = split(r.materialLabels, ', ')
       it.locations = split(r.locations)
-      it.museumIds = split(r.museumIds)
+    }
+    // The open museums' own records of it: object IDs, and inventory numbers in
+    // their collections. FILTER, not VALUES: a VALUES list of museums makes the
+    // optimizer scan every inventory number those museums hold.
+    for (const r of await sparql(`SELECT ?item ?prop ?museum ?v WHERE { ${V}
+  {
+    ?item ?p ?v . FILTER(?p IN (${Object.keys(OPEN_MUSEUM_ID).map((p) => `wdt:${p}`).join(', ')}))
+    BIND(STRAFTER(STR(?p), STR(wdt:)) AS ?prop)
+  } UNION {
+    ?item p:P217 ?st . ?st pq:P195 ?m ; ps:P217 ?v . FILTER(?m IN (${Object.keys(OPEN_MUSEUM).map((q) => `wd:${q}`).join(', ')}))
+    BIND(STRAFTER(STR(?m), STR(wd:)) AS ?museum)
+  }
+}`)) {
+      const ref = r.prop ? { key: OPEN_MUSEUM_ID[r.prop], id: r.v } : { key: OPEN_MUSEUM[r.museum], inv: r.v }
+      if (ref.key) items.get(qidOf(r.item)).museumRefs.push(ref)
     }
     // Inception (P571). An explicit range (earliest P1319, latest P1326) beats the precision.
     for (const r of await sparql(`SELECT ?item ?t ?p ?circa ?early ?late ?stRank WHERE { ${V}
@@ -321,7 +337,43 @@ export function shownHolder(it) {
 /** The open museum (aic/met/cma) that holds this work, by collection or object ID, or null. */
 const heldByOpenMuseum = (it) =>
   it.holders.flatMap((h) => [h.qid, ...h.parents.map((p) => p.qid)]).map((q) => OPEN_MUSEUM[q]).find(Boolean) ||
-  it.museumIds.map((p) => OPEN_MUSEUM_ID[p]).find(Boolean) || null
+  it.museumRefs[0]?.key || null
+
+/**
+ * Does a museum record release a usable image: the museum's public-domain flag,
+ * an image, and 2000+ px? `releases` is true, false, or null when we can't tell.
+ */
+export async function releaseOf(key, rec, probe = probeImageSize) {
+  const lic = LICENSE_RULES[key]
+  const v = rec._gate.license_value
+  const base = { museum: rec.museum, object_id: rec.object_id }
+  if (!lic.ok(v)) return { ...base, releases: false, why: `${lic.field} = ${JSON.stringify(v ?? null)}` }
+  if (!rec.image_url) return { ...base, releases: false, why: 'its record has no image' }
+  const size = rec.width ? rec : await probe(rec.image_url).catch(() => null)
+  const long = Math.max(size?.width || 0, size?.height || 0)
+  if (!long) return { ...base, releases: null, why: "its image size couldn't be read" }
+  if (long < MIN_LONG_EDGE) return { ...base, releases: false, why: `its image is ${long} px, under ${MIN_LONG_EDGE}` }
+  return { ...base, releases: true, why: `${lic.field} = ${JSON.stringify(v)}, ${long} px` }
+}
+
+/** The holding museum's verdict, from its own record (found through the IDs Wikidata links). */
+async function museumRelease(key, refs) {
+  const src = MUSEUMS[key]
+  const unknown = (why) => ({ museum: src.museum, object_id: null, releases: null, why })
+  const ids = refs.filter((r) => r.key === key && r.id).map((r) => r.id)
+  const invs = refs.filter((r) => r.key === key && r.inv).map((r) => r.inv)
+  if (!ids.length && !invs.length) return unknown("Wikidata doesn't link to its record")
+  let recs
+  try {
+    recs = await src.normalize([...(ids.length ? await src.byIds(ids) : []), ...(invs.length ? await src.byInventory(invs) : [])])
+  } catch (e) {
+    return unknown(`its record couldn't be fetched (${e.message.slice(0, 100)})`)
+  }
+  if (!recs.length) return unknown("its record wasn't found")
+  const verdicts = []
+  for (const r of recs) verdicts.push(await releaseOf(key, r))
+  return verdicts.find((v) => v.releases) || verdicts.find((v) => v.releases === false) || verdicts[0]
+}
 
 function toRecord(it, info) {
   const who = peopleFromWikidata(it.persons)
@@ -354,6 +406,7 @@ function toRecord(it, info) {
   })
   rec.fame.wikipedia_langs = it.wp
   rec._heldBy = heldByOpenMuseum(it)
+  rec._museumRefs = it.museumRefs
   return rec
 }
 
@@ -378,6 +431,13 @@ export const commons = {
     const items = await hydrate(qids, minWp)
     const infos = await commonsImageInfo(items.flatMap((it) => it.images))
     log(`  commons: ${qids.length} Wikidata items -> ${items.length}${minWp ? ` with ${minWp}+ Wikipedia editions` : ''}`)
-    return items.map((it) => toRecord(it, pickImage(it, infos)))
+    const recs = items.map((it) => toRecord(it, pickImage(it, infos)))
+    // A work an open museum holds: ask the museum, but only if it would otherwise pass.
+    for (const r of recs.filter((x) => x._heldBy)) {
+      r._gate.open_museum = clear({ ...r._gate, open_museum: null }).pass
+        ? await museumRelease(r._heldBy, r._museumRefs)
+        : { museum: MUSEUMS[r._heldBy].museum, object_id: null, releases: null, why: "it fails other checks, so its record wasn't looked up" }
+    }
+    return recs
   },
 }

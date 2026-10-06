@@ -29,7 +29,7 @@ The Commons lane finds paintings on Wikidata and takes each one's image (P18) fr
 - **Famous runs** take the most-linked paintings (P31 painting, portrait painting, watercolour painting, tableau, triptych or altarpiece) and keep those with 10+ Wikipedia editions.
 - **`--query`** uses Wikidata's search and keeps works with 3+ editions (10+ with `--famous`).
 - Creators and their dates come from P170, P569 and P570; attributions from P1773, P1774, P1779, P1780 and P1877. The date is P571, widened by its precision or a "latest date". The holder is the current P195: a department names its museum.
-- It sends a User-Agent with a contact address, keeps two Wikidata queries in flight at most, and sends `maxlag` to Commons.
+- It sends a User-Agent with a contact address, runs one Wikidata query at a time, and sends `maxlag` to Commons.
 
 Each output record has:
 - **Nine provenance keys** that `publish-piece.mjs` copies into `gallery.json`: `source` (`"real_artwork"`), `artist`, `artist_dates`, `original_title`, `original_date`, `museum`, `credit_line`, `source_url`, `license` (`"Public Domain"` or `"CC0"`). For Commons, `museum` is the holding institution, `credit_line` reads "Image: Wikimedia Commons, <file>", `source_url` is the Commons file page, and `license` is `"Public Domain"`.
@@ -52,12 +52,13 @@ Commons only, because its legal basis is an argument (*Bridgeman v. Corel*, DSM 
 
 5. **US safety:** the latest P571 is at or before the current year − 96 (1930 in 2026). An unknown date fails.
 6. **Holder:** at least one current holder, and none that is an Italian public collection: an Italian holder typed as a national, Ministry of Culture or public-entity museum, owned or run by Italy, a ministry, a region, a province or a comune, or a state or civic museum by name.
+7. **Open museums first:** when AIC, CMA or the Met holds the work (by P195, or their object ID or inventory number on Wikidata), the museum's own record is fetched. If it releases a usable image (its open flag, an image, 2000+ px), the Commons record is skipped for it. If it doesn't, the record passes with a reason such as "museum: The Metropolitan Museum of Art doesn't release a usable image (isPublicDomain = false); using Commons". If the record can't be found or fetched, the Commons record fails.
 
 ### Duplicates and fame
 
-- Works already in `gallery.json` (matched by `source_url`) are skipped. Commons works are also matched by artist and title, since an item's image can change.
+- Works already in `gallery.json` (matched by `source_url`) are skipped. A Commons work is also matched by artist and title against every real artwork, since its file can change; a museum work against the Commons-sourced ones, since a museum may start releasing a work we took from Commons.
 - A work held by several museums keeps only its most famous copy (matched by artist surname and title, or Wikidata QID).
-- **Museum images win.** A Commons work held by the Art Institute, Cleveland or the Met (by P195 or their object-ID property) is skipped for the museum's own copy, even if the museum fails it. A museum copy also beats a Commons copy of the same work, however famous.
+- **Museum images win.** A Commons work whose holding open museum releases a usable image is skipped (check 7). A passing museum copy also beats a Commons copy of the same work, however famous. A Commons copy of a work the museum withholds keeps the museum as `museum` and the Commons file page as `source_url`.
 - Fame is the number of Wikipedia language editions about the work, plus 5 for a museum highlight flag. It comes from Wikidata (`wikidata.mjs`) through each museum's object-ID property (AIC P4610, Met P3634, CMA P11110, plus inventory number P217 for AIC and CMA), or for Commons the item's own count. If Wikidata is down, only the highlight flags count.
 
 ## frame-painting.mjs

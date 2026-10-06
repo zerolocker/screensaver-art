@@ -22,10 +22,11 @@ Commons works also need:
 
 5. **A date of 1930 or earlier** (in 2026), so the work is public domain in the US. Mondrian died in 1944, but *Broadway Boogie Woogie* (1943) fails. An unknown date fails.
 6. **A known holder that isn't an Italian public collection.** That excludes the Uffizi, the Accademia, Brera, the Borghese, and Italy's state, regional and civic museums.
+7. **If the Art Institute, Cleveland or the Met holds the work, that museum withholds a usable image of its own:** no public-domain flag, no image, or one under 2000 px. The Met holds Monet's *Garden at Sainte-Adresse* but flags it not public domain and shows no image, so it comes from Commons. The credit still names the Met as the holder and links the Commons file, never implying the Met released it.
 
 **Why Commons needs more rules.** A museum's public-domain flag is the museum's own waiver. A Commons image has none, so we rely on a legal argument: a faithful photo of a flat public-domain painting has no copyright of its own, in the US under *Bridgeman v. Corel* (1999) and in the EU under Article 14 of the DSM Directive (2019). Hence the extra rules: the work must be public domain in the US too (rule 5), and Italy's Cultural Heritage Code still restricts reproductions of works in its public collections (rule 6).
 
-**Prefer museum images.** A work held by the Art Institute, Cleveland or the Met always comes from the museum, even when Commons has a larger file.
+**Prefer museum images.** When the Art Institute, Cleveland or the Met releases a usable image of a work it holds, that image is used, even when Commons has a larger file.
 
 **Never work around the gate.** If a painting you want doesn't pass, skip it.
 

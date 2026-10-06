@@ -6,7 +6,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { clear, commonsLicence, italianPublic, peopleFromWikidata, usCutoffYear } from './clearance.mjs'
-import { shownHolder, wikidataArtistName } from './commons.mjs'
+import { releaseOf, shownHolder, wikidataArtistName } from './commons.mjs'
 
 const CUT = 1955 // = cutoffYear(2026)
 const US = 1930 // = usCutoffYear(2026)
@@ -56,6 +56,8 @@ test('licence: only a file Commons marks public domain, with no rights claim', (
   assert.ok(says(dual, /CC-BY-SA-4\.0/))
   assert.equal(lic({ License: null, LicenseShortName: null, Copyrighted: null, categories: ['PD-Art (PD-old-100)'] }).pass, true)
   assert.equal(lic({ License: 'cc0', LicenseShortName: 'CC0', categories: [] }).pass, true)
+  // Commons marks CC0 files Copyrighted (wd:Q1752990's file, uploaded by the Met).
+  assert.equal(lic({ License: 'cc0', LicenseShortName: 'CC0', Copyrighted: 'True', categories: ['CC-Zero'] }).pass, true)
   assert.equal(lic({ License: null, LicenseShortName: null, Copyrighted: null, categories: [] }).pass, false)
   assert.equal(lic({ License: 'unknown', LicenseShortName: 'Unknown', categories: [] }).pass, false)
   assert.equal(judge(starry({ license_value: null })).pass, false)
@@ -131,6 +133,42 @@ test('flat art: paintings, and triptychs or altarpieces only when painted', () =
   assert.ok(says(kefermarkt, /^medium: Wikidata P31 \(P186\) "triptych" \(limewood\) is not a painting/))
   assert.equal(judge(starry({ p31: ['Q3305213', 'Q245117'] })).pass, false) // a painted relief
   assert.equal(judge(starry({ p31: ['Q93184'] })).pass, false) // a drawing: not this lane
+})
+
+test('a museum that holds the work and releases a usable image wins; one that withholds it lets Commons in', () => {
+  const MET = 'The Metropolitan Museum of Art'
+  // wd:Q432253, Garden at Sainte-Adresse: met:437133 has isPublicDomain false and no image.
+  const withheld = judge(starry({ open_museum: { museum: MET, object_id: 'met:437133', releases: false, why: 'isPublicDomain = false' } }))
+  assert.equal(withheld.pass, true)
+  assert.ok(says(withheld, /^museum: The Metropolitan Museum of Art doesn't release a usable image \(isPublicDomain = false\); using Commons$/))
+  assert.equal(withheld.evidence.open_museum.object_id, 'met:437133')
+  // wd:Q1752990, The Death of Socrates: the Met releases it under CC0.
+  const released = judge(starry({ open_museum: { museum: MET, object_id: 'met:436105', releases: true, why: 'isPublicDomain = true, 4000 px' } }))
+  assert.deepEqual(released.reasons, ['museum: The Metropolitan Museum of Art releases its own image (met:436105); use that, not Commons'])
+  // Can't tell: the museum's record is missing, or couldn't be fetched.
+  const unknown = judge(starry({ open_museum: { museum: MET, object_id: null, releases: null, why: "Wikidata doesn't link to its record" } }))
+  assert.equal(unknown.pass, false)
+  assert.ok(says(unknown, /can't confirm it withholds its own image/))
+})
+
+test('what counts as a museum releasing a usable image', async () => {
+  const rec = (source, license_value, extra = {}) => ({
+    museum: 'M', object_id: `${source}:1`, image_url: 'https://img', width: 3000, height: 2000,
+    _gate: { source, license_value }, ...extra,
+  })
+  const noProbe = () => { throw new Error('should not probe') }
+  assert.deepEqual(await releaseOf('met', rec('met', false, { image_url: null }), noProbe),
+    { museum: 'M', object_id: 'met:1', releases: false, why: 'isPublicDomain = false' })
+  assert.equal((await releaseOf('met', rec('met', true, { image_url: null }), noProbe)).why, 'its record has no image')
+  // AIC's American Gothic (aic:6565) is flagged not public domain, whatever its image.
+  assert.equal((await releaseOf('aic', rec('aic', false), noProbe)).releases, false)
+  assert.equal((await releaseOf('aic', rec('aic', true, { width: 1686, height: 1200 }), noProbe)).why, 'its image is 1686 px, under 2000')
+  assert.equal((await releaseOf('cma', rec('cma', 'CC0'), noProbe)).releases, true)
+  // The Met reports no size: read it from the image.
+  const met = rec('met', true, { width: null, height: null })
+  assert.equal((await releaseOf('met', met, async () => ({ width: 4000, height: 2663 }))).releases, true)
+  assert.equal((await releaseOf('met', met, async () => ({ width: 1500, height: 1000 }))).releases, false)
+  assert.equal((await releaseOf('met', met, async () => null)).releases, null)
 })
 
 test('size: the Commons original must reach 2000 px', () => {

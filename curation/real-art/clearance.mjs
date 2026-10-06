@@ -13,6 +13,8 @@
 // Wikimedia Commons images (see "Wikimedia Commons" below) also need:
 //   5. US safety: the work is dated <= (this year - 96): 1930 in 2026.
 //   6. A known holder that isn't an Italian public collection.
+//   7. If AIC, CMA or the Met holds it, that museum withholds a usable image of
+//      its own (no open flag, no image, or under 2000 px). Otherwise use theirs.
 //
 // When in doubt, reject: eligible works are plentiful.
 
@@ -60,9 +62,10 @@ export function commonsLicence(v) {
   const nonfree = cats.filter((c) => COMMONS_NONFREE_CATEGORY.test(c))
   const evidence = { file: v.file, License: v.License ?? null, LicenseShortName: v.LicenseShortName ?? null, Copyrighted: v.Copyrighted ?? null, categories: [...pdCats, ...nonfree] }
   const said = `License "${v.License ?? ''}", LicenseShortName "${short}"`
-  if (v.Copyrighted === 'True') return { ok: false, why: `Commons marks the file Copyrighted (${said})`, evidence }
   if (code && !COMMONS_PD_LICENSES.has(code)) return { ok: false, why: `Commons licence is not public domain (${said})`, evidence }
   if (nonfree.length) return { ok: false, why: `the file also carries ${nonfree.join(', ')}`, evidence }
+  // Commons marks CC0 files Copyrighted (a rights holder waived them); that's fine.
+  if (v.Copyrighted === 'True' && code !== 'cc0') return { ok: false, why: `Commons marks the file Copyrighted (${said})`, evidence }
   const pd = COMMONS_PD_LICENSES.has(code) || /^(public domain|cc0)\b/i.test(short) || pdCats.length
   if (!pd) return { ok: false, why: `no public-domain licence on the file (${said})`, evidence }
   return { ok: true, why: `${said}${pdCats.length ? `; ${pdCats.join(', ')}` : ''}`, evidence }
@@ -493,7 +496,8 @@ export function italianPublic(h) {
 /**
  * c = { source, license_value, type_label, medium, object_end, who: {people,
  *       anonymous, qualified, raw}, width, height }
- * Commons also: p31[], p186[] (Wikidata QIDs), holders[] (see italianPublic).
+ * Commons also: p31[], p186[] (Wikidata QIDs), holders[] (see italianPublic), and
+ *   open_museum {museum, object_id, releases, why} when AIC, CMA or the Met holds it.
  * opts.skipSize: run checks 1-3 only (to decide whether a size probe is worth it).
  */
 export function clear(c, { cutoff = cutoffYear(), usCutoff = usCutoffYear(), skipSize = false } = {}) {
@@ -566,6 +570,15 @@ export function clear(c, { cutoff = cutoffYear(), usCutoff = usCutoffYear(), ski
     if (!ev.holders.length) fails.push('holder: no current collection (P195) on Wikidata — can\'t rule out an Italian public collection')
     for (const h of italian) fails.push(`holder ${h.label || h.qid}: Italian public collection (${h.italian_public})`)
     if (ev.holders.length && !italian.length) passes.push(`holder: ${ev.holders.map((h) => h.label || h.qid).join(', ')} — not an Italian public collection`)
+
+    // 7. A museum's own released image always wins over Commons.
+    const m = c.open_museum
+    if (m) {
+      ev.open_museum = m
+      if (m.releases === false) passes.push(`museum: ${m.museum} doesn't release a usable image (${m.why}); using Commons`)
+      else if (m.releases === true) fails.push(`museum: ${m.museum} releases its own image (${m.object_id}); use that, not Commons`)
+      else fails.push(`museum: held by ${m.museum}, but ${m.why}; can't confirm it withholds its own image`)
+    }
   }
 
   // 4. resolution

@@ -45,13 +45,14 @@ const FLAT_TYPES = [
   'Q838948', // work of art (generic)
 ]
 
-// The query service allows five queries in flight per client, and every source
-// runs its own: keep it to two.
-const MAX_IN_FLIGHT = 2
+// One query at a time. Every source runs its own, and the heavy ones (the
+// Commons discovery takes ~20 s alone) pass the server's 60 s limit and get a
+// 504 when they share it.
+const MAX_IN_FLIGHT = 1
 let inFlight = 0
 const queue = []
 
-export async function sparql(query) {
+export async function sparql(query, { retries = 2 } = {}) {
   while (inFlight >= MAX_IN_FLIGHT) await new Promise((r) => queue.push(r))
   inFlight++
   try {
@@ -59,7 +60,7 @@ export async function sparql(query) {
       method: 'POST',
       headers: { Accept: 'application/sparql-results+json', 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ query }).toString(),
-      retries: 2,
+      retries,
       timeoutMs: 70_000,
     })
     return d.results.bindings.map((b) => Object.fromEntries(Object.entries(b).map(([k, v]) => [k, v.value])))

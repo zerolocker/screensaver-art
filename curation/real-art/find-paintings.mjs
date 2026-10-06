@@ -222,14 +222,16 @@ const all = perSource.flatMap((s) => s.cands)
 const passing = []
 const rejects = []
 const dupes = []
-// A Commons work's file can change on Wikidata, so it's also matched by artist + title.
+// The same work can reach the gallery through Commons, then a museum or another
+// Commons file: those are also matched by artist + title.
 const galleryWorks = new Set(galleryItems.filter((i) => i.source === 'real_artwork').map(workKey))
+const galleryCommonsWorks = new Set(galleryItems.filter((i) => isCommonsUrl(i.source_url)).map(workKey))
 for (const c of all) {
   if (galleryUrls.has(canonUrl(c.source_url))) { dupes.push(`${c.object_id} (already in gallery.json)`); continue }
-  if (c._gate.source === 'commons') {
-    if (galleryWorks.has(workKey(c))) { dupes.push(`${c.object_id} (same work as a gallery.json piece)`); continue }
-    if (c._heldBy) { dupes.push(`${c.object_id} (held by ${SOURCES[c._heldBy].museum}: use the museum's own copy)`); continue }
-  }
+  const fromCommonsLane = c._gate.source === 'commons'
+  if ((fromCommonsLane ? galleryWorks : galleryCommonsWorks).has(workKey(c))) { dupes.push(`${c.object_id} (same work as a gallery.json piece)`); continue }
+  const m = c._gate.open_museum
+  if (m?.releases === true) { dupes.push(`${c.object_id} (${m.museum} releases its own image: ${m.object_id})`); continue }
   ;(c.clearance.pass ? passing : rejects).push(c)
 }
 if (FAMOUS && query && !ID_MODE) {

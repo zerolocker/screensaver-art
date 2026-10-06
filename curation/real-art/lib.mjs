@@ -51,7 +51,7 @@ const MIN_GAP_MS = {
   'api.artic.edu': 1000,
   'www.artic.edu': 250,
   'openaccess-api.clevelandart.org': 120,
-  'query.wikidata.org': 200, // plus at most two queries in flight (wikidata.mjs)
+  'query.wikidata.org': 200, // and one query at a time (wikidata.mjs)
   'www.wikidata.org': 500,
   'commons.wikimedia.org': 500,
   'upload.wikimedia.org': 1000,

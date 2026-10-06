@@ -37,10 +37,13 @@
   #gen { margin: 12px 16px; padding: 12px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
   .cols { display: grid; grid-template-columns: minmax(280px, 1.6fr) minmax(220px, 1fr) minmax(220px, 1fr); gap: 18px; }
   @media (max-width: 1000px) { .cols { grid-template-columns: 1fr; } }
-  .cols h3 { margin: 0 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); }
+  #gen h3 { margin: 0 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--dim); }
+  #gen.drop { outline: 2px dashed var(--accent); outline-offset: -6px; }
   .row2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0 10px; }
   .row2 > div > select, .row2 > div > input { width: 100%; }
-  #arts { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 8px; margin-top: 12px; }
+  .arts-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
+  #gen .arts-bar h3 { margin: 0; }
+  #arts { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 8px; margin-top: 8px; }
   .art { display: flex; gap: 8px; padding: 6px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel2); align-items: flex-start; }
   .art.off { opacity: .45; }
   .art img.th { height: 64px; width: 86px; object-fit: contain; background: #000; border-radius: 4px; flex: none; }
@@ -50,6 +53,12 @@
   .art textarea { margin-top: 4px; font-size: 12px; }
   .art .ov { font-size: 11px; padding: 1px 6px; margin-top: 3px; }
   .art .ov.set { border-color: var(--warn); color: var(--warn); }
+  .art .rm { font-size: 11px; padding: 1px 6px; margin-top: 3px; }
+  .art input.u-title { width: 100%; font-weight: 600; padding: 1px 5px; }
+  .art .u-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+  .art .u-row input { flex: 1 1 90px; min-width: 0; padding: 1px 5px; font-size: 12px; }
+  .art .u-row input.u-year { flex: 0 1 64px; }
+  .art .blank { color: var(--warn); }
   .actions { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
   #go { font-size: 16px; font-weight: 600; padding: 10px 26px; background: var(--accent); color: #0b0b0d; border: 0; }
   #go:disabled { background: var(--panel2); color: var(--dim); }
@@ -160,6 +169,14 @@
       <div style="margin-top:10px"><button id="preview">Preview inputs</button> <span class="hint">free — no Omni call</span></div>
     </div>
   </div>
+  <div class="arts-bar">
+    <h3>Artworks</h3>
+    <button id="upload" title="Saved, shrunk to 3840 px at most, in omni-lab/uploads/ (gitignored)">+ Upload images…</button>
+    <input id="file" type="file" accept="image/*,.heic,.heif" multiple hidden>
+    <span class="hint">or drop image files on this panel</span>
+    <span id="fetch-box"></span>
+    <span id="up-msg" class="hint"></span>
+  </div>
   <div id="arts"></div>
   <div class="actions">
     <button id="go">Generate</button>
@@ -225,26 +242,50 @@ function buildForm() {
 function renderArts() {
   const ps = S.paintings
   if (!ps.length) {
-    $('#arts').innerHTML = `<div class="muted">No paintings yet. <button id="fetch">Fetch the 10 paintings</button> ${S.fetching ? '(fetching… see omni-lab/paintings/fetch.log)' : ''}</div>`
-    $('#fetch').onclick = async () => { await api('/api/paintings/fetch', { method: 'POST' }); poll() }
+    $('#arts').innerHTML = `<div class="muted">No artworks yet. Upload your own images, or fetch the 10 test paintings.</div>`
     return
   }
   $('#arts').innerHTML = ps.map((p) => `
     <div class="art" data-id="${esc(p.id)}">
       <input type="checkbox" class="inc" checked>
-      <img class="th" src="/files/paintings/${esc(p.thumb)}" title="${esc(p.title)}">
+      <img class="th" src="/files/${esc(p.dir)}/${esc(p.thumb)}" title="${esc(p.upload ? `uploaded ${p.original_name}` : p.title)}">
       <img class="pv" hidden>
       <div class="t">
-        <b title="${esc(p.title)}">${esc(p.short_title || p.title)}</b>
-        <div class="hint">${esc(p.artist)} · ${esc(p.year)}</div>
+        ${p.upload ? `<input class="u-title" value="${esc(p.title)}" placeholder="title" title="{title}">
+        <div class="u-row"><input class="u-artist" value="${esc(p.artist)}" placeholder="artist" title="{artist}"><input class="u-year" value="${esc(p.year)}" placeholder="year" title="{year} and {date}"></div>`
+        : `<b title="${esc(p.title)}">${esc(p.short_title || p.title)}</b>
+        <div class="hint">${esc(p.artist)} · ${esc(p.year)}</div>`}
         <div class="hint">${p.width}×${p.height} · ${esc(p.shape)} ${p.aspect} → <span class="outasp"></span> <span class="pvinfo"></span></div>
-        <button class="ov">override prompt</button>
-        <textarea class="ovt" rows="2" hidden placeholder="Prompt for this painting only (blank = use the main prompt)"></textarea>
+        ${p.upload ? '<div class="hint blank" hidden></div>' : ''}
+        <button class="ov">override prompt</button>${p.upload ? ' <button class="rm" title="Delete it from omni-lab/uploads/">remove</button>' : ''}
+        <textarea class="ovt" rows="2" hidden placeholder="Prompt for this artwork only (blank = use the main prompt)"></textarea>
       </div>
     </div>`).join('')
   for (const el of $$('.art')) {
     $('.ov', el).onclick = (e) => { e.preventDefault(); const t = $('.ovt', el); t.hidden = !t.hidden; if (!t.hidden) t.focus() }
+    const p = ps.find((x) => x.id === el.dataset.id)
+    if (p.upload) wireUpload(el, p)
   }
+}
+/** The artwork list changed (an upload, a removal, a fetch): re-render it, keeping each card's checkbox and override. New ones start checked. */
+function syncArts() {
+  const prev = Object.fromEntries($$('.art').map((el) => [el.dataset.id, { on: $('.inc', el).checked, ov: $('.ovt', el).value }]))
+  renderArts()
+  for (const el of $$('.art')) {
+    const s = prev[el.dataset.id]
+    $('.inc', el).checked = s ? s.on : true
+    $('.ovt', el).value = s?.ov || ''
+    $('.ovt', el).hidden = !s?.ov
+  }
+  onFormChange()
+}
+function renderFetch() {
+  const box = $('#fetch-box')
+  const html = S.paintings.some((p) => !p.upload) ? ''
+    : S.fetching ? '<span class="hint">fetching the test paintings… (omni-lab/paintings/fetch.log)</span>' : '<button id="fetch">Fetch the 10 test paintings</button>'
+  if (box.dataset.h === html) return
+  box.innerHTML = html; box.dataset.h = html
+  if ($('#fetch')) $('#fetch').onclick = async () => { await api('/api/paintings/fetch', { method: 'POST' }); poll() }
 }
 function readForm() {
   const c = {}
@@ -279,6 +320,15 @@ function onFormChange() {
     $('.outasp', el).textContent = c.aspect !== 'auto' ? c.aspect : p.width > p.height ? '16:9' : '9:16'
     $('.ov', el).classList.toggle('set', !!$('.ovt', el).value.trim())
     $('.ov', el).textContent = $('.ovt', el).value.trim() ? 'prompt overridden ✎' : 'override prompt'
+    if (p.upload) {
+      const tpl = $('.ovt', el).value.trim() || c.prompt
+      const v = { title: $('.u-title', el).value.trim(), artist: $('.u-artist', el).value.trim(), year: $('.u-year', el).value.trim() }
+      v.date = v.year
+      const blank = Object.keys(v).filter((k) => !v[k] && tpl.includes(`{${k}}`))
+      $('.blank', el).hidden = !blank.length
+      $('.blank', el).textContent = `⚠ ${blank.map((k) => `{${k}}`).join(' ')} would be blank in the prompt`
+      $('.blank', el).title = 'Fill in the details above, or override the prompt for this image'
+    }
   }
   const n = c.artworks.length
   $('#go').textContent = `Generate · ${n} artwork${n === 1 ? '' : 's'} · ${c.resolution}${c.editPrompt ? ' + edit' : ''}`
@@ -293,6 +343,7 @@ $('#go').onclick = async () => {
   if (c.resolution === '4k' && !confirm(`4k on ${c.artworks.length} artworks is the expensive setting. Go?`)) return
   $('#go').disabled = true
   try {
+    await metaSave
     const { id } = await api('/api/runs', { method: 'POST', body: { config: c } })
     flash('#go-msg', `started run ${id}`)
     await poll()
@@ -302,6 +353,7 @@ $('#go').onclick = async () => {
 $('#preview').onclick = async () => {
   const c = readForm()
   $('#preview').disabled = true
+  await metaSave
   await Promise.all(c.artworks.map(async (id) => {
     const el = $(`.art[data-id="${CSS.escape(id)}"]`)
     try {
@@ -314,6 +366,55 @@ $('#preview').onclick = async () => {
   $('#preview').disabled = false
 }
 function flash(sel, msg) { $(sel).textContent = msg; setTimeout(() => { if ($(sel).textContent === msg) $(sel).textContent = '' }, 5000) }
+
+// ---------------------------------------------------------------- uploads
+
+let metaSave = Promise.resolve() // pending title/artist/year saves: Generate and Preview wait for them
+async function uploadFiles(files) {
+  const imgs = [...files].filter((f) => f.type.startsWith('image/') || /\.(jpe?g|png|webp|tiff?|bmp|gif|hei[cf]|avif)$/i.test(f.name))
+  if (!imgs.length) return flash('#up-msg', 'no image files in that')
+  const added = [], failed = []
+  for (const [i, f] of imgs.entries()) {
+    $('#up-msg').textContent = `uploading ${i + 1}/${imgs.length}: ${f.name}…`
+    try {
+      // The raw file is the body; the server stores it as JPEG at <= 3840 px.
+      const r = await fetch(`/api/uploads?name=${encodeURIComponent(f.name)}`, { method: 'POST', body: f })
+      const j = await r.json().catch(() => ({}))
+      if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`)
+      added.push(j.id)
+    } catch (e) { failed.push(`${f.name}: ${e.message}`) }
+  }
+  $('#up-msg').textContent = ''
+  await poll()
+  for (const id of added) { const el = $(`.art[data-id="${CSS.escape(id)}"]`); if (el) $('.inc', el).checked = true }
+  onFormChange()
+  if (added.length) flash('#up-msg', `added ${added.length} image${added.length === 1 ? '' : 's'} and selected ${added.length === 1 ? 'it' : 'them'}`)
+  if (failed.length) alert(`Couldn't add:\n${failed.join('\n')}`)
+}
+function wireUpload(el, p) {
+  const save = () => {
+    const body = { title: $('.u-title', el).value.trim(), artist: $('.u-artist', el).value.trim(), year: $('.u-year', el).value.trim() }
+    metaSave = metaSave.then(() => api(`/api/uploads/${p.key}`, { method: 'POST', body })).catch((e) => alert(`${p.title}: details not saved: ${e.message}`))
+  }
+  for (const i of $$('.u-title, .u-artist, .u-year', el)) i.addEventListener('change', save)
+  $('.rm', el).onclick = async (e) => {
+    e.preventDefault()
+    if (!confirm(`Remove "${$('.u-title', el).value.trim() || p.original_name}" from the lab? Its file in omni-lab/uploads/ is deleted. Past runs keep their input and videos.`)) return
+    try { await api(`/api/uploads/${p.key}`, { method: 'DELETE' }) } catch (err) { alert(err.message) }
+    poll()
+  }
+}
+$('#upload').onclick = () => $('#file').click()
+$('#file').onchange = () => { uploadFiles($('#file').files); $('#file').value = '' }
+// Drop image files on the settings panel. Anywhere else a drop does nothing (instead of opening the file).
+for (const ev of ['dragover', 'drop']) document.addEventListener(ev, (e) => { if (e.dataTransfer?.types.includes('Files')) e.preventDefault() })
+let dragDepth = 0
+$('#gen').addEventListener('dragenter', (e) => { if (e.dataTransfer.types.includes('Files')) { dragDepth++; $('#gen').classList.add('drop') } })
+$('#gen').addEventListener('dragleave', () => { dragDepth = Math.max(0, dragDepth - 1); if (!dragDepth) $('#gen').classList.remove('drop') })
+$('#gen').addEventListener('drop', (e) => {
+  dragDepth = 0; $('#gen').classList.remove('drop')
+  if (e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files)
+})
 
 // ---------------------------------------------------------------- run summaries
 
@@ -563,10 +664,11 @@ function renderCompare() {
   const keys = [...new Set([...A.items, ...B.items].map((it) => it.key))].sort((x, y) => order.indexOf(x) - order.indexOf(y))
   for (const k of keys) {
     let row = document.getElementById('cmp-' + k)
-    const p = S.paintings.find((x) => x.key === k) || {}
+    // A removed upload has no record any more: fall back to what the run saved.
+    const p = S.paintings.find((x) => x.key === k) || A.items.find((x) => x.key === k) || B.items.find((x) => x.key === k)
     if (!row) {
       row = document.createElement('div'); row.className = 'cmp-row'; row.id = 'cmp-' + k
-      row.innerHTML = `<div class="who"><b>${esc(p.short_title || k)}</b><div class="hint">${esc(p.artist || '')} · ${esc(p.year || '')}<br>${p.width}×${p.height} · ${esc(p.shape || '')}</div>${p.thumb ? `<img src="/files/paintings/${esc(p.thumb)}">` : ''}</div><div class="ca"></div><div class="cb"></div>`
+      row.innerHTML = `<div class="who"><b>${esc(p.short_title || p.title || k)}</b><div class="hint">${esc(p.artist || '')} · ${esc(p.year || '')}${p.width ? `<br>${p.width}×${p.height} · ${esc(p.shape || '')}` : ''}</div>${p.thumb ? `<img src="/files/${esc(p.dir)}/${esc(p.thumb)}">` : ''}</div><div class="ca"></div><div class="cb"></div>`
       body.append(row)
     }
     for (const [run, cls] of [[A, '.ca'], [B, '.cb']]) {
@@ -615,14 +717,16 @@ function render() {
 }
 
 let pollT = null
+let artsSig = null
 async function poll() {
   clearTimeout(pollT)
   try {
-    const hadPaintings = S?.paintings?.length
     S = await api('/api/state')
-    if (!formReady && S.paintings.length) buildForm()
-    else if (!S.paintings.length) renderArts()
-    else if (!hadPaintings) buildForm()
+    const sig = S.paintings.map((p) => p.id).join('|')
+    if (!formReady) buildForm()
+    else if (sig !== artsSig) syncArts()
+    artsSig = sig
+    renderFetch()
     render()
   } catch (e) {
     $('#jobs').textContent = `server unreachable (${e.message}) — retrying`

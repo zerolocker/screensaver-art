@@ -1,8 +1,8 @@
 # Omni Lab
 
-A local UI for tuning Gemini Omni settings on real paintings. It runs one config
-on up to 10 paintings at once, keeps every run on disk, and shows any two runs
-side by side.
+A local UI for tuning Gemini Omni settings on real paintings and on your own
+images. It runs one config on many artworks at once, keeps every run on disk, and
+shows any two runs side by side.
 
 ## Run it
 
@@ -21,6 +21,22 @@ node omni-lab/server.mjs          # http://localhost:4322 (opens the browser)
 - Fetch the 10 test paintings once: `node omni-lab/fetch-paintings.mjs` (add
   `--refresh` to re-download). It uses `curation/real-art/find-paintings.mjs` for
   metadata and clearance, and stores them unframed at up to 3840 px.
+
+## Your own images
+
+- Upload with **+ Upload images…**, or drop files on the settings panel. New uploads
+  are listed first and selected.
+- Each upload is stored like the paintings: upright per its EXIF orientation, as a
+  JPEG at up to 3840 px, never upscaled. Transparent areas are flattened onto the
+  `#0b0b0d` wall. Uploading the same file again gives back the same entry.
+- JPEG, PNG, WebP, TIFF, BMP and GIF work. HEIC needs `pip install pillow-heif` in
+  the lab's python.
+- Each upload has title, artist and year fields for the `{title}`, `{artist}`,
+  `{year}` and `{date}` placeholders (`{date}` is the year). The title starts as the
+  file name. A warning appears when the prompt uses a placeholder you left blank:
+  fill it in, or override the prompt for that image.
+- **remove** deletes the upload. Past runs keep their own input and videos, but a
+  retry of one needs the file, so it fails.
 
 ## Settings
 
@@ -57,7 +73,9 @@ Omni has no negative prompt or temperature. Put any "don't" in the prompt.
     - `video.mp4`, plus `edit.mp4` if the run had an edit prompt, each with a `.json` sidecar holding the interaction id
     - `status.json`
     - `log.txt`: every command run and the CLI's full output
-- `runs/`, `paintings/` and `.preview/` are gitignored. Never commit media from them.
+- Uploads live in `uploads/`: `<key>.jpg`, `<key>_thumb.jpg` and `uploads.json`. The
+  key is `up_` plus a hash of the file's bytes.
+- `runs/`, `paintings/`, `uploads/` and `.preview/` are gitignored. Never commit media from them.
 - Old runs may have recorded options that were since removed: crop anchor, wall
   colour and margin, first + last frame, and frame-role tags. History and compare
   show them read-only. Retrying such a run uses the current behaviour.

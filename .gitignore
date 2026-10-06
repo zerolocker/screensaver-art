@@ -36,7 +36,8 @@ living-art-screensaver-web/.lart-ds-synth/
 
 /llm-video-replies/
 
-# Omni Lab: generated runs, fetched paintings and input previews (media; the lab's source is committed).
+# Omni Lab: generated runs, fetched paintings, your uploads and input previews (media; the lab's source is committed).
 /omni-lab/runs/
 /omni-lab/paintings/
+/omni-lab/uploads/
 /omni-lab/.preview/

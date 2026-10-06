@@ -2,14 +2,9 @@
 // No npm dependencies. See omni-lab/README.md.
 //
 //   node omni-lab/server.mjs                # serve on http://localhost:4322 + open the browser
-//   node omni-lab/server.mjs a.jpg b.png    # …with these images uploaded and selected
-//   node omni-lab/server.mjs --help         # all options
-//   NO_OPEN=1 node omni-lab/server.mjs      # don't open the browser (or --no-open)
+//   NO_OPEN=1 node omni-lab/server.mjs      # don't open the browser
 //   OMNI_PYTHON=/path/to/python3 …          # python with google-genai + Pillow (default: python3)
 //   OMNI_CONCURRENCY=10 …                   # parallel Omni calls (default 10)
-//
-// If a lab already runs on the port, the command hands it the images and opens the
-// browser instead of starting a second server.
 //
 // Each artwork of a run is one detached `python3 omni-lab/job.py` process that owns
 // its runs/<id>/<art>/status.json, so jobs keep going across a server restart and
@@ -22,32 +17,7 @@ import { createReadStream, existsSync, mkdirSync, openSync, closeSync, readFileS
 import { createHash, randomBytes } from 'node:crypto'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { parseArgs } from 'node:util'
 import { platform } from 'node:os'
-
-const USAGE = `Usage: node omni-lab/server.mjs [options] [image ...]
-
-Starts Omni Lab and opens it in the browser. Each image you name is uploaded to
-the lab and selected for the next run. If the lab is already running, the images
-go to that lab and the browser opens on it. No second server starts.
-
-Options:
-  --port <n>   port to serve on (default: $PORT or 4322)
-  --no-open    don't open the browser (or NO_OPEN=1)
-  -h, --help   show this help
-
-Environment:
-  OMNI_PYTHON       python with google-genai + Pillow (default: python3)
-  OMNI_CONCURRENCY  parallel Omni calls (default: 10)`
-
-let cli
-try {
-  cli = parseArgs({ allowPositionals: true, options: { port: { type: 'string' }, 'no-open': { type: 'boolean' }, help: { type: 'boolean', short: 'h' } } })
-} catch (e) {
-  console.error(`${e.message}\n\n${USAGE}`)
-  process.exit(2)
-}
-if (cli.values.help) { console.log(USAGE); process.exit(0) }
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(HERE, '..')
@@ -56,13 +26,9 @@ const PAINT = path.join(HERE, 'paintings')
 const UPLOADS = path.join(HERE, 'uploads')
 const PREVIEW = path.join(HERE, '.preview')
 const JOB = path.join(HERE, 'job.py')
-const PORT = Number(cli.values.port || process.env.PORT || 4322)
-const NO_OPEN = cli.values['no-open'] || !!process.env.NO_OPEN
-const IMAGES = cli.positionals.map((f) => path.resolve(f))
+const PORT = Number(process.env.PORT) || 4322
 const PY = process.env.OMNI_PYTHON || 'python3'
 const CONCURRENCY = Number(process.env.OMNI_CONCURRENCY) || 10
-if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) { console.error(`bad port: ${cli.values.port || process.env.PORT}`); process.exit(2) }
-for (const f of IMAGES) if (!existsSync(f) || !statSync(f).isFile()) { console.error(`no such file: ${f}`); process.exit(2) }
 mkdirSync(RUNS, { recursive: true })
 
 const DEFAULTS = {
@@ -518,11 +484,10 @@ const server = createServer(async (req, res) => {
         active: active.size, queued: queue.length, concurrency: CONCURRENCY, python: pythonOk, fetching: !!fetchProc,
       })
     }
-    if (M === 'GET' && p === '/api/ping') return sendJson(res, 200, { omniLab: true })
     if (M === 'GET' && p === '/api/runs') return sendJson(res, 200, runIds().map(runView).filter(Boolean))
     let m
     if (M === 'POST' && p === '/api/uploads') {
-      // The raw file is the body (no multipart): the browser and the CLI both send it as is.
+      // The raw file is the body (no multipart).
       return sendJson(res, 200, await addUpload(await readRaw(req, MAX_UPLOAD), url.searchParams.get('name') || 'upload'))
     }
     if ((m = p.match(/^\/api\/uploads\/(up_[0-9a-f]+)$/))) {
@@ -583,56 +548,20 @@ const server = createServer(async (req, res) => {
   }
 })
 
-// ---- start ------------------------------------------------------------------
-
-const LINK = `http://localhost:${PORT}`
-/** The page selects exactly these artworks when opened with ?select=. */
-const pageUrl = (ids) => ids.length ? `${LINK}/?select=${ids.map(encodeURIComponent).join(',')}` : LINK
-
-function openBrowser(url) {
-  if (NO_OPEN) { if (url !== LINK) console.log(`  Open ${url} to see them selected.\n`); return }
-  const cmd = platform() === 'darwin' ? 'open' : platform() === 'win32' ? 'cmd' : 'xdg-open'
-  const args = platform() === 'win32' ? ['/c', 'start', '', url] : [url]
-  try { spawn(cmd, args, { stdio: 'ignore', detached: true }).on('error', () => {}).unref() } catch {}
-}
-
-async function labRunning() {
-  try {
-    const r = await fetch(`http://127.0.0.1:${PORT}/api/ping`, { signal: AbortSignal.timeout(2000) })
-    return (await r.json()).omniLab === true
-  } catch { return false }
-}
-
-if (await labRunning()) {
-  // Hand the images to the running lab: a second server would also run a second job queue.
-  const ids = []
-  for (const f of IMAGES) {
-    try {
-      const r = await fetch(`http://127.0.0.1:${PORT}/api/uploads?name=${encodeURIComponent(path.basename(f))}`, { method: 'POST', body: readFileSync(f) })
-      const j = await r.json().catch(() => ({}))
-      if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`)
-      ids.push(j.id)
-      console.log(`  + ${path.basename(f)}`)
-    } catch (e) { console.error(`  !! ${path.basename(f)}: ${e.message}`) }
-  }
-  console.log(`\n  Omni Lab is already running at ${LINK}${IMAGES.length ? `; added ${ids.length} of ${IMAGES.length} image(s) to it` : ''}.\n`)
-  openBrowser(pageUrl(ids))
-  process.exit(ids.length === IMAGES.length ? 0 : 1)
-}
-
 checkPython()
-const added = []
-for (const f of IMAGES) {
-  try { added.push((await addUpload(readFileSync(f), f)).id) } catch (e) { console.error(`  !! ${path.basename(f)}: ${e.message}`) }
-}
 server.on('error', (e) => {
   if (e.code !== 'EADDRINUSE') throw e
-  console.error(`\n  !! Port ${PORT} is in use by another program, or by an Omni Lab started before this version.\n     Stop it, or pick another port with --port.\n`)
+  console.error(`\n  !! Port ${PORT} is in use. Is Omni Lab already running? Stop it, or set PORT.\n`)
   process.exit(1)
 })
 server.listen(PORT, '127.0.0.1', () => {
   recover() // only once the port is ours, so a second copy can't start the same queued jobs
-  console.log(`\n  Omni Lab running at ${LINK}  (python: ${pythonOk?.ok ? pythonOk.exe : 'NOT OK'}, ${CONCURRENCY} concurrent)`)
+  const link = `http://localhost:${PORT}`
+  console.log(`\n  Omni Lab running at ${link}  (python: ${pythonOk?.ok ? pythonOk.exe : 'NOT OK'}, ${CONCURRENCY} concurrent)`)
   console.log(`  Runs are kept in ${path.relative(ROOT, RUNS)}/, uploads in ${path.relative(ROOT, UPLOADS)}/. Ctrl+C stops the server; running jobs finish in the background.\n`)
-  openBrowser(pageUrl(added))
+  if (!process.env.NO_OPEN) {
+    const cmd = platform() === 'darwin' ? 'open' : platform() === 'win32' ? 'cmd' : 'xdg-open'
+    const args = platform() === 'win32' ? ['/c', 'start', '', link] : [link]
+    try { spawn(cmd, args, { stdio: 'ignore', detached: true }).on('error', () => {}).unref() } catch {}
+  }
 })

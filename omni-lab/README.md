@@ -7,33 +7,25 @@ shows any two runs side by side.
 ## Run it
 
 ```bash
-node omni-lab/server.mjs                       # http://localhost:4322 (opens the browser)
-node omni-lab/server.mjs ~/Desktop/photo.jpg   # also upload these images and select them
-node omni-lab/server.mjs --help                # --port <n>, --no-open
+node omni-lab/server.mjs          # http://localhost:4322 (opens the browser)
 ```
 
-- It works from any directory, and image paths are relative to where you run it.
-  For a short command, add `alias omni-lab='node /path/to/screensaver-art/omni-lab/server.mjs'`
-  to your shell profile. Then run `omni-lab ~/Desktop/*.jpg`.
-- If the lab is already running on that port, the command doesn't start a second
-  server. It sends the images to the running lab and opens the browser with them
-  selected.
 - Needs Node 22 and a `python3` with `google-genai` and `Pillow`. Point it at another
   python with `OMNI_PYTHON=/path/to/python3`. The page shows a red banner if the
   python can't import them.
 - The API key comes from `curation/.env` through `curation/with-secrets.sh`. The
   server never reads it. Each job calls
   `.claude/skills/omni-video-gen/scripts/generate.py` through that wrapper.
-- Other env vars: `NO_OPEN=1` (same as `--no-open`), `OMNI_CONCURRENCY` (default
-  10), `PORT` (default 4322; `--port` wins).
+- Other env vars: `NO_OPEN=1` (don't open the browser), `OMNI_CONCURRENCY` (default
+  10), `PORT` (default 4322).
 - Fetch the 10 test paintings once: `node omni-lab/fetch-paintings.mjs` (add
   `--refresh` to re-download). It uses `curation/real-art/find-paintings.mjs` for
   metadata and clearance, and stores them unframed at up to 3840 px.
 
 ## Your own images
 
-- Upload with **+ Upload images…**, by dropping files on the settings panel, or by
-  naming them on the command line. New uploads are listed first and selected.
+- Upload with **+ Upload images…**, or drop files on the settings panel. New uploads
+  are listed first and selected.
 - Each upload is stored like the paintings: upright per its EXIF orientation, as a
   JPEG at up to 3840 px, never upscaled. Transparent areas are flattened onto the
   `#0b0b0d` wall. Uploading the same file again gives back the same entry.

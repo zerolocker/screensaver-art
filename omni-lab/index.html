@@ -235,15 +235,7 @@ function buildForm() {
   }
   renderArts()
   formReady = true
-  const draft = { ...S.defaults, ...store.get('omni-lab-draft', {}) }
-  // `node omni-lab/server.mjs a.jpg b.png` opens /?select=<ids>: select exactly those.
-  const sel = new URLSearchParams(location.search).get('select')
-  if (sel) {
-    draft.artworks = sel.split(',')
-    history.replaceState(null, '', location.pathname)
-    flash('#up-msg', `selected the ${draft.artworks.length} image${draft.artworks.length === 1 ? '' : 's'} from the command line`)
-  }
-  writeForm(draft)
+  writeForm({ ...S.defaults, ...store.get('omni-lab-draft', {}) })
   $('#gen').addEventListener('input', onFormChange)
   $('#gen').addEventListener('change', onFormChange)
 }

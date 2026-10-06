@@ -45,15 +45,28 @@ const FLAT_TYPES = [
   'Q838948', // work of art (generic)
 ]
 
-async function sparql(query) {
-  const d = await http(ENDPOINT, {
-    method: 'POST',
-    headers: { Accept: 'application/sparql-results+json', 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ query }).toString(),
-    retries: 2,
-    timeoutMs: 70_000,
-  })
-  return d.results.bindings.map((b) => Object.fromEntries(Object.entries(b).map(([k, v]) => [k, v.value])))
+// The query service allows five queries in flight per client, and every source
+// runs its own: keep it to two.
+const MAX_IN_FLIGHT = 2
+let inFlight = 0
+const queue = []
+
+export async function sparql(query) {
+  while (inFlight >= MAX_IN_FLIGHT) await new Promise((r) => queue.push(r))
+  inFlight++
+  try {
+    const d = await http(ENDPOINT, {
+      method: 'POST',
+      headers: { Accept: 'application/sparql-results+json', 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ query }).toString(),
+      retries: 2,
+      timeoutMs: 70_000,
+    })
+    return d.results.bindings.map((b) => Object.fromEntries(Object.entries(b).map(([k, v]) => [k, v.value])))
+  } finally {
+    inFlight--
+    queue.shift()?.()
+  }
 }
 
 const lit = (s) => JSON.stringify(String(s)) // SPARQL string literal (JSON escaping is compatible)

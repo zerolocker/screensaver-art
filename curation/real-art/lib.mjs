@@ -5,9 +5,10 @@ import { createWriteStream } from 'node:fs'
 import { Readable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
 
+// Wikimedia's User-Agent policy wants a contact address; the museums get the same.
 export const UA =
-  'LivingArtScreensaver-curation/1.0 (+https://living-art-screensaver.com; ' +
-  'nightly public-domain art sourcing, ~4 works/night)'
+  'LivingArtScreensaver-curation/1.1 (https://living-art-screensaver.com; livingartscreensaver@gmail.com; ' +
+  `nightly public-domain art sourcing, ~4 works/night) node/${process.versions.node}`
 
 /** Exactly these keys are copied into gallery.json. */
 export const PROVENANCE_KEYS = [
@@ -50,7 +51,11 @@ const MIN_GAP_MS = {
   'api.artic.edu': 1000,
   'www.artic.edu': 250,
   'openaccess-api.clevelandart.org': 120,
-  'query.wikidata.org': 200,
+  'query.wikidata.org': 200, // plus at most two queries in flight (wikidata.mjs)
+  'www.wikidata.org': 500,
+  'commons.wikimedia.org': 500,
+  'upload.wikimedia.org': 1000,
+  'thumb.wikimedia.org': 1000,
 }
 const nextSlot = new Map()
 const jars = new Map()

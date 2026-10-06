@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// Find public-domain artworks in three museum collections, run each through the
-// copyright gate (clearance.mjs), rank the eligible ones by fame, and write a
-// JSON array for the curator. See curation/real-art/README.md.
+// Find public-domain artworks in three museum collections and on Wikimedia
+// Commons, run each through the copyright gate (clearance.mjs), rank the eligible
+// ones by fame, and write a JSON array for the curator. See curation/real-art/README.md.
 //
 //   node curation/real-art/find-paintings.mjs --famous --out /tmp/cands.json
 //   node curation/real-art/find-paintings.mjs --query "harbor boats" --limit 30
-//   node curation/real-art/find-paintings.mjs --ids aic:20684,met:435702,cma:1922.1133 --show-rejects
+//   node curation/real-art/find-paintings.mjs --ids aic:20684,met:435702,cma:1922.1133,wd:Q45585 --show-rejects
 //
 // Every record carries `clearance: {pass, reasons[], evidence{}}`. Only passing
 // records are written unless --show-rejects (audit mode).
@@ -14,17 +14,22 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { clear, cutoffYear } from './clearance.mjs'
+import { commons } from './commons.mjs'
 import { fold, log, parseArgs, PROVENANCE_KEYS, probeImageSize, trippedHosts } from './lib.mjs'
-import { SOURCES } from './sources.mjs'
+import { SOURCES as MUSEUMS } from './sources.mjs'
 import { famousKeys, wikipediaLangs } from './wikidata.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const GALLERY = path.join(ROOT, 'gallery.json')
 const HIGHLIGHT_BONUS = 5 // a museum's own "highlight" ~ five Wikipedia editions
+const SOURCES = { ...MUSEUMS, commons }
+// Commons has far more famous candidates than the gate passes (closed museums,
+// modern artists, Italy, small files), so it fetches more of them.
+const COMMONS_POOL_FACTOR = 3
 
 const USAGE = `usage: node curation/real-art/find-paintings.mjs \\
   [--famous] [--query <theme keywords>] [--ids <src:id,...>] \\
-  [--sources aic,cma,met] [--limit N] [--pool N] [--out <file.json>] [--show-rejects]
+  [--sources aic,cma,met,commons] [--limit N] [--pool N] [--out <file.json>] [--show-rejects]
 
   --famous        surface each collection's most famous eligible works (Wikidata
                   Wikipedia-edition counts + museum highlight flags). Implied when
@@ -32,11 +37,12 @@ const USAGE = `usage: node curation/real-art/find-paintings.mjs \\
                   matching the theme only.
   --query         theme keywords, searched in every source.
   --ids           fetch + clear specific works: aic:<id>, met:<objectID>,
-                  cma:<id or accession no.> (comma-separated). Rejections are
-                  always reported on stderr.
-  --sources       subset of aic,cma,met (default all three).
+                  cma:<id or accession no.>, wd:<Wikidata QID> (Commons)
+                  (comma-separated). Rejections are always reported on stderr.
+  --sources       subset of aic,cma,met,commons (default all four).
   --limit         max eligible records in the output (default 40).
-  --pool          raw candidates to hydrate per source (default max(40, 2*limit)).
+  --pool          raw candidates to hydrate per source (default max(40, 2*limit);
+                  Commons takes 3x).
   --out           write the JSON array here (default stdout).
   --show-rejects  audit mode: also output rejected records, with reasons.`
 
@@ -46,7 +52,7 @@ function die(msg) {
 }
 
 const opts = parseArgs(process.argv.slice(2), new Set(['famous', 'show-rejects']), USAGE, die)
-const sources = String(opts.sources || 'aic,cma,met').split(',').map((s) => s.trim()).filter(Boolean)
+const sources = String(opts.sources || 'aic,cma,met,commons').split(',').map((s) => s.trim()).filter(Boolean)
 for (const s of sources) if (!SOURCES[s]) die(`unknown source "${s}" (valid: ${Object.keys(SOURCES).join(', ')})`)
 const limit = Number(opts.limit ?? 40)
 if (!Number.isInteger(limit) || limit < 1) die('--limit must be a positive integer')
@@ -58,9 +64,11 @@ const SHOW_REJECTS = !!opts['show-rejects']
 const idsBySource = {}
 if (opts.ids) {
   for (const tok of String(opts.ids).split(',').map((s) => s.trim()).filter(Boolean)) {
-    const m = tok.match(/^(aic|met|cma):(.+)$/)
-    if (!m) die(`bad --ids entry "${tok}" — expected aic:<id>, met:<id> or cma:<id>`)
-    ;(idsBySource[m[1]] ||= []).push(m[2])
+    const m = tok.match(/^(aic|met|cma|wd|commons):(.+)$/)
+    if (!m) die(`bad --ids entry "${tok}" — expected aic:<id>, met:<id>, cma:<id> or wd:<QID>`)
+    const key = m[1] === 'wd' ? 'commons' : m[1]
+    if (key === 'commons' && !/^Q\d+$/i.test(m[2])) die(`bad --ids entry "${tok}" — expected wd:Q<number>`)
+    ;(idsBySource[key] ||= []).push(m[2])
   }
 }
 const ID_MODE = !!opts.ids
@@ -75,19 +83,25 @@ function canonUrl(u) {
   s = s.replace(/[?#].*$/, '').replace(/\/+$/, '')
   return s.replace(/^(artic\.edu\/artworks\/\d+)\/.*$/, '$1')
 }
-const galleryUrls = (() => {
+const galleryItems = (() => {
   try {
-    const items = JSON.parse(readFileSync(GALLERY, 'utf8'))
-    return new Set(items.map((i) => i.source_url).filter(Boolean).map(canonUrl))
+    return JSON.parse(readFileSync(GALLERY, 'utf8'))
   } catch (e) {
     die(`can't read ${GALLERY} for dedup: ${e.message}`)
   }
 })()
+const galleryUrls = new Set(galleryItems.map((i) => i.source_url).filter(Boolean).map(canonUrl))
+const isCommonsUrl = (u) => /^https?:\/\/commons\.wikimedia\.org\//i.test(u || '')
+const commonsInGallery = galleryItems.filter((i) => isCommonsUrl(i.source_url)).length
 
 // ---- harvest ---------------------------------------------------------------
 
 async function harvest(key) {
   const src = SOURCES[key]
+  if (src.collect) {
+    // Used Commons works stay in Wikidata's fame order, so look further down it.
+    return src.collect({ ids: ID_MODE ? idsBySource[key] || [] : null, famous: FAMOUS, query, n: COMMONS_POOL_FACTOR * pool + commonsInGallery })
+  }
   const raws = []
   const seen = new Set()
   const add = (list) => {
@@ -148,7 +162,7 @@ async function gate(cands) {
 }
 
 async function addFame(key, cands) {
-  if (!cands.length) return true
+  if (!cands.length || SOURCES[key].fameBuiltIn) return true
   try {
     const counts = await wikipediaLangs(key, cands)
     for (const c of cands) c.fame.wikipedia_langs = counts.get(c.object_id) ?? 0
@@ -208,8 +222,14 @@ const all = perSource.flatMap((s) => s.cands)
 const passing = []
 const rejects = []
 const dupes = []
+// A Commons work's file can change on Wikidata, so it's also matched by artist + title.
+const galleryWorks = new Set(galleryItems.filter((i) => i.source === 'real_artwork').map(workKey))
 for (const c of all) {
   if (galleryUrls.has(canonUrl(c.source_url))) { dupes.push(`${c.object_id} (already in gallery.json)`); continue }
+  if (c._gate.source === 'commons') {
+    if (galleryWorks.has(workKey(c))) { dupes.push(`${c.object_id} (same work as a gallery.json piece)`); continue }
+    if (c._heldBy) { dupes.push(`${c.object_id} (held by ${SOURCES[c._heldBy].museum}: use the museum's own copy)`); continue }
+  }
   ;(c.clearance.pass ? passing : rejects).push(c)
 }
 if (FAMOUS && query && !ID_MODE) {
@@ -218,14 +238,21 @@ if (FAMOUS && query && !ID_MODE) {
 }
 passing.sort(byFame)
 rejects.sort(byFame)
+// A museum's own copy beats a Commons one of the same work, however famous.
+const fromCommons = (c) => c._gate.source === 'commons'
 const seenWork = new Map()
+const seenQid = new Map()
 const eligible = []
-for (const c of passing) {
+for (const c of [...passing.filter((c) => !fromCommons(c)), ...passing.filter(fromCommons)]) {
   const k = workKey(c)
-  if (seenWork.has(k)) { dupes.push(`${c.object_id} (same work as ${seenWork.get(k)})`); continue }
+  const q = c._wd?.qid
+  const dup = seenWork.get(k) ?? (q && seenQid.get(q))
+  if (dup) { dupes.push(`${c.object_id} (same work as ${dup})`); continue }
   seenWork.set(k, c.object_id)
+  if (q) seenQid.set(q, c.object_id)
   eligible.push(c)
 }
+eligible.sort(byFame)
 
 const output = [...eligible.slice(0, limit), ...(SHOW_REJECTS ? rejects : [])].map(finalize)
 const json = `${JSON.stringify(output, null, 2)}\n`
@@ -245,7 +272,7 @@ if (ID_MODE || SHOW_REJECTS) {
 }
 log(`  ${eligible.length} eligible (${Math.min(limit, eligible.length)} written)${SHOW_REJECTS ? ` + ${rejects.length} rejects` : ''}${opts.out ? ` -> ${opts.out}` : ''}`)
 for (const [i, c] of eligible.slice(0, 15).entries()) {
-  log(`  ${String(i + 1).padStart(2)}. ${c.original_title?.slice(0, 48)} — ${c.artist} — ${c.object_id} — wp ${c.fame.wikipedia_langs ?? '?'}${c.fame.highlight ? ' ★' : ''} — ${c.width}×${c.height}`)
+  log(`  ${String(i + 1).padStart(2)}. ${c.original_title?.slice(0, 48)} — ${c.artist} — ${c.object_id} (${c.museum}) — wp ${c.fame.wikipedia_langs ?? '?'}${c.fame.highlight ? ' ★' : ''} — ${c.width}×${c.height}`)
 }
 if (perSource.every((s) => s.failed || !s.cands.length) && !all.length) {
   die('no candidates from any source — all sources failed or returned nothing')

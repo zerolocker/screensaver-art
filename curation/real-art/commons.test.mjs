@@ -1,0 +1,175 @@
+// node --test curation/real-art/
+// Offline fixtures for the Commons lane's gate (licence, US date, Italy, flat
+// art) and how it names artists and holders. Shapes follow live Wikidata and
+// Commons records (Oct 2026).
+
+import assert from 'node:assert/strict'
+import { test } from 'node:test'
+import { clear, commonsLicence, italianPublic, peopleFromWikidata, usCutoffYear } from './clearance.mjs'
+import { shownHolder, wikidataArtistName } from './commons.mjs'
+
+const CUT = 1955 // = cutoffYear(2026)
+const US = 1930 // = usCutoffYear(2026)
+const judge = (c) => clear(c, { cutoff: CUT, usCutoff: US })
+const says = (r, re) => r.reasons.some((x) => re.test(x))
+
+const PD_FILE = {
+  file: 'Van Gogh - Starry Night - Google Art Project.jpg', License: 'pd', LicenseShortName: 'Public domain', Copyrighted: 'False',
+  categories: ['The Starry Night by van Gogh', 'PD-old-100-expired', 'PD-Art (PD-old-100-expired)', 'CC-PD-Mark', 'Large images'],
+}
+const MOMA = { qid: 'Q188740', label: 'Museum of Modern Art', countries: ['Q30'], types: ['Q207694'], runBy: [] }
+const vanGogh = { kind: 'creator', qid: 'Q5582', label: 'Vincent van Gogh', birth: 1853, death: 1890 }
+
+// wd:Q45585, The Starry Night
+const starry = (extra = {}) => ({
+  source: 'commons', license_value: PD_FILE, type_label: 'painting', medium: 'oil paint, canvas', object_end: 1889,
+  who: peopleFromWikidata([vanGogh]), width: 44567, height: 35291,
+  p31: ['Q3305213'], p186: ['Q296955', 'Q12321255'], holders: [MOMA],
+  ...extra,
+})
+
+test('the US cutoff is 95 years from publication', () => {
+  assert.equal(usCutoffYear(2026), 1930)
+  assert.equal(usCutoffYear(2030), 1934)
+})
+
+test('The Starry Night passes every check', () => {
+  const r = judge(starry())
+  assert.equal(r.pass, true, r.reasons.join('\n'))
+  assert.ok(says(r, /^US: dated 1889 <= 1930/))
+  assert.ok(says(r, /^holder: Museum of Modern Art — not an Italian public collection/))
+  assert.deepEqual(r.evidence.license_flag['Commons file licence'].categories, ['PD-old-100-expired', 'PD-Art (PD-old-100-expired)', 'CC-PD-Mark'])
+})
+
+test('licence: only a file Commons marks public domain, with no rights claim', () => {
+  const lic = (v) => judge(starry({ license_value: { ...PD_FILE, ...v } }))
+  // wd:Q500554, At Eternity's Gate: a self-published CC BY-SA photo.
+  const ccby = lic({ License: 'cc-by-sa-4.0', LicenseShortName: 'CC BY-SA 4.0', Copyrighted: 'True', categories: ['Self-published work'] })
+  assert.equal(ccby.pass, false)
+  assert.ok(says(ccby, /^licence: /))
+  assert.equal(lic({ License: 'cc-by-2.0', LicenseShortName: 'CC BY 2.0', Copyrighted: null }).pass, false)
+  // The Städel's "PDM-owner": no machine-readable licence and marked copyrighted.
+  assert.equal(lic({ License: null, LicenseShortName: 'PDM-owner', Copyrighted: 'True', categories: ['PDMark-owner'] }).pass, false)
+  // PD-Art plus a photographer's CC BY-SA ("Licensed-PD-Art").
+  const dual = lic({ categories: ['PD-Art (PD-old-100)', 'CC-BY-SA-4.0'] })
+  assert.equal(dual.pass, false)
+  assert.ok(says(dual, /CC-BY-SA-4\.0/))
+  assert.equal(lic({ License: null, LicenseShortName: null, Copyrighted: null, categories: ['PD-Art (PD-old-100)'] }).pass, true)
+  assert.equal(lic({ License: 'cc0', LicenseShortName: 'CC0', categories: [] }).pass, true)
+  assert.equal(lic({ License: null, LicenseShortName: null, Copyrighted: null, categories: [] }).pass, false)
+  assert.equal(lic({ License: 'unknown', LicenseShortName: 'Unknown', categories: [] }).pass, false)
+  assert.equal(judge(starry({ license_value: null })).pass, false)
+  assert.equal(commonsLicence({ file: 'x.jpg', License: 'gfdl', LicenseShortName: 'GFDL' }).ok, false)
+})
+
+test('US safety: a work dated after 1930 fails even when its artist died long enough ago', () => {
+  // wd:Q2915406, Broadway Boogie Woogie: Mondrian died 1944, painted 1942-43.
+  const mondrian = starry({ object_end: 1943, who: peopleFromWikidata([{ kind: 'creator', qid: 'Q151803', label: 'Piet Mondrian', birth: 1872, death: 1944 }]) })
+  const r = judge(mondrian)
+  assert.equal(r.pass, false)
+  assert.deepEqual(r.reasons, ['US: dated 1943 > 1930 — may still be in US copyright'])
+  assert.equal(judge({ ...mondrian, object_end: 1930 }).pass, true)
+  const undated = judge(starry({ object_end: null }))
+  assert.equal(undated.pass, false)
+  assert.ok(says(undated, /^US: no inception date/))
+})
+
+test('life+70 and the anonymous rule apply as for the museums', () => {
+  // Picasso (d. 1973) fails on life+70 as well as the US date.
+  const picasso = judge(starry({ object_end: 1937, who: peopleFromWikidata([{ kind: 'creator', qid: 'Q5593', label: 'Pablo Picasso', birth: 1881, death: 1973 }]) }))
+  assert.ok(says(picasso, /died 1973 > 1955 — still in copyright/) && says(picasso, /^US: dated 1937/))
+  // A circa death year counts 10 years later.
+  assert.equal(judge(starry({ who: peopleFromWikidata([{ ...vanGogh, death: 1950, deathApprox: true }]), object_end: 1920 })).pass, false)
+  // Unknown value as creator (anonymous): needs a date before 1900.
+  const anon = (end) => judge(starry({ object_end: end, who: peopleFromWikidata([{ kind: 'creator', qid: null, label: null }]) }))
+  assert.equal(anon(1850).pass, true)
+  assert.equal(anon(1905).pass, false)
+  assert.equal(judge(starry({ object_end: 1850, who: peopleFromWikidata([]) })).pass, true) // no P170 at all: anonymous
+  // "Workshop of" (P1774 on an unknown-value P170) needs < 1900 too, and Rembrandt must clear life+70.
+  const workshop = (end) => judge(starry({
+    object_end: end,
+    who: peopleFromWikidata([{ kind: 'creator', qid: null }, { kind: 'workshop of', qid: 'Q5598', label: 'Rembrandt', birth: 1606, death: 1669 }]),
+  }))
+  assert.equal(workshop(1650).pass, true)
+  assert.ok(says(workshop(1925), /^anonymous\/unidentified hand: object date 1925 is not < 1900/))
+  assert.equal(workshop(1925).evidence.attribution_qualifier, 'workshop of Rembrandt')
+  const attributed = judge(starry({ object_end: 1925, who: peopleFromWikidata([{ ...vanGogh, nature: 'attribution' }]) }))
+  assert.ok(says(attributed, /^attribution "attributed to Vincent van Gogh": object date 1925 is not < 1900/))
+  // A creator with no dates is bounded by the work's date.
+  assert.equal(judge(starry({ object_end: 1500, who: peopleFromWikidata([{ kind: 'creator', qid: 'Q1', label: 'Master of X' }]) })).pass, true)
+})
+
+test('Italian public collections are out, whatever the licence', () => {
+  const MINISTRY = { qid: 'Q1347047', types: ['Q1112537'], label: 'Ministry of Culture' }
+  const uffizi = { qid: 'Q51252', label: 'Uffizi Gallery', countries: ['Q38'], types: ['Q207694'], runBy: [MINISTRY] }
+  const r = judge(starry({ holders: [uffizi] }))
+  assert.equal(r.pass, false)
+  assert.deepEqual(r.reasons, ['holder Uffizi Gallery: Italian public collection (owned or run by Ministry of Culture (ministry of Italy))'])
+  // A Ministry museum by class, a civic one by class, one owned by Italy, one by its comune.
+  assert.match(italianPublic({ label: 'Pinacoteca di Brera', countries: ['Q38'], types: ['Q124830411'] }), /Ministry of Culture/)
+  assert.match(italianPublic({ label: 'Capitoline Museums', countries: ['Q38'], types: ['Q124830213'] }), /public entity/)
+  assert.equal(italianPublic({ label: 'Galleria Borghese', countries: ['Q38'], runBy: [{ qid: 'Q38', types: ['Q6256'] }] }), 'owned or run by Italy')
+  assert.match(italianPublic({ label: 'Palazzo Bianco', countries: ['Q38'], runBy: [{ qid: 'Q1449', types: ['Q747074'], label: 'Genoa' }] }), /comune of Italy/)
+  // Untyped and unowned on Wikidata: the name decides.
+  assert.match(italianPublic({ label: 'Galleria Palatina', countries: ['Q38'], types: ['Q207694'] }), /by name/)
+  assert.match(italianPublic({ label: 'Museo Civico di Sansepolcro', countries: ['Q38'] }), /by name/)
+  // Private and church holders in Italy, and "National" museums elsewhere, pass.
+  assert.equal(italianPublic({ label: 'Galleria Doria Pamphilj', countries: ['Q38'], types: ['Q2087181'] }), null)
+  assert.equal(italianPublic({ label: 'National Gallery', countries: ['Q145'], types: ['Q207694'] }), null)
+  // One Italian public holder among several still fails.
+  assert.equal(judge(starry({ holders: [MOMA, uffizi] })).pass, false)
+  // No holder: can't rule Italy out.
+  assert.ok(says(judge(starry({ holders: [] })), /^holder: no current collection/))
+})
+
+test('flat art: paintings, and triptychs or altarpieces only when painted', () => {
+  assert.equal(judge(starry({ p31: ['Q79218', 'Q3305213'] })).pass, true) // The Garden of Earthly Delights
+  assert.equal(judge(starry({ p31: ['Q15711026'], p186: ['Q175166', 'Q106857709'] })).pass, true) // tempera on panel
+  // wd:Q1737783, the Kefermarkt Altarpiece: a carved limewood triptych.
+  const kefermarkt = judge(starry({ p31: ['Q79218'], p186: ['Q1123657'], type_label: 'triptych', medium: 'limewood' }))
+  assert.equal(kefermarkt.pass, false)
+  assert.ok(says(kefermarkt, /^medium: Wikidata P31 \(P186\) "triptych" \(limewood\) is not a painting/))
+  assert.equal(judge(starry({ p31: ['Q3305213', 'Q245117'] })).pass, false) // a painted relief
+  assert.equal(judge(starry({ p31: ['Q93184'] })).pass, false) // a drawing: not this lane
+})
+
+test('size: the Commons original must reach 2000 px', () => {
+  assert.equal(judge(starry({ width: 1375, height: 2000 })).pass, true) // The Blue Boy
+  assert.equal(judge(starry({ width: 800, height: 443 })).pass, false)
+  assert.equal(judge(starry({ width: null, height: null })).pass, false)
+})
+
+test('artist names read like a museum label', () => {
+  assert.equal(wikidataArtistName([vanGogh]), 'Vincent van Gogh')
+  assert.equal(wikidataArtistName([{ kind: 'creator', qid: null }, { kind: 'workshop of', qid: 'Q5598', label: 'Rembrandt' }]), 'Workshop of Rembrandt')
+  assert.equal(wikidataArtistName([{ ...vanGogh, nature: 'attribution' }]), 'Attributed to Vincent van Gogh')
+  // wd:Q734834, the Ghent Altarpiece
+  assert.equal(wikidataArtistName([
+    { kind: 'creator', qid: 'Q102272', label: 'Jan van Eyck' },
+    { kind: 'creator', qid: 'Q456326', label: 'Hubert van Eyck', nature: 'presumably' },
+  ]), 'Jan van Eyck and presumably Hubert van Eyck')
+  // The same person as creator and as an attribution: say the attribution once.
+  assert.equal(wikidataArtistName([{ ...vanGogh }, { ...vanGogh, kind: 'attributed to' }]), 'Attributed to Vincent van Gogh')
+  assert.equal(wikidataArtistName([{ kind: 'creator', qid: 'Q4233718', label: 'anonymous' }]), 'Unknown artist')
+  assert.equal(wikidataArtistName([]), 'Unknown artist')
+})
+
+test('the holder shown is the museum, not a department or a lender', () => {
+  const holder = (h) => ({ links: 0, typeLabels: [], parents: [], countries: [], types: [], runBy: [], ...h })
+  // wd:Q29530: the Louvre's Department of Paintings names the Louvre.
+  const louvre = shownHolder({ locations: [], holders: [holder({ qid: 'Q3044768', label: 'Department of Paintings of the Louvre', typeLabels: ['curatorial department of the Louvre', 'art collection'], parents: [{ qid: 'Q19675', label: 'Louvre Museum' }] })] })
+  assert.equal(louvre.label, 'Louvre Museum')
+  // wd:Q219831: the Night Watch hangs (P276) in the Rijksmuseum, on loan from the Amsterdam Museum.
+  const nightWatch = shownHolder({
+    locations: ['Q190804'],
+    holders: [holder({ qid: 'Q1820897', label: 'Amsterdam Museum', links: 60 }), holder({ qid: 'Q190804', label: 'Rijksmuseum', links: 50 })],
+  })
+  assert.equal(nightWatch.label, 'Rijksmuseum')
+  // A sub-collection held alongside its parent drops out.
+  const nga = shownHolder({
+    locations: [],
+    holders: [holder({ qid: 'Q46596638', label: 'Andrew W. Mellon collection', links: 900, typeLabels: ['art collection'], parents: [{ qid: 'Q214867', label: 'National Gallery of Art' }] }), holder({ qid: 'Q214867', label: 'National Gallery of Art', links: 80 })],
+  })
+  assert.equal(nga.label, 'National Gallery of Art')
+  assert.equal(shownHolder({ locations: [], holders: [] }), null)
+})

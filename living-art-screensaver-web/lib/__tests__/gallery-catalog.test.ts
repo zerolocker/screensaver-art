@@ -7,7 +7,9 @@ import {
   GALLERY_PAGE_SIZE,
   artworkCredit,
   eraBySlug,
+  fromCommons,
   galleryPage,
+  holderCredit,
   parseArtworkTitle,
   parseTitle,
   pieceBySlug,
@@ -262,5 +264,47 @@ describe('real artworks', () => {
   it('names a museum without doubling its own "The"', () => {
     expect(theMuseum('Art Institute of Chicago')).toBe('the Art Institute of Chicago')
     expect(theMuseum('The Metropolitan Museum of Art')).toBe('the Metropolitan Museum of Art')
+    expect(theMuseum('Private collection')).toBe('a private collection')
+  })
+
+  // A Commons image: the museum holds the work but didn't release the image.
+  const commons = (over: Partial<RawItem> = {}) =>
+    real({
+      title: 'The Starry Night - Vincent van Gogh (AI Animated)',
+      artist: 'Vincent van Gogh',
+      artist_dates: '1853–1890',
+      original_title: 'The Starry Night',
+      original_date: '1889',
+      museum: 'Museum of Modern Art',
+      credit_line: 'Image: Wikimedia Commons, Van Gogh - Starry Night - Google Art Project.jpg',
+      source_url: 'https://commons.wikimedia.org/wiki/File:Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg',
+      ...over,
+    })
+
+  it('never says the museum released a Commons image', () => {
+    const piece = toPiece(commons())
+    expect(fromCommons(piece.artwork!)).toBe(true)
+    expect(fromCommons(toPiece(real()).artwork!)).toBe(false)
+    for (let i = 0; i < 40; i++) {
+      const [opener] = pieceParagraphs({ ...piece, slug: `c${i}` })
+      expect(opener).toContain('the Museum of Modern Art')
+      expect(opener).toMatch(/public domain/)
+      expect(opener).not.toMatch(/museum's image/)
+    }
+    expect(artworkCredit(piece.artwork!)).toBe(
+      'Vincent van Gogh (1853–1890), The Starry Night, 1889. Museum of Modern Art. ' +
+        'Image: Wikimedia Commons, Van Gogh - Starry Night - Google Art Project.jpg. Public domain.',
+    )
+    expect(holderCredit(piece.artwork!)).toBe('Museum of Modern Art. Image: Wikimedia Commons, Van Gogh - Starry Night - Google Art Project.jpg')
+  })
+
+  it('says "a private collection", not "the collection of the private collection"', () => {
+    const piece = toPiece(commons({ museum: 'Private collection' }))
+    for (let i = 0; i < 12; i++) {
+      const [opener] = pieceParagraphs({ ...piece, slug: `p${i}` })
+      expect(opener).toMatch(/a private collection/)
+      expect(opener).not.toMatch(/the (collection of the )?private collection/i)
+    }
+    expect(pieceSummary(piece)).toContain('from a private collection')
   })
 })

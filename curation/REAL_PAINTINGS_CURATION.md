@@ -8,25 +8,28 @@ Run every command from the repo root. The fixed animation config, its prompt and
 
 The same secrets and wrapper as [`AUTOMATED_CURATION.md`](AUTOMATED_CURATION.md#prerequisites): `GEMINI_API_KEY` (Omni and the clip's music), `CLOUDFLARE_API_TOKEN` (used by `publish-piece.mjs`), and `ZERNIO_API_KEY` (social). No image generation. Needs Node 18+, `ffmpeg`, and `google-genai` 2.25 or newer for `python3`, because Omni uses the Interactions API. If the Omni script says the SDK is too old, run `python3 -m pip install -U google-genai` and retry.
 
-There are four sources: the Art Institute of Chicago, the Cleveland Museum of Art, the Met, and Wikimedia Commons. Commons covers famous works in museums that publish no open images, such as the Louvre, the Prado, the National Gallery in London and MoMA. None of them needs a key. If one is down, use the others; if all are down, abort and report. **Take images only from the three museums or Wikimedia Commons under these rules,** never from search engines, stock sites or anywhere else.
+There are eight sources: seven museums (the Art Institute of Chicago, the Cleveland Museum of Art, the Met, the National Gallery of Art in Washington, the Rijksmuseum, the Getty Museum and SMK in Copenhagen) and Wikimedia Commons. Commons covers famous works in museums that publish no open images, such as the Louvre, the Prado, the National Gallery in London and MoMA. None of them needs a key. If one is down, use the others; if all are down, abort and report. **Take images only from the seven museums or Wikimedia Commons under these rules,** never from search engines, stock sites or anywhere else.
 
 ## The legal gate
 
 `curation/real-art/find-paintings.mjs` passes a painting only if all of these hold, and records the evidence in its `clearance` field:
-1. **The image is marked public domain.** For the three museums, the museum's own Public Domain or CC0 flag. For Commons, the file's own licence must say public domain (PD-Art, PD-old or CC0), with no CC BY, CC BY-SA or other rights claim on the file.
+1. **The image is marked public domain.** For the seven museums, the museum's own Public Domain or CC0 flag on the image. For Commons, the file's own licence must say public domain (PD-Art, PD-old or CC0), with no CC BY, CC BY-SA or other rights claim on the file.
 2. **The artist died at least 71 years ago** (1955 or earlier, in 2026). Anonymous and "attributed to" or "workshop of" works must predate 1900. The work's own age doesn't count: Hopper's *Nighthawks* (1942) is open access, but Hopper died in 1967, so it's blocked until 2038.
 3. **Flat art only:** paintings, prints, drawings, watercolours. A photo of a 3-D object can carry its own copyright. Commons takes paintings only; a triptych or altarpiece also needs a paint among its materials, because some are carved.
 4. **At least 2000 px on the long edge.** Never AI-upscale a real artwork.
 
+Commons, Rijksmuseum and SMK works also need:
+
+5. **A date of 1930 or earlier** (in 2026), so the work is public domain in the US. Mondrian died in 1944, but *Broadway Boogie Woogie* (1943) fails. An unknown date fails. The Rijksmuseum and SMK mark a work public domain once its artist has been dead 70 years, which isn't the US rule for works published after 1930.
+
 Commons works also need:
 
-5. **A date of 1930 or earlier** (in 2026), so the work is public domain in the US. Mondrian died in 1944, but *Broadway Boogie Woogie* (1943) fails. An unknown date fails.
 6. **A known holder that isn't an Italian public collection.** That excludes the Uffizi, the Accademia, Brera, the Borghese, and Italy's state, regional and civic museums.
-7. **If the Art Institute, Cleveland or the Met holds the work, that museum withholds a usable image of its own:** no public-domain flag, no image, or one under 2000 px. The Met holds Monet's *Garden at Sainte-Adresse* but flags it not public domain and shows no image, so it comes from Commons. The credit still names the Met as the holder and links the Commons file, never implying the Met released it.
+7. **If one of the seven museums holds the work, that museum withholds a usable image of its own:** no public-domain flag, no image, or one under 2000 px. The Met holds Monet's *Garden at Sainte-Adresse* but flags it not public domain and shows no image, so it comes from Commons. The credit still names the Met as the holder and links the Commons file, never implying the Met released it.
 
 **Why Commons needs more rules.** A museum's public-domain flag is the museum's own waiver. A Commons image has none, so we rely on a legal argument: a faithful photo of a flat public-domain painting has no copyright of its own, in the US under *Bridgeman v. Corel* (1999) and in the EU under Article 14 of the DSM Directive (2019). Hence the extra rules: the work must be public domain in the US too (rule 5), and Italy's Cultural Heritage Code still restricts reproductions of works in its public collections (rule 6).
 
-**Prefer museum images.** When the Art Institute, Cleveland or the Met releases a usable image of a work it holds, that image is used, even when Commons has a larger file.
+**Prefer museum images.** When one of the seven museums releases a usable image of a work it holds, that image is used, even when Commons has a larger file. *The Night Watch* comes from the Rijksmuseum, not Commons.
 
 **Never work around the gate.** If a painting you want doesn't pass, skip it.
 
@@ -38,7 +41,7 @@ Commons works also need:
    ```bash
    node curation/real-art/find-paintings.mjs --famous --limit 80 --out /tmp/lart-candidates.json
    ```
-   Add `--query "<theme>"` for variety. `--ids aic:<id>` checks one specific work (`wd:<QID>` for Commons). Everything in the output has passed the gate and isn't in `gallery.json` yet.
+   Add `--query "<theme>"` for variety. `--ids aic:<id>` checks one specific work (`rijks:SK-C-5`, `smk:KMS3716`, `wd:<QID>` for Commons; the README lists every form). Everything in the output has passed the gate and isn't in `gallery.json` yet.
 
 3. **Pick four.**
    - **Recognizable.** Prefer works a general audience knows: a high `fame.wikipedia_langs`, plus your own judgement. Each painting is used once.

@@ -2,7 +2,7 @@
 // map records to the provenance keys and the fields clearance.mjs judges; they
 // don't decide eligibility. Server-side licence filters just skip obvious rejects.
 
-import { LICENSE_RULES, peopleFromAic, peopleFromCma, peopleFromMet } from './clearance.mjs'
+import { licenceLabel, peopleFromAic, peopleFromCma, peopleFromMet } from './clearance.mjs'
 import { chunk, http, log, mapPool } from './lib.mjs'
 
 const aspectOf = (w, h) => (w && h ? Math.round((w / h) * 1000) / 1000 : null)
@@ -44,14 +44,16 @@ export function formatDates(f) {
   if (b) return `born ${b}`
   return null
 }
-const mainDates = (who) => formatDates(who.people.find((p) => p.birth != null || p.death != null || p.floruit != null || p.deathAfter != null))
+export const mainDates = (who) => formatDates(who.people.find((p) => p.birth != null || p.death != null || p.floruit != null || p.deathAfter != null))
+/** The dates of the person the artist line names ("Follower of Jan Lievens"), else the first dated one. */
+export const datesFor = (who, artist) =>
+  formatDates(who.people.find((p) => p.name && String(artist ?? '').includes(p.name) && (p.birth != null || p.death != null || p.floruit != null))) || mainDates(who)
 
 export function record({ objectId, gate, prov, image, highlight, wd, classification }) {
-  const lic = LICENSE_RULES[gate.source]
   return {
     source: 'real_artwork',
     ...prov,
-    license: lic.ok(gate.license_value) ? lic.label : null,
+    license: licenceLabel(gate.source, gate.license_value),
     object_id: objectId,
     image_url: image.url || null,
     width: image.width || null,

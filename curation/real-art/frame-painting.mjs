@@ -6,6 +6,7 @@
 //   node curation/real-art/frame-painting.mjs --candidates /tmp/cands.json --id aic:20684
 //   node curation/real-art/frame-painting.mjs --record piece.json --stem monet_haystacks --margin 0.04
 //   node curation/real-art/frame-painting.mjs --candidates /tmp/cands.json --id wd:Q45585
+//   node curation/real-art/frame-painting.mjs --candidates /tmp/cands.json --id rijks:SK-A-2344
 //
 // Writes gallery/<stem>_4k.webp (the wall still: published as the web images),
 // gallery/<stem>_src.jpg (the whole painting, unframed, 1920px long edge: what
@@ -70,7 +71,7 @@ if (!(margin >= 0 && margin < 0.45)) die('--margin must be a fraction in [0, 0.4
 
 /** caillebotte_paris_street_rainy_day */
 function defaultStem(r) {
-  const artist = String(r.artist || '')
+  const artist = fold(r.artist) // before the suffix rule: "Hammershøi" mustn't lose a roman-numeral "i"
     .replace(/\([^)]*\)/g, ' ')
     .replace(/^(attributed to|workshop of|studio of|circle of|follower of|school of|manner of|after|copy after)\s+/i, '')
     .replace(/\b(the (elder|younger)|and (workshop|studio|assistants?)|jr\.?|sr\.?|[ivx]+)\s*$/i, '')
@@ -129,6 +130,27 @@ async function commonsAttempts(r) {
   return [{ url: info.thumb.url }, ...(long <= 2 * COMMONS_EDGE ? [{ url: info.url }] : [])]
 }
 
+/**
+ * NGA, the Rijksmuseum, the Getty and SMK serve IIIF: ask for a rendition about
+ * IIIF_EDGE px on the long edge, within the server's size limits, rather than
+ * originals of 20,000+ px. A smaller original comes at its own size.
+ */
+const IIIF_EDGE = 4000
+const IIIF_SOURCE = /^(nga|rijks|getty|smk):/
+const IIIF_URL = /\/full\/[^/]+\/0\/default\.jpg$/
+async function iiifAttempts(r) {
+  const base = r.image_url.replace(IIIF_URL, '')
+  const info = await http(`${base}/info.json`)
+  const limits = { ...[info.profile].flat().find((p) => p && typeof p === 'object'), ...info } // IIIF 2 keeps them in the profile
+  const { width: w, height: h } = info
+  let k = Math.min(1, IIIF_EDGE / Math.max(w, h))
+  if (limits.maxArea) k = Math.min(k, Math.sqrt(limits.maxArea / (w * h)))
+  if (limits.maxWidth) k = Math.min(k, limits.maxWidth / w)
+  if (limits.maxHeight) k = Math.min(k, limits.maxHeight / h)
+  const size = `${Math.floor(w * k)},${Math.floor(h * k)}`
+  return [{ url: `${base}/full/${size}/0/default.jpg` }, ...(k === 1 ? [{ url: r.image_url }] : [])]
+}
+
 function probe(file) {
   const r = spawnSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'json', file], { encoding: 'utf8' })
   if (r.status !== 0) return null
@@ -141,6 +163,7 @@ function probe(file) {
 log(`framing ${rec.object_id} "${rec.original_title}" — ${rec.artist} -> ${path.relative(ROOT, outStill)}`)
 const attempts = await (async () => (rec.object_id.startsWith('aic:') ? aicAttempts(rec.image_url)
   : rec.object_id.startsWith('wd:') ? commonsAttempts(rec)
+  : IIIF_SOURCE.test(rec.object_id) && IIIF_URL.test(rec.image_url) ? iiifAttempts(rec)
   : [{ url: rec.image_url }]))().catch((e) => die(`can't find a download for ${rec.object_id}: ${e.message}`))
 if (!attempts.length) die(`no served size of ${rec.object_id} reaches ${MIN_LONG_EDGE}px`)
 

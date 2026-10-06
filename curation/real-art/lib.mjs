@@ -51,6 +51,14 @@ const MIN_GAP_MS = {
   'api.artic.edu': 1000,
   'www.artic.edu': 250,
   'openaccess-api.clevelandart.org': 120,
+  'id.rijksmuseum.nl': 200,
+  'data.rijksmuseum.nl': 250,
+  'iiif.micr.io': 200,
+  'data.getty.edu': 300,
+  'media.getty.edu': 200,
+  'api.smk.dk': 300,
+  'iip.smk.dk': 300,
+  'api.nga.gov': 300,
   'query.wikidata.org': 200, // and one query at a time (wikidata.mjs)
   'www.wikidata.org': 500,
   'commons.wikimedia.org': 500,
@@ -256,8 +264,10 @@ export const chunk = (arr, n) =>
 
 // ---- text ------------------------------------------------------------------
 
+// NFKD leaves some letters whole (Hammershøi, Bærentzen): spell them out.
+const LETTERS = { ø: 'o', æ: 'ae', œ: 'oe', ß: 'ss', ł: 'l', đ: 'd', ð: 'd', þ: 'th' }
 export const fold = (s) =>
-  String(s ?? '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase()
+  String(s ?? '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[øæœßłđðþ]/g, (c) => LETTERS[c])
 
 export const slug = (s, maxWords = 6) =>
   fold(s).replace(/['’]/g, '').replace(/[^a-z0-9]+/g, ' ').trim().split(/\s+/)

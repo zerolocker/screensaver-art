@@ -2,8 +2,9 @@
 // map records to the provenance keys and the fields clearance.mjs judges; they
 // don't decide eligibility. Server-side licence filters just skip obvious rejects.
 
-import { licenceLabel, peopleFromAic, peopleFromCma, peopleFromMet } from './clearance.mjs'
+import { licenceLabel, MIN_LONG_EDGE, peopleFromAic, peopleFromCma, peopleFromMet } from './clearance.mjs'
 import { chunk, http, log, mapPool } from './lib.mjs'
+import { aicWing, cmaWing, metWing } from './wings.mjs'
 
 const aspectOf = (w, h) => (w && h ? Math.round((w / h) * 1000) / 1000 : null)
 const stripParen = (s) => String(s ?? '').replace(/\s*\([^)]*\)\s*$/, '').trim()
@@ -49,7 +50,7 @@ export const mainDates = (who) => formatDates(who.people.find((p) => p.birth != 
 export const datesFor = (who, artist) =>
   formatDates(who.people.find((p) => p.name && String(artist ?? '').includes(p.name) && (p.birth != null || p.death != null || p.floruit != null))) || mainDates(who)
 
-export function record({ objectId, gate, prov, image, highlight, wd, classification }) {
+export function record({ objectId, gate, prov, image, highlight, wd, classification, wing = null }) {
   return {
     source: 'real_artwork',
     ...prov,
@@ -62,6 +63,7 @@ export function record({ objectId, gate, prov, image, highlight, wd, classificat
     classification: classification ?? (gate.type_label || null),
     medium: gate.medium || null,
     fame: { wikipedia_langs: null, highlight: !!highlight },
+    wing,
     _gate: gate,
     _wd: wd,
   }
@@ -74,7 +76,7 @@ const AIC_FLAT_TYPE_IDS = [1, 18, 14, 30] // Painting, Print, Drawing and Waterc
 const AIC_FIELDS = [
   'id', 'title', 'artist_display', 'artist_title', 'artist_ids', 'date_display', 'date_end',
   'artwork_type_title', 'medium_display', 'image_id', 'is_public_domain', 'is_boosted',
-  'credit_line', 'thumbnail', 'main_reference_number',
+  'credit_line', 'thumbnail', 'main_reference_number', 'place_of_origin', 'department_title', 'style_titles', 'date_start',
 ]
 
 async function aicSearch({ query, highlights = false, n }) {
@@ -190,6 +192,7 @@ export const aic = {
         // 403s, and non-PD works redirect to an 843px cap (frame re-verifies).
         image: { url: a.image_id && w ? `https://www.artic.edu/iiif/2/${a.image_id}/full/${w},/0/default.jpg` : null, width: w, height: h },
         highlight: a.is_boosted,
+        wing: aicWing(a),
         wd: { id: String(a.id), inv: a.main_reference_number || null },
       })
     })
@@ -285,6 +288,7 @@ export const met = {
         image: { url: o.primaryImage || null, width: null, height: null },
         classification: [o.classification, o.objectName].filter(Boolean).join(' / ') || null,
         highlight: o.isHighlight,
+        wing: metWing(o),
         wd: { id: String(o.objectID), qid },
       })
     })
@@ -341,7 +345,7 @@ function cmaImage(a) {
   const print = pick('print')
   const full = pick('full') // TIFF master; only if the print JPEG is too small
   const long = (im) => Math.max(im?.width || 0, im?.height || 0)
-  return print && long(print) >= 2000 ? print : full && long(full) >= 2000 ? full : print || full || { url: null }
+  return print && long(print) >= MIN_LONG_EDGE ? print : full && long(full) >= MIN_LONG_EDGE ? full : print || full || { url: null }
 }
 
 export function cmaArtistName(a, who) {
@@ -390,6 +394,7 @@ export const cma = {
         },
         image,
         highlight: a.is_highlight,
+        wing: cmaWing(a),
         wd: { id: a.accession_number || null, inv: a.accession_number || null, qid },
       })
     })

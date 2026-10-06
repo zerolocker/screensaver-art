@@ -1,16 +1,19 @@
 // The Wikimedia Commons lane: famous paintings found on Wikidata, imaged from
-// their Commons file (P18). It reaches works whose museums publish no open
-// images (the Louvre, the Prado, MoMA…). Like sources.mjs it only maps records;
-// clearance.mjs decides, with two extra checks for this lane.
+// the largest public-domain scan on Commons (scans.mjs; P18 by default). It
+// reaches works whose museums publish no open images (the Louvre, the Prado,
+// MoMA…). Like sources.mjs it only maps records; clearance.mjs decides, with
+// extra checks for this lane.
 
 import {
-  ANONYMOUS_QID, APPROX_MARGIN, clear, COMMONS_PAINTING_TYPES, COMMONS_PANEL_TYPES, commonsLicence, LICENSE_RULES,
+  ANONYMOUS_QID, APPROX_MARGIN, clear, COMMONS_PAINTING_TYPES, COMMONS_PANEL_TYPES, commonsLicence, datesBeforeDeath, LICENSE_RULES,
   MIN_LONG_EDGE, natureWord, peopleFromWikidata,
 } from './clearance.mjs'
 import { chunk, http, log, probeImageSize } from './lib.mjs'
 import { MUSEUMS } from './museums.mjs'
+import { ENOUGH_EDGE, findScans } from './scans.mjs'
 import { formatDates, record } from './sources.mjs'
 import { sparql, WD } from './wikidata.mjs'
+import { commonsWing, wikidataWingFacts } from './wings.mjs'
 
 const COMMONS_API = 'https://commons.wikimedia.org/w/api.php'
 const WIKIDATA_API = 'https://www.wikidata.org/w/api.php'
@@ -93,17 +96,23 @@ async function mwApi(url, params, { maxlag = true } = {}) {
 
 const dropQuery = (u) => (u ? u.split('?')[0] : null) // Commons appends utm_* tracking parameters
 
+const plain = (html) => String(html ?? '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;|&#160;/g, ' ').replace(/\s+/g, ' ').trim()
+const infoCache = new Map() // for this run, keyed by width and file name
+
 /**
  * imageinfo for Commons files (names as in P18), 50 a request: size, licence
- * metadata, the original's URL, and with `width` a rendition that wide
- * (Commons rounds it up to its next standard thumbnail width).
+ * metadata, description, the original's URL, and with `width` a rendition that
+ * wide (Commons rounds it up to its next standard thumbnail width).
  */
 export async function commonsImageInfo(files, { width } = {}) {
+  const key = (f) => `${width || ''}|${f}`
   const out = new Map()
-  for (const part of chunk([...new Set(files)], 50)) {
+  const todo = []
+  for (const f of new Set(files)) (infoCache.has(key(f)) ? out.set(f, infoCache.get(key(f))) : todo.push(f))
+  for (const part of chunk(todo, 50)) {
     const d = await mwApi(COMMONS_API, {
       action: 'query', prop: 'imageinfo', redirects: '1', titles: part.map((f) => `File:${f}`).join('|'),
-      iiprop: 'size|url|mime|extmetadata', iiextmetadatafilter: 'License|LicenseShortName|Copyrighted|Categories',
+      iiprop: 'size|url|mime|extmetadata', iiextmetadatafilter: 'License|LicenseShortName|Copyrighted|Categories|ImageDescription',
       ...(width ? { iiurlwidth: String(width) } : {}),
     })
     // Key each answer by the name we asked for, through any redirect and normalization.
@@ -114,13 +123,16 @@ export async function commonsImageInfo(files, { width } = {}) {
       const asked = (norm.get(viaRedirect) ?? viaRedirect).replace(/^File:/, '')
       const ii = p.imageinfo?.[0]
       const em = ii?.extmetadata || {}
-      out.set(asked, ii ? {
+      const info = ii ? {
         file: p.title.replace(/^File:/, ''), width: ii.width, height: ii.height, mime: ii.mime,
         url: dropQuery(ii.url), page: ii.descriptionurl,
         thumb: ii.thumburl ? { url: dropQuery(ii.thumburl), width: ii.thumbwidth, height: ii.thumbheight } : null,
         License: em.License?.value ?? null, LicenseShortName: em.LicenseShortName?.value ?? null,
         Copyrighted: em.Copyrighted?.value ?? null, categories: split(em.Categories?.value, '|'),
-      } : null)
+        description: plain(em.ImageDescription?.value).slice(0, 1500) || null,
+      } : null
+      infoCache.set(key(asked), info)
+      out.set(asked, info)
     }
   }
   return out
@@ -202,20 +214,21 @@ WHERE { ${V}
       const ref = r.prop ? { key: OPEN_MUSEUM_ID[r.prop], id: r.v } : { key: OPEN_MUSEUM[r.museum], inv: r.v }
       if (ref.key) items.get(qidOf(r.item)).museumRefs.push(ref)
     }
-    // Inception (P571). An explicit range (earliest P1319, latest P1326) beats the precision.
+    // Inception (P571). An explicit range (earliest P1319 or start P580, latest
+    // P1326 or end P582) beats the precision.
     for (const r of await sparql(`SELECT ?item ?t ?p ?circa ?early ?late ?stRank WHERE { ${V}
   ?item p:P571 ?st . ${NOT_DEPRECATED('?st')}
   ?st psv:P571 [ wikibase:timeValue ?t ; wikibase:timePrecision ?p ] .
   OPTIONAL { ?st pq:P1480 wd:${CIRCA} BIND(true AS ?circa) }
-  OPTIONAL { ?st pq:P1319 ?early }
-  OPTIONAL { ?st pq:P1326 ?late }
+  OPTIONAL { ?st pq:P1319|pq:P580 ?early }
+  OPTIONAL { ?st pq:P1326|pq:P582 ?late }
 }`)) {
       const d = timeOf(r.t, r.p, r.circa)
       if (!d) continue
       const early = yearOf(r.early)
       const late = yearOf(r.late)
       if (late != null) Object.assign(d, { year: early ?? Math.min(d.year, late), until: late, latest: late, label: null })
-      else if (d.circa) d.latest += APPROX_MARGIN // as for a circa death year; "c. 1925" may be 1935
+      else if (d.circa) d.latest += APPROX_MARGIN // as for a circa death year
       d.preferred = r.stRank === 'http://wikiba.se/ontology#PreferredRank'
       items.get(qidOf(r.item)).dates.push(d)
     }
@@ -342,7 +355,7 @@ const heldByOpenMuseum = (it) =>
 
 /**
  * Does a museum record release a usable image: the museum's public-domain flag,
- * an image, and 2000+ px? `releases` is true, false, or null when we can't tell.
+ * an image, and at least MIN_LONG_EDGE px? `releases` is true, false, or null when we can't tell.
  */
 export async function releaseOf(key, rec, probe = probeImageSize) {
   const lic = LICENSE_RULES[key]
@@ -376,18 +389,23 @@ async function museumRelease(key, refs) {
   return verdicts.find((v) => v.releases) || verdicts.find((v) => v.releases === false) || verdicts[0]
 }
 
-function toRecord(it, info) {
+function toRecord(it, info, scan = null) {
   const who = peopleFromWikidata(it.persons)
   const licence = info ? { file: info.file, License: info.License, LicenseShortName: info.LicenseShortName, Copyrighted: info.Copyrighted, categories: info.categories } : null
   const typeLabel = it.types.map((t) => TYPE_LABELS[t]).filter(Boolean).join(' | ') || it.types.join(' ') || null
   const latest = it.dates.length ? Math.max(...it.dates.map((d) => d.latest)) : null
   const main = it.persons.find((p) => p.kind === 'creator' && p.qid && p.qid !== ANONYMOUS_QID) || it.persons.find((p) => p.qid && p.qid !== ANONYMOUS_QID)
   const holder = shownHolder(it)
+  // A date after the artist's death is a data error: the gate ignores it, so don't show it.
+  const { lastDeath } = datesBeforeDeath([], who.people)
+  const shownDates = lastDeath == null ? it.dates : it.dates.filter((d) => d.year <= lastDeath)
   const gate = {
     source: 'commons', license_value: licence, type_label: typeLabel, medium: it.materialLabels.join(', ') || null,
-    object_end: latest, who, width: info?.width ?? null, height: info?.height ?? null,
+    object_end: latest, dates: it.dates.map(({ year, latest: l }) => ({ year, latest: l })),
+    who, width: info?.width ?? null, height: info?.height ?? null,
     p31: it.types, p186: it.materials,
     holders: it.holders.map(({ qid, label, countries, types, runBy }) => ({ qid, label, countries, types, runBy })),
+    scan,
   }
   const rec = record({
     objectId: `wd:${it.qid}`,
@@ -396,7 +414,7 @@ function toRecord(it, info) {
       artist: wikidataArtistName(it.persons),
       artist_dates: main ? formatDates(main.shown) : null,
       original_title: it.label,
-      original_date: dateText(it.dates),
+      original_date: dateText(shownDates),
       museum: holder?.label ? cap(holder.label) : 'Unknown collection',
       credit_line: info ? `Image: Wikimedia Commons, ${info.file}` : null,
       source_url: info?.page || `https://www.wikidata.org/wiki/${it.qid}`,
@@ -432,7 +450,26 @@ export const commons = {
     const items = await hydrate(qids, minWp)
     const infos = await commonsImageInfo(items.flatMap((it) => it.images))
     log(`  commons: ${qids.length} Wikidata items -> ${items.length}${minWp ? ` with ${minWp}+ Wikipedia editions` : ''}`)
-    const recs = items.map((it) => toRecord(it, pickImage(it, infos)))
+    const p18 = new Map(items.map((it) => [it.qid, pickImage(it, infos)]))
+    let recs = items.map((it) => toRecord(it, p18.get(it.qid)))
+    // Look for a larger scan only for works that pass everything else and whose
+    // P18 isn't already a public-domain file big enough for the wall.
+    const wanted = items.filter((it, i) => {
+      const f = p18.get(it.qid)
+      const enough = f && commonsLicence(f).ok && Math.max(f.width, f.height) >= ENOUGH_EDGE
+      return !enough && clear(recs[i]._gate, { skipFile: true }).pass
+    })
+    try {
+      const scans = await findScans(wanted.map((it) => ({ qid: it.qid, label: it.label, p18: p18.get(it.qid) })), {
+        api: (params) => mwApi(COMMONS_API, params), imageInfo: commonsImageInfo,
+      })
+      recs = items.map((it, i) => (scans.has(it.qid) ? toRecord(it, scans.get(it.qid).info, scans.get(it.qid).scan) : recs[i]))
+    } catch (e) {
+      log(`  commons: the search for larger scans failed (${e.message.slice(0, 120)}); using P18`)
+    }
+    const facts = await wikidataWingFacts(items.map((it) => it.qid))
+      .catch((e) => { log(`  commons: no wing facts (${e.message.slice(0, 120)})`); return new Map() })
+    recs.forEach((r, i) => { r.wing = commonsWing(facts.get(items[i].qid), items[i].dates.length ? Math.min(...items[i].dates.map((d) => d.year)) : null) })
     // A work an open museum holds: ask the museum, but only if it would otherwise pass.
     for (const r of recs.filter((x) => x._heldBy)) {
       r._gate.open_museum = clear({ ...r._gate, open_museum: null }).pass

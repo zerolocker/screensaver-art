@@ -49,6 +49,12 @@ const aic = (display, extra = {}) => ({
   ...extra,
 })
 const failsOn = (r, re) => r.reasons.some((x) => re.test(x))
+// Live AIC records (Oct 2026). Undated agents carry birth = death = 4713.
+const BOSCH_AGENT = { id: 119568, title: 'Workshop of Hieronymus Bosch', agent_type_title: 'Individual', birth_date: 4713, death_date: 4713 }
+const aicWith = (art, agents, extra = {}) => ({
+  ...aic('', extra),
+  who: peopleFromAic({ artist_ids: agents.map((g) => g.id), ...art }, new Map(agents.map((g) => [g.id, g]))),
+})
 
 test('Seurat passes; Hopper (d. 1967) and Pollock (d. 1956) do not', () => {
   assert.equal(clear(aic('Georges Seurat (French, 1859–1891)'), { cutoff: CUT }).pass, true)
@@ -59,40 +65,82 @@ test('Seurat passes; Hopper (d. 1967) and Pollock (d. 1956) do not', () => {
   assert.equal(clear(aic('Henri Matisse\nFrench, 1869–1954', { object_end: 1923 }), { cutoff: CUT }).pass, true)
 })
 
-test('approximate and unknown deaths are bounded conservatively', () => {
-  assert.equal(clear(aic('X (French, c. 1880–c. 1950)', { object_end: 1920 }), { cutoff: CUT }).pass, false) // c. 1950 could be 1960
-  assert.equal(clear(aic('Joshua Johnson (American, c. 1763–after 1825)', { object_end: 1805 }), { cutoff: CUT }).pass, true)
-  assert.equal(clear(aic('Y (American, born 1890)', { object_end: 1925 }), { cutoff: CUT }).pass, false)
-  assert.equal(clear(aic('Toshusai Sharaku\nJapanese, active 1794-95', { object_end: 1794 }), { cutoff: CUT }).pass, true)
-  // active from 1850 -> dead by 1850 - 10 + 110 = 1950; "c." adds 10 -> 1960 > 1955
-  assert.equal(clear(aic('W (American, active 1850-1880)', { object_end: 1870 }), { cutoff: CUT }).pass, true)
-  assert.equal(clear(aic('W (American, active c. 1850-1880)', { object_end: 1870 }), { cutoff: CUT }).pass, false)
+test('approximate years count as written', () => {
+  // A circa death is exact: c. 1950 <= 1955.
+  assert.equal(clear(aic('X (French, c. 1880–c. 1950)', { object_end: 1920 }), { cutoff: CUT }).pass, true)
+  assert.equal(clear(aic('X (French, c. 1880–c. 1956)', { object_end: 1920 }), { cutoff: CUT }).pass, false)
+  // A split year takes the later one: 1955/56 is 1956.
+  assert.equal(clear(aic('X (French, 1880–1955/56)', { object_end: 1920 }), { cutoff: CUT }).pass, false)
+  assert.equal(clear(aic('X (French, 1880–1954/55)', { object_end: 1920 }), { cutoff: CUT }).pass, true)
+  // An approximate birth or floruit is exact too.
+  assert.equal(clear(aic('Y (American, born c. 1885)', { object_end: 1925 }), { cutoff: CUT }).pass, true)
+  assert.equal(clear(aic('W (American, active c. 1895-1910)', { object_end: 1900 }), { cutoff: CUT }).pass, true)
 })
 
-test('anonymous works need an object date before 1900', () => {
+test('an unknown death year assumes a 70-year life', () => {
+  const r = (display, object_end) => clear(aic(display, { object_end }), { cutoff: CUT })
+  // Born: birth + 70.
+  assert.equal(r('Y (American, born 1885)', 1925).pass, true)
+  assert.equal(r('Y (American, born 1886)', 1925).pass, false)
+  assert.ok(failsOn(r('Y (American, born 1886)', 1925), /death year unknown, born 1886 -> taken as dead by 1956 > 1955/))
+  // Active from Y: born Y - 10, so dead by Y + 60.
+  assert.equal(r('W (American, active 1895-1910)', 1900).pass, true)
+  assert.equal(r('W (American, active 1896-1910)', 1900).pass, false)
+  assert.equal(r('Toshusai Sharaku\nJapanese, active 1794-95', 1794).pass, true)
+  // "Died after" sets a floor on the assumption.
+  assert.equal(r('Joshua Johnson (American, c. 1763–after 1825)', 1805).pass, true)
+  assert.equal(r('Z (American, 1880–after 1960)', 1905).pass, false)
+  // No life dates at all: born the work's date - 10, so dead by its date + 60.
+  const named = (end) => aicWith({ artist_display: 'Jane Doe', artist_title: 'Jane Doe' }, [{ id: 7, title: 'Jane Doe', agent_type_title: 'Individual' }], { object_end: end })
+  assert.equal(clear(named(1895), { cutoff: CUT }).pass, true)
+  assert.equal(clear(named(1896), { cutoff: CUT }).pass, false)
+})
+
+test('a work with no identifiable artist is judged from its date', () => {
   const anon = (end) => ({
     ...aic('', { object_end: end }),
     who: peopleFromAic({ artist_display: 'Artist unknown\nJapanese', artist_ids: [] }, new Map()),
   })
-  assert.equal(clear(anon(1850), { cutoff: CUT }).pass, true)
-  assert.equal(clear(anon(1905), { cutoff: CUT }).pass, false)
+  // Dated 1895: dead by 1955. Dated 1896: 1956.
+  assert.equal(clear(anon(1895), { cutoff: CUT }).pass, true)
+  assert.equal(clear(anon(1896), { cutoff: CUT }).pass, false)
+  assert.ok(failsOn(clear(anon(1896), { cutoff: CUT }), /^artist anonymous hand: no life dates, object dated 1896 -> taken as dead by 1956 > 1955/))
   assert.equal(clear({ ...anon(1850), object_end: null }, { cutoff: CUT }).pass, false)
+  // No artist information at all: the same rule, and no date still rejects.
+  const none = (end) => ({ ...aic('', { object_end: end }), who: peopleFromAic({ artist_display: '', artist_ids: [] }, new Map()) })
+  assert.equal(clear(none(1850), { cutoff: CUT }).pass, true)
+  assert.ok(failsOn(clear(none(null), { cutoff: CUT }), /no life dates and no object date/))
 })
 
-test('attributed / workshop / after also need the anonymous rule', () => {
-  const att = clear(aic('Attributed to Z (Dutch, 1850–1899)', { object_end: 1905 }), { cutoff: CUT })
-  assert.equal(att.pass, false)
-  assert.ok(failsOn(att, /attribution/))
+test('a named artist behind a qualifier is judged on their own dates', () => {
+  // Attributed to an artist who died in 1899, on a work dated 1905.
+  assert.equal(clear(aic('Attributed to Z (Dutch, 1850–1899)', { object_end: 1905 }), { cutoff: CUT }).pass, true)
+  assert.equal(clear(aic('Attributed to Z (Dutch, 1890–1960)', { object_end: 1905 }), { cutoff: CUT }).pass, false)
   const met = {
     source: 'met', license_value: true, type_label: 'Paintings / Painting', medium: 'Oil on wood',
     object_end: 1533, width: 3000, height: 4000,
     who: peopleFromMet({ artistDisplayName: 'Lucas Cranach the Elder and Workshop', artistDisplayBio: 'German, Kronach 1472–1553 Weimar', artistEndDate: '1553' }),
   }
   assert.equal(clear(met, { cutoff: CUT }).pass, true)
-  assert.equal(clear({ ...met, object_end: 1901 }, { cutoff: CUT }).pass, false)
+  assert.equal(clear({ ...met, object_end: 1901 }, { cutoff: CUT }).pass, true)
+  // aic:85628: "After Raphael" on a later copy is judged on Raphael (d. 1520).
+  const after = clear(aicWith({ artist_display: 'After Raffaello Sanzio, called Raphael\nItalian, 1483-1520', artist_title: 'Workshop of Raphael' }, [{ id: 1, title: 'Workshop of Raphael', agent_type_title: 'Individual' }], { object_end: 1910 }), { cutoff: CUT })
+  assert.equal(after.pass, true, after.reasons.join('\n'))
+  assert.match(after.evidence.attribution_qualifier, /^After/)
+  // "X after Y" names two people: the undated one is judged from the work's date.
+  const engraver = (end) => clear(aic('Jane Roe after Raffaello Sanzio, called Raphael\nItalian, 1483-1520', { object_end: end }), { cutoff: CUT })
+  assert.equal(engraver(1850).pass, true)
+  assert.equal(engraver(1910).pass, false)
+  // CMA: "Workshop of" with the master's dates.
+  const cma = (end) => clear({
+    source: 'cma', license_value: 'CC0', type_label: 'Painting', medium: 'oil', object_end: end, width: 3000, height: 2000,
+    who: peopleFromCma({ creators: [{ description: 'Workshop of Hans Memling (Netherlandish, c. 1430–1494)', role: 'artist' }] }),
+  }, { cutoff: CUT })
+  assert.equal(cma(1500).pass, true)
+  assert.equal(cma(1500).evidence.attribution_qualifier, 'Workshop of Hans Memling')
 })
 
-test('Met: 9999 means living; sitters are not authors; undated printers need < 1900', () => {
+test('Met: 9999 means living; sitters, printers and publishers are not authors', () => {
   const base = { source: 'met', license_value: true, type_label: 'Drawings / Drawing', medium: 'Graphite', object_end: 1873, width: 3000, height: 2000 }
   const living = peopleFromMet({ artistDisplayName: 'Shao Fan', artistDisplayBio: 'Chinese, born 1964', artistEndDate: '9999' })
   assert.equal(clear({ ...base, who: living }, { cutoff: CUT }).pass, false)
@@ -106,7 +154,7 @@ test('Met: 9999 means living; sitters are not authors; undated printers need < 1
     constituents: [{ role: 'Printer', name: 'Affiches Américaines, Charles Lévy' }],
   })
   assert.equal(clear({ ...base, type_label: 'Prints / Print', object_end: 1891, who: poster }, { cutoff: CUT }).pass, true)
-  assert.equal(clear({ ...base, type_label: 'Prints / Print', object_end: 1903, who: poster }, { cutoff: CUT }).pass, false)
+  assert.equal(clear({ ...base, type_label: 'Prints / Print', object_end: 1903, who: poster }, { cutoff: CUT }).pass, true)
 })
 
 test('licence flag, flat-art and resolution checks', () => {
@@ -128,16 +176,14 @@ test('licence flag, flat-art and resolution checks', () => {
   assert.equal(metFlat('Sculpture / Statue'), false)
   assert.equal(metFlat('Photographs / Photograph'), false)
   assert.equal(metFlat('Textiles-Woven / Tapestry'), false)
-  assert.equal(clear({ ...cma, width: 1999, height: 1500 }, { cutoff: CUT }).pass, false)
+  // 1920 px on the long edge: Omni's input size.
+  assert.equal(clear({ ...cma, width: 1920, height: 1080 }, { cutoff: CUT }).pass, true)
+  assert.equal(clear({ ...cma, width: 1080, height: 1920 }, { cutoff: CUT }).pass, true)
+  assert.equal(clear({ ...cma, width: 1919, height: 1500 }, { cutoff: CUT }).pass, false)
+  assert.ok(failsOn(clear({ ...cma, width: 1919, height: 1500 }, { cutoff: CUT }), /^image: long edge 1919px < 1920px$/))
   assert.equal(clear({ ...cma, width: null, height: null }, { cutoff: CUT }).pass, false)
 })
 
-// Live AIC records (Oct 2026). Undated agents carry birth = death = 4713.
-const BOSCH_AGENT = { id: 119568, title: 'Workshop of Hieronymus Bosch', agent_type_title: 'Individual', birth_date: 4713, death_date: 4713 }
-const aicWith = (art, agents, extra = {}) => ({
-  ...aic('', extra),
-  who: peopleFromAic({ artist_ids: agents.map((g) => g.id), ...art }, new Map(agents.map((g) => [g.id, g]))),
-})
 
 test('implausible structured years are unknown, not dates', () => {
   assert.equal(toYear(4713, 2026), null) // AIC's no-date sentinel
@@ -150,16 +196,15 @@ test('implausible structured years are unknown, not dates', () => {
   assert.equal(toYear(2026, 2026), 2026)
 })
 
-test('AIC 4713 agent dates no longer reject; the label + attribution rule decide', () => {
+test('AIC 4713 agent dates no longer reject; the label decides', () => {
   // aic:22857, The Garden of Paradise
   const bosch = aicWith({ artist_display: 'Workshop of Hieronymus Bosch (Netherlandish, c. 1450–1516)', artist_title: BOSCH_AGENT.title }, [BOSCH_AGENT], { object_end: 1525 })
   assert.ok(!bosch.who.people.some((p) => p.from === 'aic agent'))
   const r = clear(bosch, { cutoff: CUT })
   assert.equal(r.pass, true)
   assert.ok(!r.reasons.some((x) => /4713/.test(x)))
-  assert.ok(failsOn(r, /^attribution "Workshop": object dated 1525 < 1900/))
-  // The attribution rule still bites on a modern date.
-  assert.equal(clear({ ...bosch, object_end: 1925 }, { cutoff: CUT }).pass, false)
+  assert.ok(failsOn(r, /died 1516 <= 1955/))
+  assert.equal(r.evidence.attribution_qualifier, 'Workshop')
 })
 
 test('a sentinel date falls through to the conservative rules, never a pass of its own', () => {
@@ -229,10 +274,10 @@ test('the gate still sees every qualifier the artist field shows', () => {
   assert.ok(aicQ('Northern Italian (Milan)', 'Bonifacio Bembo, workshop of'))
   assert.equal(aicQ('Georges Seurat (French, 1859–1891)', 'Georges Seurat'), null)
   const veneziano = clear(aic('', {
-    object_end: 1925,
+    object_end: 1350,
     who: peopleFromAic({ artist_display: 'Paolo Veneziano (Italian, active 1333–1358)', artist_title: 'Workshop of Paolo Veneziano', artist_ids: [1] }, new Map()),
   }), { cutoff: CUT })
-  assert.ok(failsOn(veneziano, /^attribution "Workshop": object date 1925 is not < 1900/))
+  assert.equal(veneziano.evidence.attribution_qualifier, 'Workshop')
   // Met: the qualifier in the name alone.
   assert.ok(peopleFromMet({ artistPrefix: '', artistDisplayName: 'Workshop of Fra Filippo Lippi', artistDisplayBio: 'Italian, Florence ca. 1406–1469 Spoleto' }).qualified)
   assert.equal(peopleFromMet({ artistPrefix: 'Workshop of', artistDisplayName: 'Lucas Cranach the Elder' }).qualified, 'Workshop of')

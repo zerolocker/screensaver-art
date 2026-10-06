@@ -77,7 +77,7 @@ test('flat art in each museum\'s own terms', () => {
   assert.equal(smk('Collage / Drawing'), false)
 })
 
-test('US safety: the Rijksmuseum and SMK need a date of 1930 or earlier; NGA and the Getty waive their own', () => {
+test('US safety: the Rijksmuseum and SMK need a date of 1930 or earlier unless every artist died by then; NGA and the Getty waive their own', () => {
   // Mondrian died in 1944: life+70 has run, but a 1940 work may be in US copyright.
   const mondrian = peopleFromCredits([{ name: 'Piet Mondrian', birth: 1872, death: 1944, from: 'test' }])
   const late = (source, license_value) => judge(work(source, { license_value, object_end: 1940, who: mondrian }))
@@ -85,8 +85,13 @@ test('US safety: the Rijksmuseum and SMK need a date of 1930 or earlier; NGA and
   assert.deepEqual(late('smk', { public_domain: true, rights: PDM }).reasons, ['US: dated 1940 > 1930 — may still be in US copyright'])
   assert.equal(late('nga', '1').pass, true)
   assert.equal(late('getty', CC0).pass, true)
-  assert.ok(says(judge(work('smk', { license_value: { public_domain: true, rights: PDM }, object_end: null })), /^US: no date/))
-  assert.ok(says(judge(work('rijks', { license_value: PDM, object_end: 1930 })), /^US: dated 1930 <= 1930/))
+  assert.ok(says(judge(work('smk', { license_value: { public_domain: true, rights: PDM }, object_end: null, who: mondrian })), /^US: no usable date/))
+  // An artist who died by 1930 can't have made a later work: an unknown or bogus date passes.
+  const vermeer = peopleFromCredits([{ name: 'Johannes Vermeer', birth: 1632, death: 1675, from: 'test' }])
+  assert.ok(says(judge(work('smk', { license_value: { public_domain: true, rights: PDM }, object_end: null, who: vermeer })), /^US: every artist died by 1930 \(last in 1675\)/))
+  // A date after the artist's death is ignored; Mondrian's 1999 is a data error.
+  assert.ok(says(judge(work('rijks', { license_value: PDM, object_end: 1999, dates: [{ year: 1920, latest: 1920 }, { year: 1999, latest: 1999 }], who: mondrian })), /^US: dated 1920 <= 1930 \(ignoring 1999/))
+  assert.ok(says(judge(work('rijks', { license_value: PDM, object_end: 1930, who: mondrian })), /^US: dated 1930 <= 1930/))
 })
 
 test('CSV: quoted commas, doubled quotes, newlines and CRLF', () => {
@@ -135,9 +140,10 @@ test('NGA: name prefixes that qualify an attribution, and ones that only join na
   // A credit whose constituent is missing is an undated maker, not an anonymous one.
   const missing = who([{ name: null, prefix: '' }])
   assert.deepEqual([missing.anonymous, missing.people.length], [false, 1])
-  // A late "Attributed to" work fails the anonymous-work rule.
+  // A late "Attributed to" work is judged on X's own dates.
   const late = ngaRecord({ ...GINEVRA, o: { ...GINEVRA.o, endyear: '1905', attribution: 'Attributed to X' }, artists: [{ name: 'X', prefix: 'Attributed to', role: 'artist', life: 'American, 1850 - 1910' }] })
-  assert.ok(says(judge(late._gate), /^attribution "Attributed to X": object date 1905 is not < 1900/))
+  assert.equal(judge(late._gate).pass, true)
+  assert.equal(judge(late._gate).evidence.attribution_qualifier, 'Attributed to X')
 })
 
 // rijks:SK-A-15 and friends: production parts as the Linked Art API returns them.
@@ -217,7 +223,7 @@ const VERMEER = new Map([['https://id.rijksmuseum.nl/2101778', {
   record: { born: { timespan: { identified_by: [{ content: '1632 - 1632-10-31' }], end_of_the_end: '1632-10-31T23:59:59Z' } }, died: { timespan: { identified_by: [{ content: '1675-12 - 1675-12-15' }], end_of_the_end: '1675-12-15T23:59:59Z' } } },
 }]])
 
-test('Rijksmuseum: a record, and a circa date counted ten years later', () => {
+test('Rijksmuseum: a record, and a circa date counted as written', () => {
   const image = { url: 'https://iiif.micr.io/QkOGy/full/max/0/default.jpg', width: 4649, height: 5177 }
   const r = rijksRecord({ obj: MILKMAID, rights: PDM, image, persons: VERMEER })
   assert.equal(r.object_id, 'rijks:SK-A-2344')
@@ -227,10 +233,10 @@ test('Rijksmuseum: a record, and a circa date counted ten years later', () => {
   assert.equal(r.license, 'Public Domain')
   assert.equal(r.source_url, 'https://www.rijksmuseum.nl/en/collection/SK-A-2344')
   assert.equal(r.fame.highlight, true) // in the museum's Top 100
-  assert.equal(r._gate.object_end, 1670)
+  assert.equal(r._gate.object_end, 1660)
   assert.equal(judge(r._gate).pass, true)
   const in1925 = rijksRecord({ obj: { ...MILKMAID, produced_by: { ...MILKMAID.produced_by, timespan: { ...MILKMAID.produced_by.timespan, identified_by: [{ content: 'c. 1925', language: EN }], begin_of_the_begin: '1925-01-01T00:00:00Z', end_of_the_end: '1925-12-31T23:59:59Z' } } }, rights: PDM, image, persons: VERMEER })
-  assert.ok(says(judge(in1925._gate), /^US: dated 1935 > 1930/))
+  assert.equal(in1925._gate.object_end, 1925)
 })
 
 test('Getty: producers, prefixes and the record', () => {
@@ -289,8 +295,8 @@ test('SMK: names, roles and the record', () => {
   assert.equal(r.license, 'Public Domain')
   assert.equal(r.image_url, 'https://iip.smk.dk/iiif/jp2/1544bs13w_kms3716.tif.reconstructed.tif.jp2/full/full/0/default.jpg')
   assert.equal(judge(r._gate).pass, true)
-  // Ring died in 1933, so a 1931 work passes life+70 but not the US date; "ca." adds ten years.
+  // Ring died in 1933, so a 1931 work passes life+70 but not the US date; "ca." counts as written.
   const late = smkRecord({ ...ring, production_date: [{ end: '1931-12-31T00:00:00.000Z', period: '1931' }] })
   assert.deepEqual(judge(late._gate).reasons, ['US: dated 1931 > 1930 — may still be in US copyright'])
-  assert.equal(smkRecord({ ...ring, production_date: [{ end: '1925-12-31T00:00:00.000Z', period: 'ca. 1925' }] })._gate.object_end, 1935)
+  assert.equal(smkRecord({ ...ring, production_date: [{ end: '1925-12-31T00:00:00.000Z', period: 'ca. 1925' }] })._gate.object_end, 1925)
 })

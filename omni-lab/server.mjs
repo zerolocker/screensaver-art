@@ -1,10 +1,15 @@
-// Omni Lab: a local UI for tuning Gemini Omni settings on real paintings.
+// Omni Lab: a local UI for tuning Gemini Omni settings on real paintings and your own images.
 // No npm dependencies. See omni-lab/README.md.
 //
 //   node omni-lab/server.mjs                # serve on http://localhost:4322 + open the browser
-//   NO_OPEN=1 node omni-lab/server.mjs      # don't open the browser
+//   node omni-lab/server.mjs a.jpg b.png    # …with these images uploaded and selected
+//   node omni-lab/server.mjs --help         # all options
+//   NO_OPEN=1 node omni-lab/server.mjs      # don't open the browser (or --no-open)
 //   OMNI_PYTHON=/path/to/python3 …          # python with google-genai + Pillow (default: python3)
 //   OMNI_CONCURRENCY=10 …                   # parallel Omni calls (default 10)
+//
+// If a lab already runs on the port, the command hands it the images and opens the
+// browser instead of starting a second server.
 //
 // Each artwork of a run is one detached `python3 omni-lab/job.py` process that owns
 // its runs/<id>/<art>/status.json, so jobs keep going across a server restart and
@@ -17,17 +22,47 @@ import { createReadStream, existsSync, mkdirSync, openSync, closeSync, readFileS
 import { createHash, randomBytes } from 'node:crypto'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { parseArgs } from 'node:util'
 import { platform } from 'node:os'
+
+const USAGE = `Usage: node omni-lab/server.mjs [options] [image ...]
+
+Starts Omni Lab and opens it in the browser. Each image you name is uploaded to
+the lab and selected for the next run. If the lab is already running, the images
+go to that lab and the browser opens on it. No second server starts.
+
+Options:
+  --port <n>   port to serve on (default: $PORT or 4322)
+  --no-open    don't open the browser (or NO_OPEN=1)
+  -h, --help   show this help
+
+Environment:
+  OMNI_PYTHON       python with google-genai + Pillow (default: python3)
+  OMNI_CONCURRENCY  parallel Omni calls (default: 10)`
+
+let cli
+try {
+  cli = parseArgs({ allowPositionals: true, options: { port: { type: 'string' }, 'no-open': { type: 'boolean' }, help: { type: 'boolean', short: 'h' } } })
+} catch (e) {
+  console.error(`${e.message}\n\n${USAGE}`)
+  process.exit(2)
+}
+if (cli.values.help) { console.log(USAGE); process.exit(0) }
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(HERE, '..')
 const RUNS = path.join(HERE, 'runs')
 const PAINT = path.join(HERE, 'paintings')
+const UPLOADS = path.join(HERE, 'uploads')
 const PREVIEW = path.join(HERE, '.preview')
 const JOB = path.join(HERE, 'job.py')
-const PORT = Number(process.env.PORT) || 4322
+const PORT = Number(cli.values.port || process.env.PORT || 4322)
+const NO_OPEN = cli.values['no-open'] || !!process.env.NO_OPEN
+const IMAGES = cli.positionals.map((f) => path.resolve(f))
 const PY = process.env.OMNI_PYTHON || 'python3'
 const CONCURRENCY = Number(process.env.OMNI_CONCURRENCY) || 10
+if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) { console.error(`bad port: ${cli.values.port || process.env.PORT}`); process.exit(2) }
+for (const f of IMAGES) if (!existsSync(f) || !statSync(f).isFile()) { console.error(`no such file: ${f}`); process.exit(2) }
 mkdirSync(RUNS, { recursive: true })
 
 const DEFAULTS = {
@@ -77,6 +112,105 @@ const lastLine = (f) => {
 const paintings = () => readJson(path.join(PAINT, 'paintings.json'), [])
 let fetchProc = null
 
+// ---- uploads: your own images, next to the paintings -------------------------
+// uploads/{<key>.jpg, <key>_thumb.jpg, uploads.json}, newest first. The key is a hash of
+// the bytes, so uploading the same file twice gives back the same artwork.
+
+const UPLOAD_INDEX = path.join(UPLOADS, 'uploads.json')
+const UPLOAD_EDGE = 3840 // stored like the paintings: <= the largest input long edge, never upscaled
+const MAX_UPLOAD = 500 * 1024 * 1024
+const uploads = () => readJson(UPLOAD_INDEX, [])
+
+/** Everything a run can use: uploads (newest first), then the paintings. `dir` is where its files live. */
+const artworks = () => [
+  ...uploads().map((u) => ({ ...u, dir: 'uploads', upload: true })),
+  ...paintings().map((p) => ({ ...p, dir: 'paintings' })),
+]
+
+const shapeOf = (a) => a >= 1.7 ? 'very wide' : a >= 1.15 ? 'wide' : a > 0.95 ? 'near-square' : a >= 0.7 ? 'tall' : 'very tall'
+
+// Upright per EXIF, flattened onto the wall colour if transparent, JPEG q95 4:4:4 at <= edge,
+// plus a 480px thumb. Reads HEIC too when pillow-heif is installed. Prints {w,h,sw,sh}.
+const UPLOAD_PY = `
+import sys, json
+from PIL import Image, ImageOps
+Image.MAX_IMAGE_PIXELS = None
+try:
+    from pillow_heif import register_heif_opener
+    register_heif_opener()
+except ImportError:
+    pass
+src, out, thumb, edge = sys.argv[1], sys.argv[2], sys.argv[3], int(sys.argv[4])
+im = ImageOps.exif_transpose(Image.open(src))
+if im.mode in ("RGBA", "LA", "PA") or "transparency" in im.info:
+    im = im.convert("RGBA")
+    bg = Image.new("RGB", im.size, (0x0B, 0x0B, 0x0D))
+    bg.paste(im, mask=im.getchannel("A"))
+    im = bg
+else:
+    im = im.convert("RGB")
+sw, sh = im.size
+if max(im.size) > edge:
+    im.thumbnail((edge, edge), Image.LANCZOS)
+im.save(out, "JPEG", quality=95, subsampling=0)
+t = im.copy(); t.thumbnail((480, 480), Image.LANCZOS); t.save(thumb, "JPEG", quality=85)
+print(json.dumps({"w": im.size[0], "h": im.size[1], "sw": sw, "sh": sh}))
+`
+
+async function addUpload(buf, name) {
+  if (!buf.length) throw new Error('empty upload')
+  const hash = createHash('sha1').update(buf).digest('hex').slice(0, 12)
+  const key = `up_${hash}`
+  const have = uploads().find((u) => u.key === key)
+  if (have && existsSync(path.join(UPLOADS, have.file))) return have
+  mkdirSync(UPLOADS, { recursive: true })
+  const base = path.basename(name)
+  const file = `${key}.jpg`, thumb = `${key}_thumb.jpg`
+  const src = path.join(UPLOADS, `${key}.upload`), tmp = path.join(UPLOADS, `${key}.tmp.jpg`)
+  writeFileSync(src, buf)
+  const r = await runAsync(PY, ['-c', UPLOAD_PY, src, tmp, path.join(UPLOADS, thumb), String(UPLOAD_EDGE)], { cwd: ROOT })
+  rmSync(src, { force: true })
+  if (r.status !== 0) {
+    for (const f of [tmp, path.join(UPLOADS, thumb)]) rmSync(f, { force: true })
+    const why = (r.stderr || '').trim().split('\n').pop()
+    throw new Error(`bad image ${base}: ${/cannot identify image/.test(why)
+      ? `Pillow can't read this format${/\.hei[cf]$/i.test(base) ? ' (for HEIC: pip install pillow-heif)' : ''}` : why}`)
+  }
+  renameSync(tmp, path.join(UPLOADS, file))
+  const d = JSON.parse(r.stdout.trim().split('\n').pop())
+  const aspect = Math.round((d.w / d.h) * 1000) / 1000
+  const u = {
+    id: `up:${hash}`, key, file, thumb,
+    title: base.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim() || 'untitled', artist: '', year: '', date: '',
+    original_name: base, width: d.w, height: d.h, source_width: d.sw, source_height: d.sh,
+    aspect, shape: shapeOf(aspect), uploadedAt: new Date().toISOString(),
+  }
+  writeJson(UPLOAD_INDEX, [u, ...uploads().filter((x) => x.key !== key)])
+  console.log(`upload ${key}: ${base} ${d.sw}×${d.sh} -> ${d.w}×${d.h} (${u.shape})`)
+  return u
+}
+
+/** Title, artist and year fill the prompt's placeholders ({date} = the year). */
+function editUpload(key, body) {
+  const list = uploads()
+  const u = list.find((x) => x.key === key)
+  if (!u) throw new Error('unknown upload')
+  for (const k of ['title', 'artist', 'year']) if (k in body) u[k] = String(body[k] ?? '').trim()
+  u.date = u.year
+  writeJson(UPLOAD_INDEX, list)
+  return u
+}
+
+/** Past runs keep their own input.jpg and videos; only a retry of one would need the file. */
+function removeUpload(key) {
+  const list = uploads()
+  const u = list.find((x) => x.key === key)
+  if (!u) throw new Error('unknown upload')
+  writeJson(UPLOAD_INDEX, list.filter((x) => x !== u))
+  for (const f of [u.file, u.thumb]) rmSync(path.join(UPLOADS, f), { force: true })
+  if (existsSync(PREVIEW)) for (const d of readdirSync(PREVIEW)) if (d.startsWith(`${key}-`)) rmSync(path.join(PREVIEW, d), { recursive: true, force: true })
+}
+
 // ---- config -----------------------------------------------------------------
 
 function cleanConfig(raw = {}) {
@@ -94,7 +228,7 @@ function cleanConfig(raw = {}) {
   if (!/^[\w.\-/]+$/.test(c.model)) throw new Error('bad model id')
   c.seed = c.seed === '' || c.seed == null ? '' : Number(c.seed)
   if (c.seed !== '' && !Number.isInteger(c.seed)) throw new Error('seed must be an integer')
-  const ids = new Set(paintings().map((p) => p.id))
+  const ids = new Set(artworks().map((p) => p.id))
   c.promptOverrides = Object.fromEntries(Object.entries(c.promptOverrides || {})
     .map(([k, v]) => [k, String(v || '').trim()]).filter(([k, v]) => ids.has(k) && v))
   c.artworks = Array.isArray(c.artworks) ? c.artworks.filter((a) => ids.has(a)) : [...ids]
@@ -109,8 +243,8 @@ const promptFor = (c, p) => (c.promptOverrides[p.id] || c.prompt)
 
 function itemFor(c, p) {
   return {
-    artId: p.id, key: p.key, title: p.short_title || p.title, artist: p.artist, year: p.year,
-    paintingPath: path.join(PAINT, p.file), paintingSize: [p.width, p.height],
+    artId: p.id, key: p.key, title: p.short_title || p.title || p.original_name, artist: p.artist, year: p.year,
+    paintingPath: path.join(HERE, p.dir, p.file), paintingSize: [p.width, p.height],
     prompt: promptFor(c, p), editPrompt: c.editPrompt, model: c.model, resolution: c.resolution,
     aspect: aspectFor(c, p), duration: c.duration, seed: c.seed, task: c.task,
     framing: c.framing, longEdge: c.longEdge,
@@ -148,7 +282,7 @@ function createRun(config) {
   const d = new Date()
   const pad = (n) => String(n).padStart(2, '0')
   const id = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}-${randomBytes(2).toString('hex')}`
-  const byId = new Map(paintings().map((p) => [p.id, p]))
+  const byId = new Map(artworks().map((p) => [p.id, p]))
   const sel = c.artworks.map((a) => byId.get(a))
   mkdirSync(path.join(RUNS, id))
   for (const p of sel) {
@@ -299,7 +433,7 @@ function runAsync(cmd, args, opts) {
 
 async function preview(config, artId) {
   const c = cleanConfig({ ...config, artworks: [artId] })
-  const p = paintings().find((x) => x.id === artId)
+  const p = artworks().find((x) => x.id === artId)
   if (!p) throw new Error('unknown artwork')
   const item = itemFor(c, p)
   const prepKeys = ['paintingPath', 'aspect', 'framing', 'longEdge']
@@ -322,19 +456,26 @@ async function preview(config, artId) {
 const noCache = { 'Cache-Control': 'no-store' }
 function send(res, status, body, headers = {}) { res.writeHead(status, headers); res.end(body) }
 const sendJson = (res, status, obj) => send(res, status, JSON.stringify(obj), { 'Content-Type': 'application/json', ...noCache })
-async function readBody(req) {
+async function readRaw(req, limit = 10 * 1024 * 1024) {
   const chunks = []
-  for await (const c of req) chunks.push(c)
-  const s = Buffer.concat(chunks).toString('utf8')
+  let n = 0
+  for await (const c of req) {
+    if ((n += c.length) > limit) throw new Error(`bad upload: over ${Math.round(limit / 1048576)} MB`)
+    chunks.push(c)
+  }
+  return Buffer.concat(chunks)
+}
+async function readBody(req) {
+  const s = (await readRaw(req)).toString('utf8')
   return s ? JSON.parse(s) : {}
 }
 
 const TYPES = { '.mp4': 'video/mp4', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.json': 'application/json', '.txt': 'text/plain; charset=utf-8', '.log': 'text/plain; charset=utf-8' }
 
-/** Static files under runs/, paintings/ and .preview/, with HTTP Range (video seeking). */
+/** Static files under runs/, paintings/, uploads/ and .preview/, with HTTP Range (video seeking). */
 function serveFile(req, res, rel) {
   const abs = path.resolve(HERE, rel)
-  const okRoot = [RUNS, PAINT, PREVIEW].some((r) => abs.startsWith(r + path.sep))
+  const okRoot = [RUNS, PAINT, UPLOADS, PREVIEW].some((r) => abs.startsWith(r + path.sep))
   if (!okRoot || !existsSync(abs) || !statSync(abs).isFile()) return sendJson(res, 404, { error: 'not found' })
   const size = statSync(abs).size
   const type = TYPES[path.extname(abs).toLowerCase()] || 'application/octet-stream'
@@ -373,12 +514,21 @@ const server = createServer(async (req, res) => {
 
     if (M === 'GET' && p === '/api/state') {
       return sendJson(res, 200, {
-        defaults: DEFAULTS, enums: ENUMS, paintings: paintings(), runs: runIds().map(runView).filter(Boolean),
+        defaults: DEFAULTS, enums: ENUMS, paintings: artworks(), runs: runIds().map(runView).filter(Boolean),
         active: active.size, queued: queue.length, concurrency: CONCURRENCY, python: pythonOk, fetching: !!fetchProc,
       })
     }
+    if (M === 'GET' && p === '/api/ping') return sendJson(res, 200, { omniLab: true })
     if (M === 'GET' && p === '/api/runs') return sendJson(res, 200, runIds().map(runView).filter(Boolean))
     let m
+    if (M === 'POST' && p === '/api/uploads') {
+      // The raw file is the body (no multipart): the browser and the CLI both send it as is.
+      return sendJson(res, 200, await addUpload(await readRaw(req, MAX_UPLOAD), url.searchParams.get('name') || 'upload'))
+    }
+    if ((m = p.match(/^\/api\/uploads\/(up_[0-9a-f]+)$/))) {
+      if (M === 'POST') return sendJson(res, 200, editUpload(m[1], await readBody(req)))
+      if (M === 'DELETE') { removeUpload(m[1]); return sendJson(res, 200, { ok: true }) }
+    }
     if (M === 'GET' && (m = p.match(/^\/api\/runs\/([\w-]+)$/))) {
       const v = runView(m[1])
       return v ? sendJson(res, 200, v) : sendJson(res, 404, { error: 'no such run' })
@@ -393,6 +543,7 @@ const server = createServer(async (req, res) => {
     }
     if (M === 'POST' && p === '/api/paintings/fetch') {
       if (!fetchProc) {
+        mkdirSync(PAINT, { recursive: true })
         const fd = openSync(path.join(PAINT, 'fetch.log'), 'a')
         fetchProc = spawn(process.execPath, [path.join(HERE, 'fetch-paintings.mjs')], { cwd: ROOT, stdio: ['ignore', fd, fd], env: { ...process.env, OMNI_PYTHON: PY } })
         closeSync(fd)
@@ -432,15 +583,56 @@ const server = createServer(async (req, res) => {
   }
 })
 
-checkPython()
-recover()
-server.listen(PORT, '127.0.0.1', () => {
-  const link = `http://localhost:${PORT}`
-  console.log(`\n  Omni Lab running at ${link}  (python: ${pythonOk?.ok ? pythonOk.exe : 'NOT OK'}, ${CONCURRENCY} concurrent)`)
-  console.log(`  Runs are kept in ${path.relative(ROOT, RUNS)}/. Ctrl+C stops the server; running jobs finish in the background.\n`)
-  if (!process.env.NO_OPEN) {
-    const cmd = platform() === 'darwin' ? 'open' : platform() === 'win32' ? 'cmd' : 'xdg-open'
-    const args = platform() === 'win32' ? ['/c', 'start', '', link] : [link]
-    try { spawn(cmd, args, { stdio: 'ignore', detached: true }).unref() } catch {}
+// ---- start ------------------------------------------------------------------
+
+const LINK = `http://localhost:${PORT}`
+/** The page selects exactly these artworks when opened with ?select=. */
+const pageUrl = (ids) => ids.length ? `${LINK}/?select=${ids.map(encodeURIComponent).join(',')}` : LINK
+
+function openBrowser(url) {
+  if (NO_OPEN) { if (url !== LINK) console.log(`  Open ${url} to see them selected.\n`); return }
+  const cmd = platform() === 'darwin' ? 'open' : platform() === 'win32' ? 'cmd' : 'xdg-open'
+  const args = platform() === 'win32' ? ['/c', 'start', '', url] : [url]
+  try { spawn(cmd, args, { stdio: 'ignore', detached: true }).on('error', () => {}).unref() } catch {}
+}
+
+async function labRunning() {
+  try {
+    const r = await fetch(`http://127.0.0.1:${PORT}/api/ping`, { signal: AbortSignal.timeout(2000) })
+    return (await r.json()).omniLab === true
+  } catch { return false }
+}
+
+if (await labRunning()) {
+  // Hand the images to the running lab: a second server would also run a second job queue.
+  const ids = []
+  for (const f of IMAGES) {
+    try {
+      const r = await fetch(`http://127.0.0.1:${PORT}/api/uploads?name=${encodeURIComponent(path.basename(f))}`, { method: 'POST', body: readFileSync(f) })
+      const j = await r.json().catch(() => ({}))
+      if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`)
+      ids.push(j.id)
+      console.log(`  + ${path.basename(f)}`)
+    } catch (e) { console.error(`  !! ${path.basename(f)}: ${e.message}`) }
   }
+  console.log(`\n  Omni Lab is already running at ${LINK}${IMAGES.length ? `; added ${ids.length} of ${IMAGES.length} image(s) to it` : ''}.\n`)
+  openBrowser(pageUrl(ids))
+  process.exit(ids.length === IMAGES.length ? 0 : 1)
+}
+
+checkPython()
+const added = []
+for (const f of IMAGES) {
+  try { added.push((await addUpload(readFileSync(f), f)).id) } catch (e) { console.error(`  !! ${path.basename(f)}: ${e.message}`) }
+}
+server.on('error', (e) => {
+  if (e.code !== 'EADDRINUSE') throw e
+  console.error(`\n  !! Port ${PORT} is in use by another program, or by an Omni Lab started before this version.\n     Stop it, or pick another port with --port.\n`)
+  process.exit(1)
+})
+server.listen(PORT, '127.0.0.1', () => {
+  recover() // only once the port is ours, so a second copy can't start the same queued jobs
+  console.log(`\n  Omni Lab running at ${LINK}  (python: ${pythonOk?.ok ? pythonOk.exe : 'NOT OK'}, ${CONCURRENCY} concurrent)`)
+  console.log(`  Runs are kept in ${path.relative(ROOT, RUNS)}/, uploads in ${path.relative(ROOT, UPLOADS)}/. Ctrl+C stops the server; running jobs finish in the background.\n`)
+  openBrowser(pageUrl(added))
 })

@@ -1,26 +1,50 @@
 # Omni Lab
 
-A local UI for tuning Gemini Omni settings on real paintings. It runs one config
-on up to 10 paintings at once, keeps every run on disk, and shows any two runs
-side by side.
+A local UI for tuning Gemini Omni settings on real paintings and on your own
+images. It runs one config on many artworks at once, keeps every run on disk, and
+shows any two runs side by side.
 
 ## Run it
 
 ```bash
-node omni-lab/server.mjs          # http://localhost:4322 (opens the browser)
+node omni-lab/server.mjs                       # http://localhost:4322 (opens the browser)
+node omni-lab/server.mjs ~/Desktop/photo.jpg   # also upload these images and select them
+node omni-lab/server.mjs --help                # --port <n>, --no-open
 ```
 
+- It works from any directory, and image paths are relative to where you run it.
+  For a short command, add `alias omni-lab='node /path/to/screensaver-art/omni-lab/server.mjs'`
+  to your shell profile. Then run `omni-lab ~/Desktop/*.jpg`.
+- If the lab is already running on that port, the command doesn't start a second
+  server. It sends the images to the running lab and opens the browser with them
+  selected.
 - Needs Node 22 and a `python3` with `google-genai` and `Pillow`. Point it at another
   python with `OMNI_PYTHON=/path/to/python3`. The page shows a red banner if the
   python can't import them.
 - The API key comes from `curation/.env` through `curation/with-secrets.sh`. The
   server never reads it. Each job calls
   `.claude/skills/omni-video-gen/scripts/generate.py` through that wrapper.
-- Other env vars: `NO_OPEN=1` (don't open the browser), `OMNI_CONCURRENCY` (default
-  10), `PORT` (default 4322).
+- Other env vars: `NO_OPEN=1` (same as `--no-open`), `OMNI_CONCURRENCY` (default
+  10), `PORT` (default 4322; `--port` wins).
 - Fetch the 10 test paintings once: `node omni-lab/fetch-paintings.mjs` (add
   `--refresh` to re-download). It uses `curation/real-art/find-paintings.mjs` for
   metadata and clearance, and stores them unframed at up to 3840 px.
+
+## Your own images
+
+- Upload with **+ Upload images…**, by dropping files on the settings panel, or by
+  naming them on the command line. New uploads are listed first and selected.
+- Each upload is stored like the paintings: upright per its EXIF orientation, as a
+  JPEG at up to 3840 px, never upscaled. Transparent areas are flattened onto the
+  `#0b0b0d` wall. Uploading the same file again gives back the same entry.
+- JPEG, PNG, WebP, TIFF, BMP and GIF work. HEIC needs `pip install pillow-heif` in
+  the lab's python.
+- Each upload has title, artist and year fields for the `{title}`, `{artist}`,
+  `{year}` and `{date}` placeholders (`{date}` is the year). The title starts as the
+  file name. A warning appears when the prompt uses a placeholder you left blank:
+  fill it in, or override the prompt for that image.
+- **remove** deletes the upload. Past runs keep their own input and videos, but a
+  retry of one needs the file, so it fails.
 
 ## Settings
 
@@ -57,7 +81,9 @@ Omni has no negative prompt or temperature. Put any "don't" in the prompt.
     - `video.mp4`, plus `edit.mp4` if the run had an edit prompt, each with a `.json` sidecar holding the interaction id
     - `status.json`
     - `log.txt`: every command run and the CLI's full output
-- `runs/`, `paintings/` and `.preview/` are gitignored. Never commit media from them.
+- Uploads live in `uploads/`: `<key>.jpg`, `<key>_thumb.jpg` and `uploads.json`. The
+  key is `up_` plus a hash of the file's bytes.
+- `runs/`, `paintings/`, `uploads/` and `.preview/` are gitignored. Never commit media from them.
 - Old runs may have recorded options that were since removed: crop anchor, wall
   colour and margin, first + last frame, and frame-role tags. History and compare
   show them read-only. Retrying such a run uses the current behaviour.

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// Find public-domain artworks in three museum collections and on Wikimedia
+// Find public-domain artworks in seven museum collections and on Wikimedia
 // Commons, run each through the copyright gate (clearance.mjs), rank the eligible
 // ones by fame, and write a JSON array for the curator. See curation/real-art/README.md.
 //
 //   node curation/real-art/find-paintings.mjs --famous --out /tmp/cands.json
 //   node curation/real-art/find-paintings.mjs --query "harbor boats" --limit 30
-//   node curation/real-art/find-paintings.mjs --ids aic:20684,met:435702,cma:1922.1133,wd:Q45585 --show-rejects
+//   node curation/real-art/find-paintings.mjs --ids aic:20684,met:435702,rijks:SK-C-5,wd:Q45585 --show-rejects
 //
 // Every record carries `clearance: {pass, reasons[], evidence{}}`. Only passing
 // records are written unless --show-rejects (audit mode).
@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url'
 import { clear, cutoffYear } from './clearance.mjs'
 import { commons } from './commons.mjs'
 import { fold, log, parseArgs, PROVENANCE_KEYS, probeImageSize, trippedHosts } from './lib.mjs'
-import { SOURCES as MUSEUMS } from './sources.mjs'
+import { MUSEUMS } from './museums.mjs'
 import { famousKeys, wikipediaLangs } from './wikidata.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
@@ -29,7 +29,7 @@ const COMMONS_POOL_FACTOR = 3
 
 const USAGE = `usage: node curation/real-art/find-paintings.mjs \\
   [--famous] [--query <theme keywords>] [--ids <src:id,...>] \\
-  [--sources aic,cma,met,commons] [--limit N] [--pool N] [--out <file.json>] [--show-rejects]
+  [--sources aic,cma,met,nga,rijks,getty,smk,commons] [--limit N] [--pool N] [--out <file.json>] [--show-rejects]
 
   --famous        surface each collection's most famous eligible works (Wikidata
                   Wikipedia-edition counts + museum highlight flags). Implied when
@@ -37,9 +37,11 @@ const USAGE = `usage: node curation/real-art/find-paintings.mjs \\
                   matching the theme only.
   --query         theme keywords, searched in every source.
   --ids           fetch + clear specific works: aic:<id>, met:<objectID>,
-                  cma:<id or accession no.>, wd:<Wikidata QID> (Commons)
+                  cma:<id or accession no.>, nga:<objectid or accession no.>,
+                  rijks:<object no. or Linked Art ID>, getty:<page slug, UUID or
+                  accession no.>, smk:<object no.>, wd:<Wikidata QID> (Commons)
                   (comma-separated). Rejections are always reported on stderr.
-  --sources       subset of aic,cma,met,commons (default all four).
+  --sources       subset of aic,cma,met,nga,rijks,getty,smk,commons (default all).
   --limit         max eligible records in the output (default 40).
   --pool          raw candidates to hydrate per source (default max(40, 2*limit);
                   Commons takes 3x).
@@ -52,7 +54,7 @@ function die(msg) {
 }
 
 const opts = parseArgs(process.argv.slice(2), new Set(['famous', 'show-rejects']), USAGE, die)
-const sources = String(opts.sources || 'aic,cma,met,commons').split(',').map((s) => s.trim()).filter(Boolean)
+const sources = String(opts.sources || Object.keys(SOURCES).join(',')).split(',').map((s) => s.trim()).filter(Boolean)
 for (const s of sources) if (!SOURCES[s]) die(`unknown source "${s}" (valid: ${Object.keys(SOURCES).join(', ')})`)
 const limit = Number(opts.limit ?? 40)
 if (!Number.isInteger(limit) || limit < 1) die('--limit must be a positive integer')
@@ -64,8 +66,8 @@ const SHOW_REJECTS = !!opts['show-rejects']
 const idsBySource = {}
 if (opts.ids) {
   for (const tok of String(opts.ids).split(',').map((s) => s.trim()).filter(Boolean)) {
-    const m = tok.match(/^(aic|met|cma|wd|commons):(.+)$/)
-    if (!m) die(`bad --ids entry "${tok}" — expected aic:<id>, met:<id>, cma:<id> or wd:<QID>`)
+    const m = tok.match(new RegExp(`^(${[...Object.keys(SOURCES), 'wd'].join('|')}):(.+)$`))
+    if (!m) die(`bad --ids entry "${tok}" — expected <source>:<id> (${Object.keys(MUSEUMS).join(', ')}) or wd:<QID>`)
     const key = m[1] === 'wd' ? 'commons' : m[1]
     if (key === 'commons' && !/^Q\d+$/i.test(m[2])) die(`bad --ids entry "${tok}" — expected wd:Q<number>`)
     ;(idsBySource[key] ||= []).push(m[2])
@@ -120,7 +122,8 @@ async function harvest(key) {
         const keys = await famousKeys(key, 2 * pool)
         const ids = [...new Set(keys.filter((k) => k.kind === 'id').map((k) => k.value))]
         const invs = [...new Set(keys.filter((k) => k.kind === 'inv').map((k) => k.value))]
-        if (key === 'met') add(await src.byIds(ids.slice(0, pool)))
+        if (src.byFameKeys) add(await src.byFameKeys(keys, pool))
+        else if (key === 'met') add(await src.byIds(ids.slice(0, pool)))
         else if (key === 'cma') add(await src.byIds([...new Set(keys.map((k) => k.value))].slice(0, pool)))
         else { add(await src.byIds(ids)); add(await src.byInventory(invs)) }
         const rank = new Map(keys.map((k, i) => [`${k.kind}:${k.value}`, i]))
@@ -240,17 +243,19 @@ if (FAMOUS && query && !ID_MODE) {
 }
 passing.sort(byFame)
 rejects.sort(byFame)
-// A museum's own copy beats a Commons one of the same work, however famous.
+// A museum's own copy beats a Commons one of the same work, however famous. The
+// same work: the same Wikidata item where both records have one, else the same
+// artist and title.
 const fromCommons = (c) => c._gate.source === 'commons'
-const seenWork = new Map()
+const seenWork = new Map() // workKey -> [{id, qid}]
 const seenQid = new Map()
 const eligible = []
 for (const c of [...passing.filter((c) => !fromCommons(c)), ...passing.filter(fromCommons)]) {
   const k = workKey(c)
-  const q = c._wd?.qid
-  const dup = seenWork.get(k) ?? (q && seenQid.get(q))
+  const q = c._wd?.qid || null
+  const dup = (q && seenQid.get(q)) || (seenWork.get(k) || []).find((s) => !(q && s.qid))?.id
   if (dup) { dupes.push(`${c.object_id} (same work as ${dup})`); continue }
-  seenWork.set(k, c.object_id)
+  seenWork.set(k, [...(seenWork.get(k) || []), { id: c.object_id, qid: q }])
   if (q) seenQid.set(q, c.object_id)
   eligible.push(c)
 }

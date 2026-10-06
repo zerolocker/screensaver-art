@@ -10,11 +10,12 @@
 //      photos can carry their own copyright; no photographs, by product choice).
 //   4. Image long edge >= 2000 px.
 //
-// Wikimedia Commons images (see "Wikimedia Commons" below) also need:
+// Wikimedia Commons, the Rijksmuseum and SMK also need:
 //   5. US safety: the work is dated <= (this year - 96): 1930 in 2026.
+// Commons images (see "Wikimedia Commons" below) also need:
 //   6. A known holder that isn't an Italian public collection.
-//   7. If AIC, CMA or the Met holds it, that museum withholds a usable image of
-//      its own (no open flag, no image, or under 2000 px). Otherwise use theirs.
+//   7. If a museum we source directly holds it, that museum withholds a usable
+//      image of its own (no open flag, no image, or too small). Otherwise use theirs.
 //
 // When in doubt, reject: eligible works are plentiful.
 
@@ -31,6 +32,9 @@ export const cutoffYear = (year = new Date().getFullYear()) => year - TERM_YEARS
 export const US_TERM_YEARS = 95 // US works published before 1978: 95 years from publication
 /** In 2026 -> dated <= 1930. */
 export const usCutoffYear = (year = new Date().getFullYear()) => year - US_TERM_YEARS - 1
+// Sources whose public-domain mark only means life+70 has run (the EU rule), so
+// a work published after 1930 may still be in US copyright: check 5.
+export const US_DATE_RULE = new Set(['commons', 'rijks', 'smk'])
 
 // ---- Wikimedia Commons -----------------------------------------------------
 //
@@ -73,11 +77,33 @@ export function commonsLicence(v) {
 
 // ---- 1. licence ------------------------------------------------------------
 
+const PD_MARK_URL = /^https?:\/\/creativecommons\.org\/publicdomain\/mark\/1\.0\/?$/
+const CC0_URL = /^https?:\/\/creativecommons\.org\/publicdomain\/zero\/1\.0\/?$/
+const pdOrCc0 = (u) => PD_MARK_URL.test(u) || CC0_URL.test(u)
+const markLabel = (u) => (CC0_URL.test(u) ? 'CC0' : 'Public Domain')
+
+// `label` is the gallery licence; a function when the museum uses both marks.
 export const LICENSE_RULES = {
   aic: { field: 'is_public_domain', want: 'true', ok: (v) => v === true, label: 'Public Domain' },
   met: { field: 'isPublicDomain', want: 'true', ok: (v) => v === true, label: 'CC0' },
   cma: { field: 'share_license_status', want: '"CC0"', ok: (v) => v === 'CC0', label: 'CC0' },
+  // The primary published image's flag; NGA releases open-access images as CC0.
+  nga: { field: 'published_images.openaccess', want: '"1"', ok: (v) => v === '1', label: 'CC0' },
+  // The image's own right (its VisualItem), not the metadata's.
+  rijks: { field: 'image rights', want: 'Public Domain Mark 1.0 or CC0 1.0', ok: (v) => pdOrCc0(String(v ?? '')), label: markLabel },
+  getty: { field: 'rights (object and IIIF manifest)', want: 'CC0 1.0', ok: (v) => CC0_URL.test(String(v ?? '')), label: 'CC0' },
+  smk: {
+    field: 'public_domain, rights', want: 'true and Public Domain Mark 1.0 or CC0 1.0',
+    ok: (v) => v?.public_domain === true && pdOrCc0(String(v.rights ?? '')), label: (v) => markLabel(String(v?.rights ?? '')),
+  },
   commons: { field: 'Commons file licence', ok: (v) => commonsLicence(v).ok, check: commonsLicence, label: 'Public Domain' },
+}
+
+/** The gallery licence for a passing flag ("Public Domain" / "CC0"), else null. */
+export function licenceLabel(source, v) {
+  const lic = LICENSE_RULES[source]
+  if (!lic.ok(v)) return null
+  return typeof lic.label === 'function' ? lic.label(v) : lic.label
 }
 
 // ---- 2. life dates ---------------------------------------------------------
@@ -208,6 +234,8 @@ export function parseLifeFacts(raw) {
 
 const ANON_NAME = /\b(unknown|unidentified|anonymous)\b/i
 const QUALIFIER = /\b(attributed to|attributed|workshop|studio|school of|circle of|followers? of|manner of|style of|imitator of|copy after|copy of|possibly|probably)\b|\bafter\s+(?![\d(]|c\.|ca\.)\p{Lu}|(^|\s)\?(\s|$)/iu
+/** Does this artist text carry an attribution qualifier ("Workshop of X", "after X")? */
+export const isQualified = (s) => QUALIFIER.test(String(s ?? ''))
 // Contributors named in free text. Creative ones (whose own copyright would count)
 // need a lifetime; production ones (printer, publisher, block cutter — execution,
 // often a firm) are not authors, but an undated one still pulls in the
@@ -215,7 +243,7 @@ const QUALIFIER = /\b(attributed to|attributed|workshop|studio|school of|circle 
 const CREATIVE_PHRASES = /\b(after|engraved by|engraver|etched by|designed by|painted by|drawn by|lithographed by|inscribed by|calligraphy by)\b(?!\s*(\d|c\.|ca\.))/gi
 const PRODUCTION_PHRASES = /\b(published by|publisher|printed by|printer|carved by|cut by)\b/gi
 // Structured roles (Met constituents[].role, CMA creators[].role).
-const NOT_AUTHOR_ROLE = /\b(sitter|subject|owner|former attribution|formerly attributed|patron|dedicatee|donor|commissioner|lender|depicted|honou?ree|recipient)\b/i
+const NOT_AUTHOR_ROLE = /\b(sitter|subject|owner|former attribution|formerly( attributed)?|earlier ascribed|rejected attribution|patron|dedicatee|donor|commissioner|lender|depicted|honou?ree|recipient)\b/i
 const PRODUCTION_ROLE = /\b(printer|publisher|manufacturer|retailer|distributor|foundry|block ?cutter|cutter|carver)\b/i
 
 // A structured life year outside this range is a placeholder, so it counts as unknown and
@@ -396,6 +424,46 @@ export function peopleFromWikidata(persons = []) {
   return { people, anonymous, undatedProduction: [], qualified, raw }
 }
 
+/**
+ * NGA, the Rijksmuseum, the Getty and SMK list their makers as structured credits:
+ * [{name, role, qualifier, life, birth, death, birthApprox, deathApprox, deathAfter,
+ * anonymous, from}]. `life` is a lifetime in free text ("Italian, 1452 - 1519"),
+ * parsed like the other museums' labels; `birth`/`death` are structured years that
+ * corroborate it (the later death wins). The adapter passes `qualifier` ("attributed
+ * to", "workshop of", "after"…) only when the credit carries one.
+ */
+export function peopleFromCredits(credits = []) {
+  const people = []
+  const undatedProduction = []
+  let anonymous = !credits.length
+  let qualified = null
+  for (const c of credits) {
+    if (NOT_AUTHOR_ROLE.test(c.role || '') || NOT_AUTHOR_ROLE.test(c.qualifier || '')) continue
+    if (c.qualifier) qualified ||= `${c.qualifier} ${c.name || ''}`.trim()
+    if (c.anonymous || ANON_NAME.test(c.name || '')) { anonymous = true; continue }
+    // A maker the record doesn't name isn't anonymous: just undated.
+    if (!c.name) { people.push({ ...UNDATED, name: `unnamed ${c.role || 'maker'}`, from: `${c.from} (no name)` }); continue }
+    const facts = parseLifeFacts(c.life || '')
+    const birth = toYear(c.birth)
+    const death = toYear(c.death)
+    if (facts.length) {
+      for (const f of facts) {
+        if (f.death != null && death != null) f.death = Math.max(f.death, death)
+        people.push({ ...f, name: c.name, from: c.from })
+      }
+    } else if (birth != null || death != null || toYear(c.deathAfter) != null) {
+      people.push({ ...UNDATED, name: c.name, from: c.from, birth, birthApprox: !!c.birthApprox, death, deathApprox: !!c.deathApprox, deathAfter: toYear(c.deathAfter) })
+    } else if (PRODUCTION_ROLE.test(c.role || '')) {
+      undatedProduction.push(`${c.role}: ${c.name}`)
+    } else {
+      people.push({ ...UNDATED, name: c.name, from: `${c.from} (no dates)` })
+    }
+  }
+  const raw = credits.map((c) => [c.role && `${c.role}:`, c.qualifier, c.name || 'unknown', c.life ? `(${c.life})` : (c.birth || c.death) ? `(${c.birth ?? '?'}–${c.death ?? '?'})` : null]
+    .filter(Boolean).join(' ')).join('; ')
+  return { people, anonymous, undatedProduction, qualified, raw }
+}
+
 /** The latest year by which this person is certainly dead, and why. */
 function diedBy(p, objectEnd) {
   if (p.living) return { by: Infinity, why: 'listed as living' }
@@ -436,10 +504,33 @@ export const COMMONS_PAINTING_TYPES = {
 export const COMMONS_PANEL_TYPES = { Q79218: 'triptych', Q15711026: 'altarpiece' }
 const PAINTS = new Set(['Q296955', 'Q175166', 'Q174219', 'Q204330']) // oil paint, tempera, paint, gouache
 const SCULPTURE_TYPES = new Set(['Q860861', 'Q245117', 'Q179700']) // sculpture, relief sculpture, statue
+// The Index of American Design is watercolour renderings (1935–42).
+const NGA_FLAT = new Set(['Painting', 'Print', 'Drawing', 'Index of American Design'])
+// Rijksmuseum types of work, in English or (when it has no English label) Dutch.
+const RIJKS_FLAT = /\b(paintings?|schilderij|prints?|prent|drawings?|tekening|schetsboekblad|watercolou?rs?|aquarel|pastels?|gouaches?|grisailles?|miniatures?|miniatuur)\b/i
+const RIJKS_NOT_FLAT = /photo|foto|frame|lijst|sculpture|beeld|relief|\bbooks?\b|\bboek(en)?\b|\bmaps?\b|\bkaart(en)?\b/i
+// Getty AAT classifications. A miniature still in its manuscript is a page of a book.
+export const GETTY_TYPES = {
+  'aat:300033618': 'Paintings', 'aat:300033656': 'Panel Paintings', 'aat:300041273': 'Prints', 'aat:300033973': 'Drawings',
+  'aat:300076922': 'Pastels', 'aat:300033936': 'Miniatures (Paintings)', 'aat:300264522': 'Illuminations (Paintings)',
+  'aat:300265483': 'Manuscripts', 'aat:300028569': 'Manuscripts (Documents)', 'aat:300028051': 'Books', 'aat:300026690': 'Albums (Books)',
+  'aat:300046300': 'Photographs', 'aat:300047090': 'Sculpture', 'aat:300047230': 'Reliefs (Sculpture)', 'aat:300263722': 'Stained Glass',
+  'aat:300411641': 'Decorative Arts', 'aat:300178228': 'Diptychs',
+}
+const GETTY_FLAT = new Set(['Paintings', 'Panel Paintings', 'Prints', 'Drawings', 'Pastels', 'Miniatures (Paintings)', 'Illuminations (Paintings)'])
+const GETTY_NOT_FLAT = new Set(['Manuscripts', 'Manuscripts (Documents)', 'Books', 'Albums (Books)', 'Photographs', 'Sculpture', 'Reliefs (Sculpture)', 'Stained Glass', 'Decorative Arts', 'Diptychs'])
+// SMK object names (English): a category plus, for prints, the technique.
+const SMK_FLAT = new Set(['painting', 'drawing', 'print', 'watercolour', 'gouache', 'pastel', 'miniature'])
+const SMK_NOT_FLAT = /photo|collage|relief|statue|sculpture|bust|medal|altar|alterpiece|diptych|predella|icon|mural|offset|collotype|computer print|xerogra/i
+const names = (t) => String(t).split(' / ').map((x) => x.trim()).filter(Boolean)
 
 export const FLAT_RULES = {
   aic: { field: 'artwork_type_title', ok: (t) => ['Painting', 'Print', 'Drawing and Watercolor', 'Miniature Painting'].includes(t) },
   cma: { field: 'type', ok: (t) => ['Painting', 'Print', 'Drawing'].includes(t) },
+  nga: { field: 'classification', ok: (t) => NGA_FLAT.has(t) },
+  rijks: { field: 'type of work', ok: (t) => RIJKS_FLAT.test(t) && !RIJKS_NOT_FLAT.test(t) },
+  getty: { field: 'classification (AAT)', ok: (t) => names(t).some((x) => GETTY_FLAT.has(x)) && !names(t).some((x) => GETTY_NOT_FLAT.has(x)) },
+  smk: { field: 'object_names', ok: (t) => names(t).some((x) => SMK_FLAT.has(x.toLowerCase())) && !SMK_NOT_FLAT.test(t) },
   met: {
     field: 'classification / objectName',
     ok: (t) => {
@@ -497,7 +588,7 @@ export function italianPublic(h) {
  * c = { source, license_value, type_label, medium, object_end, who: {people,
  *       anonymous, qualified, raw}, width, height }
  * Commons also: p31[], p186[] (Wikidata QIDs), holders[] (see italianPublic), and
- *   open_museum {museum, object_id, releases, why} when AIC, CMA or the Met holds it.
+ *   open_museum {museum, object_id, releases, why} when a museum we source directly holds it.
  * opts.skipSize: run checks 1-3 only (to decide whether a size probe is worth it).
  */
 export function clear(c, { cutoff = cutoffYear(), usCutoff = usCutoffYear(), skipSize = false } = {}) {
@@ -557,13 +648,15 @@ export function clear(c, { cutoff = cutoffYear(), usCutoff = usCutoffYear(), ski
   } else if (PHOTO.test(c.medium || '') || PHOTO.test(c.type_label || '')) fails.push(`medium: photographic ("${c.medium}") — excluded by product choice`)
   else passes.push(`flat art: ${c.type_label}`)
 
-  if (commons) {
+  if (US_DATE_RULE.has(c.source)) {
     // 5. US safety: the 1930 rule stands in for "published 95+ years ago".
     ev.us_cutoff_year = usCutoff
-    if (oe == null) fails.push(`US: no inception date (P571) — can't show the work is from ${usCutoff} or earlier`)
+    if (oe == null) fails.push(`US: no ${commons ? 'inception date (P571)' : 'date'} — can't show the work is from ${usCutoff} or earlier`)
     else if (oe > usCutoff) fails.push(`US: dated ${oe} > ${usCutoff} — may still be in US copyright`)
     else passes.push(`US: dated ${oe} <= ${usCutoff}`)
+  }
 
+  if (commons) {
     // 6. holder: known, and not an Italian public collection.
     ev.holders = (c.holders || []).map((h) => ({ qid: h.qid, label: h.label ?? null, countries: h.countries || [], italian_public: italianPublic(h) }))
     const italian = ev.holders.filter((h) => h.italian_public)

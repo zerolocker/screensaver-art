@@ -8,7 +8,8 @@ import {
   MIN_LONG_EDGE, natureWord, peopleFromWikidata,
 } from './clearance.mjs'
 import { chunk, http, log, probeImageSize } from './lib.mjs'
-import { formatDates, record, SOURCES as MUSEUMS } from './sources.mjs'
+import { MUSEUMS } from './museums.mjs'
+import { formatDates, record } from './sources.mjs'
 import { sparql, WD } from './wikidata.mjs'
 
 const COMMONS_API = 'https://commons.wikimedia.org/w/api.php'
@@ -23,7 +24,7 @@ const CIRCA = 'Q5727902'
 // The open museums we source directly. A work they hold comes from the museum
 // whenever it releases a usable image (clearance.mjs, check 7).
 const OPEN_MUSEUM = Object.fromEntries(Object.entries(WD).map(([k, v]) => [v.museum, k]))
-const OPEN_MUSEUM_ID = Object.fromEntries(Object.entries(WD).map(([k, v]) => [v.idProp, k]))
+const OPEN_MUSEUM_ID = Object.fromEntries(Object.entries(WD).filter(([, v]) => v.idProp).map(([k, v]) => [v.idProp, k]))
 
 const ENTITY = 'http://www.wikidata.org/entity/'
 /** An item IRI -> "Q45585"; an unknown value (a .well-known/genid IRI) -> null. */
@@ -334,7 +335,7 @@ export function shownHolder(it) {
   return named.find((h) => h.label) || null
 }
 
-/** The open museum (aic/met/cma) that holds this work, by collection or object ID, or null. */
+/** The open museum (a MUSEUMS key) that holds this work, by collection or object ID, or null. */
 const heldByOpenMuseum = (it) =>
   it.holders.flatMap((h) => [h.qid, ...h.parents.map((p) => p.qid)]).map((q) => OPEN_MUSEUM[q]).find(Boolean) ||
   it.museumRefs[0]?.key || null

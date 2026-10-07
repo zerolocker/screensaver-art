@@ -14,18 +14,21 @@ There are eight sources: seven museums (the Art Institute of Chicago, the Clevel
 
 `curation/real-art/find-paintings.mjs` passes a painting only if all of these hold, and records the evidence in its `clearance` field:
 1. **The image is marked public domain.** For the seven museums, the museum's own Public Domain or CC0 flag on the image. For Commons, the file's own licence must say public domain (PD-Art, PD-old or CC0), with no CC BY, CC BY-SA or other rights claim on the file.
-2. **The artist died at least 71 years ago** (1955 or earlier, in 2026). Anonymous and "attributed to" or "workshop of" works must predate 1900. The work's own age doesn't count: Hopper's *Nighthawks* (1942) is open access, but Hopper died in 1967, so it's blocked until 2038.
+2. **The artist died at least 71 years ago** (1955 or earlier, in 2026). The work's own age doesn't count: Hopper's *Nighthawks* (1942) is open access, but Hopper died in 1967, so it's blocked until 2038.
+   - Approximate years count as written: "c. 1880" is 1880.
+   - An unknown death year assumes a 70-year life: birth + 70, or with no birth year, the work's date (or the first active year) + 60.
+   - "Workshop of Rembrandt" or "After Raphael" is judged on Rembrandt's or Raphael's dates. A work with no identifiable artist is judged from its date, so it must be dated 1895 or earlier.
 3. **Flat art only:** paintings, prints, drawings, watercolours. A photo of a 3-D object can carry its own copyright. Commons takes paintings only; a triptych or altarpiece also needs a paint among its materials, because some are carved.
-4. **At least 2000 px on the long edge.** Never AI-upscale a real artwork.
+4. **At least 1920 px on the long edge,** the size Omni takes. Never AI-upscale a real artwork.
 
 Commons, Rijksmuseum and SMK works also need:
 
-5. **A date of 1930 or earlier** (in 2026), so the work is public domain in the US. Mondrian died in 1944, but *Broadway Boogie Woogie* (1943) fails. An unknown date fails. The Rijksmuseum and SMK mark a work public domain once its artist has been dead 70 years, which isn't the US rule for works published after 1930.
+5. **A date of 1930 or earlier** (in 2026), unless every artist died by 1930. A work published in the US gets 95 years from publication, so only one from 1930 or earlier is safe there; the Rijksmuseum and SMK mark a work public domain once its artist has been dead 70 years, which isn't the US rule. Mondrian died in 1944, so *Broadway Boogie Woogie* (1943) fails. A date after the artist's death is a data error and is ignored; with no date left, an artist who died after 1930 fails.
 
 Commons works also need:
 
 6. **A known holder that isn't an Italian public collection.** That excludes the Uffizi, the Accademia, Brera, the Borghese, and Italy's state, regional and civic museums.
-7. **If one of the seven museums holds the work, that museum withholds a usable image of its own:** no public-domain flag, no image, or one under 2000 px. The Met holds Monet's *Garden at Sainte-Adresse* but flags it not public domain and shows no image, so it comes from Commons. The credit still names the Met as the holder and links the Commons file, never implying the Met released it.
+7. **If one of the seven museums holds the work, that museum withholds a usable image of its own:** no public-domain flag, no image, or one under 1920 px. The Met holds Monet's *Garden at Sainte-Adresse* but flags it not public domain and shows no image, so it comes from Commons. The credit still names the Met as the holder and links the Commons file, never implying the Met released it.
 
 **Why Commons needs more rules.** A museum's public-domain flag is the museum's own waiver. A Commons image has none, so we rely on a legal argument: a faithful photo of a flat public-domain painting has no copyright of its own, in the US under *Bridgeman v. Corel* (1999) and in the EU under Article 14 of the DSM Directive (2019). Hence the extra rules: the work must be public domain in the US too (rule 5), and Italy's Cultural Heritage Code still restricts reproductions of works in its public collections (rule 6).
 
@@ -44,9 +47,9 @@ Commons works also need:
    Add `--query "<theme>"` for variety. `--ids aic:<id>` checks one specific work (`rijks:SK-C-5`, `smk:KMS3716`, `wd:<QID>` for Commons; the README lists every form). Everything in the output has passed the gate and isn't in `gallery.json` yet.
 
 3. **Pick four.**
-   - **Recognizable.** Prefer works a general audience knows: a high `fame.wikipedia_langs`, plus your own judgement. Each painting is used once.
+   - **Recognizable.** Prefer works a general audience knows: high in the list, plus your own judgement. The list ranks fame within each wing, so a famous Japanese print sits near a more famous European painting; `fame.wikipedia_langs` is the raw count. Each painting is used once.
    - **Something in it can move**: people, animals, water, sky, smoke, cloth.
-   - **Variety.** Spread artists, eras, wings and subjects. Check the last ~12 entries with `source: "real_artwork"`. Never two works by one painter in a night.
+   - **Variety.** At most two of the four from one wing, and at least one from a non-European wing (`wing` other than Medieval & Byzantine, Renaissance & Baroque, 19th Century, Modern or Contemporary) whenever the list has an eligible one. `wing` is a hint: you still choose the `--tag`. Also spread artists, eras and subjects, and check the last ~12 entries with `source: "real_artwork"`. Never two works by one painter in a night.
    - **No nudity or graphic violence**, however famous. Pieces are posted to social media and play on screens others can see.
    - If Omni's safety filter refuses a painting, take the next pick.
    - **Check a Commons pick's title, artist and date** against its Commons file page. They come from Wikidata, which anyone can edit, and labels are sometimes vandalized.

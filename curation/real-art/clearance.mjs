@@ -2,29 +2,29 @@
 // `clearance: {pass, reasons[], evidence{}}`.
 //
 //   1. Licence: the museum's own flag is exactly Public Domain / CC0.
-//   2. Life+70: every identified artist died <= (this year - 71); an anonymous work
-//      must be dated < 1900. Unknown death year -> we only pass if it is *physically
-//      certain* the person died by the cutoff (born / active / made the work long
-//      enough ago), else reject.
+//   2. Life+70: every identified artist died <= (this year - 71). An unknown
+//      death year assumes a 70-year life: birth + 70, else (work date or
+//      floruit) + 60. A work with no identifiable artist is judged the same way
+//      from its date. Approximate years count as written.
 //   3. Flat art only: paintings, prints, drawings, watercolours (no 3-D objects, whose
 //      photos can carry their own copyright; no photographs, by product choice).
-//   4. Image long edge >= 2000 px.
+//   4. Image long edge >= 1920 px.
 //
 // Wikimedia Commons, the Rijksmuseum and SMK also need:
-//   5. US safety: the work is dated <= (this year - 96): 1930 in 2026.
+//   5. US safety: unless every artist died by (this year - 96), 1930 in 2026,
+//      the work is dated by then. Dates after the artist's death are ignored.
 // Commons images (see "Wikimedia Commons" below) also need:
 //   6. A known holder that isn't an Italian public collection.
 //   7. If a museum we source directly holds it, that museum withholds a usable
-//      image of its own (no open flag, no image, or too small). Otherwise use theirs.
+//      image of its own (no open flag, no image, or under 1920 px). Otherwise use theirs.
 //
 // When in doubt, reject: eligible works are plentiful.
 
 export const TERM_YEARS = 70 // life + 70 (US/EU)
-export const ANON_BEFORE = 1900 // anonymous works: object end date must be < this
-export const MAX_LIFESPAN = 110 // nobody verifiably outlives this
-export const MIN_WORKING_AGE = 10 // nobody made a museum piece younger than this
-export const APPROX_MARGIN = 10 // "c. 1950" could be 1960
-export const MIN_LONG_EDGE = 2000
+export const LIFESPAN = 70 // assumed when a death year is unknown
+export const MIN_WORKING_AGE = 10 // born this long before the work or the first active year
+export const APPROX_MARGIN = 0 // approximate years count as written: "c. 1880" is 1880
+export const MIN_LONG_EDGE = 1920 // Omni's input size
 
 /** Life+70 expires at the end of the 70th calendar year: in 2026 -> died <= 1955. */
 export const cutoffYear = (year = new Date().getFullYear()) => year - TERM_YEARS - 1
@@ -236,12 +236,9 @@ const ANON_NAME = /\b(unknown|unidentified|anonymous)\b/i
 const QUALIFIER = /\b(attributed to|attributed|workshop|studio|school of|circle of|followers? of|manner of|style of|imitator of|copy after|copy of|possibly|probably)\b|\bafter\s+(?![\d(]|c\.|ca\.)\p{Lu}|(^|\s)\?(\s|$)/iu
 /** Does this artist text carry an attribution qualifier ("Workshop of X", "after X")? */
 export const isQualified = (s) => QUALIFIER.test(String(s ?? ''))
-// Contributors named in free text. Creative ones (whose own copyright would count)
-// need a lifetime; production ones (printer, publisher, block cutter — execution,
-// often a firm) are not authors, but an undated one still pulls in the
-// anonymous-work rule, to stay conservative.
+// Contributors named in free text whose own copyright would count. Production
+// roles (printer, publisher, block cutter: execution, often a firm) are not authors.
 const CREATIVE_PHRASES = /\b(after|engraved by|engraver|etched by|designed by|painted by|drawn by|lithographed by|inscribed by|calligraphy by)\b(?!\s*(\d|c\.|ca\.))/gi
-const PRODUCTION_PHRASES = /\b(published by|publisher|printed by|printer|carved by|cut by)\b/gi
 // Structured roles (Met constituents[].role, CMA creators[].role).
 const NOT_AUTHOR_ROLE = /\b(sitter|subject|owner|former attribution|formerly( attributed)?|earlier ascribed|rejected attribution|patron|dedicatee|donor|commissioner|lender|depicted|honou?ree|recipient)\b/i
 const PRODUCTION_ROLE = /\b(printer|publisher|manufacturer|retailer|distributor|foundry|block ?cutter|cutter|carver)\b/i
@@ -282,21 +279,21 @@ export function peopleFromAic(a, agentsById = new Map()) {
     }
   }
   // Everyone we can see named (agents + "after X"/"engraved by Y" phrases) must be
-  // covered by a dated lifetime; any shortfall is an undated person, bounded by
-  // the object's date. Lifetimes beyond that cover printers/publishers.
-  const creative = (display.match(CREATIVE_PHRASES) || []).length
-  const production = (display.match(PRODUCTION_PHRASES) || []).length
+  // covered by a dated lifetime; any shortfall is an undated person, judged from
+  // the object's date. A leading "After X" qualifies the main artist and names
+  // no one new.
+  const creative = [...display.matchAll(CREATIVE_PHRASES)]
+    .filter((m) => /\S/.test(display.slice(display.lastIndexOf('\n', m.index - 1) + 1, m.index))).length
   const anonymous = ANON_NAME.test(display) || (individuals.length === 0 && facts.length === 0)
   const expected = (anonymous && individuals.length === 0 ? 0 : Math.max(individuals.length, 1)) + creative
   const flat = display.replace(/\s+/g, ' ').trim()
   for (let i = facts.length; i < expected; i++) {
     people.push({ name: `undated contributor in "${flat}"`, from: 'artist_display', ...UNDATED })
   }
-  const undatedProduction = facts.length < expected + production ? [`printer/publisher in "${flat}"`] : []
   // The qualifier can sit on the agent alone ("Workshop of Paolo Veneziano" over a
   // plain "Paolo Veneziano" label); the artist field shows it, so the gate sees it too.
   const qualified = (display.match(QUALIFIER) || String(a.artist_title ?? '').match(QUALIFIER) || [null])[0]
-  return { people, anonymous, undatedProduction, qualified, raw: display }
+  return { people, anonymous, qualified, raw: display }
 }
 
 const UNDATED = { birth: null, birthApprox: false, death: null, deathApprox: false, deathAfter: null, floruit: null, floruitApprox: false, floruitEnd: null }
@@ -338,28 +335,25 @@ export function peopleFromMet(o) {
       people.push({ name, from: 'artistDisplayName (no dates)', ...UNDATED })
     }
   })
-  // Other constituents carry no dates in the API: creators are bounded by the
-  // object's date; printers/publishers pull in the anonymous rule; sitters,
-  // owners and former attributions aren't authors at all.
+  // Other constituents carry no dates in the API: creators are judged from the
+  // object's date; printers, publishers, sitters, owners and former
+  // attributions aren't authors.
   const primary = names.filter(Boolean).map((n) => n.toLowerCase())
-  const undatedProduction = []
   for (const c of o.constituents || []) {
     const bare = stripPrefix(c.name || '')
     const lc = bare.toLowerCase()
     if (primary.some((p) => p === lc || p.endsWith(lc) || lc.endsWith(p) || p.includes(lc))) continue
-    if (NOT_AUTHOR_ROLE.test(c.role || '')) continue
-    if (PRODUCTION_ROLE.test(c.role || '')) { undatedProduction.push(`${c.role}: ${c.name}`); continue }
+    if (NOT_AUTHOR_ROLE.test(c.role || '') || PRODUCTION_ROLE.test(c.role || '')) continue
     if (ANON_MET.test(bare)) { anonymous = true; continue }
     people.push({ name: `${c.role || 'constituent'}: ${c.name}`, from: 'constituents (no dates)', ...UNDATED })
   }
   if (!names.filter(Boolean).length && !people.length) anonymous = true
-  return { people, anonymous, undatedProduction, qualified, raw: [o.artistPrefix, o.artistDisplayName, o.artistDisplayBio].filter(Boolean).join(' ') }
+  return { people, anonymous, qualified, raw: [o.artistPrefix, o.artistDisplayName, o.artistDisplayBio].filter(Boolean).join(' ') }
 }
 
 /** CMA: creators[] — parse description, corroborate with birth_year/death_year. */
 export function peopleFromCma(a) {
   const people = []
-  const undatedProduction = []
   let anonymous = !(a.creators || []).length
   let qualified = null
   for (const c of a.creators || []) {
@@ -369,11 +363,8 @@ export function peopleFromCma(a) {
     const bare = desc.replace(/\s*\(.*$/s, '').trim()
     if (QUALIFIER.test(q)) qualified ||= q
     else if (QUALIFIER.test(bare)) qualified ||= bare // "Attributed to X (…)" with no qualifier field
-    if (ANON_NAME.test(desc) || /^(studio|workshop|assistants?|circle|school|followers?)\b/i.test(desc.trim())) {
-      anonymous = true
-      if (/^(studio|workshop|assistants?|circle|school|followers?)\b/i.test(desc.trim())) qualified ||= desc.trim()
-      continue
-    }
+    if (/^(studio|workshop|assistants?|circle|school|followers?)\b/i.test(desc.trim())) qualified ||= desc.trim()
+    if (ANON_NAME.test(desc)) { anonymous = true; continue }
     const facts = parseLifeFacts(desc)
     const dy = toYear(c.death_year)
     if (facts.length) {
@@ -383,13 +374,11 @@ export function peopleFromCma(a) {
       }
     } else if (dy != null || toYear(c.birth_year) != null) {
       people.push({ name: desc, from: 'creators[].birth_year/death_year', ...UNDATED, birth: toYear(c.birth_year), death: dy, deathApprox: dy != null })
-    } else if (PRODUCTION_ROLE.test(c.role || '')) {
-      undatedProduction.push(`${c.role}: ${desc}`)
-    } else {
+    } else if (!PRODUCTION_ROLE.test(c.role || '')) {
       people.push({ name: desc, from: 'creators[].description (no dates)', ...UNDATED })
     }
   }
-  return { people, anonymous, undatedProduction, qualified, raw: (a.creators || []).map((c) => [c.role, c.qualifier, c.description].filter(Boolean).join(' ')).join('; ') }
+  return { people, anonymous, qualified, raw: (a.creators || []).map((c) => [c.role, c.qualifier, c.description].filter(Boolean).join(' ')).join('; ') }
 }
 
 export const ANONYMOUS_QID = 'Q4233718'
@@ -414,14 +403,17 @@ export function peopleFromWikidata(persons = []) {
     const qual = p.kind !== 'creator' ? p.kind : p.nature ? natureWord(p.nature) : null
     if (qual) qualified ||= `${qual} ${p.label || p.qid || 'unknown'}`
     if (!p.qid || p.qid === ANONYMOUS_QID) { anonymous = true; continue }
+    // One person named in several statements ("creator", "possibly") is judged once.
+    if (people.some((x) => x.qid === p.qid)) continue
     people.push({
+      qid: p.qid,
       ...UNDATED, name: p.label || p.qid, from: `Wikidata ${p.qid} P569/P570`,
       birth: p.birth ?? null, birthApprox: !!p.birthApprox, death: p.death ?? null, deathApprox: !!p.deathApprox,
     })
   }
   const raw = persons.map((p) => `${p.kind === 'creator' ? '' : `${p.kind} `}${p.label || p.qid || 'unknown value'}` +
     ` (${p.birth ?? '?'}–${p.death ?? '?'})${p.nature ? ` [${p.nature}]` : ''}`).join('; ')
-  return { people, anonymous, undatedProduction: [], qualified, raw }
+  return { people, anonymous, qualified, raw }
 }
 
 /**
@@ -434,7 +426,6 @@ export function peopleFromWikidata(persons = []) {
  */
 export function peopleFromCredits(credits = []) {
   const people = []
-  const undatedProduction = []
   let anonymous = !credits.length
   let qualified = null
   for (const c of credits) {
@@ -453,37 +444,50 @@ export function peopleFromCredits(credits = []) {
       }
     } else if (birth != null || death != null || toYear(c.deathAfter) != null) {
       people.push({ ...UNDATED, name: c.name, from: c.from, birth, birthApprox: !!c.birthApprox, death, deathApprox: !!c.deathApprox, deathAfter: toYear(c.deathAfter) })
-    } else if (PRODUCTION_ROLE.test(c.role || '')) {
-      undatedProduction.push(`${c.role}: ${c.name}`)
-    } else {
+    } else if (!PRODUCTION_ROLE.test(c.role || '')) {
       people.push({ ...UNDATED, name: c.name, from: `${c.from} (no dates)` })
     }
   }
   const raw = credits.map((c) => [c.role && `${c.role}:`, c.qualifier, c.name || 'unknown', c.life ? `(${c.life})` : (c.birth || c.death) ? `(${c.birth ?? '?'}–${c.death ?? '?'})` : null]
     .filter(Boolean).join(' ')).join('; ')
-  return { people, anonymous, undatedProduction, qualified, raw }
+  return { people, anonymous, qualified, raw }
 }
 
-/** The latest year by which this person is certainly dead, and why. */
+/** The year this person is taken to have died by, and why. */
 function diedBy(p, objectEnd) {
   if (p.living) return { by: Infinity, why: 'listed as living' }
   if (p.death != null) {
     return { by: p.death + (p.deathApprox ? APPROX_MARGIN : 0), why: `died ${p.deathApprox ? 'c. ' : ''}${p.death}` }
   }
+  // No death year: assume a LIFESPAN-year life, born MIN_WORKING_AGE years
+  // before the first active year or the work.
   const after = p.deathAfter != null ? `died after ${p.deathAfter}; ` : ''
+  const at = (by, why) => ({ by: Math.max(by, p.deathAfter ?? -Infinity), why: `${after}${why} -> taken as dead by ${by}` })
   if (p.birth != null) {
-    const by = p.birth + (p.birthApprox ? APPROX_MARGIN : 0) + MAX_LIFESPAN
-    return { by: Math.max(by, p.deathAfter ?? -Infinity), why: `${after}death year unknown, born ${p.birth} -> dead by ${by}` }
+    return at(p.birth + (p.birthApprox ? APPROX_MARGIN : 0) + LIFESPAN, `death year unknown, born ${p.birth}`)
   }
   if (p.floruit != null) {
-    const by = p.floruit + (p.floruitApprox ? APPROX_MARGIN : 0) - MIN_WORKING_AGE + MAX_LIFESPAN
-    return { by: Math.max(by, p.deathAfter ?? -Infinity), why: `${after}death year unknown, active from ${p.floruit} -> dead by ${by}` }
+    return at(p.floruit + (p.floruitApprox ? APPROX_MARGIN : 0) - MIN_WORKING_AGE + LIFESPAN, `death year unknown, active from ${p.floruit}`)
   }
-  if (objectEnd != null) {
-    const by = objectEnd - MIN_WORKING_AGE + MAX_LIFESPAN
-    return { by: Math.max(by, p.deathAfter ?? -Infinity), why: `${after}no life dates, object dated ${objectEnd} -> dead by ${by}` }
-  }
+  if (objectEnd != null) return at(objectEnd - MIN_WORKING_AGE + LIFESPAN, `no life dates, object dated ${objectEnd}`)
   return { by: Infinity, why: 'no life dates and no object date' }
+}
+
+/**
+ * A work can't be dated after its last artist died: such a date is a data error.
+ * dates = [{year, latest}] (as written, and the latest its precision allows);
+ * people = identified artists. Drops dates after the last death and caps the
+ * rest at it. lastDeath is null unless every artist's death year is known.
+ */
+export function datesBeforeDeath(dates, people) {
+  const deaths = people.map((p) => (p.living ? Infinity : p.death ?? null))
+  const lastDeath = deaths.length && deaths.every((d) => d != null) ? Math.max(...deaths) : null
+  if (lastDeath == null) return { dates, lastDeath, ignored: [] }
+  return {
+    dates: dates.filter((d) => d.year <= lastDeath).map((d) => ({ ...d, latest: Math.min(d.latest, lastDeath) })),
+    lastDeath,
+    ignored: dates.filter((d) => d.year > lastDeath),
+  }
 }
 
 // ---- 3. flat art -----------------------------------------------------------
@@ -587,11 +591,16 @@ export function italianPublic(h) {
 /**
  * c = { source, license_value, type_label, medium, object_end, who: {people,
  *       anonymous, qualified, raw}, width, height }
- * Commons also: p31[], p186[] (Wikidata QIDs), holders[] (see italianPublic), and
- *   open_museum {museum, object_id, releases, why} when a museum we source directly holds it.
+ * `dates` [{year, latest}] lists every date when a source has several (Commons'
+ *   P571), else object_end is the date.
+ * Commons also: p31[], p186[] (Wikidata QIDs), holders[] (see italianPublic),
+ *   scan {file, why, …} (scans.mjs), and open_museum {museum, object_id,
+ *   releases, why} when a museum we source directly holds it.
  * opts.skipSize: run checks 1-3 only (to decide whether a size probe is worth it).
+ * opts.skipFile: skip the checks that depend on the Commons file (licence and
+ *   size), to decide whether a search for a better scan is worth it.
  */
-export function clear(c, { cutoff = cutoffYear(), usCutoff = usCutoffYear(), skipSize = false } = {}) {
+export function clear(c, { cutoff = cutoffYear(), usCutoff = usCutoffYear(), skipSize = false, skipFile = false } = {}) {
   const fails = []
   const passes = []
   const ev = { cutoff_year: cutoff }
@@ -599,46 +608,39 @@ export function clear(c, { cutoff = cutoffYear(), usCutoff = usCutoffYear(), ski
 
   // 1. licence
   const lic = LICENSE_RULES[c.source]
+  const fileChecks = !(skipFile && commons)
   if (lic.check) {
-    const v = lic.check(c.license_value)
-    ev.license_flag = { [lic.field]: v.evidence }
-    ;(v.ok ? passes : fails).push(`licence: ${v.why}`)
+    if (fileChecks) {
+      const v = lic.check(c.license_value)
+      ev.license_flag = { [lic.field]: v.evidence }
+      ;(v.ok ? passes : fails).push(`licence: ${v.why}`)
+    }
   } else {
     ev.license_flag = { [lic.field]: c.license_value ?? null }
     if (lic.ok(c.license_value)) passes.push(`licence: ${lic.field} = ${JSON.stringify(c.license_value)}`)
     else fails.push(`licence: ${lic.field} = ${JSON.stringify(c.license_value ?? null)} (need ${lic.want})`)
   }
 
-  // 2. life + 70
-  const { people = [], anonymous = false, qualified = null, undatedProduction = [], raw = '' } = c.who || {}
+  // 2. life + 70. A named artist behind a qualifier ("workshop of", "after")
+  // is judged on their own dates; a work with no identifiable artist, on its date.
+  const { people = [], anonymous = false, qualified = null, raw = '' } = c.who || {}
   const oe = Number.isFinite(c.object_end) ? c.object_end : null
   ev.artist_text = raw || null
   ev.object_end_date = oe
   ev.anonymous = anonymous
   ev.attribution_qualifier = qualified
-  ev.undated_printers_publishers = undatedProduction
-  ev.people = people.map((p) => {
+  const judged = people.length ? people : [{ ...UNDATED, name: anonymous ? 'anonymous hand' : 'unrecorded artist', from: 'no identifiable artist' }]
+  ev.people = judged.map((p) => {
     const d = diedBy(p, oe)
-    const exact = p.death != null && !p.deathApprox && !p.living
-    return { name: p.name, from: p.from, death: p.death ?? null, birth: p.birth ?? null, floruit: p.floruit ?? null, died_by: Number.isFinite(d.by) ? d.by : null, ok: d.by <= cutoff, why: d.why, exact }
+    const known = p.death != null && !p.living
+    return { name: p.name, from: p.from, death: p.death ?? null, birth: p.birth ?? null, floruit: p.floruit ?? null, died_by: Number.isFinite(d.by) ? d.by : null, ok: d.by <= cutoff, why: d.why, known }
   })
-  if (!people.length && !anonymous) fails.push('artist: no artist information to establish a death date')
-  for (const { exact, ...p } of ev.people) {
+  for (const { known, ...p } of ev.people) {
     if (p.ok) passes.push(`artist ${p.name}: ${p.why} <= ${cutoff}`)
-    else if (exact) fails.push(`artist ${p.name}: ${p.why} > ${cutoff} — still in copyright (life+${TERM_YEARS})`)
+    else if (known) fails.push(`artist ${p.name}: ${p.why} > ${cutoff} — still in copyright (life+${TERM_YEARS})`)
     else fails.push(`artist ${p.name}: ${p.why}${p.died_by ? ` > ${cutoff}` : ''} — can't establish life+${TERM_YEARS} has run`)
   }
-  ev.people = ev.people.map(({ exact, ...p }) => p)
-  // Anonymous hands, any "attributed to / workshop of / after / ?" — where the real
-  // hand may be unknown — and undated printers/publishers must also clear the
-  // anonymous-work rule.
-  if (anonymous || qualified || undatedProduction.length) {
-    const why = anonymous ? 'anonymous/unidentified hand'
-      : qualified ? `attribution "${qualified}"`
-      : `undated ${undatedProduction.join('; ')}`
-    if (oe != null && oe < ANON_BEFORE) passes.push(`${why}: object dated ${oe} < ${ANON_BEFORE}`)
-    else fails.push(`${why}: object date ${oe ?? 'unknown'} is not < ${ANON_BEFORE}`)
-  }
+  ev.people = ev.people.map(({ known, ...p }) => p)
 
   // 3. flat art
   const flat = FLAT_RULES[c.source]
@@ -649,11 +651,20 @@ export function clear(c, { cutoff = cutoffYear(), usCutoff = usCutoffYear(), ski
   else passes.push(`flat art: ${c.type_label}`)
 
   if (US_DATE_RULE.has(c.source)) {
-    // 5. US safety: the 1930 rule stands in for "published 95+ years ago".
+    // 5. US safety. A work published in the US gets 95 years from publication,
+    // so only one from before usCutoff + 1 is safe; life+70 covers unpublished
+    // works only. An artist who died by usCutoff can't have made a later one.
     ev.us_cutoff_year = usCutoff
-    if (oe == null) fails.push(`US: no ${commons ? 'inception date (P571)' : 'date'} — can't show the work is from ${usCutoff} or earlier`)
-    else if (oe > usCutoff) fails.push(`US: dated ${oe} > ${usCutoff} — may still be in US copyright`)
-    else passes.push(`US: dated ${oe} <= ${usCutoff}`)
+    const { dates, lastDeath, ignored } = datesBeforeDeath(c.dates ?? (oe != null ? [{ year: oe, latest: oe }] : []), people)
+    const usEnd = dates.length ? Math.max(...dates.map((d) => d.latest)) : null
+    ev.us_date = usEnd
+    if (ignored.length) ev.us_dates_ignored = ignored.map((d) => d.year)
+    const after = ignored.length ? ` (ignoring ${ignored.map((d) => d.year).join(', ')}, after the artist's death in ${lastDeath})` : ''
+    const what = commons ? 'inception date (P571)' : 'date'
+    if (lastDeath != null && lastDeath <= usCutoff) passes.push(`US: every artist died by ${usCutoff} (last in ${lastDeath}), so the work is from ${usCutoff} or earlier`)
+    else if (usEnd == null) fails.push(`US: no usable ${what}${after} — can't show the work is from ${usCutoff} or earlier`)
+    else if (usEnd > usCutoff) fails.push(`US: dated ${usEnd} > ${usCutoff}${after} — may still be in US copyright`)
+    else passes.push(`US: dated ${usEnd} <= ${usCutoff}${after}`)
   }
 
   if (commons) {
@@ -675,12 +686,14 @@ export function clear(c, { cutoff = cutoffYear(), usCutoff = usCutoffYear(), ski
   }
 
   // 4. resolution
-  if (!skipSize) {
+  if (!skipSize && fileChecks) {
     const long = Math.max(c.width || 0, c.height || 0)
     ev.image = { width: c.width ?? null, height: c.height ?? null, long_edge: long || null }
-    if (!long) fails.push('image: no image / size unknown')
-    else if (long < MIN_LONG_EDGE) fails.push(`image: long edge ${long}px < ${MIN_LONG_EDGE}px`)
-    else passes.push(`image: long edge ${long}px >= ${MIN_LONG_EDGE}px`)
+    if (c.scan) ev.scan = c.scan
+    const why = c.scan?.upgraded ? ` (${c.scan.why})` : ''
+    if (!long) fails.push(`image: no image / size unknown${why}`)
+    else if (long < MIN_LONG_EDGE) fails.push(`image: long edge ${long}px < ${MIN_LONG_EDGE}px${why}`)
+    else passes.push(`image: long edge ${long}px >= ${MIN_LONG_EDGE}px${why}`)
   }
 
   return { pass: fails.length === 0, reasons: fails.length ? fails : passes, evidence: ev }

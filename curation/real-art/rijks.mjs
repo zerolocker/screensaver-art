@@ -9,6 +9,7 @@
 import { APPROX_MARGIN, isQualified, LICENSE_RULES, peopleFromCredits } from './clearance.mjs'
 import { fold, http, log, mapPool } from './lib.mjs'
 import { datesFor, record } from './sources.mjs'
+import { rijksWing } from './wings.mjs'
 
 const ID = 'https://id.rijksmuseum.nl/'
 const SEARCH = 'https://data.rijksmuseum.nl/search/collection'
@@ -190,7 +191,7 @@ export function rijksRecord({ obj, rights, image, persons = new Map() }) {
   const shownDate = arr(ts?.identified_by).find((x) => inLang(x, EN))?.content || arr(ts?.identified_by)[0]?.content || null
   const begin = yearOf(ts?.begin_of_the_begin)
   const end = yearOf(ts?.end_of_the_end)
-  // "c. 1925" is stored as 1925: the date checks take it as up to ten years later, as for Commons.
+  // "c. 1925" is stored as 1925, and counts as written (APPROX_MARGIN), as for Commons.
   const objectEnd = end == null ? null : end + (isCircaText(shownDate) && begin === end ? APPROX_MARGIN : 0)
   const who = peopleFromCredits(rijksCredits(obj, persons))
   const statement = enText(obj.produced_by?.referred_to_by, ATTRIBUTION)
@@ -216,6 +217,7 @@ export function rijksRecord({ obj, rights, image, persons = new Map() }) {
     },
     image: { url: image?.url ?? null, width: image?.width, height: image?.height },
     highlight: ids(obj.member_of).includes(TOP_100),
+    wing: rijksWing(obj),
     wd: { id: numericId, inv: objectNumber, qid: null },
   })
 }

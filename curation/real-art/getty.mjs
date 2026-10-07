@@ -5,6 +5,7 @@
 import { GETTY_TYPES, LICENSE_RULES, peopleFromCredits } from './clearance.mjs'
 import { chunk, fold, http, log, mapPool } from './lib.mjs'
 import { datesFor, record } from './sources.mjs'
+import { gettyWing } from './wings.mjs'
 
 const SPARQL = 'https://data.getty.edu/museum/collection/sparql'
 const OBJECT = 'https://data.getty.edu/museum/collection/object/'
@@ -155,6 +156,7 @@ export function gettyRecord(o, manifest = null) {
     },
     image: { url: manifest?.base ? `${manifest.base}/full/max/0/default.jpg` : null, width: manifest?.width, height: manifest?.height },
     highlight: false,
+    wing: gettyWing(o),
     wd: { id: slug, inv: o.acc || null, qid: null },
   })
 }

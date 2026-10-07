@@ -11,6 +11,7 @@ import { pipeline } from 'node:stream/promises'
 import { isQualified, peopleFromCredits } from './clearance.mjs'
 import { fold, http, HttpError, log } from './lib.mjs'
 import { datesFor, record } from './sources.mjs'
+import { ngaWing } from './wings.mjs'
 
 const DATA = 'https://raw.githubusercontent.com/NationalGalleryOfArt/opendata/main/data'
 export const NGA_CACHE = path.join(os.tmpdir(), 'lart-real-art-cache', 'nga')
@@ -130,7 +131,7 @@ function loadIndex() {
     const t = Date.now()
     const objects = new Map()
     const byAccession = new Map()
-    eachCsvRow(texts.objects, ['objectid', 'accessionnum', 'title', 'displaydate', 'endyear', 'medium', 'attribution', 'creditline', 'classification', 'wikidataid'], (o) => {
+    eachCsvRow(texts.objects, ['objectid', 'accessionnum', 'title', 'displaydate', 'beginyear', 'endyear', 'medium', 'attribution', 'creditline', 'classification', 'wikidataid'], (o) => {
       objects.set(o.objectid, o)
       if (o.accessionnum) byAccession.set(o.accessionnum, o.objectid)
     })
@@ -258,6 +259,7 @@ export function ngaRecord({ o, artists, image }) {
     },
     image: { url: image?.iiifurl ? `${image.iiifurl}/full/full/0/default.jpg` : null, width: w, height: h },
     highlight: false,
+    wing: ngaWing(o, artists),
     wd: { id: o.objectid, inv: o.accessionnum || null, qid: /^Q\d+$/.test(o.wikidataid) ? o.wikidataid : null },
   })
 }

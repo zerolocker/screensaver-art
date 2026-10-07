@@ -2,7 +2,7 @@
 
 The runbook when `curation/CURATION_MODE` is `real-paintings`. Each night, add **four famous public-domain paintings, animated with Gemini Omni**. Only the motion is generated. Famous works come first, because people recognize them and search for them by name.
 
-Run every command from the repo root. The fixed animation config, its prompt and how to check the clip are in [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md).
+Run every command from the repo root. The fixed animation config and its prompt are in [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md).
 
 ## Prerequisites
 
@@ -78,7 +78,13 @@ Commons works also need:
    ```
    Fill in only the title, artist and year (rules in the guidance). Don't change anything else.
 
-6. **Check the clip before publishing**, per *Checking the clip* in the guidance. Reject only an obvious failure, such as the painting turning into a different scene. If it fails, reroll once with the same prompt. If that fails too, drop the painting and take the next pick.
+6. **Check the clip before publishing.** Pull the first, middle and last frames, e.g. `ffmpeg -ss <t> -i clip.mp4 -frames:v 1 f<t>.png`. Reject a clip only for an **obvious** failure, one anyone would see at a glance:
+   - **It's no longer this painting.** By the middle or the end it has become a different scene.
+   - **The file is broken**: blank, black or garbled frames.
+
+   Don't reject for anything subtler: the camera drifting or reframing, a figure turning or changing expression, a prop, accessory or animal appearing or vanishing, cloth or water moving. Judging fine detail from a few frames is unreliable and rejected good clips. When unsure, publish.
+
+   If a clip fails, reroll once with the same prompt (Omni varies from run to run). If that fails too, drop the painting and take the next pick.
 
 7. **Publish.**
    ```bash

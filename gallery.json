@@ -7402,7 +7402,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Mona_Lisa,_by_Leonardo_da_Vinci,_from_C2RMF_retouched.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Mona Lisa, by Leonardo da Vinci, completed in the year of 1503.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Calm, contemplative chamber music: fingerpicked lute-like classical guitar, soft viola and cello, a quiet wooden flute. Warm, gently mysterious, unhurried. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/vangogh_the_starry_night_animated.mp4",
@@ -7425,7 +7426,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Starry Night, by Vincent van Gogh, completed in the year of 1889.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Calm, contemplative chamber music: fingerpicked lute-like classical guitar, soft viola and cello, a quiet wooden flute. Warm, gently mysterious, unhurried. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/wood_american_gothic_animated.mp4",
@@ -7448,7 +7450,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Grant_Wood_-_American_Gothic_(1930).jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled American Gothic, by Grant Wood, completed in the year of 1930.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Calm, contemplative chamber music: fingerpicked lute-like classical guitar, soft viola and cello, a quiet wooden flute. Warm, gently mysterious, unhurried. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/osmanhamdi_the_tortoise_trainer_animated.mp4",
@@ -7471,6 +7474,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Osman_Hamdi_Bey_-_The_Tortoise_Trainer_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Tortoise Trainer, by Osman Hamdi Bey, completed in the year of 1906.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Calm, contemplative chamber music: fingerpicked lute-like classical guitar, soft viola and cello, a quiet wooden flute. Warm, gently mysterious, unhurried. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

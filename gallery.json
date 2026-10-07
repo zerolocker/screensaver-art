@@ -7380,5 +7380,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Princesse de Broglie, by Jean-Auguste-Dominique Ingres, completed in the year of 1851.",
     "looping": false,
     "music_prompt": "Unhurried candlelit chamber music: string quartet with soft harpsichord, warm and dignified, gentle Baroque-to-Classical phrasing, intimate portrait-gallery calm. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_mona_lisa_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_mona_lisa_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_mona_lisa_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_mona_lisa_640w.webp",
+    "title": "Mona Lisa - Leonardo da Vinci (AI Animated)",
+    "type": "video",
+    "date": "2026-10-07",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Leonardo da Vinci",
+    "artist_dates": "1452–1519",
+    "original_title": "Mona Lisa",
+    "original_date": "1503–1506",
+    "museum": "Louvre Museum",
+    "credit_line": "Image: Wikimedia Commons, Mona Lisa, by Leonardo da Vinci, from C2RMF retouched.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Mona_Lisa,_by_Leonardo_da_Vinci,_from_C2RMF_retouched.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Mona Lisa, by Leonardo da Vinci, completed in the year of 1503.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/vangogh_the_starry_night_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/vangogh_the_starry_night_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/vangogh_the_starry_night_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/vangogh_the_starry_night_640w.webp",
+    "title": "The Starry Night - Vincent van Gogh (AI Animated)",
+    "type": "video",
+    "date": "2026-10-07",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Vincent van Gogh",
+    "artist_dates": "1853–1890",
+    "original_title": "The Starry Night",
+    "original_date": "1889",
+    "museum": "Museum of Modern Art",
+    "credit_line": "Image: Wikimedia Commons, Van Gogh - Starry Night - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Starry Night, by Vincent van Gogh, completed in the year of 1889.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/wood_american_gothic_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/wood_american_gothic_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/wood_american_gothic_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/wood_american_gothic_640w.webp",
+    "title": "American Gothic - Grant Wood (AI Animated)",
+    "type": "video",
+    "date": "2026-10-07",
+    "tags": [
+      "Modern"
+    ],
+    "source": "real_artwork",
+    "artist": "Grant Wood",
+    "artist_dates": "1891–1942",
+    "original_title": "American Gothic",
+    "original_date": "1930",
+    "museum": "Art Institute of Chicago",
+    "credit_line": "Image: Wikimedia Commons, Grant Wood - American Gothic (1930).jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Grant_Wood_-_American_Gothic_(1930).jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled American Gothic, by Grant Wood, completed in the year of 1930.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/osmanhamdi_the_tortoise_trainer_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/osmanhamdi_the_tortoise_trainer_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/osmanhamdi_the_tortoise_trainer_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/osmanhamdi_the_tortoise_trainer_640w.webp",
+    "title": "The Tortoise Trainer - Osman Hamdi Bey (AI Animated)",
+    "type": "video",
+    "date": "2026-10-07",
+    "tags": [
+      "Islamic"
+    ],
+    "source": "real_artwork",
+    "artist": "Osman Hamdi Bey",
+    "artist_dates": "1842–1910",
+    "original_title": "The Tortoise Trainer",
+    "original_date": "1906",
+    "museum": "Suna and İnan Kıraç Foundation",
+    "credit_line": "Image: Wikimedia Commons, Osman Hamdi Bey - The Tortoise Trainer - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Osman_Hamdi_Bey_-_The_Tortoise_Trainer_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Tortoise Trainer, by Osman Hamdi Bey, completed in the year of 1906.",
+    "looping": false
   }
 ]

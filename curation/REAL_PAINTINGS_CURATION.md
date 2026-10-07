@@ -8,11 +8,13 @@ Run every command from the repo root. The fixed animation config and its prompt 
 
 The same secrets and wrapper as [`AUTOMATED_CURATION.md`](AUTOMATED_CURATION.md#prerequisites): `GEMINI_API_KEY` (Omni and the clip's music), `CLOUDFLARE_API_TOKEN` (used by `publish-piece.mjs`), and `ZERNIO_API_KEY` (social). No image generation. Needs Node 18+, `ffmpeg`, and `google-genai` 2.25 or newer for `python3`, because Omni uses the Interactions API. If the Omni script says the SDK is too old, run `python3 -m pip install -U google-genai` and retry.
 
-There are eight sources: seven museums (the Art Institute of Chicago, the Cleveland Museum of Art, the Met, the National Gallery of Art in Washington, the Rijksmuseum, the Getty Museum and SMK in Copenhagen) and Wikimedia Commons. Commons covers famous works in museums that publish no open images, such as the Louvre, the Prado, the National Gallery in London and MoMA. None of them needs a key. If one is down, use the others; if all are down, abort and report. **Take images only from the seven museums or Wikimedia Commons under these rules,** never from search engines, stock sites or anywhere else.
+There are eight sources: seven museums (the Art Institute of Chicago, the Cleveland Museum of Art, the Met, the National Gallery of Art in Washington, the Rijksmuseum, the Getty Museum and SMK in Copenhagen) and Wikimedia Commons. Commons covers famous works in museums that publish no open images, such as the Louvre, the Prado, the National Gallery in London and MoMA. None of them needs a key. **Take images only from the seven museums or Wikimedia Commons under these rules,** never from search engines, stock sites or anywhere else.
+
+The night doesn't search them. A monthly refresh clears their most famous works into a catalog, and the night picks from its queue ([`REAL_PAINTINGS_CATALOG.md`](REAL_PAINTINGS_CATALOG.md)). The founder vetoes works in `curation/real-art/blocklist.txt`.
 
 ## The legal gate
 
-`curation/real-art/find-paintings.mjs` passes a painting only if all of these hold, and records the evidence in its `clearance` field:
+The catalog holds only paintings that pass all of these, checked by `curation/real-art/clearance.mjs` at each refresh. Each record keeps the evidence in its `clearance` field:
 1. **The image is marked public domain.** For the seven museums, the museum's own Public Domain or CC0 flag on the image. For Commons, the file's own licence must say public domain (PD-Art, PD-old or CC0), with no CC BY, CC BY-SA or other rights claim on the file.
 2. **The artist died at least 71 years ago** (1955 or earlier, in 2026). The work's own age doesn't count: Hopper's *Nighthawks* (1942) is open access, but Hopper died in 1967, so it's blocked until 2038.
    - Approximate years count as written: "c. 1880" is 1880.
@@ -40,11 +42,14 @@ Commons works also need:
 
 1. **Context.** Read the repo-root `README.md`, `REAL_ART_GUIDANCE.md`, and the *Gallery tags* and *Music prompts* sections of `PROMPT_GUIDANCE.md`. Its other rules are for writing AI image and video prompts, and this mode writes none.
 
-2. **Find candidates.**
+2. **Read the queue.**
    ```bash
-   node curation/real-art/find-paintings.mjs --famous --limit 80 --out /tmp/lart-candidates.json
+   node curation/real-art/queue.mjs --out /tmp/lart-candidates.json
    ```
-   Add `--query "<theme>"` for variety. `--ids aic:<id>` checks one specific work (`rijks:SK-C-5`, `smk:KMS3716`, `wd:<QID>` for Commons; the README lists every form). Everything in the output has passed the gate and isn't in `gallery.json` yet.
+   It writes the next 80 works from the catalog. Every one has passed the gate, isn't in `gallery.json` yet and isn't on the blocklist. It makes no requests.
+   - If it fails (no catalog, or no works left), abort the night and report the error. Don't search the museums instead.
+   - If it prints a `WARNING` (for example, the catalog is over 34 days old), carry on and put the warning at the top of your final report.
+   - Pick only from this file. A work outside it may be vetoed or uncleared.
 
 3. **Pick four.**
    - **Recognizable.** Prefer works a general audience knows: high in the list, plus your own judgement. The list ranks fame within each wing, so a famous Japanese print sits near a more famous European painting; `fame.wikipedia_langs` is the raw count. Each painting is used once.
@@ -64,7 +69,7 @@ Commons works also need:
    - `gallery/<stem>_4k.webp`: the whole painting on a 3840×2160 near-black wall. The web images are cut from this.
    - `gallery/<stem>.provenance.json`: the credit fields.
 
-   Its last line of output also gives `omni_aspect` (16:9 or 9:16). **Look at the stills.** If one is soft, discoloured or a detail crop, pick another painting.
+   Its last line of output also gives `omni_aspect` (16:9 or 9:16). **Look at the stills.** If one is soft, discoloured or a detail crop, pick another painting. If the download fails, the image has moved since the catalog was built: pick another and mention it in your report.
 
 5. **Animate with Omni** (the `omni-video-gen` skill), using the config and prompt in the guidance:
    ```bash
@@ -98,9 +103,10 @@ Commons works also need:
 
 8. **Repeat** steps 4–7 until four pieces are published.
 
-9. **Commit and push.**
+9. **Commit and push.** First refresh the founder's view of the queue, which now skips tonight's four.
    ```bash
-   git add gallery.json && git commit -m "AUTO_CURATION (real art): Added [Artist — Title, …]" \
+   node curation/real-art/queue.mjs --markdown
+   git add gallery.json curation/real-art/QUEUE.md && git commit -m "AUTO_CURATION (real art): Added [Artist — Title, …]" \
      -m "<one line per piece: why it was picked; any reroll or drop and why>" && git push
    ```
 

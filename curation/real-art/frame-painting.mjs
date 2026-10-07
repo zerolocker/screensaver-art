@@ -30,7 +30,8 @@ const USAGE = `usage: node curation/real-art/frame-painting.mjs \\
   (--candidates <file.json> --id <src:id> | --record <file.json>) \\
   [--stem <name>] [--margin <fraction>] [--out-dir <dir>]
 
-  --candidates/--id  pick one record (by object_id) from find-paintings output.
+  --candidates/--id  pick one record (by object_id) from queue.mjs or
+                     find-paintings.mjs output.
   --record           a JSON file holding one record (or a one-element array).
   --stem             output name; default <artist surname>_<short title slug>.
   --margin           wall showing on every side, as a fraction of the canvas

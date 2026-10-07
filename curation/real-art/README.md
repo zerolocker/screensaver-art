@@ -1,10 +1,53 @@
 # curation/real-art
 
-Scripts for the first half of the real-paintings curation ([`REAL_PAINTINGS_CURATION.md`](../REAL_PAINTINGS_CURATION.md)): find paintings, clear them legally, and frame them. The curator picks the four, then animates them with Omni and publishes with `publish-piece.mjs --provenance`.
+Scripts for the first half of the real-paintings curation ([`REAL_PAINTINGS_CURATION.md`](../REAL_PAINTINGS_CURATION.md)): find paintings, clear them legally, and frame them. A monthly refresh clears the most famous works into a catalog. Each night the curator reads the queue from it, picks four, frames them, animates them with Omni and publishes them with `publish-piece.mjs --provenance`.
 
 Needs Node 18+ and `ffmpeg`/`ffprobe`. No npm packages, no API keys.
 
+## The catalog
+
+The nightly doesn't search the sources. `build-catalog.mjs` clears the most famous works into `catalog.json` once a month, and the nightly reads the upcoming queue from it with `queue.mjs`. The refresh, the routine that runs it, and how to veto a work: [`REAL_PAINTINGS_CATALOG.md`](../REAL_PAINTINGS_CATALOG.md).
+
+| File | |
+|---|---|
+| `catalog.json` | Every work that passed the gate at the last refresh, minus those already in `gallery.json`. Committed. Metadata only. |
+| `QUEUE.md` | The upcoming queue with thumbnails, generated from the catalog. |
+| `blocklist.txt` | Works the nightly must never pick. |
+
+### build-catalog.mjs
+
+```bash
+node curation/real-art/build-catalog.mjs --summary /tmp/catalog-summary.md
+```
+
+- Runs a famous search of all eight sources through `search.mjs`, the pipeline `find-paintings.mjs` uses, so both clear works the same way. `--pool` (default 200) sets the candidates fetched per source; Commons takes 3×.
+- Clears every work from scratch. Nothing carries over from the last catalog.
+- Writes the passing works as `find-paintings.mjs` records (below), sorted by `object_id` so a refresh diffs cleanly. No images: a work's image is downloaded when it's picked.
+- Also records `built_at`, the cutoff years, a SHA-256 of `clearance.mjs`, and per-source counts.
+- Refuses to write after a partial outage: a source failed or found nothing, a host walled us off, the Wikidata fame lookup failed, a source passed under half as many works as last time, or under 150 works passed. `--force` writes anyway.
+- `--summary` writes the refresh PR's description: per-source counts, the works added and removed (and why each left), and the top 30 of the queue.
+
+### queue.mjs
+
+```bash
+node curation/real-art/queue.mjs                                  # print the next 40
+node curation/real-art/queue.mjs --out /tmp/lart-candidates.json  # the nightly's candidates (the next 80)
+node curation/real-art/queue.mjs --markdown                       # rewrite QUEUE.md
+```
+
+- The queue is the catalog minus works already in `gallery.json` (matched as in *Duplicates and fame*) and works on the blocklist. It's ranked like a famous run, over what's left: when a wing's best work is used, its next one takes its place in the first round.
+- `--out` writes the records `frame-painting.mjs --candidates` reads.
+- Fails when `catalog.json` is missing or unreadable, or nothing is left.
+- Warns on stderr and carries on when the catalog is over 34 days old, `clearance.mjs` has changed since the build, a blocklist line isn't an ID, or under 40 works are left.
+- Makes no requests.
+
+### blocklist.txt
+
+One work per line: an `object_id`, a bare Wikidata QID or the work's `source_url`, then `# why`. A `wd:Q…` line also blocks museum records of the same work (by their `qid`). It's applied when the queue is read, so a veto works from the next nightly run without a rebuild.
+
 ## find-paintings.mjs
+
+The same search, run by hand: to check specific works (`--ids`) or explore a theme (`--query`).
 
 ```bash
 node curation/real-art/find-paintings.mjs --famous --out /tmp/cands.json      # most famous eligible works
@@ -19,7 +62,7 @@ node curation/real-art/find-paintings.mjs --ids aic:27992,met:435702,rijks:SK-A-
 | `--famous` | Rank by fame. The default when there's no `--query` or `--ids`. |
 | `--ids src:id,…` | Check specific works: `aic:<id>`, `met:<objectID>`, `cma:<id or accession no.>`, `nga:<objectid or accession no.>`, `rijks:<object no. or Linked Art ID>`, `getty:<page slug, UUID or accession no.>`, `smk:<object no.>`, `wd:<Wikidata QID>` (Commons) |
 | `--limit N` | Max eligible records written (default 40) |
-| `--pool N` | Raw candidates fetched per source (default max(40, 2×limit)); Commons fetches 3× as many |
+| `--pool N` | Raw candidates fetched per source (default max(40, 2×limit)), plus as many as the gallery already took from it; Commons fetches 3× as many |
 | `--out <file>` | Output file (default stdout). Progress goes to stderr. |
 | `--show-rejects` | Also output rejected records with their reasons |
 
@@ -49,7 +92,7 @@ The file Wikidata links (P18) is sometimes an old small scan while Commons holds
 
 Each output record has:
 - **Nine provenance keys** that `publish-piece.mjs` copies into `gallery.json`: `source` (`"real_artwork"`), `artist`, `artist_dates`, `original_title`, `original_date`, `museum`, `credit_line`, `source_url`, `license` (`"Public Domain"` or `"CC0"`). For Commons, `museum` is the holding institution, `credit_line` reads "Image: Wikimedia Commons, <file>", `source_url` is the Commons file page, and `license` is `"Public Domain"`.
-- **Working keys:** `object_id` (`<source>:<id>`, `wd:Q…` for Commons), `image_url`, `width`, `height`, `aspect`, `classification`, `medium`, `wing`, `fame`, `clearance`.
+- **Working keys:** `object_id` (`<source>:<id>`, `wd:Q…` for Commons), `image_url`, `width`, `height`, `aspect`, `classification`, `medium`, `wing`, `fame`, `clearance`, and `qid`, the work's Wikidata item when known.
 
 ### The legal gate
 
@@ -120,4 +163,4 @@ node curation/real-art/frame-painting.mjs --record one-record.json --stem caille
 node --test curation/real-art/
 ```
 
-Offline fixture tests for the legal gate (`clearance.test.mjs`; `commons.test.mjs` for the Commons checks and naming; `museums.test.mjs` for NGA, the Rijksmuseum, the Getty and SMK), the scan picker (`scans.test.mjs`), and the wing hint and ranking (`wings.test.mjs`). `index.js` exists only so a bare directory argument works on Node 21+.
+Offline fixture tests for the legal gate (`clearance.test.mjs`; `commons.test.mjs` for the Commons checks and naming; `museums.test.mjs` for NGA, the Rijksmuseum, the Getty and SMK), the scan picker (`scans.test.mjs`), the wing hint and ranking (`wings.test.mjs`), and the catalog's queue, blocklist and staleness checks (`catalog.test.mjs`). `index.js` exists only so a bare directory argument works on Node 21+.

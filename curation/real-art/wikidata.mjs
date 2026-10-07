@@ -147,7 +147,7 @@ export async function famousKeys(source, limit) {
   if (cfg.inventory) parts.push(sub(invPattern(cfg.museum), 'inv'))
   const q = `SELECT ?key (MAX(?links) AS ?n) WHERE {
   ${parts.join('\n  UNION ')}
-} GROUP BY ?key ORDER BY DESC(?n) LIMIT ${Math.max(1, Math.floor(limit))}`
+} GROUP BY ?key ORDER BY DESC(?n) ?key LIMIT ${Math.max(1, Math.floor(limit))}`
   return (await sparql(q)).map((r) => {
     const [kind, ...rest] = r.key.split(':')
     return { kind, value: rest.join(':'), sitelinks: Number(r.n) }

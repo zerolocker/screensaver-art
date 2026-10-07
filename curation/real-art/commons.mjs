@@ -149,7 +149,8 @@ async function famousQids(n) {
 }`, { retries: 5 })
   // ORDER BY ... LIMIT times out on the server; ~1,700 rows sort fine here.
   const links = new Map(rows.map((r) => [qidOf(r.item), Number(r.links)]))
-  return [...links].sort((a, b) => b[1] - a[1]).slice(0, n).map(([q]) => q)
+  // Ties broken by QID, so the same works make the cut each run.
+  return [...links].sort((a, b) => b[1] - a[1] || Number(a[0].slice(1)) - Number(b[0].slice(1))).slice(0, n).map(([q]) => q)
 }
 
 /**
@@ -308,6 +309,16 @@ WHERE { ${V}
         parents: split(r.parents, '\t').map((s) => { const [q, label] = s.split('~'); return { qid: q, label: label || null } }),
       })
     }
+  }
+  // SPARQL returns rows in no fixed order. Sort every list, so the same work
+  // gets the same record (and the catalog the same diff) on every run.
+  const byText = (a, b) => String(a).localeCompare(String(b))
+  for (const q of keep) {
+    const it = items.get(q)
+    for (const k of ['images', 'types', 'materials', 'materialLabels', 'locations']) it[k].sort(byText)
+    it.dates.sort((a, b) => a.year - b.year || a.latest - b.latest)
+    it.museumRefs.sort((a, b) => byText(`${a.key}|${a.id ?? ''}|${a.inv ?? ''}`, `${b.key}|${b.id ?? ''}|${b.inv ?? ''}`))
+    it.holders.sort((a, b) => byText(a.qid, b.qid))
   }
   return keep.map((q) => items.get(q))
 }

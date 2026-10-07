@@ -1,10 +1,27 @@
 // node --test curation/real-art/
-// Offline fixtures for the wing hint: field shapes follow live AIC, Met, CMA
-// and Wikidata records (Oct 2026).
+// Offline fixtures for the wing hint: field shapes follow live museum and
+// Wikidata records (Oct 2026).
 
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { aicWing, cmaWing, commonsWing, metWing, rankByWing, wingOf } from './wings.mjs'
+import { aicWing, cmaWing, commonsWing, gettyWing, metWing, ngaWing, rankByWing, rijksWing, smkWing, wingOf } from './wings.mjs'
+
+test('NGA, the Rijksmuseum, the Getty and SMK', () => {
+  // NGA: the artists' display dates carry their nationality.
+  assert.equal(ngaWing({ attribution: 'Leonardo da Vinci', beginyear: '1474', endyear: '1478' }, [{ life: 'Florentine, 1452 - 1519' }]), 'Renaissance & Baroque')
+  assert.equal(ngaWing({ attribution: 'Katsushika Hokusai', beginyear: '1830', endyear: '1832' }, [{ life: 'Japanese, 1760 - 1849' }]), 'Japanese')
+  // Rijksmuseum: the production places, in English.
+  const place = (en) => ({ notation: [{ '@language': 'nl', '@value': en }, { '@language': 'en', '@value': en }] })
+  const rijks = (places, begin) => ({ produced_by: { timespan: { begin_of_the_begin: `${begin}-01-01T00:00:00Z` }, part: [{ took_place_at: places.map(place) }] } })
+  assert.equal(rijksWing(rijks(['Amsterdam'], 1642)), 'Renaissance & Baroque')
+  assert.equal(rijksWing(rijks(['Kyoto'], 1800)), 'Japanese')
+  assert.equal(rijksWing(rijks([], 1890)), '19th Century')
+  // Getty: the producer's description.
+  assert.equal(gettyWing({ producers: new Map([['p', { producer: 'Vincent van Gogh (Dutch, 1853 - 1890)' }]]), date: '1889' }), '19th Century')
+  // SMK: the creators' nationalities.
+  assert.equal(smkWing({ production: [{ creator_nationality: 'Danish' }], production_date: [{ start: '1897-01-01T00:00:00.000Z' }] }), '19th Century')
+  assert.equal(smkWing({ production: [{ creator_nationality: 'Indian' }], production_date: [{ start: '1650-01-01T00:00:00.000Z' }] }), 'South & Southeast Asian')
+})
 
 test('culture or region for non-Western art', () => {
   assert.equal(aicWing({ place_of_origin: 'Japan', department_title: 'Arts of Asia', artist_display: 'Katsushika Hokusai\nJapanese, 1760-1849', date_start: 1830 }), 'Japanese')

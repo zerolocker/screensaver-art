@@ -12,10 +12,10 @@ export const WESTERN_WINGS = new Set(['Medieval & Byzantine', 'Renaissance & Bar
 // split by date below.
 const REGIONS = [
   ['americas', /pre-?columbian|\baztec|\bmaya\b|\bmayan\b|\binca\b|olmec|nazca|nasca|\bmoche\b|mississippian|native american|first nations|\bindigenous\b|mexica\b|zapotec|mixtec|teotihuacan|huastec|ta[ií]no|andean|navajo|\bhopi\b|lakota|cheyenne|kiowa/i],
-  ['Japanese', /\bjapan(ese)?\b|ukiyo-?e|\bedo period|meiji|tokugawa|\bkan[oō] school|rinpa|yamato-e|nanga/i],
-  ['Chinese & Korean', /\bchin(a|ese)\b|\bkorea(n)?\b|joseon|goryeo|\b(qing|ming|song|tang|yuan|han|jin|liao) dynasty|taiwan/i],
-  ['South & Southeast Asian', /\bindia(n)?\b|mughal|rajput|rajasthan|pahari|deccan|\bnepal(ese)?\b|tibet(an)?|sri lanka|\bthai(land)?\b|cambodia|khmer|burm(a|ese)|myanmar|indonesia|\bjava(nese)?\b|\bbali(nese)?\b|vietnam|\blaos\b|bengal|pakistan|bangladesh|british raj|maratha|sikh empire/i],
-  ['Islamic', /islamic|persia(n)?\b|\biran(ian)?\b|ottoman|safavid|timurid|qajar|mamluk|fatimid|abbasid|umayyad|\barab(ic|ian)?\b|turk(ish|ey)\b|syria|iraq|afghan|uzbek|bukhara|herat|isfahan|tabriz|moorish|nasrid/i],
+  ['Japanese', /\bjapan(ese)?\b|ukiyo-?e|\bedo period|meiji|tokugawa|\bkan[oō] school|rinpa|yamato-e|nanga|\bedo\b|kyoto|osaka|tokyo|nagasaki/i],
+  ['Chinese & Korean', /\bchin(a|ese)\b|\bkorea(n)?\b|joseon|goryeo|\b(qing|ming|song|tang|yuan|han|jin|liao) dynasty|taiwan|beijing|peking|canton|guangzhou|nanjing|nanking|suzhou|hangzhou|jingdezhen|seoul/i],
+  ['South & Southeast Asian', /\bindia(n)?\b|mughal|rajput|rajasthan|pahari|deccan|\bnepal(ese)?\b|tibet(an)?|sri lanka|\bthai(land)?\b|cambodia|khmer|burm(a|ese)|myanmar|indonesia|\bjava(nese)?\b|\bbali(nese)?\b|vietnam|\blaos\b|bengal|pakistan|bangladesh|british raj|maratha|sikh empire|delhi|agra|lucknow|calcutta|kolkata|bombay|mumbai|madras|jaipur|golconda/i],
+  ['Islamic', /islamic|persia(n)?\b|\biran(ian)?\b|ottoman|safavid|timurid|qajar|mamluk|fatimid|abbasid|umayyad|\barab(ic|ian)?\b|turk(ish|ey)\b|syria|iraq|afghan|uzbek|bukhara|herat|isfahan|tabriz|moorish|nasrid|istanbul|constantinople|cairo/i],
   ['egypt', /\begypt(ian)?\b|fayum|coptic/i],
   ['near-east', /mesopotamia|assyria|babylon|sumer|achaemenid|sasanian|scythian|elamite/i],
   ['Arts of Africa & Oceania', /\bafrica(n)?\b(?! american)|nigeria|\bbenin\b|yoruba|congo|ghana|asante|\bmali\b|ethiopia|kenya|cameroon|gabon|angola|zimbabwe|oceania|polynesia|melanesia|micronesia|m[aā]ori|aborigin|papua|new guinea|hawai|samoa|fiji|tonga|vanuatu|solomon islands/i],
@@ -103,6 +103,35 @@ export const metWing = (o) => wingOf({
 export const cmaWing = (a) => wingOf({
   fields: [...[].concat(a.culture || []), a.department, ...(a.creators || []).map((c) => c.description)],
   year: year(a.creation_date_earliest, a.creation_date_latest),
+})
+
+const isoYear = (s) => { const m = String(s ?? '').match(/^(-?\d{1,4})-/); return m ? Number(m[1]) : null }
+const firstYear = (s) => { const m = String(s ?? '').match(/\b\d{3,4}\b/); return m ? Number(m[0]) : null }
+
+/** NGA: the artists' display dates ("Florentine, 1452 - 1519") carry their nationality. */
+export const ngaWing = (o, artists = []) => wingOf({
+  fields: [...artists.map((a) => a.life), o.attribution],
+  year: year(o.beginyear, o.endyear),
+})
+
+/** Rijksmuseum: the production places ("Amsterdam", "Japan"), in English. */
+export function rijksWing(obj) {
+  const pb = obj.produced_by || {}
+  const places = [pb, ...[].concat(pb.part || [])].flatMap((p) => [].concat(p.took_place_at || []))
+    .flatMap((pl) => [].concat(pl.notation || []).filter((n) => n['@language'] === 'en').map((n) => n['@value']))
+  return wingOf({ fields: places, year: isoYear(pb.timespan?.begin_of_the_begin) })
+}
+
+/** Getty: each producer's description ("Vincent van Gogh (Dutch, 1853 - 1890)"). */
+export const gettyWing = (o) => wingOf({
+  fields: [...(o.producers?.values() || [])].map((p) => p.producer),
+  year: firstYear(o.date) ?? isoYear(o.end),
+})
+
+/** SMK: the creators' nationalities. */
+export const smkWing = (o) => wingOf({
+  fields: (o.production || []).map((c) => c.creator_nationality),
+  year: isoYear(o.production_date?.[0]?.start) ?? isoYear(o.production_date?.[0]?.end),
 })
 
 /** Commons: country of origin (P495), culture (P2596), the creators' citizenship (P27), movement (P135). */

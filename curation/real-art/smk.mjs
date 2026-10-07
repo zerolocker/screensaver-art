@@ -5,6 +5,7 @@
 import { APPROX_MARGIN, peopleFromCredits } from './clearance.mjs'
 import { chunk, http, log } from './lib.mjs'
 import { datesFor, record } from './sources.mjs'
+import { smkWing } from './wings.mjs'
 
 const API = 'https://api.smk.dk/api/v1/art'
 const MUSEUM = 'SMK – National Gallery of Denmark'
@@ -114,6 +115,7 @@ export function smkRecord(o) {
     },
     image,
     highlight: false,
+    wing: smkWing(o),
     wd: { inv: o.object_number },
   })
 }

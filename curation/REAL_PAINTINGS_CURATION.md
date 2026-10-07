@@ -99,5 +99,3 @@ Commons works also need:
    ```
 
 10. **Post to social.** Follow step 8 of [`AUTOMATED_CURATION.md`](AUTOMATED_CURATION.md). Put the most recognizable painting first, because it's what people see before they scroll on. Captions credit the painter automatically. Write music that suits the paintings' own times and places.
-
-11. **Lessons.** If a night teaches something genuinely new about animating real paint, add it as a rule in `REAL_ART_GUIDANCE.md` and commit it with the batch. Don't write a narrative log.

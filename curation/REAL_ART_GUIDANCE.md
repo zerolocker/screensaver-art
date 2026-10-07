@@ -25,13 +25,6 @@ Fixed for every painting. The founder chose it after iterating side by side on 1
 
 **9:16 results are expected** for tall paintings. The screensaver, the app and the website hang them on a dark wall, and social posts use them as-is.
 
-## Picking for Omni
-
-- **Prefer one to three large figures.** Single-figure and close-group scenes (Vermeer, Sargent, Caillebotte's foreground couple) stay faithful. Wide landscapes whose only motion is sky or water (El Greco's *View of Toledo*, Church's *Heart of the Andes*) and crowded scenes of many small figures (Seurat's *Grande Jatte*, Bruegel's *Harvesters*, Toulouse-Lautrec's *At the Moulin Rouge*) get repainted, recomposed or sprout new boats, carts and people.
-- **Prefer tightly finished paint over loose brushwork.** Smooth academic and Old Master surfaces (Rembrandt, Velázquez, David, Ingres) hold. Sketchy Impressionist handling gets repainted as smooth realism, with the camera pulling back and new props appearing (Degas's *Millinery Shop* and Manet's *Boating* failed twice each).
-- **Avoid scenes with several animals.** Omni adds more of them: Goya's *Manuel Osorio* gained extra cats in both takes, and a caged bird got out.
-- **Skip museum photos that include the physical frame** (Bonheur's *Horse Fair* at the Met). The gilt frame shows up on the wall still and in Omni's input.
-
 ## Fidelity checklist
 
 Step 6 of the runbook. Pull the first, middle and last frames, e.g. `ffmpeg -ss <t> -i clip.mp4 -frames:v 1 f<t>.png`.
@@ -41,4 +34,4 @@ Step 6 of the runbook. Pull the first, middle and last frames, e.g. `ffmpeg -ss 
 - [ ] **No new people or objects** have appeared, and none have vanished.
 - [ ] **Faces and hands are intact**: no melting, no extra limbs.
 
-If a check fails, reroll once with the same prompt (Omni varies from run to run). If it fails again, drop the painting and take the next pick. When a night shows a genuinely new failure pattern, add it here as a rule. Don't keep a narrative log.
+If a check fails, reroll once with the same prompt (Omni varies from run to run). If it fails again, drop the painting and take the next pick.

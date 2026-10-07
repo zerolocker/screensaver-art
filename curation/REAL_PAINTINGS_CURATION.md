@@ -2,7 +2,7 @@
 
 The runbook when `curation/CURATION_MODE` is `real-paintings`. Each night, add **four famous public-domain paintings, animated with Gemini Omni**. Only the motion is generated. Famous works come first, because people recognize them and search for them by name.
 
-Run every command from the repo root. The fixed animation config, its prompt and the review checklist are in [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md).
+Run every command from the repo root. The fixed animation config, its prompt and how to check the clip are in [`REAL_ART_GUIDANCE.md`](REAL_ART_GUIDANCE.md).
 
 ## Prerequisites
 
@@ -78,7 +78,7 @@ Commons works also need:
    ```
    Fill in only the title, artist and year (rules in the guidance). Don't change anything else.
 
-6. **Check the clip before publishing.** Pull the first, middle and last frames and go through the guidance's *Fidelity checklist*. Compare fixed landmarks (a lamppost, a wall edge, the signature, the painting's border) across the frames before you describe how anything moved. If it fails, reroll once with the same prompt. If that fails too, drop the painting and take the next pick.
+6. **Check the clip before publishing**, per *Checking the clip* in the guidance. Reject only an obvious failure, such as the painting turning into a different scene. If it fails, reroll once with the same prompt. If that fails too, drop the painting and take the next pick.
 
 7. **Publish.**
    ```bash

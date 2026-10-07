@@ -25,13 +25,14 @@ Fixed for every painting. The founder chose it after iterating side by side on 1
 
 **9:16 results are expected** for tall paintings. The screensaver, the app and the website hang them on a dark wall, and social posts use them as-is.
 
-## Fidelity checklist
+## Checking the clip
 
 Step 6 of the runbook. Pull the first, middle and last frames, e.g. `ffmpeg -ss <t> -i clip.mp4 -frames:v 1 f<t>.png`.
-- [ ] **Landmarks line up** across the frames (a lamppost, a building edge, the signature). If they don't, the camera moved.
-- [ ] **It's still this painting at the end**: same composition, nothing repainted into a different scene.
-- [ ] **Omni's crop keeps the subject**: no cut-off heads, and the focal point is in frame.
-- [ ] **No new people or objects** have appeared, and none have vanished.
-- [ ] **Faces and hands are intact**: no melting, no extra limbs.
 
-If a check fails, reroll once with the same prompt (Omni varies from run to run). If it fails again, drop the painting and take the next pick.
+Reject a clip only for an **obvious** failure, one anyone would see at a glance:
+- **It's no longer this painting.** By the middle or the end it has become a different scene, e.g. Degas's *Millinery Shop* turning into another, photoreal shop with a different room, props and woman.
+- **The file is broken**: blank, black or garbled frames.
+
+Don't reject for anything subtler: the camera drifting or reframing, a figure turning or changing expression, a prop, accessory or animal appearing or vanishing, cloth or water moving. Judging fine detail from a few frames is unreliable and rejected good clips. When unsure, publish.
+
+If a clip fails, reroll once with the same prompt (Omni varies from run to run). If it fails again, drop the painting and take the next pick.

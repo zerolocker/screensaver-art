@@ -10,7 +10,8 @@ Everything that fills and maintains `gallery.json`. Two parts feed each other:
 | `AUTOMATED_CURATION.md` | The nightly runbook. The scheduled job always starts here. |
 | `CURATION_MODE` | One word, `ai-generated` or `real-paintings`, that picks the runbook. |
 | `REAL_PAINTINGS_CURATION.md`, `REAL_ART_GUIDANCE.md` | The runbook and rules for animating real public-domain paintings. |
-| `real-art/` | Scripts that find, legally clear and frame those paintings. See its README. |
+| `REAL_PAINTINGS_CATALOG.md` | The monthly refresh of the paintings catalog, its routine, and how to see and veto what's coming. |
+| `real-art/` | Scripts that find, legally clear and frame those paintings, and the catalog the nightly picks from. See its README. |
 | `PROMPT_GUIDANCE.md` | Prompt rules learned from reviews. |
 | `ART_STYLES_FOR_INSPIRATION.md` | Styles for the agent to draw from. |
 | `publish-piece.mjs` | Publishes one finished piece: web images, R2 upload, `gallery.json` entry. |

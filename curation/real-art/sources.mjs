@@ -95,7 +95,8 @@ async function aicSearch({ query, highlights = false, n }) {
     const body = {
       query: { bool: { must, filter } }, fields: AIC_FIELDS,
       limit: Math.min(100, n - out.length), from,
-      ...(query ? {} : { sort: [{ boost_rank: { order: 'asc', missing: '_last' } }] }),
+      // Many works share a rank: break ties by ID, or each call returns a different page.
+      ...(query ? {} : { sort: [{ boost_rank: { order: 'asc', missing: '_last' } }, { id: 'asc' }] }),
     }
     const d = await http(`${AIC_API}/artworks/search`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),

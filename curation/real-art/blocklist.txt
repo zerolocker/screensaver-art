@@ -1,0 +1,9 @@
+# Works the nightly real-paintings curation must never pick.
+#
+# One work per line: its ID from QUEUE.md (an object_id such as rijks:SK-C-5
+# or wd:Q12418), then # and why. A wd:Q… line blocks the work from every
+# source, including a museum's copy of it. A pasted URL of the work's page
+# works too. Delete a line to lift the veto.
+#
+# Push to master and the next nightly run honours it. The catalog needn't be
+# rebuilt.

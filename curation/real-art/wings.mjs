@@ -150,6 +150,8 @@ export async function wikidataWingFacts(qids) {
       out.get(r.item.replace(/^.*\//, ''))?.[r.kind].push(...String(r.labels).split('|').filter(Boolean))
     }
   }
+  // The first label that names a region wins, so their order must not change between runs.
+  for (const f of out.values()) for (const list of Object.values(f)) list.sort()
   return out
 }
 

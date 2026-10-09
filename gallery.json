@@ -7476,5 +7476,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Tortoise Trainer, by Osman Hamdi Bey, completed in the year of 1906.",
     "looping": false,
     "music_prompt": "Calm, contemplative chamber music: fingerpicked lute-like classical guitar, soft viola and cello, a quiet wooden flute. Warm, gently mysterious, unhurried. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_girl_with_a_pearl_earring_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_girl_with_a_pearl_earring_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_girl_with_a_pearl_earring_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_girl_with_a_pearl_earring_640w.webp",
+    "title": "Girl with a Pearl Earring - Johannes Vermeer (AI Animated)",
+    "type": "video",
+    "date": "2026-10-08",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Johannes Vermeer",
+    "artist_dates": "1632–1675",
+    "original_title": "Girl with a Pearl Earring",
+    "original_date": "c. 1665",
+    "museum": "Mauritshuis",
+    "credit_line": "Image: Wikimedia Commons, 1665 Girl with a Pearl Earring.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:1665_Girl_with_a_Pearl_Earring.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Girl with a Pearl Earring, by Johannes Vermeer, completed in the year of 1665.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/rousseau_sleeping_gypsy_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/rousseau_sleeping_gypsy_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/rousseau_sleeping_gypsy_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/rousseau_sleeping_gypsy_640w.webp",
+    "title": "The Sleeping Gypsy - Henri Rousseau (AI Animated)",
+    "type": "video",
+    "date": "2026-10-08",
+    "tags": [
+      "Modern"
+    ],
+    "source": "real_artwork",
+    "artist": "Henri Rousseau",
+    "artist_dates": "1844–1919",
+    "original_title": "The Sleeping Gypsy",
+    "original_date": "1897",
+    "museum": "Museum of Modern Art",
+    "credit_line": "Image: Wikimedia Commons, La Bohémienne endormie.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:La_Boh%C3%A9mienne_endormie.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Sleeping Gypsy, by Henri Rousseau, completed in the year of 1897.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/han_gan_night_shining_white_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/han_gan_night_shining_white_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/han_gan_night_shining_white_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/han_gan_night_shining_white_640w.webp",
+    "title": "Night-Shining White - Han Gan (AI Animated)",
+    "type": "video",
+    "date": "2026-10-08",
+    "tags": [
+      "Chinese & Korean"
+    ],
+    "source": "real_artwork",
+    "artist": "Han Gan",
+    "artist_dates": "active c. 742–756",
+    "original_title": "Night-Shining White",
+    "original_date": "ca. 750",
+    "museum": "The Metropolitan Museum of Art",
+    "credit_line": "Purchase, The Dillon Fund Gift, 1977",
+    "source_url": "https://www.metmuseum.org/art/collection/search/39901",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Night-Shining White, by Han Gan, completed in the year of 750.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/monet_impression_sunrise_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/monet_impression_sunrise_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/monet_impression_sunrise_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/monet_impression_sunrise_640w.webp",
+    "title": "Impression, Sunrise - Claude Monet (AI Animated)",
+    "type": "video",
+    "date": "2026-10-08",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Claude Monet",
+    "artist_dates": "1840–1926",
+    "original_title": "Impression, Sunrise",
+    "original_date": "1872",
+    "museum": "Musée Marmottan Monet",
+    "credit_line": "Image: Wikimedia Commons, Monet - Impression, Sunrise.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Monet_-_Impression,_Sunrise.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Impression, Sunrise, by Claude Monet, completed in the year of 1872.",
+    "looping": false
   }
 ]

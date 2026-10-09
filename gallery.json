@@ -7572,5 +7572,101 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Impression, Sunrise, by Claude Monet, completed in the year of 1872.",
     "looping": false,
     "music_prompt": "Airy impressionist harp and breathy flute over soft strings; slow rippling phrases for a misty harbour sunrise. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/klimt_the_kiss_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/klimt_the_kiss_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/klimt_the_kiss_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/klimt_the_kiss_640w.webp",
+    "title": "The Kiss - Gustav Klimt (AI Animated)",
+    "type": "video",
+    "date": "2026-10-09",
+    "tags": [
+      "Modern"
+    ],
+    "source": "real_artwork",
+    "artist": "Gustav Klimt",
+    "artist_dates": "1862–1918",
+    "original_title": "The Kiss",
+    "original_date": "1907–1908",
+    "museum": "Belvedere",
+    "credit_line": "Image: Wikimedia Commons, The Kiss - Gustav Klimt - Google Cultural Institute.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Kiss, by Gustav Klimt, completed in the year of 1907.",
+    "looping": false,
+    "music_prompt": "Intimate Viennese chamber music, warm muted strings and delicate harp; slow, tender chromatic phrases with a luminous golden texture. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_the_night_watch_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_the_night_watch_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_the_night_watch_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_the_night_watch_640w.webp",
+    "title": "The Night Watch - Rembrandt van Rijn (AI Animated)",
+    "type": "video",
+    "date": "2026-10-09",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Rembrandt van Rijn",
+    "artist_dates": "1606–1669",
+    "original_title": "The Night Watch Militia Company of District II under the Command of Captain Frans Banninck Cocq",
+    "original_date": "1642",
+    "museum": "Rijksmuseum",
+    "credit_line": "On loan from the City of Amsterdam",
+    "source_url": "https://www.rijksmuseum.nl/en/collection/SK-C-5",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Night Watch, by Rembrandt van Rijn, completed in the year of 1642.",
+    "looping": false,
+    "music_prompt": "Dutch Baroque chamber music, harpsichord, warm viola and soft bass viol; measured processional pulse, dignified and restrained. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/sorolla_strolling_seashore_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/sorolla_strolling_seashore_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/sorolla_strolling_seashore_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/sorolla_strolling_seashore_640w.webp",
+    "title": "Strolling along the Seashore - Joaquín Sorolla (AI Animated)",
+    "type": "video",
+    "date": "2026-10-09",
+    "tags": [
+      "Modern"
+    ],
+    "source": "real_artwork",
+    "artist": "Joaquín Sorolla",
+    "artist_dates": "1863–1923",
+    "original_title": "Strolling along the Seashore",
+    "original_date": "1909",
+    "museum": "Sorolla Museum",
+    "credit_line": "Image: Wikimedia Commons, Joaquín Sorolla y Bastida - Strolling along the Seashore - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Joaqu%C3%ADn_Sorolla_y_Bastida_-_Strolling_along_the_Seashore_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Strolling along the Seashore, by Joaquín Sorolla, completed in the year of 1909.",
+    "looping": false,
+    "music_prompt": "Airy Spanish classical guitar and soft flute; gentle strolling rhythm, sunlit, graceful and breezy, with spacious phrasing. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/seurat_sunday_la_grande_jatte_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/seurat_sunday_la_grande_jatte_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/seurat_sunday_la_grande_jatte_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/seurat_sunday_la_grande_jatte_640w.webp",
+    "title": "A Sunday on La Grande Jatte - Georges Seurat (AI Animated)",
+    "type": "video",
+    "date": "2026-10-09",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Georges Seurat",
+    "artist_dates": "1859–1891",
+    "original_title": "A Sunday on La Grande Jatte — 1884",
+    "original_date": "1884–86, border added 1888–89",
+    "museum": "Art Institute of Chicago",
+    "credit_line": "Helen Birch Bartlett Memorial Collection",
+    "source_url": "https://www.artic.edu/artworks/27992",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled A Sunday on La Grande Jatte, by Georges Seurat, completed in the year of 1884.",
+    "looping": false,
+    "music_prompt": "Light French chamber music, pizzicato strings, mellow flute and delicate harp; relaxed lilting phrases for a bright riverside afternoon. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

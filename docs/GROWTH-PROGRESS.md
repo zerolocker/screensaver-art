@@ -20,8 +20,8 @@ The reasoning behind the plan is in [`growth-and-marketing-strategy.md`](growth-
 | Platform demand probe | Live | `components/marketing/platform-interest.tsx`. Results are PostHog events only. |
 | Brand-name SEO | Live | Title, meta description, JSON-LD |
 | Gallery landing pages | Live | `/gallery`, `/art/<slug>`, `/era/<tag>`. `/art/*` is `noindex`. |
-| Daily social posts | Live since 2026-09-07 | All of each night's pieces, stitched into one 9:16 clip, to Instagram, YouTube, TikTok and Pinterest through Zernio (about $12/month). Since 2026-10-08, every description leads with the app pitch and domain, then spaced artwork titles and credits. See `marketing/README.md`. |
-| Music for clips | Live | Lyria. One prompt per night's set, written by the nightly agent. |
+| Daily social posts | Live since 2026-09-07 | All of each night's pieces, stitched into one 9:16 clip, to Instagram, YouTube, TikTok and Pinterest through Zernio (about $12/month). Instagram, YouTube and TikTok descriptions lead with the app pitch and domain, then spaced artwork credits. Pinterest combines the daily-art pitch and artwork credits on one line, separated by pipes, and links to the homepage. See `marketing/README.md`. |
+| Music for clips | Live | Lyria. One distinct prompt and track per artwork, matching its scene, era and culture. Tracks crossfade with the visual dissolve (normally 1 s). |
 | Real-paintings curation | Switching on (PR #105, after app 1.4.10 ships) | Famous public-domain paintings animated with Gemini Omni replace AI art. `curation/REAL_PAINTINGS_CURATION.md`. Switch back with `curation/CURATION_MODE`. |
 | Lifetime price ($15.99) | Live | Pricing work is closed until there is traffic. |
 | Product Hunt | Failed, 2026-07-26 | 5 upvotes, no traffic. Can't be rerun for months. |
@@ -45,14 +45,14 @@ The reasoning behind the plan is in [`growth-and-marketing-strategy.md`](growth-
 
 | Task | Agent / branch / PR | Started |
 |---|---|---|
-| _(none)_ | | |
+| — | — | — |
 
 ## Next up
 
 1. **Directory submissions.** An agent builds a paste-ready pack (blurbs at each site's length limit, screenshots, categories) for alternativeto.net (under Aerial), MacUpdate and indie app directories. The founder pastes it in one sitting.
 2. **Press and creator outreach.** Target list, a `/press` kit page, and drafted pitches for the founder to send. One feature is worth months of our own posts.
 3. **Reddit.** One subreddit at a time, video first ([`launch-kit.md`](launch-kit.md)).
-4. **Read the UTM data** to learn which channel converts. Pins are tagged `utm_source=pinterest&utm_medium=social&utm_campaign=daily`. Instagram, YouTube and TikTok descriptions show the bare domain; tagged bio links provide channel attribution, while visits typed from that domain cannot identify the channel.
+4. **Read the attribution data** to learn which channel converts. New pins link to the bare homepage, so use Pinterest referrers rather than pin UTMs (older pins remain tagged). Instagram, YouTube and TikTok descriptions show the bare domain; tagged bio links provide channel attribution, while visits typed from that domain cannot identify the channel.
 
 ## Waiting on the founder
 
@@ -67,7 +67,7 @@ Look at the four accounts now and then and check:
 - The music fits the art. Any singing is a bug.
 - The title pill under the art isn't hidden by Instagram's caption.
 - Hashtags fit the piece, and pin titles lead with the style.
-- Each pin opens its own `/art/<slug>` page, and the bio links work.
+- New pins open the homepage, and the bio links work.
 - TikTok's pinned comment is visible when signed out. Failures show in the run log as `⚠ tiktok link comment`.
 - Instagram Reels carry the AI label, and YouTube Shorts have a real title and the synthetic-media disclosure.
 
@@ -79,9 +79,9 @@ Don't reverse these without asking the founder.
 
 - Nightly art is famous public-domain paintings, animated. The AI-art curation is paused, not deleted.
 - Post all of a night's pieces as one clip, to all four channels equally, and let the UTM data rank them.
-- Every description starts with the app pitch and `living-art-screensaver.com`, then separated artwork titles and artist/date/museum credits. Full provenance stays on the art pages. Pins link to the first piece's own page. Instagram and YouTube say "Link in bio"; TikTok says "Link in comment and bio", with the address in a pinned comment.
+- Instagram, YouTube and TikTok descriptions start with the app pitch and `living-art-screensaver.com`, then separated artwork titles and artist/date/museum credits. Full provenance stays on the art pages. Pinterest descriptions start with "Animated art screensaver app, with a new piece added every night." and append `Title (Artist, date · Museum)` blocks separated by pipes on one line. Pins link directly to the homepage. Instagram and YouTube say "Link in bio"; TikTok says "Link in comment and bio", with the address in a pinned comment.
 - Clips carry no brand or marketing text. The caption does the selling, and it leaves out "Mac" so interest from other platforms shows up.
-- Music is written for each night's set. Music that clashes with the pictures is worse than none.
+- Music is written separately for each artwork, matching its scene, era and culture. Music changes crossfade with the visual dissolves; music that clashes with the current painting is worse than none.
 - Buy social posting rather than build it (see the strategy doc).
 - `/art/*` pages exist for social, not search, and stay `noindex`.
 - Pricing stays as it is until there is traffic.

@@ -5,7 +5,7 @@
 // ("Captions"). Everything depends only on the pieces, so a retried post is identical.
 
 import { artistMovement, artistShortName, artworkHashtags, pieceHashtags } from './hashtags.mjs'
-import { SITE_ORIGIN, landingUrl } from './pieces.mjs'
+import { SITE_ORIGIN } from './pieces.mjs'
 
 /** What the app is, in as few words as a phone will show. */
 const PITCH = 'Animated art screensaver app'
@@ -156,16 +156,16 @@ export function buildCaptions(pieces) {
     },
     pinterest: {
       // Pin titles are what Pinterest search ranks, so they lead with what people
-      // search for: the painting and painter, or the style. A set's pin links to
-      // its first piece, so the title names that one.
+      // search for: the painting and painter, or the style. A set names its first piece.
       title: realArt
         ? fitWithTail(`${first.title} by ${first.artwork.artist}${set ? ` and ${pieces.length - 1} more` : ''}, animated`,
           ' | Art screensaver app', LIMIT.pinTitle)
         : clamp(`Animated ${first.style}: ${name} | Art screensaver app`, LIMIT.pinTitle),
-      description: fit(LIMIT.pinDescription, texts,
-        (l) => `${PITCH}\n${SITE_DOMAIN}\n\n${l.join('\n\n')}`),
-      // Tagged with the channel so PostHog can attribute pin traffic.
-      link: landingUrl(first.webSlug, 'pinterest'),
+      description: fit(LIMIT.pinDescription, pieces.map((p) =>
+        (p.artwork ? `${p.title} (${artworkCreditLine(p.artwork)})` : titleLine(p.title, p.style))
+          .replace(/\s+/g, ' ').trim()),
+      (l) => `${PITCH}, with a new piece added every night. ${l.join(' | ')}`),
+      link: `${SITE_ORIGIN}/`,
     },
   }
 }
@@ -173,15 +173,13 @@ export function buildCaptions(pieces) {
 /** The human-facing record written next to the rendered clips. */
 export function captionsMarkdown(pieces) {
   const c = buildCaptions(pieces)
-  const { webSlug } = pieces[0]
-  const page = webSlug ? `\`/art/${webSlug}\`` : 'the home page (no gallery entry for this source)'
-  const landing = webSlug && pieces.length > 1 ? `${page}, the first piece's page` : page
   return `# Social captions — ${postName(pieces)}
 
 _These are exactly the strings \`post-social.mjs\` publishes, so what you read here
-is what went out. Every description shows the app pitch and website domain.
+is what went out. Instagram, YouTube and TikTok show the app pitch and website domain.
 Instagram and YouTube point to the profile's bio; TikTok points to a pinned
-comment and the bio; the pin links to ${landing}._
+comment and the bio. Pinterest shows the daily-art pitch and artwork details on one
+line, separated by pipes, and links to the home page._
 
 ## Instagram Reels
 \`\`\`

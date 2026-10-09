@@ -62,36 +62,39 @@ The only files you change are `gallery.json`, `curation/ART_STYLES_FOR_INSPIRATI
    ```
    Don't commit anything else you generated.
 
-8. **Post tonight's pieces to social as one clip.** All four go out together, in one 9:16 clip, each dissolving into the next under one piece of music.
+8. **Post tonight's pieces to social as one clip.** All four go out together, in one 9:16 clip. Each artwork gets its own music, crossfaded with the visual dissolve (normally 1 s).
 
    **8a. Order the pieces.** Put first the one most likely to stop a thumb: a muted vertical clip seen for three seconds on a phone.
    - The most recognizable artwork leads, else the one with one clear subject. A landscape piece is zoomed 1.5× with its sides cropped, so a subject near an edge, or detail spread across a wide scene, makes a weak opener. A portrait piece is shown whole.
    - Colour and light that stand out in a feed. This is a brighter, higher-contrast bar than "looks good on a wall".
    - A different opener from the last few nights. `marketing/out/.posted.json` lists past posts; avoid a third misty landscape in a row.
 
-   **8b. Write one music prompt for the set** following *Music prompts* in `PROMPT_GUIDANCE.md`.
+   **8b. Write one distinct music prompt per artwork** following *Music prompts* in `PROMPT_GUIDANCE.md`. Match each painting's own scene, era and culture. Keep the prompts in the same order as the selected titles.
 
    **8c. Render and post.**
    ```bash
-   MUSIC_PROMPT="Warm, unhurried chamber music: soft strings and a gentle harp …
-   Even dynamics, no build or drop. Instrumental, no vocals."
+   MUSIC_1="<instruments, mood and texture for the first artwork>. Even dynamics, no build or drop. Instrumental, no vocals."
+   MUSIC_2="<music for the second artwork>. Even dynamics, no build or drop. Instrumental, no vocals."
+   MUSIC_3="<music for the third artwork>. Even dynamics, no build or drop. Instrumental, no vocals."
+   MUSIC_4="<music for the fourth artwork>. Even dynamics, no build or drop. Instrumental, no vocals."
 
    node marketing/make-social-assets.mjs \
      --titles "<first piece>" "<second>" "<third>" "<fourth>" \
-     --music-prompt "$MUSIC_PROMPT"
+     --music-prompt "$MUSIC_1" --music-prompt "$MUSIC_2" \
+     --music-prompt "$MUSIC_3" --music-prompt "$MUSIC_4"
 
    bash curation/with-secrets.sh ZERNIO_API_KEY -- \
      node marketing/post-social.mjs --slug <set slug from the render>
    ```
-   Each `--titles` value is a piece's exact title, or part of one that no other title contains; the script lists the matches if it's ambiguous. The first command generates the music, renders the clip and captions into `marketing/out/<set slug>/` (e.g. `mount-fuji-and-3-more`), and records `music_prompt` on every piece's `gallery.json` entry. The second posts the clip to Instagram, YouTube, TikTok and Pinterest; the pin links to the first piece's page. Details: [`marketing/README.md`](../marketing/README.md).
+   Each `--titles` value is a piece's exact title, or part of one that no other title contains; the script lists the matches if it's ambiguous. Repeat `--music-prompt` exactly once per artwork, in playback order. The first command generates four music tracks, renders the clip and captions into `marketing/out/<set slug>/` (e.g. `mount-fuji-and-3-more`), and records each artwork's own `music_prompt` on its `gallery.json` entry. The second posts the clip to Instagram, YouTube, TikTok and Pinterest; the pin links to the website's homepage. Details: [`marketing/README.md`](../marketing/README.md).
 
-   **8d. Commit the music prompt.**
+   **8d. Commit the music prompts.**
    ```bash
-   git add gallery.json && git commit -m "AUTO_CURATION: music_prompt for tonight's set" && git push
+   git add gallery.json && git commit -m "AUTO_CURATION: per-artwork music prompts for tonight's set" && git push
    ```
 
    Notes:
-   - Step 8 must run after step 7's push. The pin links to the first piece's web page, which exists only after Vercel rebuilds; the poster waits for it.
-   - The set shares one piece of music, so every piece in it carries the same `music_prompt`.
+   - Step 8 must run after step 7's push. Pins link to the homepage; the poster checks that it is reachable before publishing.
+   - Every artwork carries the prompt for its own track. Do not reuse a set-wide prompt on all four entries.
    - Never commit anything from `marketing/out/`.
    - If posting fails, report which channel failed and carry on. Still do 8d.

@@ -595,15 +595,12 @@ async function main() {
         (skipped.length ? `  (already posted: ${skipped.join(', ')})` : ''))
     if (todo.length === 0) continue
     if (piece.pieces) log(`  ${piece.pieces.length} pieces: ${piece.pieces.map((p) => p.title).join(' · ')}`)
-    if (!piece.webSlug && todo.includes('pinterest')) warn('  ⚠ no gallery slug for this piece — the pin will link to the home page')
-
     const captions = buildCaptions(piecesOf(piece))
     const results = {}
 
     // Only the pin carries a link, so only the pin waits on the landing page.
-    if (todo.includes('pinterest') && piece.webSlug && !a.dryRun && !(await landingIsLive(captions.pinterest.link))) {
-      results.pinterest = { ok: false, error: `${captions.pinterest.link} is not live — not pinning a link that 404s ` +
-        `(a pin's destination can't be edited afterwards)` }
+    if (todo.includes('pinterest') && !a.dryRun && !(await landingIsLive(captions.pinterest.link))) {
+      results.pinterest = { ok: false, error: `${captions.pinterest.link} is not live — not pinning a broken link` }
     }
 
     const platforms = todo.filter((p) => !results[p])

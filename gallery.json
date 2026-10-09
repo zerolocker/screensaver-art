@@ -7499,7 +7499,7 @@
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Girl with a Pearl Earring, by Johannes Vermeer, completed in the year of 1665.",
     "looping": false,
-    "music_prompt": "Intimate, unhurried chamber music: soft harpsichord, warm sustained strings and sparse flute phrases; gentle, luminous, restrained. Even dynamics, no build or drop. Instrumental, no vocals."
+    "music_prompt": "Intimate Dutch Baroque chamber music, delicate harpsichord and warm viola; slow, luminous and restrained. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/rousseau_sleeping_gypsy_animated.mp4",
@@ -7523,7 +7523,7 @@
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Sleeping Gypsy, by Henri Rousseau, completed in the year of 1897.",
     "looping": false,
-    "music_prompt": "Intimate, unhurried chamber music: soft harpsichord, warm sustained strings and sparse flute phrases; gentle, luminous, restrained. Even dynamics, no build or drop. Instrumental, no vocals."
+    "music_prompt": "Dreamlike nocturne, warm low strings, distant wooden flute and delicate harp; hushed moonlit stillness, no tension. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/han_gan_night_shining_white_animated.mp4",
@@ -7547,7 +7547,7 @@
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Night-Shining White, by Han Gan, completed in the year of 750.",
     "looping": false,
-    "music_prompt": "Intimate, unhurried chamber music: soft harpsichord, warm sustained strings and sparse flute phrases; gentle, luminous, restrained. Even dynamics, no build or drop. Instrumental, no vocals."
+    "music_prompt": "Sparse guqin plucks and soft xiao breath tones; poised, dignified and gently alert, with ample silence. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/monet_impression_sunrise_animated.mp4",
@@ -7571,6 +7571,6 @@
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Impression, Sunrise, by Claude Monet, completed in the year of 1872.",
     "looping": false,
-    "music_prompt": "Intimate, unhurried chamber music: soft harpsichord, warm sustained strings and sparse flute phrases; gentle, luminous, restrained. Even dynamics, no build or drop. Instrumental, no vocals."
+    "music_prompt": "Airy impressionist harp and breathy flute over soft strings; slow rippling phrases for a misty harbour sunrise. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

@@ -110,4 +110,4 @@ Commons works also need:
      -m "<one line per piece: why it was picked; any reroll or drop and why>" && git push
    ```
 
-10. **Post to social.** Follow step 8 of [`AUTOMATED_CURATION.md`](AUTOMATED_CURATION.md). Put the most recognizable painting first, because it's what people see before they scroll on. Captions credit the painter automatically. Write music that suits the paintings' own times and places.
+10. **Post to social.** Follow step 8 of [`AUTOMATED_CURATION.md`](AUTOMATED_CURATION.md). Put the most recognizable painting first, because it's what people see before they scroll on. Instagram, TikTok and YouTube captions credit the painters automatically; Pinterest combines the daily-art pitch and painter credits on one line, separated by pipes, and links to the homepage. Write a distinct music prompt per painting, suited to its own scene, time and place. Tracks crossfade with the artwork dissolves.

@@ -1,7 +1,5 @@
-// Generates the music for one post (a piece, or a night's set stitched into one
-// clip) with one Lyria call. The music is written for the art because music that
-// clashes with the picture is worse than none. Only the prompt is kept (as
-// `music_prompt` on every piece it scored); the MP3 is temporary.
+// Generates one Lyria track per artwork and joins a set's tracks in playback
+// order. Only each artwork's own music_prompt is kept; the audio is temporary.
 
 import { spawnSync } from 'node:child_process'
 import { existsSync, statSync } from 'node:fs'
@@ -13,6 +11,9 @@ const WITH_SECRETS = path.join(REPO_ROOT, 'curation/with-secrets.sh')
 
 /** Music level in dB: well under the art. */
 export const DEFAULT_GAIN_DB = -9
+
+/** Seconds of overlap between different artworks' music. */
+export const MUSIC_CROSSFADE = 1
 
 /**
  * Lyria sings unless told not to. The skill also rejects a sung result; this
@@ -52,7 +53,7 @@ export function generateBed({ prompt, outFile, model = 'clip' }) {
 
 /**
  * Seconds of crossfade where a looped bed meets its own start. Lyria returns ~30s
- * and a night's set runs ~40s, so the bed repeats; a hard seam is very audible.
+ * and longer segments or a manually shared bed may need repeats; avoid a hard seam.
  */
 const LOOP_CROSSFADE = 3
 
@@ -85,5 +86,58 @@ export function fitBed({ bed, length, outFile }) {
     '-filter_complex', chain.join(';'), '-map', `[${joined}]`, '-c:a', 'pcm_s16le', outFile,
   ], { stdio: ['ignore', 'ignore', 'inherit'] })
   if (r.status !== 0) throw new Error('ffmpeg could not loop the music bed')
+  return outFile
+}
+
+/**
+ * Centre each music crossfade on the corresponding visual dissolve. If the
+ * audio and video overlaps differ, trimming tracks to their source clip lengths
+ * would make the music drift later at every artwork change.
+ */
+export function musicTimeline({ durations, videoCrossfade, crossfade = MUSIC_CROSSFADE }) {
+  if (durations.length < 2 || durations.some((d) => !Number.isFinite(d) || d <= videoCrossfade) ||
+      !Number.isFinite(videoCrossfade) || videoCrossfade <= 0 ||
+      !Number.isFinite(crossfade) || crossfade <= 0 || crossfade > videoCrossfade) {
+    throw new Error('invalid music timeline: need at least two clips longer than the visual crossfade, ' +
+      'and a positive music crossfade no longer than the visual dissolve')
+  }
+  const starts = [0]
+  for (let i = 1; i < durations.length; i++) {
+    starts.push(starts[i - 1] + durations[i - 1] - videoCrossfade)
+  }
+  const duration = starts.at(-1) + durations.at(-1)
+  const transitions = starts.slice(1).map((start) => ({
+    start: start + (videoCrossfade - crossfade) / 2,
+    end: start + (videoCrossfade + crossfade) / 2,
+  }))
+  const segments = durations.map((_, i) => {
+    const start = i === 0 ? 0 : transitions[i - 1].start
+    const end = i === durations.length - 1 ? duration : transitions[i].end
+    return { start, end, length: end - start }
+  })
+  return { duration, crossfade, transitions, segments }
+}
+
+/** Join one track per artwork into a WAV matching the set's exact video timing. */
+export function joinBeds({ beds, durations, videoCrossfade, outFile }) {
+  if (beds.length !== durations.length) throw new Error('need one music track per artwork')
+  const timeline = musicTimeline({ durations, videoCrossfade,
+    crossfade: Math.min(MUSIC_CROSSFADE, videoCrossfade) })
+  const fitted = beds.map((bed, i) => fitBed({ bed, length: timeline.segments[i].length,
+    outFile: path.join(path.dirname(outFile), `bed-${i}-fitted.wav`) }))
+  const chain = fitted.map((_, i) =>
+    `[${i}:a]aresample=44100,aformat=sample_fmts=fltp:channel_layouts=stereo,` +
+    `atrim=duration=${timeline.segments[i].length.toFixed(6)},asetpts=PTS-STARTPTS[m${i}]`)
+  let joined = 'm0'
+  for (let i = 1; i < beds.length; i++) {
+    chain.push(`[${joined}][m${i}]acrossfade=d=${timeline.crossfade.toFixed(6)}:c1=qsin:c2=qsin[j${i}]`)
+    joined = `j${i}`
+  }
+  const r = spawnSync('ffmpeg', [
+    '-y', '-hide_banner', '-loglevel', 'error',
+    ...fitted.flatMap((bed) => ['-i', bed]),
+    '-filter_complex', chain.join(';'), '-map', `[${joined}]`, '-c:a', 'pcm_s16le', outFile,
+  ], { stdio: ['ignore', 'ignore', 'inherit'] })
+  if (r.status !== 0) throw new Error('ffmpeg could not crossfade the artwork music tracks')
   return outFile
 }

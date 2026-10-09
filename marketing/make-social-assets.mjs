@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // Renders gallery pieces as vertical social clips, plus their captions and
 // `meta.json`, the hand-off to post-social.mjs. The nightly post is all of the
-// night's pieces in one 9:16 clip, each dissolving into the next under one music
-// bed, for Instagram, TikTok, YouTube and Pinterest alike. A single piece renders
-// on its own, in 9:16 and (if landscape) 2:3 for Pinterest.
+// night's pieces in one 9:16 clip, each with its own music track, crossfaded over
+// the visual dissolve, for Instagram, TikTok, YouTube and Pinterest alike.
+// A single piece renders in 9:16 and (if landscape) 2:3 for Pinterest.
 //
 // A landscape piece is zoomed over a blurred copy of itself, with its title in a
 // pill underneath. A portrait piece already fills a phone, so it goes out as is.
@@ -12,7 +12,8 @@
 //
 // Usage:
 //   node marketing/make-social-assets.mjs --titles "Mount Fuji" "The Milkmaid" "Irises" "Haystacks" \
-//     --music-prompt "$MUSIC_PROMPT"                 # the night's post: four pieces, one clip
+//     --music-prompt "$MUSIC_1" --music-prompt "$MUSIC_2" \
+//     --music-prompt "$MUSIC_3" --music-prompt "$MUSIC_4"
 //   node marketing/make-social-assets.mjs --latest 4  # the four newest, oldest first
 //   node marketing/make-social-assets.mjs --title "Splash Fountain"   # one piece, 9:16 + 2:3
 //   node marketing/make-social-assets.mjs --src a.mp4 --title "A" --style "Baroque" \
@@ -26,9 +27,9 @@
 //   --style <text>   override the derived art style (after --src: that source's style)
 //   --formats <list> one piece only: comma list of 9x16,2x3 (default: both). A set is 9:16 only.
 //   --duration <sec> trim each piece to at most N seconds (default: its own length)
-//   --music-prompt <text>  generate music from this prompt (Lyria) and record it
-//                          as `music_prompt` on every piece's gallery.json entry
-//   --audio <file|url>     score with an existing audio file instead of generating one
+//   --music-prompt <text>  repeat once per piece, in playback order; generate a
+//                          track and record music_prompt on that piece's gallery entry
+//   --audio <file|url>     existing audio: repeat once per piece, or one shared file
 //   --gain <dB>            music level (default: -9)
 //   --out <dir>      output base dir (default: marketing/out)
 //
@@ -41,7 +42,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { captionsMarkdown, postName, titleLine } from './lib/captions.mjs'
 import { artworkOf, assetSlug, deriveMeta, galleryVideos, REPO_ROOT, webSlugForSrc } from './lib/pieces.mjs'
-import { DEFAULT_GAIN_DB, fitBed, generateBed } from './lib/music.mjs'
+import { assertInstrumental, DEFAULT_GAIN_DB, fitBed, generateBed, joinBeds, MUSIC_CROSSFADE } from './lib/music.mjs'
 
 /** Renders the title pill PNG. */
 const TITLE_PILL = path.join(REPO_ROOT, 'marketing', 'lib', 'title_pill.py')
@@ -84,7 +85,8 @@ const warn = (s) => process.stderr.write(`${s}\n`)
 
 // ── arg parsing ─────────────────────────────────────────────────────────────
 function parseArgs(argv) {
-  const a = { titles: [], srcs: [], gain: DEFAULT_GAIN_DB, out: path.join(REPO_ROOT, 'marketing', 'out') }
+  const a = { titles: [], srcs: [], musicPrompts: [], audios: [], gain: DEFAULT_GAIN_DB,
+    out: path.join(REPO_ROOT, 'marketing', 'out') }
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
     const next = () => argv[++i]
@@ -103,8 +105,12 @@ function parseArgs(argv) {
       else a.style = next()
     } else if (arg === '--formats') a.formats = next().split(',').map((s) => s.trim()).filter(Boolean)
     else if (arg === '--duration') a.duration = Math.max(1, parseInt(next(), 10) || 0) || undefined
-    else if (arg === '--music-prompt') a.musicPrompt = next()
-    else if (arg === '--audio') a.audio = next()
+    else if (arg === '--music-prompt' || arg === '--audio') {
+      const value = next()
+      if (!value?.trim() || value.startsWith('--')) throw new Error(`${arg} requires a value`)
+      if (arg === '--music-prompt') a.musicPrompts.push(value)
+      else a.audios.push(value)
+    }
     else if (arg === '--gain') a.gain = parseFloat(next())
     else if (arg === '--out') a.out = path.resolve(next())
     else if (arg === '--help' || arg === '-h') a.help = true
@@ -161,19 +167,18 @@ async function resolveSource(src, tmp) {
 }
 
 /**
- * Record the music prompt on the `gallery.json` entry of every piece it scored (a
- * curation-only field). A set shares one bed, so its pieces share the prompt.
+ * Record each piece's own music prompt on its gallery entry (a curation-only field).
  */
-function recordMusicPrompt(srcs, prompt) {
+function recordMusicPrompts(pieces) {
   const galleryPath = path.join(REPO_ROOT, 'gallery.json')
   const items = JSON.parse(readFileSync(galleryPath, 'utf8'))
-  for (const src of srcs) {
+  for (const { entry: { src }, musicPrompt } of pieces) {
     const entry = items.find((e) => e.src === src)
     if (!entry) {
       warn(`  ⚠ no gallery.json entry for ${src} — music_prompt not recorded`)
       continue
     }
-    entry.music_prompt = prompt
+    entry.music_prompt = musicPrompt
     log(`  ✓ gallery.json: music_prompt recorded on "${entry.title}"`)
   }
   writeFileSync(galleryPath, JSON.stringify(items, null, 2) + '\n')
@@ -401,7 +406,7 @@ function writePiecePost({ piece, a, bed, scratch }) {
     src: entry.src,
     date: entry.date ?? null,
     duration: Number(duration.toFixed(3)),
-    musicPrompt: a.musicPrompt ?? null,
+    musicPrompt: piece.musicPrompt ?? null,
     formats,
     renderedAt: new Date().toISOString(),
   }, null, 2) + '\n')
@@ -475,7 +480,7 @@ function renderSet({ pieces, plan, outFile, bed, gain }) {
 }
 
 /** A set as one post: its 9:16 clip, captions naming every piece, and a meta.json listing them. */
-function writeSetPost({ pieces, a, bed, scratch }) {
+function writeSetPost({ pieces, a, beds, scratch }) {
   const [first] = pieces
   const title = postName(pieces)
   const slug = assetSlug(title) || 'set'
@@ -483,7 +488,11 @@ function writeSetPost({ pieces, a, bed, scratch }) {
   mkdirSync(dir, { recursive: true })
   const plan = planSet(pieces)
   log(`Set: ${pieces.length} pieces, ${plan.duration.toFixed(1)}s at ${plan.fps} fps`)
-  const fitted = bed && fitBed({ bed, length: plan.duration, outFile: path.join(scratch, 'bed-fitted.wav') })
+  const fitted = beds.length === pieces.length
+    ? joinBeds({ beds, durations: plan.frames.map((n) => n / plan.fps),
+      videoCrossfade: plan.fadeFrames / plan.fps, outFile: path.join(scratch, 'beds-joined.wav') })
+    : beds.length ? fitBed({ bed: beds[0], length: plan.duration,
+      outFile: path.join(scratch, 'bed-fitted.wav') }) : null
   const name = `${slug}_9x16.mp4`
   const outFile = path.join(dir, name)
   renderSet({ pieces, plan, outFile, bed: fitted, gain: a.gain })
@@ -492,14 +501,15 @@ function writeSetPost({ pieces, a, bed, scratch }) {
   writeFileSync(path.join(dir, 'meta.json'), JSON.stringify({
     schema: 1,
     assetSlug: slug,
-    // A pin has one link: the first piece's page, which its title names.
+    // Keep the first artwork's identity for captions and provenance.
     webSlug: first.webSlug,
     title,
     style: first.style,
     era: first.era,
     date: pieces.map((p) => p.entry.date).filter(Boolean).sort().at(-1) ?? null,
     duration: Number(plan.duration.toFixed(3)),
-    musicPrompt: a.musicPrompt ?? null,
+    musicPrompts: pieces.map((p) => p.musicPrompt ?? null),
+    musicCrossfade: beds.length === pieces.length ? Math.min(MUSIC_CROSSFADE, plan.fadeFrames / plan.fps) : null,
     formats: { '9x16': name },
     pieces: pieces.map((p) => ({
       ...captionPiece(p),
@@ -507,6 +517,7 @@ function writeSetPost({ pieces, a, bed, scratch }) {
       src: p.entry.src,
       date: p.entry.date ?? null,
       duration: Number(p.duration.toFixed(3)),
+      musicPrompt: p.musicPrompt ?? null,
     })),
     renderedAt: new Date().toISOString(),
   }, null, 2) + '\n')
@@ -520,15 +531,25 @@ async function main() {
     log('Usage: node marketing/make-social-assets.mjs\n' +
       '       [--titles <t> <t>… | --title <t> | --latest N | --src <path|url> [--title <t>] [--style <s>]…]\n' +
       '       [--style <text>] [--formats 9x16,2x3] [--duration <sec, trims each piece>]\n' +
-      '       [--music-prompt <text> | --audio <file|url>] [--gain -9] [--out <dir>]')
+      '       [--music-prompt <text> (once per piece) | --audio <file|url> (one or once per piece)]\n' +
+      '       [--gain -9] [--out <dir>]')
     process.exit(a.help ? 0 : 1)
   }
   if (a.srcs.length && a.titles.length) throw new Error('pass --src files or gallery --titles, not both')
   const unknown = (a.formats ?? []).filter((f) => !FORMATS[f])
   if (unknown.length) throw new Error(`unknown format(s) ${unknown.join(', ')} (use ${Object.keys(FORMATS).join(', ')})`)
-  if (a.musicPrompt && a.audio) throw new Error('pass either --music-prompt or --audio, not both')
+  if (a.musicPrompts.length && a.audios.length) throw new Error('pass either --music-prompt or --audio, not both')
 
   const entries = selectEntries(a)
+  if (!entries.length) throw new Error('no pieces selected')
+  if (a.musicPrompts.length && a.musicPrompts.length !== entries.length) {
+    throw new Error(`need one --music-prompt per piece in playback order: selected ${entries.length}, got ${a.musicPrompts.length}`)
+  }
+  // Validate every prompt before any paid calls, so a bad later prompt wastes none.
+  a.musicPrompts.forEach(assertInstrumental)
+  if (a.audios.length > 1 && a.audios.length !== entries.length) {
+    throw new Error(`need one shared --audio or one per piece: selected ${entries.length}, got ${a.audios.length}`)
+  }
   const isSet = entries.length > 1
   if (isSet && a.formats?.some((f) => f !== '9x16')) {
     throw new Error('a set renders 9:16 only (its pieces can\'t share a 2:3 clip); drop --formats')
@@ -541,21 +562,26 @@ async function main() {
     const pieces = []
     for (const [i, entry] of entries.entries()) pieces.push(await preparePiece(entry, a, path.join(scratch, String(i))))
 
-    let bed = null
-    if (a.musicPrompt) {
-      log(`Music: generating a bed for this post…\n  ${a.musicPrompt}`)
-      bed = generateBed({ prompt: a.musicPrompt, outFile: path.join(scratch, 'bed.mp3') })
-    } else if (a.audio) {
-      bed = /^https?:\/\//i.test(a.audio) ? await resolveSource(a.audio, scratch) : path.resolve(a.audio)
-      if (!existsSync(bed)) throw new Error(`audio not found: ${bed}`)
+    const beds = []
+    for (const [i, prompt] of a.musicPrompts.entries()) {
+      log(`Music ${i + 1}/${pieces.length}: generating for "${pieces[i].title}"…\n  ${prompt}`)
+      beds.push(generateBed({ prompt, outFile: path.join(scratch, `bed-${i}.mp3`) }))
+      pieces[i].musicPrompt = prompt
     }
-    if (bed) log(`  ✓ bed ready, mixing at ${a.gain} dB`)
+    for (const [i, audio] of a.audios.entries()) {
+      const audioDir = path.join(scratch, `audio-${i}`)
+      mkdirSync(audioDir, { recursive: true })
+      const bed = /^https?:\/\//i.test(audio) ? await resolveSource(audio, audioDir) : path.resolve(audio)
+      if (!existsSync(bed)) throw new Error(`audio not found: ${bed}`)
+      beds.push(bed)
+    }
+    if (beds.length) log(`  ✓ ${beds.length} track(s) ready, mixing at ${a.gain} dB`)
 
-    if (isSet) writeSetPost({ pieces, a, bed, scratch })
-    else writePiecePost({ piece: pieces[0], a, bed, scratch })
+    if (isSet) writeSetPost({ pieces, a, beds, scratch })
+    else writePiecePost({ piece: pieces[0], a, bed: beds[0], scratch })
 
     // Keep the prompt, not the MP3.
-    if (a.musicPrompt && !a.srcs.length) recordMusicPrompt(pieces.map((p) => p.entry.src), a.musicPrompt)
+    if (a.musicPrompts.length && !a.srcs.length) recordMusicPrompts(pieces)
     log('Done.')
   } finally {
     rmSync(scratch, { recursive: true, force: true })

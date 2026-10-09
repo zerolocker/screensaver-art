@@ -207,4 +207,4 @@ Complete worked example covering every template: [`examples/demo.yaml`](examples
 - Each new clip gets a duration check and a transcription check with `gemini-3.5-transcribe`, and is re-synthesised once on a mismatch. Mishearings of rare words ("Veo", "tarantella") stay within tolerance.
 - `video` clips are always muted, normalised to 1080p30, letterboxed (never cropped), and play across all of the scene's beats: looped by default, or frozen on the last frame with `loop: false`. `layout: full` keeps the progress bar and caption on a gradient over the clip.
 - Output: 1920×1080 30 fps H.264 + AAC 96k, loudness-normalised to −16 LUFS, with burned-in captions. Plays in QuickTime and on phones. Keep it under 30 MB (about 15 MB for 4 minutes).
-- Needs Google Chrome, ffmpeg, and Python with `google-genai` ≥ 2.25, `PyYAML` and `Pillow`. Fonts are macOS system fonts (New York, Avenir Next).
+- Needs Google Chrome, ffmpeg 7 or newer built with libass (it burns the captions), and Python with `google-genai` ≥ 2.25, `PyYAML` and `Pillow`. Fonts are macOS system fonts (New York, Avenir Next).

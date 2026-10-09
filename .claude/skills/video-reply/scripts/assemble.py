@@ -245,7 +245,8 @@ def encode(beats, total, segments, overlays, narration, subs, out, title, burn_a
     script = os.path.join(os.path.dirname(narration), "filter.txt")
     with open(script, "w") as fh:
         fh.write(";\n".join(f))
-    args += ["-filter_complex_script", script, "-map", "[vout]", "-map", f"{a_idx}:a"]
+    # `-/opt <file>` reads the option's value from a file (FFmpeg 7+; 9 dropped -filter_complex_script).
+    args += ["-/filter_complex", script, "-map", "[vout]", "-map", f"{a_idx}:a"]
     if s_idx is not None:
         args += ["-map", f"{s_idx}:s", "-c:s", "mov_text", "-metadata:s:s:0", "language=eng"]
     args += ["-c:v", "libx264", "-preset", "slow", "-crf", "30", "-tune", "stillimage", "-pix_fmt", "yuv420p",

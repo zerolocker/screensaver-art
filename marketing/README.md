@@ -99,11 +99,13 @@ Animated art screensaver app - Link in bio               (Instagram, YouTube)
 Animated art screensaver app - Link in comment and bio   (TikTok)
 ```
 
-It says this is an app, in the few words a phone shows. It has no URL, because these captions aren't clickable. It leaves out "Mac" on purpose, so interest from other platforms shows up. Under it come the pieces' names, one line each in the order they play, then the hashtags. On YouTube the fixed line is the title, and a set's title adds its name ("… · Mount Fuji and 3 more").
+Every description starts with the app pitch, then `living-art-screensaver.com` on its own line. Instagram and YouTube use "Link in bio"; TikTok uses "Link in comment and bio". Pinterest uses just the pitch because the pin itself links to the artwork page. The visible domain gives viewers an address to remember even where description URLs aren't clickable. The pitch leaves out "Mac" so interest from other platforms shows up.
 
-**Sets stay within each platform's limits** (Instagram and TikTok 2,200 characters, YouTube title 100 and tags 500, pin title 100 and description 500). A real set is far under them; a very long one names its first pieces and counts the rest ("+3 more").
+Under the header come the pieces in the order they play, with a blank line between each piece and before the hashtags. AI pieces show their title and style. Real paintings show the title, then the artist, date and museum on a second line; license and full provenance remain on their artwork pages. YouTube titles still name the painting and painter for real art; otherwise they use the pitch and a set's name.
 
-**Pinterest** works differently: a pin is itself a link, and Pinterest search ranks the pin's words. Pin titles lead with the style ("Animated Ukiyo-e: Mount Fuji | Art screensaver app"; for a set, "Animated Ukiyo-e: Mount Fuji and 3 more | …"), the description names each piece and then the art in plain words, and pins have no hashtags.
+**Sets stay within each platform's limits** (Instagram and TikTok 2,200 characters, YouTube title 100, description 5,000 and tags 500, pin title 100 and description 500). A very long set names its first pieces and counts the rest ("+3 more").
+
+**Pinterest** keeps a direct link to the first piece's artwork page, tagged for attribution. Pinterest search ranks the pin's words, so titles lead with the painting and artist for real art, or the style for AI art ("Animated Ukiyo-e: Mount Fuji | Art screensaver app"). Descriptions use the same header and spaced artwork blocks, with no hashtags or bio CTA.
 
 **Hashtags** (`lib/hashtags.mjs`): Instagram and TikTok get `#screensaver #animatedart` plus up to two for the pieces. YouTube gets three. A piece's own tags are one for its movement or country and one for its era; a set takes every piece's first tag before any piece's second, so the line shows the set's range.
 - A tag must be true of every piece it lands on. `Chinese & Korean` has no era tag, because `#chineseart` is wrong on a Korean painting.
@@ -114,9 +116,11 @@ It says this is an app, in the few words a phone shows. It has no URL, because t
 
 ```
 Animated art screensaver app - Link in bio
+living-art-screensaver.com
 
-Caillebotte's Paris Street; Rainy Day, brought to life
-Gustave Caillebotte, 1877 · Art Institute of Chicago · Public domain
+Paris Street; Rainy Day
+Gustave Caillebotte, 1877 · Art Institute of Chicago
+
 #screensaver #animatedart #caillebotte #impressionism
 ```
 

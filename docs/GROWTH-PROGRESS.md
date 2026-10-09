@@ -20,7 +20,7 @@ The reasoning behind the plan is in [`growth-and-marketing-strategy.md`](growth-
 | Platform demand probe | Live | `components/marketing/platform-interest.tsx`. Results are PostHog events only. |
 | Brand-name SEO | Live | Title, meta description, JSON-LD |
 | Gallery landing pages | Live | `/gallery`, `/art/<slug>`, `/era/<tag>`. `/art/*` is `noindex`. |
-| Daily social posts | Live since 2026-09-07 | All of each night's pieces, stitched into one 9:16 clip, to Instagram, YouTube, TikTok and Pinterest through Zernio (about $12/month). See `marketing/README.md`. |
+| Daily social posts | Live since 2026-09-07 | All of each night's pieces, stitched into one 9:16 clip, to Instagram, YouTube, TikTok and Pinterest through Zernio (about $12/month). Since 2026-10-08, every description leads with the app pitch and domain, then spaced artwork titles and credits. See `marketing/README.md`. |
 | Music for clips | Live | Lyria. One prompt per night's set, written by the nightly agent. |
 | Real-paintings curation | Switching on (PR #105, after app 1.4.10 ships) | Famous public-domain paintings animated with Gemini Omni replace AI art. `curation/REAL_PAINTINGS_CURATION.md`. Switch back with `curation/CURATION_MODE`. |
 | Lifetime price ($15.99) | Live | Pricing work is closed until there is traffic. |
@@ -52,10 +52,11 @@ The reasoning behind the plan is in [`growth-and-marketing-strategy.md`](growth-
 1. **Directory submissions.** An agent builds a paste-ready pack (blurbs at each site's length limit, screenshots, categories) for alternativeto.net (under Aerial), MacUpdate and indie app directories. The founder pastes it in one sitting.
 2. **Press and creator outreach.** Target list, a `/press` kit page, and drafted pitches for the founder to send. One feature is worth months of our own posts.
 3. **Reddit.** One subreddit at a time, video first ([`launch-kit.md`](launch-kit.md)).
-4. **Read the UTM data** to learn which channel converts. Pins are tagged `utm_source=pinterest&utm_medium=social&utm_campaign=daily`. Instagram, YouTube and TikTok posts carry no link, so they are only measurable through tagged bio links.
+4. **Read the UTM data** to learn which channel converts. Pins are tagged `utm_source=pinterest&utm_medium=social&utm_campaign=daily`. Instagram, YouTube and TikTok descriptions show the bare domain; tagged bio links provide channel attribution, while visits typed from that domain cannot identify the channel.
 
 ## Waiting on the founder
 
+- Reconnect Pinterest in Zernio: the caption-edit API returned `401 TOKEN_EXPIRED` on 2026-10-08. Today's pin description was updated through Pinterest's browser editor.
 - Tag the Instagram and YouTube bio links (for example `https://living-art-screensaver.com/?utm_source=instagram&utm_medium=bio`), and put `living-art-screensaver.com` in TikTok's bio as plain text. TikTok can't have a clickable bio link under 1,000 followers.
 - Pick an email service (Supabase mailer, Resend, …). It blocks the newsletter and retention email.
 
@@ -78,7 +79,7 @@ Don't reverse these without asking the founder.
 
 - Nightly art is famous public-domain paintings, animated. The AI-art curation is paused, not deleted.
 - Post all of a night's pieces as one clip, to all four channels equally, and let the UTM data rank them.
-- Pins link to the first piece's own page. Other captions have no link and say "Link in bio" (TikTok: "Link in comment and bio", with the address in a pinned comment).
+- Every description starts with the app pitch and `living-art-screensaver.com`, then separated artwork titles and artist/date/museum credits. Full provenance stays on the art pages. Pins link to the first piece's own page. Instagram and YouTube say "Link in bio"; TikTok says "Link in comment and bio", with the address in a pinned comment.
 - Clips carry no brand or marketing text. The caption does the selling, and it leaves out "Mac" so interest from other platforms shows up.
 - Music is written for each night's set. Music that clashes with the pictures is worse than none.
 - Buy social posting rather than build it (see the strategy doc).

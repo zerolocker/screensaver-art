@@ -4,7 +4,7 @@
 // pieces and names each in order. The rules behind it are in marketing/README.md
 // ("Captions"). Everything depends only on the pieces, so a retried post is identical.
 
-import { artPhrase, artistMovement, artistShortName, artworkHashtags, pieceHashtags } from './hashtags.mjs'
+import { artistMovement, artistShortName, artworkHashtags, pieceHashtags } from './hashtags.mjs'
 import { SITE_ORIGIN, landingUrl } from './pieces.mjs'
 
 /** What the app is, in as few words as a phone will show. */
@@ -16,8 +16,11 @@ export const CAPTION = `${PITCH} - Link in bio`
 /** TikTok's first line. Its link is in the pinned comment and, as plain text, the bio. */
 const TIKTOK_CAPTION = `${PITCH} - Link in comment and bio`
 
+/** Visible even where description URLs aren't clickable. */
+const SITE_DOMAIN = SITE_ORIGIN.replace(/^https?:\/\//, '')
+
 /** Pinned under every TikTok video. */
-const LINK_COMMENT = `Get the screensaver app: ${SITE_ORIGIN.replace(/^https?:\/\//, '')}`
+const LINK_COMMENT = `Get the screensaver app: ${SITE_DOMAIN}`
 
 /** Each platform's text limits, in characters. */
 const LIMIT = {
@@ -39,11 +42,6 @@ export const postName = (pieces) =>
 
 const clamp = (s, n) => (s.length <= n ? s : `${s.slice(0, n - 1).trimEnd()}…`)
 
-const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1)
-
-/** "a", "a and b", "a, b and c". */
-const spoken = (items) => (items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} and ${items.at(-1)}`)
-
 /** Distinct hashtags, first `max` of them, as one line. */
 const hashtagLine = (tags, max) => [...new Set(tags)].slice(0, max).join(' ')
 
@@ -59,32 +57,23 @@ export function artworkLead(title, artwork) {
   return short ? `${possessive(short)} ${title}, brought to life` : `${title}, brought to life`
 }
 
-/** "Gustave Caillebotte, 1877 · Art Institute of Chicago · Public domain" */
+/** "Gustave Caillebotte, 1877 · Art Institute of Chicago". Full provenance stays on the art page. */
 export function artworkCreditLine(artwork) {
   return [
     [artwork.artist, artwork.originalDate].filter(Boolean).join(', '),
     artwork.museum,
-    artwork.license === 'CC0' ? 'CC0' : 'Public domain',
   ].filter(Boolean).join(' · ')
 }
 
 /** Shorten `lead` until `lead + tail` fits in `max`. */
 const fitWithTail = (lead, tail, max) => `${clamp(lead, max - tail.length)}${tail}`
 
-/** How a caption names one piece: its title and style, or a real artwork's lead and credit. */
+/** How a caption names one piece: its title and style, or a real artwork's title and credit. */
 const pieceText = (p) =>
-  (p.artwork ? `${artworkLead(p.title, p.artwork)}\n${artworkCreditLine(p.artwork)}` : titleLine(p.title, p.style))
-
-/** The same on a pin, which runs as one paragraph. */
-const pinText = (p) =>
-  (p.artwork ? `${artworkLead(p.title, p.artwork)}. ${artworkCreditLine(p.artwork)}` : titleLine(p.title, p.style))
+  (p.artwork ? `${p.title}\n${artworkCreditLine(p.artwork)}` : titleLine(p.title, p.style))
 
 /** A piece's own hashtags, most specific first; a real artwork's come from its artist. */
 const hashtagsOf = (p) => (p.artwork ? artworkHashtags({ artist: p.artwork.artist, era: p.era }) : pieceHashtags(p))
-
-/** How a pin names a piece's art: an artist's movement, else the style or era phrase. */
-const labelOf = (p) =>
-  (p.artwork ? artistMovement(p.artwork.artist) ?? artPhrase({ style: null, era: p.era }) : artPhrase(p))
 
 /**
  * The pieces' own hashtags, every piece's most specific one before any piece's
@@ -142,13 +131,14 @@ export function buildCaptions(pieces) {
   const texts = pieces.map(pieceText)
   const own = ownHashtags(pieces)
   const feedTags = hashtagLine(['#screensaver', '#animatedart', ...own], 4)
-  const labels = [...new Set(pieces.map(labelOf).filter(Boolean))]
   const name = postName(pieces)
   const lead = realArt ? artworkLead(name, first.artwork) : null
   return {
-    instagram: { text: fit(LIMIT.instagram, texts, (l) => `${CAPTION}\n\n${l.join('\n')}\n${feedTags}`) },
+    instagram: { text: fit(LIMIT.instagram, texts,
+      (l) => `${CAPTION}\n${SITE_DOMAIN}\n\n${l.join('\n\n')}\n\n${feedTags}`) },
     tiktok: {
-      text: fit(LIMIT.tiktok, texts, (l) => `${TIKTOK_CAPTION}\n\n${l.join('\n')}\n${feedTags}`),
+      text: fit(LIMIT.tiktok, texts,
+        (l) => `${TIKTOK_CAPTION}\n${SITE_DOMAIN}\n\n${l.join('\n\n')}\n\n${feedTags}`),
       linkComment: LINK_COMMENT,
     },
     youtube: {
@@ -161,7 +151,7 @@ export function buildCaptions(pieces) {
           : fitWithTail(lead, ' - Link in bio', LIMIT.youtubeTitle))
         : set ? clamp(`${CAPTION} · ${name}`, LIMIT.youtubeTitle) : CAPTION,
       description: fit(LIMIT.youtubeDescription, texts,
-        (l) => `${l.join('\n')}\n\n${hashtagLine([...own, '#animatedart'], 3)}`),
+        (l) => `${CAPTION}\n${SITE_DOMAIN}\n\n${l.join('\n\n')}\n\n${hashtagLine([...own, '#animatedart'], 3)}`),
       tags: youtubeTags(pieces),
     },
     pinterest: {
@@ -172,12 +162,8 @@ export function buildCaptions(pieces) {
         ? fitWithTail(`${first.title} by ${first.artwork.artist}${set ? ` and ${pieces.length - 1} more` : ''}, animated`,
           ' | Art screensaver app', LIMIT.pinTitle)
         : clamp(`Animated ${first.style}: ${name} | Art screensaver app`, LIMIT.pinTitle),
-      description: fit(LIMIT.pinDescription, pieces.map(pinText), (l) => (realArt
-        ? `${l.join('. ')}.${labels.length ? ` ${capitalize(spoken(labels))}.` : ''} ` +
-          `The real ${set ? 'artworks' : 'artwork'}, gently animated with AI for your screensaver by ` +
-          `Living Art Screensaver, with ${set ? 'new pieces' : 'a new piece'} every night.`
-        : `${l.join('. ')}. ${labels.length ? `${capitalize(spoken(labels))}, gently animated` : 'Gently animated art'} ` +
-          `for your screensaver by Living Art Screensaver, with ${set ? 'new pieces' : 'a new piece'} every night.`)),
+      description: fit(LIMIT.pinDescription, texts,
+        (l) => `${PITCH}\n${SITE_DOMAIN}\n\n${l.join('\n\n')}`),
       // Tagged with the channel so PostHog can attribute pin traffic.
       link: landingUrl(first.webSlug, 'pinterest'),
     },
@@ -193,9 +179,9 @@ export function captionsMarkdown(pieces) {
   return `# Social captions — ${postName(pieces)}
 
 _These are exactly the strings \`post-social.mjs\` publishes, so what you read here
-is what went out. Instagram and YouTube lead with the same fixed line and leave
-the linking to the profile's bio; TikTok's points at a pinned comment and the bio;
-the pin links to ${landing}._
+is what went out. Every description shows the app pitch and website domain.
+Instagram and YouTube point to the profile's bio; TikTok points to a pinned
+comment and the bio; the pin links to ${landing}._
 
 ## Instagram Reels
 \`\`\`

@@ -7668,5 +7668,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled A Sunday on La Grande Jatte, by Georges Seurat, completed in the year of 1884.",
     "looping": false,
     "music_prompt": "Light French chamber music, pizzicato strings, mellow flute and delicate harp; relaxed lilting phrases for a bright riverside afternoon. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_milkmaid_20261010_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_milkmaid_20261010_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_milkmaid_20261010_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_milkmaid_20261010_640w.webp",
+    "title": "The Milkmaid - Johannes Vermeer (AI Animated)",
+    "type": "video",
+    "date": "2026-10-10",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Johannes Vermeer",
+    "artist_dates": "1632–1675",
+    "original_title": "The Milkmaid",
+    "original_date": "c. 1660",
+    "museum": "Rijksmuseum",
+    "credit_line": "Purchased with the support of the Vereniging Rembrandt",
+    "source_url": "https://www.rijksmuseum.nl/en/collection/SK-A-2344",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Milkmaid, by Johannes Vermeer, completed in the year of 1660.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_las_meninas_20261010_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_las_meninas_20261010_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_las_meninas_20261010_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_las_meninas_20261010_640w.webp",
+    "title": "Las Meninas - Diego Velázquez (AI Animated)",
+    "type": "video",
+    "date": "2026-10-10",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Diego Velázquez",
+    "artist_dates": "1599–1660",
+    "original_title": "Las Meninas",
+    "original_date": "1656",
+    "museum": "Museo del Prado",
+    "credit_line": "Image: Wikimedia Commons, Las Meninas, by Diego Velázquez, from Prado in Google Earth.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Las_Meninas,_by_Diego_Vel%C3%A1zquez,_from_Prado_in_Google_Earth.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Las Meninas, by Diego Velázquez, completed in the year of 1656.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/rousseau_tiger_storm_20261010_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/rousseau_tiger_storm_20261010_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/rousseau_tiger_storm_20261010_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/rousseau_tiger_storm_20261010_640w.webp",
+    "title": "Tiger in a Tropical Storm - Henri Rousseau (AI Animated)",
+    "type": "video",
+    "date": "2026-10-10",
+    "tags": [
+      "Modern"
+    ],
+    "source": "real_artwork",
+    "artist": "Henri Rousseau",
+    "artist_dates": "1844–1910",
+    "original_title": "Tiger in a Tropical Storm",
+    "original_date": "1891",
+    "museum": "National Gallery",
+    "credit_line": "Image: Wikimedia Commons, Henri Rousseau - Surprise!.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Henri_Rousseau_-_Surprise!.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Tiger in a Tropical Storm, by Henri Rousseau, completed in the year of 1891.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/friedrich_wanderer_20261010_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/friedrich_wanderer_20261010_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/friedrich_wanderer_20261010_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/friedrich_wanderer_20261010_640w.webp",
+    "title": "Wanderer above the Sea of Fog - Caspar David Friedrich (AI Animated)",
+    "type": "video",
+    "date": "2026-10-10",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Caspar David Friedrich",
+    "artist_dates": "1774–1840",
+    "original_title": "Wanderer above the Sea of Fog",
+    "original_date": "c. 1818",
+    "museum": "Hamburger Kunsthalle",
+    "credit_line": "Image: Wikimedia Commons, Caspar David Friedrich - Wanderer above the Sea of Fog.jpeg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Caspar_David_Friedrich_-_Wanderer_above_the_Sea_of_Fog.jpeg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Wanderer above the Sea of Fog, by Caspar David Friedrich, completed in the year of 1818.",
+    "looping": false
   }
 ]

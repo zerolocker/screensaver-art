@@ -7690,7 +7690,8 @@
     "source_url": "https://www.rijksmuseum.nl/en/collection/SK-A-2344",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Milkmaid, by Johannes Vermeer, completed in the year of 1660.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Soft harpsichord and warm viola da gamba, slow domestic Dutch Baroque melody, intimate daylight calm. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_las_meninas_20261010_animated.mp4",
@@ -7713,7 +7714,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Las_Meninas,_by_Diego_Vel%C3%A1zquez,_from_Prado_in_Google_Earth.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Las Meninas, by Diego Velázquez, completed in the year of 1656.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Spanish Baroque guitar and restrained viol consort, graceful courtly phrases, spacious and dignified at a slow pace. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/rousseau_tiger_storm_20261010_animated.mp4",
@@ -7736,7 +7738,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Henri_Rousseau_-_Surprise!.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Tiger in a Tropical Storm, by Henri Rousseau, completed in the year of 1891.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Low pizzicato cello, muted clarinet and soft brushed percussion, measured playful tension through a painted jungle storm. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/friedrich_wanderer_20261010_animated.mp4",
@@ -7759,6 +7762,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Caspar_David_Friedrich_-_Wanderer_above_the_Sea_of_Fog.jpeg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Wanderer above the Sea of Fog, by Caspar David Friedrich, completed in the year of 1818.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Sparse Romantic piano, mellow cello and distant French horn, slow open harmonies above a misty mountain valley. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

@@ -132,7 +132,7 @@ specs, and `.cache/` (TTS audio, downloaded images, build files).
 ## Spec format (YAML)
 
 Top level: `title` (MP4 title + default footer), `footer`, `scenes`, and optional
-`voice` (default `Sulafat`), `model` (default `gemini-3.8-flash-tts`; falls back to
+`voice` (default `Leda`), `model` (default `gemini-3.8-flash-tts`; falls back to
 `gemini-3.8-flash-lite-tts`), `style` (delivery direction; each model
 has a tuned default. For 3.8 models it is a short phrase like `friendly,
 warm and engaging`, sent as speech metadata; for the legacy 3.1/2.5 models it is
@@ -202,7 +202,7 @@ Complete worked example covering every template: [`examples/demo.yaml`](examples
 
 ## Notes
 
-- **TTS:** the default is `gemini-3.8-flash-tts` with the `Sulafat` voice, which won blind listening tests. `gemini-3.8-flash-lite-tts` is the fallback.
+- **TTS:** the default is `gemini-3.8-flash-tts` with the `Leda` voice, selected by the user. `gemini-3.8-flash-lite-tts` is the fallback. Set `voice` in a spec to override the default for that video.
 - 3.8 models use the Interactions API (`store=False`) and read the text as a strict verbatim transcript: any direction in the text gets spoken. So `tts.py` sends `style` as speech metadata; keep narration pure speech. 3.8 sounds flat without a style, and `friendly, warm and engaging` tested best. There's no speaking-rate setting, so `speed` time-stretches the audio.
 - Each new clip gets a duration check and a transcription check with `gemini-3.5-transcribe`, and is re-synthesised once on a mismatch. Mishearings of rare words ("Veo", "tarantella") stay within tolerance.
 - `video` clips are always muted, normalised to 1080p30, letterboxed (never cropped), and play across all of the scene's beats: looped by default, or frozen on the last frame with `loop: false`. `layout: full` keeps the progress bar and caption on a gradient over the clip.

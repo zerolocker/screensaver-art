@@ -7764,5 +7764,96 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Wanderer above the Sea of Fog, by Caspar David Friedrich, completed in the year of 1818.",
     "looping": false,
     "music_prompt": "Sparse Romantic piano, mellow cello and distant French horn, slow open harmonies above a misty mountain valley. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_lady_ermine_20261011_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_lady_ermine_20261011_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_lady_ermine_20261011_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_lady_ermine_20261011_640w.webp",
+    "title": "Lady with an Ermine - Leonardo da Vinci (AI Animated)",
+    "type": "video",
+    "date": "2026-10-11",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Leonardo da Vinci",
+    "artist_dates": "1452–1519",
+    "original_title": "Lady with an Ermine",
+    "original_date": "c. 1490",
+    "museum": "National Museum in Kraków",
+    "credit_line": "Image: Wikimedia Commons, Lady with an Ermine - Leonardo da Vinci - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Lady_with_an_Ermine_-_Leonardo_da_Vinci_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Lady with an Ermine, by Leonardo da Vinci, completed in the year of 1490.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/matisse_green_line_20261011_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/matisse_green_line_20261011_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/matisse_green_line_20261011_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/matisse_green_line_20261011_640w.webp",
+    "title": "Portrait of Madame Matisse. The Green Line - Henri Matisse (AI Animated)",
+    "type": "video",
+    "date": "2026-10-11",
+    "tags": [
+      "Modern"
+    ],
+    "source": "real_artwork",
+    "artist": "Henri Matisse",
+    "artist_dates": "1869–1954",
+    "original_title": "Portrait of Madame Matisse. The Green Line",
+    "original_date": "1905",
+    "museum": "SMK – National Gallery of Denmark",
+    "source_url": "https://open.smk.dk/artwork/image/KMSr171",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Green Line, by Henri Matisse, completed in the year of 1905.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_hunters_snow_20261011_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_hunters_snow_20261011_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_hunters_snow_20261011_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_hunters_snow_20261011_640w.webp",
+    "title": "The Hunters in the Snow - Pieter Bruegel the Elder (AI Animated)",
+    "type": "video",
+    "date": "2026-10-11",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Pieter Bruegel the Elder",
+    "artist_dates": "1520s–1569",
+    "original_title": "The Hunters in the Snow",
+    "original_date": "1565",
+    "museum": "Kunsthistorisches Museum",
+    "credit_line": "Image: Wikimedia Commons, Pieter Bruegel the Elder - Hunters in the Snow (Winter) - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Pieter_Bruegel_the_Elder_-_Hunters_in_the_Snow_(Winter)_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Hunters in the Snow, by Pieter Bruegel the Elder, completed in the year of 1565.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/vangogh_potato_eaters_20261011_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/vangogh_potato_eaters_20261011_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/vangogh_potato_eaters_20261011_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/vangogh_potato_eaters_20261011_640w.webp",
+    "title": "The Potato Eaters - Vincent van Gogh (AI Animated)",
+    "type": "video",
+    "date": "2026-10-11",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Vincent van Gogh",
+    "artist_dates": "1853–1890",
+    "original_title": "The Potato Eaters",
+    "original_date": "1885",
+    "museum": "Van Gogh Museum",
+    "credit_line": "Image: Wikimedia Commons, De aardappeleters - s0005V1962 - Van Gogh Museum.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:De_aardappeleters_-_s0005V1962_-_Van_Gogh_Museum.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Potato Eaters, by Vincent van Gogh, completed in the year of 1885.",
+    "looping": false
   }
 ]

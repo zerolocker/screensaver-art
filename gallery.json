@@ -7786,7 +7786,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Lady_with_an_Ermine_-_Leonardo_da_Vinci_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Lady with an Ermine, by Leonardo da Vinci, completed in the year of 1490.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Intimate Renaissance chamber music, soft lute and viola da gamba; poised, warm and gently flowing. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/matisse_green_line_20261011_animated.mp4",
@@ -7808,7 +7809,8 @@
     "source_url": "https://open.smk.dk/artwork/image/KMSr171",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Green Line, by Henri Matisse, completed in the year of 1905.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Airy French chamber miniature, playful clarinet and muted piano; colourful, poised, lightly syncopated, restrained tempo. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_hunters_snow_20261011_animated.mp4",
@@ -7831,7 +7833,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Pieter_Bruegel_the_Elder_-_Hunters_in_the_Snow_(Winter)_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Hunters in the Snow, by Pieter Bruegel the Elder, completed in the year of 1565.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Quiet Flemish winter pastoral, recorder and gentle viol consort; spacious, cool and unhurried, soft walking pulse. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/vangogh_potato_eaters_20261011_animated.mp4",
@@ -7854,6 +7857,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:De_aardappeleters_-_s0005V1962_-_Van_Gogh_Museum.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Potato Eaters, by Vincent van Gogh, completed in the year of 1885.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Warm low cello and sparse felt piano, earthy minor harmonies; intimate Dutch farmhouse supper, slow and reflective. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

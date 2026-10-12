@@ -7881,7 +7881,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Van_Eyck_-_Arnolfini_Portrait.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Arnolfini Portrait, by Jan van Eyck, completed in the year of 1434.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Early Renaissance Flemish chamber music: soft recorder, lute and viola da gamba, intimate and serene, candlelit interior warmth. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/fragonard_the_swing_animated.mp4",
@@ -7904,7 +7905,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Fragonard,_The_Swing.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Swing, by Jean-Honoré Fragonard, completed in the year of 1767.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Playful Rococo harpsichord and flute with pizzicato strings, airy, flirtatious and graceful, garden swing in a gentle lilt. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/renoir_bal_du_moulin_de_la_galette_animated.mp4",
@@ -7927,7 +7929,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Renoir,_Pierre-Auguste_-_Dance_at_Le_Moulin_de_la_Galette,_1876.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Bal du moulin de la Galette, by Pierre-Auguste Renoir, completed in the year of 1876.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Lilting 1870s Parisian waltz for accordion, piano and light strings, sunlit and joyful, dappled garden dance hall. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/repin_reply_of_the_zaporozhian_cossacks_animated.mp4",
@@ -7950,6 +7953,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Ilja_Jefimowitsch_Repin_-_Reply_of_the_Zaporozhian_Cossacks_-_Yorck.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Reply of the Zaporozhian Cossacks, by Ilya Repin, completed in the year of 1890.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Ukrainian folk tune on bandura and fiddle with a steady frame drum, hearty and good-humoured, open steppe camp. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

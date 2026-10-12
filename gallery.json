@@ -7859,5 +7859,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Potato Eaters, by Vincent van Gogh, completed in the year of 1885.",
     "looping": false,
     "music_prompt": "Warm low cello and sparse felt piano, earthy minor harmonies; intimate Dutch farmhouse supper, slow and reflective. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/van_eyck_arnolfini_portrait_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/van_eyck_arnolfini_portrait_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/van_eyck_arnolfini_portrait_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/van_eyck_arnolfini_portrait_640w.webp",
+    "title": "Arnolfini Portrait - Jan van Eyck (AI Animated)",
+    "type": "video",
+    "date": "2026-10-12",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Jan van Eyck",
+    "artist_dates": "c. 1390–1441",
+    "original_title": "Arnolfini Portrait",
+    "original_date": "1434",
+    "museum": "National Gallery",
+    "credit_line": "Image: Wikimedia Commons, Van Eyck - Arnolfini Portrait.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Van_Eyck_-_Arnolfini_Portrait.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Arnolfini Portrait, by Jan van Eyck, completed in the year of 1434.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/fragonard_the_swing_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/fragonard_the_swing_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/fragonard_the_swing_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/fragonard_the_swing_640w.webp",
+    "title": "The Swing - Jean-Honoré Fragonard (AI Animated)",
+    "type": "video",
+    "date": "2026-10-12",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Jean-Honoré Fragonard",
+    "artist_dates": "1732–1806",
+    "original_title": "The Swing",
+    "original_date": "c. 1767–1768",
+    "museum": "Wallace Collection",
+    "credit_line": "Image: Wikimedia Commons, Fragonard, The Swing.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Fragonard,_The_Swing.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Swing, by Jean-Honoré Fragonard, completed in the year of 1767.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/renoir_bal_du_moulin_de_la_galette_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/renoir_bal_du_moulin_de_la_galette_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/renoir_bal_du_moulin_de_la_galette_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/renoir_bal_du_moulin_de_la_galette_640w.webp",
+    "title": "Bal du moulin de la Galette - Pierre-Auguste Renoir (AI Animated)",
+    "type": "video",
+    "date": "2026-10-12",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Pierre-Auguste Renoir",
+    "artist_dates": "1841–1919",
+    "original_title": "Bal du moulin de la Galette",
+    "original_date": "1876",
+    "museum": "Musée d'Orsay",
+    "credit_line": "Image: Wikimedia Commons, Renoir, Pierre-Auguste - Dance at Le Moulin de la Galette, 1876.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Renoir,_Pierre-Auguste_-_Dance_at_Le_Moulin_de_la_Galette,_1876.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Bal du moulin de la Galette, by Pierre-Auguste Renoir, completed in the year of 1876.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/repin_reply_of_the_zaporozhian_cossacks_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/repin_reply_of_the_zaporozhian_cossacks_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/repin_reply_of_the_zaporozhian_cossacks_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/repin_reply_of_the_zaporozhian_cossacks_640w.webp",
+    "title": "Reply of the Zaporozhian Cossacks - Ilya Repin (AI Animated)",
+    "type": "video",
+    "date": "2026-10-12",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Ilya Repin",
+    "artist_dates": "1844–1930",
+    "original_title": "Reply of the Zaporozhian Cossacks",
+    "original_date": "1890–1891",
+    "museum": "Russian Museum",
+    "credit_line": "Image: Wikimedia Commons, Ilja Jefimowitsch Repin - Reply of the Zaporozhian Cossacks - Yorck.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Ilja_Jefimowitsch_Repin_-_Reply_of_the_Zaporozhian_Cossacks_-_Yorck.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Reply of the Zaporozhian Cossacks, by Ilya Repin, completed in the year of 1890.",
+    "looping": false
   }
 ]

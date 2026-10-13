@@ -7977,7 +7977,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Egon_Schiele_-_Portrait_of_Wally_Neuzil_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Portrait of Wally, by Egon Schiele, completed in the year of 1912.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Muted Viennese piano and warm clarinet, intimate early twentieth-century chamber miniature, poised and gently restless. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_delft_20261013_animated.mp4",
@@ -8000,7 +8001,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Johannes_Vermeer_-_View_of_Delft_-_92_-_Mauritshuis.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled View of Delft, by Johannes Vermeer, completed in the year of 1660.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Soft Dutch Baroque harpsichord and recorder, spacious viol harmonies, unhurried harbour daylight and quiet civic warmth. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/aivazovsky_ninth_wave_20261013_animated.mp4",
@@ -8023,7 +8025,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Hovhannes_Aivazovsky_-_The_Ninth_Wave_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Ninth Wave, by Ivan Aivazovsky, completed in the year of 1850.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Low Romantic strings and mellow French horn, slow rolling pulse, restrained maritime tension beneath a golden dawn. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/theotokos_vladimir_20261013_animated.mp4",
@@ -8045,6 +8048,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Vladimirskaja_ikona_Bo%C5%BEiej_Materi.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Theotokos of Vladimir, by Unknown artist, completed in the year of 1125.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Sparse Byzantine modal melody on bowed lyra with soft plucked psaltery, tender maternal stillness and luminous golden warmth. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

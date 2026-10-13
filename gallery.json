@@ -7955,5 +7955,96 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Reply of the Zaporozhian Cossacks, by Ilya Repin, completed in the year of 1890.",
     "looping": false,
     "music_prompt": "Ukrainian folk tune on bandura and fiddle with a steady frame drum, hearty and good-humoured, open steppe camp. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/schiele_wally_20261013_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/schiele_wally_20261013_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/schiele_wally_20261013_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/schiele_wally_20261013_640w.webp",
+    "title": "Portrait of Wally - Egon Schiele (AI Animated)",
+    "type": "video",
+    "date": "2026-10-13",
+    "tags": [
+      "Modern"
+    ],
+    "source": "real_artwork",
+    "artist": "Egon Schiele",
+    "artist_dates": "1890–1918",
+    "original_title": "Portrait of Wally",
+    "original_date": "1912",
+    "museum": "Leopold Museum",
+    "credit_line": "Image: Wikimedia Commons, Egon Schiele - Portrait of Wally Neuzil - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Egon_Schiele_-_Portrait_of_Wally_Neuzil_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Portrait of Wally, by Egon Schiele, completed in the year of 1912.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_delft_20261013_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_delft_20261013_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_delft_20261013_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_delft_20261013_640w.webp",
+    "title": "View of Delft - Johannes Vermeer (AI Animated)",
+    "type": "video",
+    "date": "2026-10-13",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Johannes Vermeer",
+    "artist_dates": "1632–1675",
+    "original_title": "View of Delft",
+    "original_date": "c. 1660–1661",
+    "museum": "Mauritshuis",
+    "credit_line": "Image: Wikimedia Commons, Johannes Vermeer - View of Delft - 92 - Mauritshuis.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Johannes_Vermeer_-_View_of_Delft_-_92_-_Mauritshuis.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled View of Delft, by Johannes Vermeer, completed in the year of 1660.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/aivazovsky_ninth_wave_20261013_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/aivazovsky_ninth_wave_20261013_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/aivazovsky_ninth_wave_20261013_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/aivazovsky_ninth_wave_20261013_640w.webp",
+    "title": "The Ninth Wave - Ivan Aivazovsky (AI Animated)",
+    "type": "video",
+    "date": "2026-10-13",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Ivan Aivazovsky",
+    "artist_dates": "1817–1900",
+    "original_title": "The Ninth Wave",
+    "original_date": "1850",
+    "museum": "Russian Museum",
+    "credit_line": "Image: Wikimedia Commons, Hovhannes Aivazovsky - The Ninth Wave - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Hovhannes_Aivazovsky_-_The_Ninth_Wave_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Ninth Wave, by Ivan Aivazovsky, completed in the year of 1850.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/theotokos_vladimir_20261013_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/theotokos_vladimir_20261013_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/theotokos_vladimir_20261013_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/theotokos_vladimir_20261013_640w.webp",
+    "title": "Theotokos of Vladimir - Unknown artist (AI Animated)",
+    "type": "video",
+    "date": "2026-10-13",
+    "tags": [
+      "Medieval & Byzantine"
+    ],
+    "source": "real_artwork",
+    "artist": "Unknown artist",
+    "original_title": "Theotokos of Vladimir",
+    "original_date": "1125",
+    "museum": "Tretyakov Gallery",
+    "credit_line": "Image: Wikimedia Commons, Vladimirskaja ikona Božiej Materi.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Vladimirskaja_ikona_Bo%C5%BEiej_Materi.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Theotokos of Vladimir, by Unknown artist, completed in the year of 1125.",
+    "looping": false
   }
 ]

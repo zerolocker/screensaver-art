@@ -1,31 +1,21 @@
-"""Gemini TTS per beat, cached on disk by hash(text, voice, model, style).
+"""Gemini 3.8 TTS per beat, cached on disk by hash(text, voice, model, style).
 
-- Two invocation paths. Gemini 3.8+ TTS models go through the Interactions API
-  (the documented path for them): the text is treated strictly as a verbatim
-  transcript, so the delivery direction goes in a `speech_metadata` annotation's
-  `style` (a short phrase) and the voice in `speech_config`. Anything put in the
-  text itself gets spoken. Requests are sent with `store=False`: nothing here uses
-  server-side conversation state, and the API otherwise keeps every request.
-  The legacy models (3.1, 2.5) use `generate_content`, with the style prose
-  prepended to the text, which they treat as direction.
-- Response audio differs by model: 3.8 unary requests return a WAV ("audio/wav",
-  24 kHz mono s16, followed by a C2PA chunk that the `wave` module skips); the
-  legacy models return headerless L16 PCM ("audio/l16; rate=24000; channels=1").
-  Both are normalised to 24 kHz mono s16 here.
+- Requests go through the Interactions API. The text is treated strictly as a
+  verbatim transcript, so the delivery direction goes in a `speech_metadata`
+  annotation's `style` (a short phrase) and the voice in `speech_config`. Anything
+  put in the text itself gets spoken. Requests are sent with `store=False`: nothing
+  here uses server-side conversation state, and the API otherwise keeps every request.
+- Responses are a WAV ("audio/wav", 24 kHz mono s16, followed by a C2PA chunk that
+  the `wave` module skips), normalised to 24 kHz mono s16 here.
 - Retries 429/5xx/empty responses with exponential backoff; after that, falls back
-  to `fallback_model` (same prebuilt voice names) with a warning.
-- Guards against reading the direction aloud and dropping a sentence with a
-  duration sanity check and (default on) a verbatim transcription of each *new*
-  clip by a dedicated speech-to-text model.
+  to `FALLBACK_MODEL` (same prebuilt voice names) with a warning.
 """
 import base64
-import difflib
 import hashlib
 import io
 import json
 import os
 import random
-import re
 import subprocess
 import threading
 import time
@@ -33,30 +23,12 @@ import wave
 from array import array
 
 RATE = 24000
-# A dedicated speech-to-text model, not a general alias that changes between releases.
-VERIFY_MODEL = os.environ.get("EXPLAINER_VERIFY_MODEL", "gemini-3.5-transcribe")
+MODEL = "gemini-3.8-flash-tts"
+FALLBACK_MODEL = "gemini-3.8-flash-lite-tts"
 RETRY_CODES = {429, 500, 502, 503, 504}
 
-# Default delivery direction when the spec sets no `style`. 3.8 takes a short phrase
-# in speech_metadata; the older models take prose prepended to the text.
+# Default delivery direction when the spec sets no `style`.
 SPEECH_STYLE = "friendly, warm and engaging"  # won blind tests vs "calm…" phrasings and no style
-PROSE_STYLE = ("Read this as a calm, friendly narrator explaining something to a "
-               "colleague: warm, clear and brisk, conversational, never salesy.")
-
-# Models that predate the verbatim-transcript schema and read direction from the text.
-LEGACY_PREFIXES = ("gemini-2.5-", "gemini-3.1-")
-
-
-def uses_interactions(model):
-    """3.8 and later: Interactions API with speech_metadata. Legacy models: generate_content."""
-    return not model.startswith(LEGACY_PREFIXES)
-
-
-def style_for(model, style):
-    """The spec's `style` if set, else the default for that model's invocation path."""
-    if style is not None:
-        return style
-    return SPEECH_STYLE if uses_interactions(model) else PROSE_STYLE
 
 
 class NoAudio(Exception):
@@ -68,21 +40,13 @@ def cache_key(text, voice, model, style):
     return hashlib.sha256(blob.encode()).hexdigest()[:24]
 
 
-def to_pcm(mime, data):
-    """Return 24 kHz mono s16le PCM bytes from whatever the model sent."""
-    mime = (mime or "").lower()
-    if "wav" in mime or data[:4] == b"RIFF":
-        with wave.open(io.BytesIO(data)) as w:
-            rate, ch, sw, pcm = w.getframerate(), w.getnchannels(), w.getsampwidth(), w.readframes(w.getnframes())
-        fmt = {1: "u8", 2: "s16le", 4: "s32le"}[sw]
-    else:
-        m = re.search(r"rate=(\d+)", mime)
-        rate = int(m.group(1)) if m else RATE
-        m = re.search(r"channels=(\d+)", mime)
-        ch = int(m.group(1)) if m else 1
-        pcm, fmt = data, "s16le"
-    if rate == RATE and ch == 1 and fmt == "s16le":
+def to_pcm(data):
+    """Return 24 kHz mono s16le PCM bytes from the WAV the model sent."""
+    with wave.open(io.BytesIO(data)) as w:
+        rate, ch, sw, pcm = w.getframerate(), w.getnchannels(), w.getsampwidth(), w.readframes(w.getnframes())
+    if rate == RATE and ch == 1 and sw == 2:
         return pcm
+    fmt = {1: "u8", 2: "s16le", 4: "s32le"}[sw]
     p = subprocess.run(["ffmpeg", "-v", "error", "-f", fmt, "-ar", str(rate), "-ac", str(ch), "-i", "-",
                         "-f", "s16le", "-ar", str(RATE), "-ac", "1", "-"], input=pcm, capture_output=True, check=True)
     return p.stdout
@@ -125,27 +89,15 @@ def seconds(pcm):
     return len(pcm) / 2 / RATE
 
 
-# Numbers are written/heard inconsistently ("487" vs "four hundred and eighty-seven",
-# "$0.99" vs "ninety-nine cents"), so the transcript check ignores them entirely.
-_NUMWORDS = set("""zero oh one two three four five six seven eight nine ten eleven twelve thirteen
-fourteen fifteen sixteen seventeen eighteen nineteen twenty thirty forty fifty sixty seventy eighty
-ninety hundred thousand million billion point and dollar dollars cent cents percent""".split())
-
-
-def _norm(s):
-    toks = re.findall(r"[a-z]+|\d+", s.lower().replace("'", ""))
-    return "".join(t for t in toks if not t.isdigit() and t not in _NUMWORDS)
-
-
 class TTS:
-    def __init__(self, cache_dir, model, fallback_model, voice, style, verify=True, refresh=False, log=print):
+    def __init__(self, cache_dir, voice, style, refresh=False, log=print):
         from google import genai
         self.client = genai.Client()
         self.dir = os.path.join(cache_dir, "tts")
         os.makedirs(self.dir, exist_ok=True)
-        self.model, self.fallback, self.voice = model, fallback_model, voice
-        self.style = style  # None = each model's default (style_for)
-        self.verify, self.refresh, self.log = verify, refresh, log
+        self.model, self.voice = MODEL, voice
+        self.style = SPEECH_STYLE if style is None else style
+        self.refresh, self.log = refresh, log
         self.warnings = []
         self.lock = threading.Lock()
         self.stats = {"cached": 0, "synth": 0}
@@ -155,16 +107,12 @@ class TTS:
             self.warnings.append(msg)
 
     def _retry(self, fn, what, attempts=5):
-        from google.genai import errors
         for k in range(attempts):
             try:
                 return fn()
-            except Exception as e:  # APIError, NoAudio, transient network errors
-                # generate_content raises errors.APIError (.code); the Interactions
-                # client raises its own APIStatusError (.status_code).
-                code = getattr(e, "code", None) or getattr(e, "status_code", None)
-                api = isinstance(e, errors.APIError) or code is not None
-                transient = isinstance(e, NoAudio) or code in RETRY_CODES or not api
+            except Exception as e:  # APIStatusError, NoAudio, transient network errors
+                code = getattr(e, "status_code", None) or getattr(e, "code", None)
+                transient = isinstance(e, NoAudio) or code in RETRY_CODES or code is None
                 if not transient or k == attempts - 1:
                     raise
                 wait = min(40, 3 * 2 ** k) + random.uniform(0, 1.5)
@@ -172,30 +120,9 @@ class TTS:
                 time.sleep(wait)
 
     def _call(self, model, text):
-        style = style_for(model, self.style)
-        if uses_interactions(model):
-            return self._call_interactions(model, text, style)
-        from google.genai import types
-        prompt = f"{style}\n\n{text}" if style else text
-        cfg = types.GenerateContentConfig(
-            response_modalities=["AUDIO"],
-            speech_config=types.SpeechConfig(voice_config=types.VoiceConfig(
-                prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=self.voice))))
-
-        def once():
-            r = self.client.models.generate_content(model=model, contents=prompt, config=cfg)
-            cand = (r.candidates or [None])[0]
-            parts = (cand.content.parts if cand and cand.content else None) or []
-            part = next((p for p in parts if p.inline_data and p.inline_data.data), None)
-            if not part:
-                raise NoAudio(f"no audio (finish_reason={getattr(cand, 'finish_reason', None)})")
-            return to_pcm(part.inline_data.mime_type, part.inline_data.data)
-        return self._retry(once, f"tts[{model}]")
-
-    def _call_interactions(self, model, text, style):
         part = {"type": "text", "text": text}
-        if style:
-            part["annotations"] = [{"type": "speech_metadata", "style": style}]
+        if self.style:
+            part["annotations"] = [{"type": "speech_metadata", "style": self.style}]
 
         def once():
             r = self.client.interactions.create(
@@ -207,55 +134,12 @@ class TTS:
             audio = getattr(r, "output_audio", None)
             if not audio or not audio.data:
                 raise NoAudio(f"no audio (status={getattr(r, 'status', None)})")
-            data = audio.data if isinstance(audio.data, bytes) else base64.b64decode(audio.data)
-            return to_pcm(audio.mime_type, data)
+            return to_pcm(audio.data if isinstance(audio.data, bytes) else base64.b64decode(audio.data))
         return self._retry(once, f"tts[{model}]")
-
-    def _transcribe(self, pcm):
-        """Verbatim transcript of a clip. Beats are a few hundred KB, so the WAV goes inline."""
-        buf = io.BytesIO()
-        with wave.open(buf, "wb") as w:
-            w.setnchannels(1); w.setsampwidth(2); w.setframerate(RATE); w.writeframes(pcm)
-        wav = buf.getvalue()
-        if "transcribe" in VERIFY_MODEL:  # dedicated speech-to-text model: no prompt
-            r = self.client.interactions.create(
-                model=VERIFY_MODEL, store=False,
-                input=[{"type": "audio", "mime_type": "audio/wav", "data": base64.b64encode(wav).decode()}])
-            return r.output_text or ""
-        from google.genai import types  # a general model, via EXPLAINER_VERIFY_MODEL
-        r = self.client.models.generate_content(
-            model=VERIFY_MODEL,
-            contents=[types.Part.from_bytes(data=wav, mime_type="audio/wav"),
-                      "Transcribe this speech verbatim. Output only the transcript."])
-        return r.text or ""
-
-    def _check(self, text, pcm):
-        """Return (ok, reason). Cheap duration check, then optional transcription."""
-        words = len(text.split())
-        dur = seconds(trim(pcm))
-        expected = words / 2.75
-        if words >= 5 and (dur > expected * 1.6 + 1.5 or dur < expected * 0.45):
-            return False, f"duration {dur:.1f}s vs ~{expected:.1f}s expected"
-        if not self.verify:
-            return True, ""
-        try:
-            heard = self._retry(lambda: self._transcribe(pcm), "verify", attempts=3)
-        except Exception as e:
-            self._warn(f"could not verify audio ({type(e).__name__}); kept unverified: \"{text[:50]}…\"")
-            return True, ""
-        a, b = _norm(text), _norm(heard)
-        m = sum(bl.size for bl in difflib.SequenceMatcher(None, a, b, autojunk=False).get_matching_blocks())
-        extra, missing = len(b) - m, len(a) - m
-        if extra > 0.25 * len(a) + 15:
-            return False, f"extra speech: heard \"{heard[:90]}\""
-        if missing > 0.2 * len(a) + 10:
-            return False, f"missing speech: heard \"{heard[:90]}\""
-        return True, ""
 
     def get(self, text):
         """Path to a cached WAV for this beat (synthesising if needed)."""
-        keys = [(m, cache_key(text, self.voice, m, style_for(m, self.style)))
-                for m in [self.model] + ([self.fallback] if self.fallback and self.fallback != self.model else [])]
+        keys = [(m, cache_key(text, self.voice, m, self.style)) for m in (MODEL, FALLBACK_MODEL)]
         if not self.refresh:
             for _, k in keys:
                 p = os.path.join(self.dir, k + ".wav")
@@ -265,31 +149,21 @@ class TTS:
                     return p
         for mi, (model, k) in enumerate(keys):
             try:
-                best = None
-                for attempt in range(2):
-                    pcm = self._call(model, text)
-                    ok, why = self._check(text, pcm)
-                    if ok:
-                        best = pcm
-                        break
-                    self.log(f"  … re-synthesising ({why}): \"{text[:50]}…\"")
-                    best = best or pcm
-                else:
-                    self._warn(f"audio check still failing after retry — listen to: \"{text[:60]}…\"")
-                if mi:
-                    self._warn(f"used fallback TTS model {model} for: \"{text[:50]}…\"")
-                p = os.path.join(self.dir, k + ".wav")
-                write_wav(p, best)
-                with open(os.path.join(self.dir, k + ".json"), "w") as f:
-                    json.dump({"text": text, "voice": self.voice, "model": model,
-                               "style": style_for(model, self.style)}, f, indent=1)
-                with self.lock:
-                    self.stats["synth"] += 1
-                return p
+                pcm = self._call(model, text)
             except Exception as e:
                 if mi == len(keys) - 1:
                     raise RuntimeError(f"TTS failed for \"{text[:60]}…\": {e}") from e
                 self.log(f"  … {model} failed ({e}); trying fallback {keys[mi + 1][0]}")
+                continue
+            if mi:
+                self._warn(f"used fallback TTS model {model} for: \"{text[:50]}…\"")
+            p = os.path.join(self.dir, k + ".wav")
+            write_wav(p, pcm)
+            with open(os.path.join(self.dir, k + ".json"), "w") as f:
+                json.dump({"text": text, "voice": self.voice, "model": model, "style": self.style}, f, indent=1)
+            with self.lock:
+                self.stats["synth"] += 1
+            return p
 
 
 def tempo(path, speed):

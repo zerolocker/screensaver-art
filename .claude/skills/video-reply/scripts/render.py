@@ -52,7 +52,6 @@ def main():
     ap.add_argument("--burn-captions", action=argparse.BooleanOptionalAction, default=True,
                     help="burn captions into the picture (default; --no-burn-captions for a soft track only)")
     ap.add_argument("--no-subs", action="store_true", help="omit the soft subtitle track")
-    ap.add_argument("--no-verify", action="store_true", help="skip transcription check of new TTS clips")
     ap.add_argument("--refresh-audio", action="store_true", help="ignore the TTS cache")
     ap.add_argument("--jobs", type=int, default=6, help="parallel TTS requests (default 6)")
     args = ap.parse_args()
@@ -86,8 +85,7 @@ def main():
             log("GEMINI_API_KEY not set — run via: bash curation/with-secrets.sh GEMINI_API_KEY -- python3 …")
             sys.exit(2)
         from tts import TTS, tempo
-        tts = TTS(CACHE, spec["model"], spec["fallback_model"], spec["voice"], spec["style"],
-                  verify=not args.no_verify, refresh=args.refresh_audio, log=log)
+        tts = TTS(CACHE, spec["voice"], spec["style"], refresh=args.refresh_audio, log=log)
         ex = ThreadPoolExecutor(max(1, args.jobs))
         futs = [[ex.submit(lambda t: tempo(tts.get(t), spec["speed"]), b["text"]) for b in sc["beats"]] for sc in scenes]
 
@@ -215,7 +213,7 @@ def main():
     qa.sheet(grabs, labels, sheet, title=f"{spec['title']} — {fmt_t(total)}, {len(beats)} beats, {len(scenes)} scenes")
 
     report(warnings)
-    log(f"tts: {tts.stats['synth']} new, {tts.stats['cached']} cached · {spec['model']} / {spec['voice']}")
+    log(f"tts: {tts.stats['synth']} new, {tts.stats['cached']} cached · {tts.model} / {spec['voice']}")
     log(f"total time: {time.time() - t_start:.1f}s")
     print(f"video: {out}")
     print(f"duration: {fmt_t(total)} ({total:.1f}s)")

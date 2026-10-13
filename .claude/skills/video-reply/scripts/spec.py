@@ -8,8 +8,6 @@ import os
 
 import yaml
 
-DEFAULT_MODEL = "gemini-3.8-flash-tts"
-FALLBACK_MODEL = "gemini-3.8-flash-lite-tts"  # Google's stated replacement for 3.1-flash-tts-preview
 DEFAULT_VOICE = "Sulafat"
 DEFAULT_ACCENT = "#e4a853"
 
@@ -31,7 +29,7 @@ TEMPLATES = {
 ALIASES = {"image": "images", "bullet": "bullets", "numbered": "steps", "flow": "pipeline",
            "comparison": "compare", "question": "decision", "custom": "html", "stat": "stats",
            "clip": "video"}
-TOP_KEYS = {"title", "footer", "voice", "model", "fallback_model", "style", "accent", "scenes", "pad", "speed"}
+TOP_KEYS = {"title", "footer", "voice", "style", "accent", "scenes", "pad", "speed"}
 SCENE_COMMON = {"template", "say", "beats", "pause"}
 
 
@@ -80,9 +78,7 @@ def load(path):
         "title": str(data.get("title", "") or ""),
         "footer": data.get("footer"),
         "voice": data.get("voice") or DEFAULT_VOICE,
-        "model": data.get("model") or DEFAULT_MODEL,
-        "fallback_model": data.get("fallback_model", FALLBACK_MODEL),
-        # None = the TTS default for each model's invocation path (tts.style_for)
+        # None = the TTS default (tts.SPEECH_STYLE)
         "style": None if data.get("style") is None else str(data["style"]).strip(),
         "accent": data.get("accent") or DEFAULT_ACCENT,
         "pad": float(data.get("pad", 0.25)),

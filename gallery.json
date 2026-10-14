@@ -8050,5 +8050,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Theotokos of Vladimir, by Unknown artist, completed in the year of 1125.",
     "looping": false,
     "music_prompt": "Sparse Byzantine modal melody on bowed lyra with soft plucked psaltery, tender maternal stillness and luminous golden warmth. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_starry_night_over_the_rhone_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_starry_night_over_the_rhone_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_starry_night_over_the_rhone_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_starry_night_over_the_rhone_640w.webp",
+    "title": "Starry Night Over the Rhône - Vincent van Gogh (AI Animated)",
+    "type": "video",
+    "date": "2026-10-14",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Vincent van Gogh",
+    "artist_dates": "1853–1890",
+    "original_title": "Starry Night Over the Rhone",
+    "original_date": "1888",
+    "museum": "Musée d'Orsay",
+    "credit_line": "Image: Wikimedia Commons, Vincent van Gogh - Starry Night - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Vincent_van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Starry Night Over the Rhône, by Vincent van Gogh, completed in the year of 1888.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_storm_on_the_sea_of_galilee_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_storm_on_the_sea_of_galilee_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_storm_on_the_sea_of_galilee_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_storm_on_the_sea_of_galilee_640w.webp",
+    "title": "The Storm on the Sea of Galilee - Rembrandt (AI Animated)",
+    "type": "video",
+    "date": "2026-10-14",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Rembrandt",
+    "artist_dates": "1606–1669",
+    "original_title": "The Storm on the Sea of Galilee",
+    "original_date": "1633",
+    "museum": "Isabella Stewart Gardner Museum",
+    "credit_line": "Image: Wikimedia Commons, Rembrandt - Christ in the Storm on the Sea of Galilee.jpeg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Rembrandt_-_Christ_in_the_Storm_on_the_Sea_of_Galilee.jpeg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Storm on the Sea of Galilee, by Rembrandt, completed in the year of 1633.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_surrender_of_breda_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_surrender_of_breda_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_surrender_of_breda_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_surrender_of_breda_640w.webp",
+    "title": "The Surrender of Breda - Diego Velázquez (AI Animated)",
+    "type": "video",
+    "date": "2026-10-14",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Diego Velázquez",
+    "artist_dates": "1599–1660",
+    "original_title": "The Surrender of Breda",
+    "original_date": "1634–1635",
+    "museum": "Museo del Prado",
+    "credit_line": "Image: Wikimedia Commons, Velazquez-The Surrender of Breda.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Velazquez-The_Surrender_of_Breda.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Surrender of Breda, by Diego Velázquez, completed in the year of 1634.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/klimt_adele_bloch_bauer_i_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/klimt_adele_bloch_bauer_i_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/klimt_adele_bloch_bauer_i_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/klimt_adele_bloch_bauer_i_640w.webp",
+    "title": "Portrait of Adele Bloch-Bauer I - Gustav Klimt (AI Animated)",
+    "type": "video",
+    "date": "2026-10-14",
+    "tags": [
+      "Modern"
+    ],
+    "source": "real_artwork",
+    "artist": "Gustav Klimt",
+    "artist_dates": "1862–1918",
+    "original_title": "Portrait of Adele Bloch-Bauer I",
+    "original_date": "1907",
+    "museum": "Neue Galerie",
+    "credit_line": "Image: Wikimedia Commons, Gustav Klimt - Porträt der Adele Bloch-Bauer I (1907).jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Gustav_Klimt_-_Portr%C3%A4t_der_Adele_Bloch-Bauer_I_(1907).jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Portrait of Adele Bloch-Bauer I, by Gustav Klimt, completed in the year of 1907.",
+    "looping": false
   }
 ]

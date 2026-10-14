@@ -8072,7 +8072,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Vincent_van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Starry Night Over the Rhône, by Vincent van Gogh, completed in the year of 1888.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Soft solo piano with gentle accordion and muted strings, a tender French nocturne beside a river under shimmering stars, warm and slow. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_storm_on_the_sea_of_galilee_animated.mp4",
@@ -8095,7 +8096,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Rembrandt_-_Christ_in_the_Storm_on_the_Sea_of_Galilee.jpeg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Storm on the Sea of Galilee, by Rembrandt, completed in the year of 1633.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Low cellos and viola da gamba with rolling timpani and a dark Dutch Baroque organ drone, stormy and weighty but restrained, like wind and swell. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_surrender_of_breda_animated.mp4",
@@ -8118,7 +8120,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Velazquez-The_Surrender_of_Breda.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Surrender of Breda, by Diego Velázquez, completed in the year of 1634.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Spanish Baroque guitar and vihuela with a small string consort and soft frame drum, dignified and courtly, calm ceremony after battle. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/klimt_adele_bloch_bauer_i_animated.mp4",
@@ -8141,6 +8144,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Gustav_Klimt_-_Portr%C3%A4t_der_Adele_Bloch-Bauer_I_(1907).jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Portrait of Adele Bloch-Bauer I, by Gustav Klimt, completed in the year of 1907.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Viennese string quartet with celesta and harp, an elegant, slow waltz-tinged lyric melody, gilded and serene, fin-de-siècle salon warmth. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

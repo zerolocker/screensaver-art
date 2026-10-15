@@ -7,8 +7,8 @@
   here uses server-side conversation state, and the API otherwise keeps every request.
 - Responses are a WAV ("audio/wav", 24 kHz mono s16, followed by a C2PA chunk that
   the `wave` module skips), normalised to 24 kHz mono s16 here.
-- Retries 429/5xx/empty responses with exponential backoff; after that, falls back
-  to `FALLBACK_MODEL` (same prebuilt voice names) with a warning.
+- Retries 429/5xx/empty responses with exponential backoff, then fails the render.
+  There is no fallback model.
 """
 import base64
 import hashlib
@@ -24,7 +24,6 @@ from array import array
 
 RATE = 24000
 MODEL = "gemini-3.8-flash-tts"
-FALLBACK_MODEL = "gemini-3.8-flash-lite-tts"
 RETRY_CODES = {429, 500, 502, 503, 504}
 
 # Default delivery direction when the spec sets no `style`.
@@ -98,13 +97,8 @@ class TTS:
         self.model, self.voice = MODEL, voice
         self.style = SPEECH_STYLE if style is None else style
         self.refresh, self.log = refresh, log
-        self.warnings = []
         self.lock = threading.Lock()
         self.stats = {"cached": 0, "synth": 0}
-
-    def _warn(self, msg):
-        with self.lock:
-            self.warnings.append(msg)
 
     def _retry(self, fn, what, attempts=5):
         for k in range(attempts):
@@ -119,14 +113,14 @@ class TTS:
                 self.log(f"  … {what}: {code or type(e).__name__}, retry in {wait:.0f}s")
                 time.sleep(wait)
 
-    def _call(self, model, text):
+    def _call(self, text):
         part = {"type": "text", "text": text}
         if self.style:
             part["annotations"] = [{"type": "speech_metadata", "style": self.style}]
 
         def once():
             r = self.client.interactions.create(
-                model=model,
+                model=MODEL,
                 input=[{"type": "user_input", "content": [part]}],
                 response_format={"type": "audio"},
                 generation_config={"speech_config": [{"voice": self.voice}]},
@@ -135,35 +129,26 @@ class TTS:
             if not audio or not audio.data:
                 raise NoAudio(f"no audio (status={getattr(r, 'status', None)})")
             return to_pcm(audio.data if isinstance(audio.data, bytes) else base64.b64decode(audio.data))
-        return self._retry(once, f"tts[{model}]")
+        return self._retry(once, f"tts[{MODEL}]")
 
     def get(self, text):
         """Path to a cached WAV for this beat (synthesising if needed)."""
-        keys = [(m, cache_key(text, self.voice, m, self.style)) for m in (MODEL, FALLBACK_MODEL)]
-        if not self.refresh:
-            for _, k in keys:
-                p = os.path.join(self.dir, k + ".wav")
-                if os.path.exists(p):
-                    with self.lock:
-                        self.stats["cached"] += 1
-                    return p
-        for mi, (model, k) in enumerate(keys):
-            try:
-                pcm = self._call(model, text)
-            except Exception as e:
-                if mi == len(keys) - 1:
-                    raise RuntimeError(f"TTS failed for \"{text[:60]}…\": {e}") from e
-                self.log(f"  … {model} failed ({e}); trying fallback {keys[mi + 1][0]}")
-                continue
-            if mi:
-                self._warn(f"used fallback TTS model {model} for: \"{text[:50]}…\"")
-            p = os.path.join(self.dir, k + ".wav")
-            write_wav(p, pcm)
-            with open(os.path.join(self.dir, k + ".json"), "w") as f:
-                json.dump({"text": text, "voice": self.voice, "model": model, "style": self.style}, f, indent=1)
+        k = cache_key(text, self.voice, MODEL, self.style)
+        p = os.path.join(self.dir, k + ".wav")
+        if not self.refresh and os.path.exists(p):
             with self.lock:
-                self.stats["synth"] += 1
+                self.stats["cached"] += 1
             return p
+        try:
+            pcm = self._call(text)
+        except Exception as e:
+            raise RuntimeError(f"TTS failed for \"{text[:60]}…\": {e}") from e
+        write_wav(p, pcm)
+        with open(os.path.join(self.dir, k + ".json"), "w") as f:
+            json.dump({"text": text, "voice": self.voice, "model": MODEL, "style": self.style}, f, indent=1)
+        with self.lock:
+            self.stats["synth"] += 1
+        return p
 
 
 def tempo(path, speed):

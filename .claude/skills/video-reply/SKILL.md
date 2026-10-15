@@ -199,7 +199,7 @@ Complete worked example covering every template: [`examples/demo.yaml`](examples
 
 ## Notes
 
-- **TTS:** always `gemini-3.8-flash-tts`, with the `Sulafat` voice by default, which won blind listening tests. `gemini-3.8-flash-lite-tts` is the fallback when it keeps failing.
+- **TTS:** always `gemini-3.8-flash-tts`, with the `Sulafat` voice by default, which won blind listening tests. There is no fallback model: if it still fails after retrying temporary errors, the render fails.
 - 3.8 uses the Interactions API (`store=False`) and reads the text as a strict verbatim transcript: any direction in the text gets spoken. So `tts.py` sends `style` as speech metadata; keep narration pure speech. 3.8 sounds flat without a style, and `friendly, warm and engaging` tested best. There's no speaking-rate setting, so `speed` time-stretches the audio.
 - `video` clips are always muted, normalised to 1080p30, letterboxed (never cropped), and play across all of the scene's beats: looped by default, or frozen on the last frame with `loop: false`. `layout: full` keeps the progress bar and caption on a gradient over the clip.
 - Output: 1920×1080 30 fps H.264 + AAC 96k, loudness-normalised to −16 LUFS, with burned-in captions. Plays in QuickTime and on phones. Keep it under 30 MB (about 15 MB for 4 minutes).

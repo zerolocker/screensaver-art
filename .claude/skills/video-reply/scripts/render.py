@@ -136,7 +136,6 @@ def main():
         wavs = [[f.result() for f in row] for row in futs]
     finally:
         ex.shutdown(wait=False, cancel_futures=True)
-    warnings += tts.warnings
     beats, total = assemble.build_timeline(spec, wavs)
     raw = os.path.join(build, "narration_raw.wav")
     narration = os.path.join(build, "narration.wav")

@@ -4,7 +4,7 @@
 #     .claude/skills/video-reply/examples/demo.yaml --out llm-video-replies/demo.mp4
 title: How new art reaches you        # footer text + MP4 title
 footer: Living Art · Explainer
-# voice: Sulafat                       # defaults; override per video if needed
+# voice: Leda                          # defaults; override per video if needed
 # model: gemini-3.8-flash-tts
 # style: "friendly, warm and engaging"  # a short phrase for 3.8 models
 # accent: "#e4a853"

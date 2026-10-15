@@ -10,7 +10,7 @@ import yaml
 
 DEFAULT_MODEL = "gemini-3.8-flash-tts"
 FALLBACK_MODEL = "gemini-3.8-flash-lite-tts"  # Google's stated replacement for 3.1-flash-tts-preview
-DEFAULT_VOICE = "Sulafat"
+DEFAULT_VOICE = "Leda"
 DEFAULT_ACCENT = "#e4a853"
 
 # template -> (required fields, optional fields, list field to count, soft max items)

@@ -124,7 +124,7 @@ specs, and `.cache/` (TTS audio, downloaded images, build files).
 - Captions are **burned into the picture by default**, and the layout reserves room
   for them. Most players hide a soft subtitle track, so it went unseen.
   `--no-burn-captions` falls back to the soft `mov_text` track only.
-- `--no-subs`, `--no-verify` (skip the transcription check), `--refresh-audio`.
+- `--no-subs`, `--refresh-audio`.
 - Re-renders are cheap. Audio is cached by hash(text, voice, model, style) and Ken
   Burns clips by image, size and duration, so edit visuals freely; only changed
   narration costs API calls.
@@ -132,11 +132,8 @@ specs, and `.cache/` (TTS audio, downloaded images, build files).
 ## Spec format (YAML)
 
 Top level: `title` (MP4 title + default footer), `footer`, `scenes`, and optional
-`voice` (default `Sulafat`), `model` (default `gemini-3.8-flash-tts`; falls back to
-`gemini-3.8-flash-lite-tts`), `style` (delivery direction; each model
-has a tuned default. For 3.8 models it is a short phrase like `friendly,
-warm and engaging`, sent as speech metadata; for the legacy 3.1/2.5 models it is
-prose prepended to each beat), `accent` (hex), `pad` (seconds after each beat, default 0.25), `speed` (pitch-preserving speech tempo, default 1.12 — the voice reads slowly at 1.0).
+`voice` (default `Sulafat`), `style` (delivery direction: a short phrase sent as
+speech metadata, default `friendly, warm and engaging`), `accent` (hex), `pad` (seconds after each beat, default 0.25), `speed` (pitch-preserving speech tempo, default 1.12 — the voice reads slowly at 1.0).
 
 Each scene: `template`, its fields, optional `kicker` (small accent caps line) and
 `say:` — the narration, a list of **beats**. Beat 1 shows the slide's fixed parts
@@ -202,9 +199,8 @@ Complete worked example covering every template: [`examples/demo.yaml`](examples
 
 ## Notes
 
-- **TTS:** the default is `gemini-3.8-flash-tts` with the `Sulafat` voice, which won blind listening tests. `gemini-3.8-flash-lite-tts` is the fallback.
-- 3.8 models use the Interactions API (`store=False`) and read the text as a strict verbatim transcript: any direction in the text gets spoken. So `tts.py` sends `style` as speech metadata; keep narration pure speech. 3.8 sounds flat without a style, and `friendly, warm and engaging` tested best. There's no speaking-rate setting, so `speed` time-stretches the audio.
-- Each new clip gets a duration check and a transcription check with `gemini-3.5-transcribe`, and is re-synthesised once on a mismatch. Mishearings of rare words ("Veo", "tarantella") stay within tolerance.
+- **TTS:** always `gemini-3.8-flash-tts`, with the `Sulafat` voice by default, which won blind listening tests. There is no fallback model: if it still fails after retrying temporary errors, the render fails.
+- 3.8 uses the Interactions API (`store=False`) and reads the text as a strict verbatim transcript: any direction in the text gets spoken. So `tts.py` sends `style` as speech metadata; keep narration pure speech. 3.8 sounds flat without a style, and `friendly, warm and engaging` tested best. There's no speaking-rate setting, so `speed` time-stretches the audio.
 - `video` clips are always muted, normalised to 1080p30, letterboxed (never cropped), and play across all of the scene's beats: looped by default, or frozen on the last frame with `loop: false`. `layout: full` keeps the progress bar and caption on a gradient over the clip.
 - Output: 1920×1080 30 fps H.264 + AAC 96k, loudness-normalised to −16 LUFS, with burned-in captions. Plays in QuickTime and on phones. Keep it under 30 MB (about 15 MB for 4 minutes).
 - Needs Google Chrome, ffmpeg 7 or newer built with libass (it burns the captions), and Python with `google-genai` ≥ 2.25, `PyYAML` and `Pillow`. Fonts are macOS system fonts (New York, Avenir Next).

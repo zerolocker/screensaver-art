@@ -8146,5 +8146,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Portrait of Adele Bloch-Bauer I, by Gustav Klimt, completed in the year of 1907.",
     "looping": false,
     "music_prompt": "Viennese string quartet with celesta and harp, an elegant, slow waltz-tinged lyric melody, gilded and serene, fin-de-siècle salon warmth. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_ginevra_de_benci_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_ginevra_de_benci_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_ginevra_de_benci_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_ginevra_de_benci_640w.webp",
+    "title": "Ginevra de' Benci - Leonardo da Vinci (AI Animated)",
+    "type": "video",
+    "date": "2026-10-15",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Leonardo da Vinci",
+    "artist_dates": "1452–1519",
+    "original_title": "Ginevra de' Benci",
+    "original_date": "c. 1474/1478",
+    "museum": "National Gallery of Art",
+    "credit_line": "Ailsa Mellon Bruce Fund",
+    "source_url": "https://www.nga.gov/collection/art-object-page.50724.html",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Ginevra de' Benci, by Leonardo da Vinci, completed in the year of 1474.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_the_harvesters_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_the_harvesters_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_the_harvesters_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_the_harvesters_640w.webp",
+    "title": "The Harvesters - Pieter Bruegel the Elder (AI Animated)",
+    "type": "video",
+    "date": "2026-10-15",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Pieter Bruegel the Elder",
+    "artist_dates": "c. 1525–1569",
+    "original_title": "The Harvesters",
+    "original_date": "1565",
+    "museum": "The Metropolitan Museum of Art",
+    "credit_line": "Rogers Fund, 1919",
+    "source_url": "https://www.metmuseum.org/art/collection/search/435809",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Harvesters, by Pieter Bruegel the Elder, completed in the year of 1565.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/constable_the_hay_wain_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/constable_the_hay_wain_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/constable_the_hay_wain_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/constable_the_hay_wain_640w.webp",
+    "title": "The Hay Wain - John Constable (AI Animated)",
+    "type": "video",
+    "date": "2026-10-15",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "John Constable",
+    "artist_dates": "1776–1837",
+    "original_title": "The Hay Wain",
+    "original_date": "1821",
+    "museum": "National Gallery",
+    "credit_line": "Image: Wikimedia Commons, John Constable - The Hay Wain (1821).jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:John_Constable_-_The_Hay_Wain_(1821).jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Hay Wain, by John Constable, completed in the year of 1821.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/matisse_woman_with_a_hat_1905_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/matisse_woman_with_a_hat_1905_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/matisse_woman_with_a_hat_1905_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/matisse_woman_with_a_hat_1905_640w.webp",
+    "title": "Woman with a Hat - Henri Matisse (AI Animated)",
+    "type": "video",
+    "date": "2026-10-15",
+    "tags": [
+      "Modern"
+    ],
+    "source": "real_artwork",
+    "artist": "Henri Matisse",
+    "artist_dates": "1869–1954",
+    "original_title": "Woman with a hat",
+    "original_date": "1905",
+    "museum": "San Francisco Museum of Modern Art",
+    "credit_line": "Image: Wikimedia Commons, Matisse-Woman-with-a-Hat.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Matisse-Woman-with-a-Hat.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Woman with a Hat, by Henri Matisse, completed in the year of 1905.",
+    "looping": false
   }
 ]

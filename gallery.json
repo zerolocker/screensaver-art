@@ -8242,5 +8242,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Woman with a Hat, by Henri Matisse, completed in the year of 1905.",
     "looping": false,
     "music_prompt": "Bright Parisian salon piano with light pizzicato strings and a dash of clarinet, playful and colourful, early 1900s. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/vangogh_cafe_terrace_at_night_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/vangogh_cafe_terrace_at_night_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/vangogh_cafe_terrace_at_night_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/vangogh_cafe_terrace_at_night_640w.webp",
+    "title": "Café Terrace at Night - Vincent van Gogh (AI Animated)",
+    "type": "video",
+    "date": "2026-10-16",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Vincent van Gogh",
+    "artist_dates": "1853–1890",
+    "original_title": "Café Terrace at Night",
+    "original_date": "1888",
+    "museum": "Kröller-Müller Museum",
+    "credit_line": "Image: Wikimedia Commons, Van Gogh - Terrace of a Café at Night (Place du Forum) 1888.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Van_Gogh_-_Terrace_of_a_Caf%C3%A9_at_Night_(Place_du_Forum)_1888.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Café Terrace at Night, by Vincent van Gogh, completed in the year of 1888.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/raphael_sistine_madonna_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/raphael_sistine_madonna_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/raphael_sistine_madonna_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/raphael_sistine_madonna_640w.webp",
+    "title": "Sistine Madonna - Raphael (AI Animated)",
+    "type": "video",
+    "date": "2026-10-16",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Raphael",
+    "artist_dates": "1483–1520",
+    "original_title": "Sistine Madonna",
+    "original_date": "c. 1512–1513",
+    "museum": "Staatliche Kunstsammlungen Dresden",
+    "credit_line": "Image: Wikimedia Commons, Raphael - The Sistine Madonna - Google Arts & Culture.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Raphael_-_The_Sistine_Madonna_-_Google_Arts_%26_Culture.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Sistine Madonna, by Raphael, completed in the year of 1512.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_the_jewish_bride_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_the_jewish_bride_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_the_jewish_bride_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_the_jewish_bride_640w.webp",
+    "title": "The Jewish Bride - Rembrandt (AI Animated)",
+    "type": "video",
+    "date": "2026-10-16",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Rembrandt",
+    "artist_dates": "1606–1669",
+    "original_title": "Isaac and Rebecca, Known as ‘The Jewish Bride’",
+    "original_date": "c. 1665 - c. 1669",
+    "museum": "Rijksmuseum",
+    "credit_line": "On loan from the City of Amsterdam (A. van der Hoop Bequest)",
+    "source_url": "https://www.rijksmuseum.nl/en/collection/SK-C-216",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Jewish Bride, by Rembrandt, completed in the year of 1665.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/shishkin_morning_in_a_pine_forest_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/shishkin_morning_in_a_pine_forest_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/shishkin_morning_in_a_pine_forest_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/shishkin_morning_in_a_pine_forest_640w.webp",
+    "title": "Morning in a Pine Forest - Ivan Shishkin and Konstantin Savitsky (AI Animated)",
+    "type": "video",
+    "date": "2026-10-16",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Ivan Shishkin and Konstantin Savitsky",
+    "artist_dates": "1831–1898",
+    "original_title": "Morning in a Pine Forest",
+    "original_date": "1889",
+    "museum": "Tretyakov Gallery",
+    "credit_line": "Image: Wikimedia Commons, Shishkin, Ivan - Morning in a Pine Forest.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Shishkin,_Ivan_-_Morning_in_a_Pine_Forest.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Morning in a Pine Forest, by Ivan Shishkin and Konstantin Savitsky, completed in the year of 1889.",
+    "looping": false
   }
 ]

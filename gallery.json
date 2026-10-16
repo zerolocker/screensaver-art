@@ -8264,7 +8264,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Van_Gogh_-_Terrace_of_a_Caf%C3%A9_at_Night_(Place_du_Forum)_1888.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Café Terrace at Night, by Vincent van Gogh, completed in the year of 1888.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Gentle French musette waltz on soft accordion with nylon-string guitar and light brushed snare, a warm starlit café evening in Provence. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/raphael_sistine_madonna_animated.mp4",
@@ -8287,7 +8288,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Raphael_-_The_Sistine_Madonna_-_Google_Arts_%26_Culture.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Sistine Madonna, by Raphael, completed in the year of 1512.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Serene High Renaissance consort of viols, lute and soft portative organ in slow modal harmony, luminous and heavenly. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_the_jewish_bride_animated.mp4",
@@ -8310,7 +8312,8 @@
     "source_url": "https://www.rijksmuseum.nl/en/collection/SK-C-216",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Jewish Bride, by Rembrandt, completed in the year of 1665.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Tender Dutch Golden Age chamber music for viola da gamba, theorbo and harpsichord, slow and intimate in a warm minor key. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/shishkin_morning_in_a_pine_forest_animated.mp4",
@@ -8333,6 +8336,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Shishkin,_Ivan_-_Morning_in_a_Pine_Forest.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Morning in a Pine Forest, by Ivan Shishkin and Konstantin Savitsky, completed in the year of 1889.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Calm Russian Romantic pastoral for muted strings, solo clarinet and harp, misty morning light through tall pines, gently playful. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

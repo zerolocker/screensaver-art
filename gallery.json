@@ -8360,7 +8360,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Korenveld_met_kraaien_-_s0149V1962_-_Van_Gogh_Museum.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Wheatfield with Crows, by Vincent van Gogh, completed in the year of 1890.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Late-romantic French chamber music: restless solo cello and piano under a windswept summer sky, rustling tremolo strings, minor key with warm golden undertones. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/veronese_wedding_at_cana_animated.mp4",
@@ -8383,7 +8384,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Les_Noces_de_Cana_-_Paolo_Veronese_-_Mus%C3%A9e_du_Louvre_Peintures_INV_142_;_MR_384.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Wedding at Cana, by Paolo Veronese, completed in the year of 1562.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Venetian Renaissance banquet music: viola da gamba, lute, recorder and gentle tambourine in a lilting dance, festive yet courtly and unhurried. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/matisse_harmony_in_red_animated.mp4",
@@ -8406,7 +8408,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:La_Desserte_rouge,_par_Henri_Matisse.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Harmony in Red, by Henri Matisse, completed in the year of 1908.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Bright early-modern Parisian salon piece: playful flute and clarinet over light piano, warm major harmonies, sunny and domestic, like a quiet afternoon at a laid table. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/el_greco_view_of_toledo_animated.mp4",
@@ -8429,6 +8432,7 @@
     "source_url": "https://www.metmuseum.org/art/collection/search/436575",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled View of Toledo, by El Greco, completed in the year of 1599.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Spanish Renaissance sacred mood: slow vihuela and low organ drone with sparse bowed strings, brooding and stormy, solemn minor modes under a dark sky. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

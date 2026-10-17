@@ -8338,5 +8338,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Morning in a Pine Forest, by Ivan Shishkin and Konstantin Savitsky, completed in the year of 1889.",
     "looping": false,
     "music_prompt": "Calm Russian Romantic pastoral for muted strings, solo clarinet and harp, misty morning light through tall pines, gently playful. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_wheatfield_with_crows_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_wheatfield_with_crows_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_wheatfield_with_crows_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_wheatfield_with_crows_640w.webp",
+    "title": "Wheatfield with Crows - Vincent van Gogh (AI Animated)",
+    "type": "video",
+    "date": "2026-10-17",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Vincent van Gogh",
+    "artist_dates": "1853–1890",
+    "original_title": "Wheatfield with Crows",
+    "original_date": "1890",
+    "museum": "Van Gogh Museum",
+    "credit_line": "Image: Wikimedia Commons, Korenveld met kraaien - s0149V1962 - Van Gogh Museum.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Korenveld_met_kraaien_-_s0149V1962_-_Van_Gogh_Museum.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Wheatfield with Crows, by Vincent van Gogh, completed in the year of 1890.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/veronese_wedding_at_cana_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/veronese_wedding_at_cana_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/veronese_wedding_at_cana_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/veronese_wedding_at_cana_640w.webp",
+    "title": "The Wedding at Cana - Paolo Veronese (AI Animated)",
+    "type": "video",
+    "date": "2026-10-17",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Paolo Veronese",
+    "artist_dates": "1528–1588",
+    "original_title": "The Wedding at Cana",
+    "original_date": "1562–1563",
+    "museum": "Louvre Museum",
+    "credit_line": "Image: Wikimedia Commons, Les Noces de Cana - Paolo Veronese - Musée du Louvre Peintures INV 142 ; MR 384.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Les_Noces_de_Cana_-_Paolo_Veronese_-_Mus%C3%A9e_du_Louvre_Peintures_INV_142_;_MR_384.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Wedding at Cana, by Paolo Veronese, completed in the year of 1562.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/matisse_harmony_in_red_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/matisse_harmony_in_red_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/matisse_harmony_in_red_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/matisse_harmony_in_red_640w.webp",
+    "title": "Harmony in Red - Henri Matisse (AI Animated)",
+    "type": "video",
+    "date": "2026-10-17",
+    "tags": [
+      "Modern"
+    ],
+    "source": "real_artwork",
+    "artist": "Henri Matisse",
+    "artist_dates": "1869–1954",
+    "original_title": "The Dessert: Harmony in Red (The Red Room)",
+    "original_date": "1908",
+    "museum": "Hermitage Museum",
+    "credit_line": "Image: Wikimedia Commons, La Desserte rouge, par Henri Matisse.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:La_Desserte_rouge,_par_Henri_Matisse.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Harmony in Red, by Henri Matisse, completed in the year of 1908.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/el_greco_view_of_toledo_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/el_greco_view_of_toledo_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/el_greco_view_of_toledo_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/el_greco_view_of_toledo_640w.webp",
+    "title": "View of Toledo - El Greco (AI Animated)",
+    "type": "video",
+    "date": "2026-10-17",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "El Greco",
+    "artist_dates": "1541–1614",
+    "original_title": "View of Toledo",
+    "original_date": "ca. 1599–1600",
+    "museum": "The Metropolitan Museum of Art",
+    "credit_line": "H. O. Havemeyer Collection, Bequest of Mrs. H. O. Havemeyer, 1929",
+    "source_url": "https://www.metmuseum.org/art/collection/search/436575",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled View of Toledo, by El Greco, completed in the year of 1599.",
+    "looping": false
   }
 ]

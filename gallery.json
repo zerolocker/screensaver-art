@@ -8530,5 +8530,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Washington Crossing the Delaware, by Emanuel Leutze, completed in the year of 1851.",
     "looping": false,
     "music_prompt": "Restrained 18th-century American colonial music: muffled snare, low fife and string ensemble in a steady minor key, cold river and determined resolve without fanfare. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/renoir_luncheon_of_the_boating_party_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/renoir_luncheon_of_the_boating_party_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/renoir_luncheon_of_the_boating_party_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/renoir_luncheon_of_the_boating_party_640w.webp",
+    "title": "Luncheon of the Boating Party - Pierre-Auguste Renoir (AI Animated)",
+    "type": "video",
+    "date": "2026-10-24",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Pierre-Auguste Renoir",
+    "artist_dates": "1841–1919",
+    "original_title": "Luncheon of the Boating Party",
+    "original_date": "1880–1881",
+    "museum": "The Phillips Collection",
+    "credit_line": "Image: Wikimedia Commons, Pierre-Auguste Renoir - Luncheon of the Boating Party - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Pierre-Auguste_Renoir_-_Luncheon_of_the_Boating_Party_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Luncheon of the Boating Party, by Pierre-Auguste Renoir, completed in the year of 1880.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_supper_at_emmaus_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_supper_at_emmaus_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_supper_at_emmaus_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_supper_at_emmaus_640w.webp",
+    "title": "Supper at Emmaus - Caravaggio (AI Animated)",
+    "type": "video",
+    "date": "2026-10-24",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Caravaggio",
+    "artist_dates": "1571–1610",
+    "original_title": "Supper at Emmaus",
+    "original_date": "1601",
+    "museum": "National Gallery",
+    "credit_line": "Image: Wikimedia Commons, Supper at Emmaus-Caravaggio (1601).jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Supper_at_Emmaus-Caravaggio_(1601).jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Supper at Emmaus, by Caravaggio, completed in the year of 1601.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/wright_of_derby_orrery_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/wright_of_derby_orrery_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/wright_of_derby_orrery_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/wright_of_derby_orrery_640w.webp",
+    "title": "A Philosopher Lecturing on the Orrery - Joseph Wright of Derby (AI Animated)",
+    "type": "video",
+    "date": "2026-10-24",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Joseph Wright of Derby",
+    "artist_dates": "1734–1797",
+    "original_title": "A Philosopher Lecturing on the Orrery",
+    "original_date": "1766",
+    "museum": "Derby Museum and Art Gallery",
+    "credit_line": "Image: Wikimedia Commons, Wright of Derby, The Orrery.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Wright_of_Derby,_The_Orrery.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled A Philosopher Lecturing on the Orrery, by Joseph Wright of Derby, completed in the year of 1766.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/whistler_whistlers_mother_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/whistler_whistlers_mother_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/whistler_whistlers_mother_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/whistler_whistlers_mother_640w.webp",
+    "title": "Whistler's Mother - James McNeill Whistler (AI Animated)",
+    "type": "video",
+    "date": "2026-10-24",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "James McNeill Whistler",
+    "artist_dates": "1834–1903",
+    "original_title": "Whistler's Mother",
+    "original_date": "1871",
+    "museum": "Musée d'Orsay",
+    "credit_line": "Image: Wikimedia Commons, Whistlers Mother high res.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Whistlers_Mother_high_res.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Whistler's Mother, by James McNeill Whistler, completed in the year of 1871.",
+    "looping": false
   }
 ]

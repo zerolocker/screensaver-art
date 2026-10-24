@@ -8456,7 +8456,8 @@
     "source_url": "https://www.getty.edu/art/collection/object/103JNH",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Irises, by Vincent van Gogh, completed in the year of 1889.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Gentle late-19th-century French chamber piece: solo piano with soft clarinet and pizzicato cello, bright and airy major key, like a breeze through a sunlit garden. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_netherlandish_proverbs_animated.mp4",
@@ -8479,7 +8480,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Pieter_Bruegel_(der_%C3%84ltere)_(ca._1525_-_1569)_-_Die_niederl%C3%A4ndischen_Sprichw%C3%B6rter_-_1720_-_Gem%C3%A4ldegalerie.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Netherlandish Proverbs, by Pieter Bruegel the Elder, completed in the year of 1559.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Lively 16th-century Flemish village dance: crumhorn, hurdy-gurdy, lute and tabor in a jaunty modal tune, playful and bustling but gentle. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_the_little_street_animated.mp4",
@@ -8502,7 +8504,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Johannes_Vermeer_-_Gezicht_op_huizen_in_Delft,_bekend_als_%27Het_straatje%27_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Little Street, by Johannes Vermeer, completed in the year of 1658.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Quiet Dutch Golden Age chamber music: viola da gamba, baroque lute and soft recorder, warm and domestic, a calm afternoon in a brick courtyard. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/leutze_washington_crossing_the_delaware_animated.mp4",
@@ -8525,6 +8528,7 @@
     "source_url": "https://www.metmuseum.org/art/collection/search/11417",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Washington Crossing the Delaware, by Emanuel Leutze, completed in the year of 1851.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Restrained 18th-century American colonial music: muffled snare, low fife and string ensemble in a steady minor key, cold river and determined resolve without fanfare. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

@@ -8434,5 +8434,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled View of Toledo, by El Greco, completed in the year of 1599.",
     "looping": false,
     "music_prompt": "Spanish Renaissance sacred mood: slow vihuela and low organ drone with sparse bowed strings, brooding and stormy, solemn minor modes under a dark sky. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_irises_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_irises_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_irises_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_irises_640w.webp",
+    "title": "Irises - Vincent van Gogh (AI Animated)",
+    "type": "video",
+    "date": "2026-10-23",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Vincent van Gogh",
+    "artist_dates": "1853–1890",
+    "original_title": "Irises",
+    "original_date": "1889",
+    "museum": "J. Paul Getty Museum",
+    "credit_line": "The J. Paul Getty Museum, Los Angeles",
+    "source_url": "https://www.getty.edu/art/collection/object/103JNH",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Irises, by Vincent van Gogh, completed in the year of 1889.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_netherlandish_proverbs_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_netherlandish_proverbs_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_netherlandish_proverbs_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_netherlandish_proverbs_640w.webp",
+    "title": "Netherlandish Proverbs - Pieter Bruegel the Elder (AI Animated)",
+    "type": "video",
+    "date": "2026-10-23",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Pieter Bruegel the Elder",
+    "artist_dates": "1520s–1569",
+    "original_title": "Netherlandish Proverbs",
+    "original_date": "1559",
+    "museum": "Gemäldegalerie Berlin",
+    "credit_line": "Image: Wikimedia Commons, Pieter Bruegel (der Ältere) (ca. 1525 - 1569) - Die niederländischen Sprichwörter - 1720 - Gemäldegalerie.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Pieter_Bruegel_(der_%C3%84ltere)_(ca._1525_-_1569)_-_Die_niederl%C3%A4ndischen_Sprichw%C3%B6rter_-_1720_-_Gem%C3%A4ldegalerie.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Netherlandish Proverbs, by Pieter Bruegel the Elder, completed in the year of 1559.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_the_little_street_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_the_little_street_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_the_little_street_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_the_little_street_640w.webp",
+    "title": "The Little Street - Johannes Vermeer (AI Animated)",
+    "type": "video",
+    "date": "2026-10-23",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Johannes Vermeer",
+    "artist_dates": "1632–1675",
+    "original_title": "The Little Street",
+    "original_date": "c. 1658",
+    "museum": "Rijksmuseum",
+    "credit_line": "Image: Wikimedia Commons, Johannes Vermeer - Gezicht op huizen in Delft, bekend als 'Het straatje' - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Johannes_Vermeer_-_Gezicht_op_huizen_in_Delft,_bekend_als_%27Het_straatje%27_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Little Street, by Johannes Vermeer, completed in the year of 1658.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/leutze_washington_crossing_the_delaware_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/leutze_washington_crossing_the_delaware_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/leutze_washington_crossing_the_delaware_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/leutze_washington_crossing_the_delaware_640w.webp",
+    "title": "Washington Crossing the Delaware - Emanuel Leutze (AI Animated)",
+    "type": "video",
+    "date": "2026-10-23",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Emanuel Leutze",
+    "artist_dates": "1816–1868",
+    "original_title": "Washington Crossing the Delaware",
+    "original_date": "1851",
+    "museum": "The Metropolitan Museum of Art",
+    "credit_line": "Gift of John Stewart Kennedy, 1897",
+    "source_url": "https://www.metmuseum.org/art/collection/search/11417",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Washington Crossing the Delaware, by Emanuel Leutze, completed in the year of 1851.",
+    "looping": false
   }
 ]

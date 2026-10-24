@@ -8552,7 +8552,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Pierre-Auguste_Renoir_-_Luncheon_of_the_Boating_Party_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Luncheon of the Boating Party, by Pierre-Auguste Renoir, completed in the year of 1880.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Breezy French café waltz on accordion, nylon-string guitar and light pizzicato strings, sunny riverside afternoon, warm and lilting. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_supper_at_emmaus_animated.mp4",
@@ -8575,7 +8576,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Supper_at_Emmaus-Caravaggio_(1601).jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Supper at Emmaus, by Caravaggio, completed in the year of 1601.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Early Baroque chamber music: theorbo, viola da gamba and soft chamber organ, candlelit and contemplative, gently reverent. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/wright_of_derby_orrery_animated.mp4",
@@ -8598,7 +8600,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Wright_of_Derby,_The_Orrery.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled A Philosopher Lecturing on the Orrery, by Joseph Wright of Derby, completed in the year of 1766.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Georgian-era candlelit study: harpsichord and a small string quartet playing a slow, curious minuet, hushed wonder, glinting celesta accents. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/whistler_whistlers_mother_animated.mp4",
@@ -8621,6 +8624,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Whistlers_Mother_high_res.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Whistler's Mother, by James McNeill Whistler, completed in the year of 1871.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Quiet Victorian parlour piano with a solo cello, muted grey tones, still and dignified, sparse sustained notes and soft room ambience. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

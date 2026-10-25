@@ -8648,7 +8648,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:%22Un_Bar_aux_Folies-Berg%C3%A8re%22_by_%C3%89douard_Manet_(1882).jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled A Bar at the Folies-Bergère, by Édouard Manet, completed in the year of 1882.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Parisian café-concert waltz from the 1880s: lilting piano, clarinet and light strings, a hazy, glittering yet wistful nightlife mood. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/repin_barge_haulers_on_the_volga_animated.mp4",
@@ -8671,7 +8672,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Ilya_Repin_-_Barge_Haulers_on_the_Volga_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Barge Haulers on the Volga, by Ilya Repin, completed in the year of 1870.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Slow Russian folk lament: low cello, balalaika and soft bayan accordion in a minor key, a steady trudging pulse under a wide pale river sky. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/gainsborough_the_blue_boy_animated.mp4",
@@ -8694,7 +8696,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Thomas_Gainsborough_-_The_Blue_Boy_(1770).jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Blue Boy, by Thomas Gainsborough, completed in the year of 1770.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Elegant 18th-century English chamber music: harpsichord, solo violin and soft viola in a graceful minuet tempo, warm and poised with a hint of pastoral air. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_the_syndics_animated.mp4",
@@ -8717,6 +8720,7 @@
     "source_url": "https://www.rijksmuseum.nl/en/collection/SK-C-6",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Syndics of the Drapers' Guild, by Rembrandt, completed in the year of 1662.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Dutch Golden Age consort: viola da gamba, theorbo and recorder in a calm, dignified minor mode, warm and candlelit, quietly contemplative. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

@@ -8626,5 +8626,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Whistler's Mother, by James McNeill Whistler, completed in the year of 1871.",
     "looping": false,
     "music_prompt": "Quiet Victorian parlour piano with a solo cello, muted grey tones, still and dignified, sparse sustained notes and soft room ambience. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/manet_bar_at_the_folies_bergere_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/manet_bar_at_the_folies_bergere_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/manet_bar_at_the_folies_bergere_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/manet_bar_at_the_folies_bergere_640w.webp",
+    "title": "A Bar at the Folies-Bergère - Édouard Manet (AI Animated)",
+    "type": "video",
+    "date": "2026-10-25",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Édouard Manet",
+    "artist_dates": "1832–1883",
+    "original_title": "A Bar at the Folies-Bergère",
+    "original_date": "1882",
+    "museum": "Courtauld Institute of Art",
+    "credit_line": "Image: Wikimedia Commons, \"Un Bar aux Folies-Bergère\" by Édouard Manet (1882).jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:%22Un_Bar_aux_Folies-Berg%C3%A8re%22_by_%C3%89douard_Manet_(1882).jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled A Bar at the Folies-Bergère, by Édouard Manet, completed in the year of 1882.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/repin_barge_haulers_on_the_volga_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/repin_barge_haulers_on_the_volga_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/repin_barge_haulers_on_the_volga_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/repin_barge_haulers_on_the_volga_640w.webp",
+    "title": "Barge Haulers on the Volga - Ilya Repin (AI Animated)",
+    "type": "video",
+    "date": "2026-10-25",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Ilya Repin",
+    "artist_dates": "1844–1930",
+    "original_title": "Barge Haulers on the Volga",
+    "original_date": "1870",
+    "museum": "Russian Museum",
+    "credit_line": "Image: Wikimedia Commons, Ilya Repin - Barge Haulers on the Volga - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Ilya_Repin_-_Barge_Haulers_on_the_Volga_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Barge Haulers on the Volga, by Ilya Repin, completed in the year of 1870.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/gainsborough_the_blue_boy_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/gainsborough_the_blue_boy_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/gainsborough_the_blue_boy_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/gainsborough_the_blue_boy_640w.webp",
+    "title": "The Blue Boy - Thomas Gainsborough (AI Animated)",
+    "type": "video",
+    "date": "2026-10-25",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Thomas Gainsborough",
+    "artist_dates": "1727–1788",
+    "original_title": "The Blue Boy",
+    "original_date": "c. 1770",
+    "museum": "The Huntington Library, Art Museum, and Botanical Gardens",
+    "credit_line": "Image: Wikimedia Commons, Thomas Gainsborough - The Blue Boy (1770).jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Thomas_Gainsborough_-_The_Blue_Boy_(1770).jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Blue Boy, by Thomas Gainsborough, completed in the year of 1770.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_the_syndics_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_the_syndics_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_the_syndics_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_the_syndics_640w.webp",
+    "title": "The Syndics of the Drapers' Guild - Rembrandt (AI Animated)",
+    "type": "video",
+    "date": "2026-10-25",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Rembrandt",
+    "artist_dates": "1606–1669",
+    "original_title": "The Sampling Officials of the Amsterdam Drapers’ Guild, Known as ‘The Syndics’",
+    "original_date": "1662",
+    "museum": "Rijksmuseum",
+    "credit_line": "On loan from the City of Amsterdam",
+    "source_url": "https://www.rijksmuseum.nl/en/collection/SK-C-6",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Syndics of the Drapers' Guild, by Rembrandt, completed in the year of 1662.",
+    "looping": false
   }
 ]

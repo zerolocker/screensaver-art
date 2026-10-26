@@ -8744,7 +8744,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:John_Everett_Millais_-_Ophelia_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Ophelia, by John Everett Millais, completed in the year of 1851.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Pastoral English stream at summer's edge: gentle solo harp arpeggios with soft cello and a distant wooden flute, tender, still and dreamlike, in a quiet minor key. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/holbein_the_ambassadors_animated.mp4",
@@ -8767,7 +8768,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Hans_Holbein_the_Younger_-_The_Ambassadors_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Ambassadors, by Hans Holbein the Younger, completed in the year of 1533.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Tudor court chamber: solo Renaissance lute with a soft viol consort, stately pavane tempo, poised and contemplative with a faint undertone of mystery. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_peasant_wedding_animated.mp4",
@@ -8790,7 +8792,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Pieter_Bruegel_the_Elder_-_Peasant_Wedding_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Peasant Wedding, by Pieter Bruegel the Elder, completed in the year of 1568.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Sixteenth-century Flemish village feast: bagpipe drone, recorder and tabor playing a lilting round dance, rustic and cheerful but unhurried, warm and earthy. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_the_night_cafe_animated.mp4",
@@ -8813,6 +8816,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Le_caf%C3%A9_de_nuit_(The_Night_Caf%C3%A9)_by_Vincent_van_Gogh.jpeg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Night Café, by Vincent van Gogh, completed in the year of 1888.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Late-night Provençal café: slow musette accordion waltz with soft brushed snare, upright bass and a muted mandolin, warm, hazy and slightly melancholic. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

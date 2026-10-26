@@ -8722,5 +8722,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Syndics of the Drapers' Guild, by Rembrandt, completed in the year of 1662.",
     "looping": false,
     "music_prompt": "Dutch Golden Age consort: viola da gamba, theorbo and recorder in a calm, dignified minor mode, warm and candlelit, quietly contemplative. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/millais_ophelia_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/millais_ophelia_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/millais_ophelia_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/millais_ophelia_640w.webp",
+    "title": "Ophelia - John Everett Millais (AI Animated)",
+    "type": "video",
+    "date": "2026-10-26",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "John Everett Millais",
+    "artist_dates": "1829–1896",
+    "original_title": "Ophelia",
+    "original_date": "1851",
+    "museum": "Tate Britain",
+    "credit_line": "Image: Wikimedia Commons, John Everett Millais - Ophelia - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:John_Everett_Millais_-_Ophelia_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Ophelia, by John Everett Millais, completed in the year of 1851.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/holbein_the_ambassadors_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/holbein_the_ambassadors_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/holbein_the_ambassadors_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/holbein_the_ambassadors_640w.webp",
+    "title": "The Ambassadors - Hans Holbein the Younger (AI Animated)",
+    "type": "video",
+    "date": "2026-10-26",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Hans Holbein the Younger",
+    "artist_dates": "1497–1543",
+    "original_title": "The Ambassadors",
+    "original_date": "1533",
+    "museum": "National Gallery",
+    "credit_line": "Image: Wikimedia Commons, Hans Holbein the Younger - The Ambassadors - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Hans_Holbein_the_Younger_-_The_Ambassadors_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Ambassadors, by Hans Holbein the Younger, completed in the year of 1533.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_peasant_wedding_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_peasant_wedding_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_peasant_wedding_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_peasant_wedding_640w.webp",
+    "title": "The Peasant Wedding - Pieter Bruegel the Elder (AI Animated)",
+    "type": "video",
+    "date": "2026-10-26",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Pieter Bruegel the Elder",
+    "artist_dates": "1520s–1569",
+    "original_title": "The Peasant Wedding",
+    "original_date": "c. 1568",
+    "museum": "Kunsthistorisches Museum",
+    "credit_line": "Image: Wikimedia Commons, Pieter Bruegel the Elder - Peasant Wedding - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Pieter_Bruegel_the_Elder_-_Peasant_Wedding_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Peasant Wedding, by Pieter Bruegel the Elder, completed in the year of 1568.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_the_night_cafe_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_the_night_cafe_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_the_night_cafe_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_the_night_cafe_640w.webp",
+    "title": "The Night Café - Vincent van Gogh (AI Animated)",
+    "type": "video",
+    "date": "2026-10-26",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Vincent van Gogh",
+    "artist_dates": "1853–1890",
+    "original_title": "The Night Café",
+    "original_date": "1888",
+    "museum": "Yale University Art Gallery",
+    "credit_line": "Image: Wikimedia Commons, Le café de nuit (The Night Café) by Vincent van Gogh.jpeg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Le_caf%C3%A9_de_nuit_(The_Night_Caf%C3%A9)_by_Vincent_van_Gogh.jpeg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Night Café, by Vincent van Gogh, completed in the year of 1888.",
+    "looping": false
   }
 ]

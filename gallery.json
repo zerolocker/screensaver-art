@@ -8840,7 +8840,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Sainte_Anne_Leonard.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Virgin and Child with Saint Anne, by Leonardo da Vinci, completed in the year of 1503.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Gentle Renaissance consort: lute, recorder and soft viol in a tender pastoral air, warm and serene, like a calm afternoon in a hillside landscape. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/durer_rhinoceros_animated.mp4",
@@ -8863,7 +8864,8 @@
     "source_url": "https://www.nga.gov/collection/art-object-page.47903.html",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Rhinoceros, by Albrecht Dürer, completed in the year of 1515.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Playful sixteenth-century German dance: crumhorn, hand drum and plucked cittern, curious and lightly comic, steady unhurried stride. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/david_oath_of_the_horatii_animated.mp4",
@@ -8886,7 +8888,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Le_Serment_des_Horaces_-_Jacques-Louis_David_-_Mus%C3%A9e_du_Louvre_Peintures_INV_3692_;_MR_1432.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Oath of the Horatii, by Jacques-Louis David, completed in the year of 1784.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Solemn neoclassical chamber strings and low French horn, steady stately pulse, noble and restrained, cool marble hall atmosphere. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/modigliani_alice_animated.mp4",
@@ -8908,6 +8911,7 @@
     "source_url": "https://open.smk.dk/artwork/image/KMSr145",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Alice, by Amedeo Modigliani, completed in the year of 1916.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Quiet early twentieth-century Parisian piano with soft clarinet, wistful and tender, muted blue tones, slow gentle waltz feel. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

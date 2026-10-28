@@ -8935,7 +8935,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Jan_Vermeer_-_The_Art_of_Painting_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Art of Painting, by Johannes Vermeer, completed in the year of 1666.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Delft interior in soft north light: solo viola da gamba and harpsichord, unhurried and contemplative, warm Dutch Golden Age chamber texture. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_church_at_auvers_animated.mp4",
@@ -8958,7 +8959,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Vincent_van_Gogh_-_The_Church_in_Auvers-sur-Oise,_View_from_the_Chevet_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Church at Auvers, by Vincent van Gogh, completed in the year of 1890.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Late-1880s French village at dusk under a swirling blue sky: gentle accordion and solo cello over soft harp, wistful and luminous. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/duccio_madonna_and_child_animated.mp4",
@@ -8981,7 +8983,8 @@
     "source_url": "https://www.metmuseum.org/art/collection/search/438754",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Madonna and Child, by Duccio, completed in the year of 1290.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Sienese gold-ground icon, around 1300: medieval vielle and portative organ drone with soft recorder, tender, devotional and still. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/manet_the_balcony_animated.mp4",
@@ -9004,6 +9007,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Edouard_Manet_-_The_Balcony_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Balcony, by Édouard Manet, completed in the year of 1868.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Parisian balcony in 1868: elegant solo piano salon waltz with light string quartet, cool, poised and quietly ironic. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

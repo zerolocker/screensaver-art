@@ -8913,5 +8913,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Alice, by Amedeo Modigliani, completed in the year of 1916.",
     "looping": false,
     "music_prompt": "Quiet early twentieth-century Parisian piano with soft clarinet, wistful and tender, muted blue tones, slow gentle waltz feel. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_art_of_painting_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_art_of_painting_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_art_of_painting_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_art_of_painting_640w.webp",
+    "title": "The Art of Painting - Johannes Vermeer (AI Animated)",
+    "type": "video",
+    "date": "2026-10-28",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Johannes Vermeer",
+    "artist_dates": "1632–1675",
+    "original_title": "The Art of Painting",
+    "original_date": "c. 1666–1668",
+    "museum": "Kunsthistorisches Museum",
+    "credit_line": "Image: Wikimedia Commons, Jan Vermeer - The Art of Painting - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Jan_Vermeer_-_The_Art_of_Painting_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Art of Painting, by Johannes Vermeer, completed in the year of 1666.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_church_at_auvers_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_church_at_auvers_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_church_at_auvers_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_church_at_auvers_640w.webp",
+    "title": "The Church at Auvers - Vincent van Gogh (AI Animated)",
+    "type": "video",
+    "date": "2026-10-28",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Vincent van Gogh",
+    "artist_dates": "1853–1890",
+    "original_title": "The Church at Auvers",
+    "original_date": "1890",
+    "museum": "Musée d'Orsay",
+    "credit_line": "Image: Wikimedia Commons, Vincent van Gogh - The Church in Auvers-sur-Oise, View from the Chevet - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Vincent_van_Gogh_-_The_Church_in_Auvers-sur-Oise,_View_from_the_Chevet_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Church at Auvers, by Vincent van Gogh, completed in the year of 1890.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/duccio_madonna_and_child_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/duccio_madonna_and_child_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/duccio_madonna_and_child_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/duccio_madonna_and_child_640w.webp",
+    "title": "Madonna and Child - Duccio (AI Animated)",
+    "type": "video",
+    "date": "2026-10-28",
+    "tags": [
+      "Medieval & Byzantine"
+    ],
+    "source": "real_artwork",
+    "artist": "Duccio",
+    "artist_dates": "active by 1278, died 1318",
+    "original_title": "Madonna and Child",
+    "original_date": "ca. 1290–1300",
+    "museum": "The Metropolitan Museum of Art",
+    "credit_line": "Purchase, Rogers Fund, Walter and Leonore Annenberg and The Annenberg Foundation Gift, Lila Acheson Wallace Gift, Annette de la Renta Gift, Harris Brisbane Dick, Fletcher, Louis V. Bell, and Dodge Funds, Joseph Pulitzer Bequest, several members of The Chairman's Council Gifts, Elaine L. Rosenberg and Stephenson Family Foundation Gifts, 2003 Benefit Fund, and other gifts and funds from various donors, 2004",
+    "source_url": "https://www.metmuseum.org/art/collection/search/438754",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Madonna and Child, by Duccio, completed in the year of 1290.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/manet_the_balcony_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/manet_the_balcony_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/manet_the_balcony_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/manet_the_balcony_640w.webp",
+    "title": "The Balcony - Édouard Manet (AI Animated)",
+    "type": "video",
+    "date": "2026-10-28",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Édouard Manet",
+    "artist_dates": "1832–1883",
+    "original_title": "The Balcony",
+    "original_date": "1868",
+    "museum": "Musée d'Orsay",
+    "credit_line": "Image: Wikimedia Commons, Edouard Manet - The Balcony - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Edouard_Manet_-_The_Balcony_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Balcony, by Édouard Manet, completed in the year of 1868.",
+    "looping": false
   }
 ]

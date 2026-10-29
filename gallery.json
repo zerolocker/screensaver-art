@@ -9009,5 +9009,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Balcony, by Édouard Manet, completed in the year of 1868.",
     "looping": false,
     "music_prompt": "Parisian balcony in 1868: elegant solo piano salon waltz with light string quartet, cool, poised and quietly ironic. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_las_hilanderas_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_las_hilanderas_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_las_hilanderas_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/velazquez_las_hilanderas_640w.webp",
+    "title": "Las Hilanderas - Diego Velázquez (AI Animated)",
+    "type": "video",
+    "date": "2026-10-29",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Diego Velázquez",
+    "artist_dates": "1599–1660",
+    "original_title": "Las Hilanderas",
+    "original_date": "1655–1660",
+    "museum": "Museo del Prado",
+    "credit_line": "Image: Wikimedia Commons, Diego Velázquez 014.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Diego_Vel%C3%A1zquez_014.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Las Hilanderas, by Diego Velázquez, completed in the year of 1655.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/friedrich_sea_of_ice_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/friedrich_sea_of_ice_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/friedrich_sea_of_ice_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/friedrich_sea_of_ice_640w.webp",
+    "title": "The Sea of Ice - Caspar David Friedrich (AI Animated)",
+    "type": "video",
+    "date": "2026-10-29",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Caspar David Friedrich",
+    "artist_dates": "1774–1840",
+    "original_title": "The Sea of Ice",
+    "original_date": "1823–1824",
+    "museum": "Hamburger Kunsthalle",
+    "credit_line": "Image: Wikimedia Commons, 1823 Friedrich Das Eismeer anagoria.JPG",
+    "source_url": "https://commons.wikimedia.org/wiki/File:1823_Friedrich_Das_Eismeer_anagoria.JPG",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Sea of Ice, by Caspar David Friedrich, completed in the year of 1823.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/fragonard_young_girl_reading_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/fragonard_young_girl_reading_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/fragonard_young_girl_reading_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/fragonard_young_girl_reading_640w.webp",
+    "title": "Young Girl Reading - Jean-Honoré Fragonard (AI Animated)",
+    "type": "video",
+    "date": "2026-10-29",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Jean-Honoré Fragonard",
+    "artist_dates": "1732–1806",
+    "original_title": "Young Girl Reading",
+    "original_date": "c. 1769",
+    "museum": "National Gallery of Art",
+    "credit_line": "Gift of Mrs. Mellon Bruce in memory of her father, Andrew W. Mellon",
+    "source_url": "https://www.nga.gov/collection/art-object-page.46303.html",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Young Girl Reading, by Jean-Honoré Fragonard, completed in the year of 1769.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_red_vineyard_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_red_vineyard_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_red_vineyard_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_red_vineyard_640w.webp",
+    "title": "The Red Vineyard - Vincent van Gogh (AI Animated)",
+    "type": "video",
+    "date": "2026-10-29",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Vincent van Gogh",
+    "artist_dates": "1853–1890",
+    "original_title": "The Red Vineyard",
+    "original_date": "1888",
+    "museum": "Pushkin Museum of Fine Arts",
+    "credit_line": "Image: Wikimedia Commons, Vincent van Gogh - Red Vineyard at Arles (1888).jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Vincent_van_Gogh_-_Red_Vineyard_at_Arles_(1888).jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Red Vineyard, by Vincent van Gogh, completed in the year of 1888.",
+    "looping": false
   }
 ]

@@ -9031,7 +9031,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Diego_Vel%C3%A1zquez_014.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Las Hilanderas, by Diego Velázquez, completed in the year of 1655.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Spanish Baroque guitar and viola da gamba with a soft baroque harp, a calm rhythmic pulse like a turning spinning wheel, warm amber workshop mood. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/friedrich_sea_of_ice_animated.mp4",
@@ -9054,7 +9055,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:1823_Friedrich_Das_Eismeer_anagoria.JPG",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Sea of Ice, by Caspar David Friedrich, completed in the year of 1823.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Sparse slow piano and a low cello drone with faint glassy string harmonics, cold, still and solemn Romantic mood, wide open frozen silence. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/fragonard_young_girl_reading_animated.mp4",
@@ -9077,7 +9079,8 @@
     "source_url": "https://www.nga.gov/collection/art-object-page.46303.html",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Young Girl Reading, by Jean-Honoré Fragonard, completed in the year of 1769.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Solo harpsichord with a gentle chamber flute and soft viola, an intimate Rococo salon air, warm, graceful and unhurried, like turning pages in afternoon light. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_red_vineyard_animated.mp4",
@@ -9100,6 +9103,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Vincent_van_Gogh_-_Red_Vineyard_at_Arles_(1888).jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Red Vineyard, by Vincent van Gogh, completed in the year of 1888.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Warm accordion and fingerpicked nylon guitar with light tambourine and a soft fiddle, a sunlit Provençal harvest feel, golden and gently lilting. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

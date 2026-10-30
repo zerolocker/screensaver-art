@@ -9105,5 +9105,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Red Vineyard, by Vincent van Gogh, completed in the year of 1888.",
     "looping": false,
     "music_prompt": "Warm accordion and fingerpicked nylon guitar with light tambourine and a soft fiddle, a sunlit Provençal harvest feel, golden and gently lilting. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/turner_rain_steam_and_speed_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/turner_rain_steam_and_speed_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/turner_rain_steam_and_speed_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/turner_rain_steam_and_speed_640w.webp",
+    "title": "Rain, Steam and Speed – The Great Western Railway - J. M. W. Turner (AI Animated)",
+    "type": "video",
+    "date": "2026-10-30",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "J. M. W. Turner",
+    "artist_dates": "c. 1775–1851",
+    "original_title": "Rain, Steam and Speed – The Great Western Railway",
+    "original_date": "1844",
+    "museum": "National Gallery",
+    "credit_line": "Image: Wikimedia Commons, J. M. W. Turner - Rain, Steam and Speed – The Great Western Railway.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:J._M._W._Turner_-_Rain,_Steam_and_Speed_%E2%80%93_The_Great_Western_Railway.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Rain, Steam and Speed – The Great Western Railway, by J. M. W. Turner, completed in the year of 1844.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_calling_of_saint_matthew_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_calling_of_saint_matthew_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_calling_of_saint_matthew_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_calling_of_saint_matthew_640w.webp",
+    "title": "The Calling of Saint Matthew - Caravaggio (AI Animated)",
+    "type": "video",
+    "date": "2026-10-30",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Caravaggio",
+    "artist_dates": "1571–1610",
+    "original_title": "The Calling of Saint Matthew",
+    "original_date": "1599–1600",
+    "museum": "San Luigi dei Francesi",
+    "credit_line": "Image: Wikimedia Commons, Caravaggio — The Calling of Saint Matthew.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Caravaggio_%E2%80%94_The_Calling_of_Saint_Matthew.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Calling of Saint Matthew, by Caravaggio, completed in the year of 1599.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/el_greco_burial_of_the_count_of_orgaz_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/el_greco_burial_of_the_count_of_orgaz_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/el_greco_burial_of_the_count_of_orgaz_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/el_greco_burial_of_the_count_of_orgaz_640w.webp",
+    "title": "The Burial of the Count of Orgaz - El Greco (AI Animated)",
+    "type": "video",
+    "date": "2026-10-30",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "El Greco",
+    "artist_dates": "1541–1614",
+    "original_title": "The Burial of the Count of Orgaz",
+    "original_date": "1586",
+    "museum": "Church of Santo Tomé",
+    "credit_line": "Image: Wikimedia Commons, El entierro del señor de Orgaz - El Greco.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:El_entierro_del_se%C3%B1or_de_Orgaz_-_El_Greco.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Burial of the Count of Orgaz, by El Greco, completed in the year of 1586.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/degas_l_absinthe_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/degas_l_absinthe_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/degas_l_absinthe_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/degas_l_absinthe_640w.webp",
+    "title": "L'Absinthe - Edgar Degas (AI Animated)",
+    "type": "video",
+    "date": "2026-10-30",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Edgar Degas",
+    "artist_dates": "1834–1917",
+    "original_title": "L'Absinthe",
+    "original_date": "1875–1876",
+    "museum": "Musée d'Orsay",
+    "credit_line": "Image: Wikimedia Commons, Edgar Degas - In a Café - Google Art Project 2.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Edgar_Degas_-_In_a_Caf%C3%A9_-_Google_Art_Project_2.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled L'Absinthe, by Edgar Degas, completed in the year of 1875.",
+    "looping": false
   }
 ]

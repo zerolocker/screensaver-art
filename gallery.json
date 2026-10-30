@@ -9127,7 +9127,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:J._M._W._Turner_-_Rain,_Steam_and_Speed_%E2%80%93_The_Great_Western_Railway.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Rain, Steam and Speed – The Great Western Railway, by J. M. W. Turner, completed in the year of 1844.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "English Romantic orchestra: steady low-string ostinato like wheels on rails, soft timpani rolls like distant rain, warm horn swells through a golden haze. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_calling_of_saint_matthew_animated.mp4",
@@ -9150,7 +9151,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Caravaggio_%E2%80%94_The_Calling_of_Saint_Matthew.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Calling of Saint Matthew, by Caravaggio, completed in the year of 1599.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Early Baroque Italian chamber music: theorbo, viola da gamba and sparse harpsichord continuo over a slow ground bass, hushed and shadowy, a dim Roman counting-house. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/el_greco_burial_of_the_count_of_orgaz_animated.mp4",
@@ -9173,7 +9175,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:El_entierro_del_se%C3%B1or_de_Orgaz_-_El_Greco.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Burial of the Count of Orgaz, by El Greco, completed in the year of 1586.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Spanish Renaissance sacred music on viols and chamber organ, slow luminous polyphony with a touch of vihuela, solemn and radiant, candlelit Toledo church. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/degas_l_absinthe_animated.mp4",
@@ -9196,6 +9199,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Edgar_Degas_-_In_a_Caf%C3%A9_-_Google_Art_Project_2.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled L'Absinthe, by Edgar Degas, completed in the year of 1875.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Melancholy 1870s Parisian café: slow solo piano waltz in a minor key with soft cello, muted and smoky, a quiet weary afternoon. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

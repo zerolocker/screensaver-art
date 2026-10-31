@@ -9223,7 +9223,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Jean-Fran%C3%A7ois_Millet_-_Des_glaneuses.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Gleaners, by Jean-François Millet, completed in the year of 1857.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Gentle pastoral strings and a soft oboe over a warm drone, unhurried and earthy, like a hazy late-summer afternoon in a French wheat field. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_belshazzars_feast_animated.mp4",
@@ -9246,7 +9247,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Rembrandt-Belsazar.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Belshazzar's Feast, by Rembrandt, completed in the year of 1636.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Dark, regal Baroque strings with a low organ pedal and a muted lute, solemn and candlelit, a hushed sense of awe in a shadowed banquet hall. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_woman_reading_a_letter_animated.mp4",
@@ -9269,7 +9271,8 @@
     "source_url": "https://www.rijksmuseum.nl/en/collection/SK-C-251",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Woman Reading a Letter, by Johannes Vermeer, completed in the year of 1663.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Quiet Dutch Baroque chamber music: a solo viola da gamba and a soft harpsichord, intimate and contemplative, morning light in a still room. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/modigliani_jacques_and_berthe_lipchitz_animated.mp4",
@@ -9292,6 +9295,7 @@
     "source_url": "https://www.artic.edu/artworks/27987",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Jacques and Berthe Lipchitz, by Amedeo Modigliani, completed in the year of 1916.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Soft 1910s Parisian café piano with a muted clarinet, wistful and tender, sparse and melancholy like a quiet studio in Montparnasse. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

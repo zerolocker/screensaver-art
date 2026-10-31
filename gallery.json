@@ -9201,5 +9201,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled L'Absinthe, by Edgar Degas, completed in the year of 1875.",
     "looping": false,
     "music_prompt": "Melancholy 1870s Parisian café: slow solo piano waltz in a minor key with soft cello, muted and smoky, a quiet weary afternoon. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/millet_the_gleaners_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/millet_the_gleaners_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/millet_the_gleaners_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/millet_the_gleaners_640w.webp",
+    "title": "The Gleaners - Jean-François Millet (AI Animated)",
+    "type": "video",
+    "date": "2026-10-31",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Jean-François Millet",
+    "artist_dates": "1814–1875",
+    "original_title": "The Gleaners",
+    "original_date": "1857",
+    "museum": "Musée d'Orsay",
+    "credit_line": "Image: Wikimedia Commons, Jean-François Millet - Des glaneuses.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Jean-Fran%C3%A7ois_Millet_-_Des_glaneuses.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Gleaners, by Jean-François Millet, completed in the year of 1857.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_belshazzars_feast_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_belshazzars_feast_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_belshazzars_feast_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_belshazzars_feast_640w.webp",
+    "title": "Belshazzar's Feast - Rembrandt (AI Animated)",
+    "type": "video",
+    "date": "2026-10-31",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Rembrandt",
+    "artist_dates": "1606–1669",
+    "original_title": "Belshazzar's Feast",
+    "original_date": "1636",
+    "museum": "National Gallery",
+    "credit_line": "Image: Wikimedia Commons, Rembrandt-Belsazar.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Rembrandt-Belsazar.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Belshazzar's Feast, by Rembrandt, completed in the year of 1636.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_woman_reading_a_letter_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_woman_reading_a_letter_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_woman_reading_a_letter_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_woman_reading_a_letter_640w.webp",
+    "title": "Woman Reading a Letter - Johannes Vermeer (AI Animated)",
+    "type": "video",
+    "date": "2026-10-31",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Johannes Vermeer",
+    "artist_dates": "1632–1675",
+    "original_title": "Woman Reading a Letter",
+    "original_date": "c. 1663",
+    "museum": "Rijksmuseum",
+    "credit_line": "On loan from the City of Amsterdam (A. van der Hoop Bequest)",
+    "source_url": "https://www.rijksmuseum.nl/en/collection/SK-C-251",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Woman Reading a Letter, by Johannes Vermeer, completed in the year of 1663.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/modigliani_jacques_and_berthe_lipchitz_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/modigliani_jacques_and_berthe_lipchitz_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/modigliani_jacques_and_berthe_lipchitz_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/modigliani_jacques_and_berthe_lipchitz_640w.webp",
+    "title": "Jacques and Berthe Lipchitz - Amedeo Modigliani (AI Animated)",
+    "type": "video",
+    "date": "2026-10-31",
+    "tags": [
+      "Modern"
+    ],
+    "source": "real_artwork",
+    "artist": "Amedeo Modigliani",
+    "artist_dates": "1884–1920",
+    "original_title": "Jacques and Berthe Lipchitz",
+    "original_date": "1916",
+    "museum": "Art Institute of Chicago",
+    "credit_line": "Helen Birch Bartlett Memorial Collection",
+    "source_url": "https://www.artic.edu/artworks/27987",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Jacques and Berthe Lipchitz, by Amedeo Modigliani, completed in the year of 1916.",
+    "looping": false
   }
 ]

@@ -9319,7 +9319,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Vincent_van_Gogh_-_The_yellow_house_(%27The_street%27).jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Yellow House, by Vincent van Gogh, completed in the year of 1888.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Gentle Provençal accordion waltz with acoustic guitar and light pizzicato strings, sunny and warm, a lazy southern afternoon. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/manet_music_in_the_tuileries_animated.mp4",
@@ -9342,7 +9343,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:%C3%89douard_Manet_-_Music_in_the_Tuileries_Gardens.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Music in the Tuileries, by Édouard Manet, completed in the year of 1862.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Elegant 1860s Parisian park bandstand: light woodwinds, soft cornet and strings in a graceful promenade, airy and sociable. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/giorgione_three_philosophers_animated.mp4",
@@ -9365,7 +9367,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Giorgione_-_Three_Philosophers_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Three Philosophers, by Giorgione, completed in the year of 1505.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Venetian Renaissance lute and recorder with soft viol drone, contemplative and pastoral, golden late-afternoon calm. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/wright_experiment_bird_air_pump_animated.mp4",
@@ -9388,6 +9391,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:An_Experiment_on_a_Bird_in_an_Air_Pump_by_Joseph_Wright_of_Derby,_1768.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled An Experiment on a Bird in the Air Pump, by Joseph Wright of Derby, completed in the year of 1768.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Hushed candlelit Georgian chamber music: harpsichord and slow string trio in a minor key, intimate, suspenseful and still. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

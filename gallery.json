@@ -9297,5 +9297,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Jacques and Berthe Lipchitz, by Amedeo Modigliani, completed in the year of 1916.",
     "looping": false,
     "music_prompt": "Soft 1910s Parisian café piano with a muted clarinet, wistful and tender, sparse and melancholy like a quiet studio in Montparnasse. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_the_yellow_house_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_the_yellow_house_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_the_yellow_house_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_the_yellow_house_640w.webp",
+    "title": "The Yellow House - Vincent van Gogh (AI Animated)",
+    "type": "video",
+    "date": "2026-11-01",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Vincent van Gogh",
+    "artist_dates": "1853–1890",
+    "original_title": "The Yellow House",
+    "original_date": "1888",
+    "museum": "Van Gogh Museum",
+    "credit_line": "Image: Wikimedia Commons, Vincent van Gogh - The yellow house ('The street').jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Vincent_van_Gogh_-_The_yellow_house_(%27The_street%27).jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Yellow House, by Vincent van Gogh, completed in the year of 1888.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/manet_music_in_the_tuileries_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/manet_music_in_the_tuileries_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/manet_music_in_the_tuileries_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/manet_music_in_the_tuileries_640w.webp",
+    "title": "Music in the Tuileries - Édouard Manet (AI Animated)",
+    "type": "video",
+    "date": "2026-11-01",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Édouard Manet",
+    "artist_dates": "1832–1883",
+    "original_title": "Music in the Tuileries",
+    "original_date": "1862",
+    "museum": "National Gallery",
+    "credit_line": "Image: Wikimedia Commons, Édouard Manet - Music in the Tuileries Gardens.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:%C3%89douard_Manet_-_Music_in_the_Tuileries_Gardens.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Music in the Tuileries, by Édouard Manet, completed in the year of 1862.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/giorgione_three_philosophers_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/giorgione_three_philosophers_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/giorgione_three_philosophers_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/giorgione_three_philosophers_640w.webp",
+    "title": "The Three Philosophers - Giorgione (AI Animated)",
+    "type": "video",
+    "date": "2026-11-01",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Giorgione",
+    "artist_dates": "1478–1510",
+    "original_title": "The Three Philosophers",
+    "original_date": "1505–1509",
+    "museum": "Kunsthistorisches Museum",
+    "credit_line": "Image: Wikimedia Commons, Giorgione - Three Philosophers - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Giorgione_-_Three_Philosophers_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Three Philosophers, by Giorgione, completed in the year of 1505.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/wright_experiment_bird_air_pump_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/wright_experiment_bird_air_pump_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/wright_experiment_bird_air_pump_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/wright_experiment_bird_air_pump_640w.webp",
+    "title": "An Experiment on a Bird in the Air Pump - Joseph Wright of Derby (AI Animated)",
+    "type": "video",
+    "date": "2026-11-01",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Joseph Wright of Derby",
+    "artist_dates": "1734–1797",
+    "original_title": "An Experiment on a Bird in the Air Pump",
+    "original_date": "1768",
+    "museum": "National Gallery",
+    "credit_line": "Image: Wikimedia Commons, An Experiment on a Bird in an Air Pump by Joseph Wright of Derby, 1768.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:An_Experiment_on_a_Bird_in_an_Air_Pump_by_Joseph_Wright_of_Derby,_1768.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled An Experiment on a Bird in the Air Pump, by Joseph Wright of Derby, completed in the year of 1768.",
+    "looping": false
   }
 ]

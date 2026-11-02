@@ -97,18 +97,23 @@ const SRC_EDGE = 1920
 // ---- which URL(s) to try ---------------------------------------------------
 
 /**
- * AIC IIIF: ask for the native width explicitly (`full/full` and `max` are
- * blocked, and native+1 px is refused), within the server's maxArea. Non-PD
- * works redirect to an 843px cap, so refuse redirects and step down the
- * advertised `sizes` instead.
+ * AIC IIIF: ask for an explicit width (`full/full` and `max` are blocked, and
+ * native+1 px is refused) with a long edge of at most AIC_EDGE px, within the
+ * server's maxArea. Natives run to 20,000+ px, past what ffmpeg decodes (about
+ * 268 MP). AIC often redirects a width it doesn't advertise to its 843px cap
+ * (always, for non-PD works), so refuse redirects and step down the advertised
+ * `sizes` instead. Those are halvings of the native, so AIC_EDGE is twice the
+ * 4K wall's width: some advertised size always lands between 4000 and 8000 px.
  */
+const AIC_EDGE = 8000
 async function aicAttempts(url) {
   const m = url.match(/^(https:\/\/www\.artic\.edu\/iiif\/2\/[^/]+)\//)
   if (!m) return [{ url }]
   const info = await http(`${m[1]}/info.json`)
   const long = Math.max(info.width, info.height)
   const maxArea = (info.profile || []).find((p) => p && typeof p === 'object' && p.maxArea)?.maxArea
-  const top = maxArea ? Math.min(info.width, Math.floor(Math.sqrt((maxArea * info.width) / info.height))) : info.width
+  let top = maxArea ? Math.min(info.width, Math.floor(Math.sqrt((maxArea * info.width) / info.height))) : info.width
+  top = Math.min(top, Math.floor((AIC_EDGE * info.width) / long))
   const widths = [top, ...(info.sizes || []).map((s) => s.width).filter((w) => w < top).sort((a, b) => b - a)]
   return [...new Set(widths)]
     .filter((w) => Math.round((w * long) / info.width) >= MIN_LONG_EDGE)
@@ -169,6 +174,7 @@ const attempts = await (async () => (rec.object_id.startsWith('aic:') ? aicAttem
 if (!attempts.length) die(`no served size of ${rec.object_id} reaches ${MIN_LONG_EDGE}px`)
 
 let src = null
+let dims = null
 let failure = null
 let encoding = false
 const tmp = path.join(outDir, `${stem}_raw.download`)
@@ -181,15 +187,18 @@ try {
       const ext = /png/i.test(got.contentType) ? 'png' : /tiff?/i.test(got.contentType) ? 'tif' : 'jpg'
       src = path.join(outDir, `${stem}_raw.${ext}`)
       renameSync(tmp, src)
-      break
+      dims = probe(src)
+      if (dims) break
+      log(`  ${a.url} -> ffprobe can't read it (${(statSync(src).size / 1e6).toFixed(1)} MB); trying the next size down`)
+      rmSync(src, { force: true })
+      src = null
     } catch (e) {
       rmSync(tmp, { force: true })
       if (!(e instanceof HttpError)) throw e
       log(`  ${a.url} -> ${e.message.replace(/^GET \S+: /, '')}; trying the next size down`)
     }
   }
-  if (!src) fail(`couldn't download any size of ${rec.object_id}`)
-  const dims = probe(src) || fail(`ffprobe can't read ${path.basename(src)} — not an image?`)
+  if (!src) fail(`couldn't download a readable size of ${rec.object_id}`)
   const long = Math.max(dims.width, dims.height)
   log(`  downloaded ${dims.width}×${dims.height} (${(statSync(src).size / 1e6).toFixed(1)} MB)`)
   if (long < MIN_LONG_EDGE) fail(`long edge ${long}px < ${MIN_LONG_EDGE}px — too small for a 4K wall; pick another work (never upscale a real artwork)`)

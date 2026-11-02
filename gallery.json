@@ -9415,7 +9415,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Le_Sacre_de_Napol%C3%A9on_-_Jacques-Louis_David_-_Mus%C3%A9e_du_Louvre_Peintures_INV_3699_;_MR_1437.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Coronation of Napoleon, by Jacques-Louis David, completed in the year of 1807.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Stately Napoleonic-era chamber orchestra with pipe organ undertone, measured strings and soft horns, ceremonial and grand yet hushed. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/goya_charles_iv_and_his_family_animated.mp4",
@@ -9438,7 +9439,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:La_familia_de_Carlos_IV,_Francisco_de_Goya.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Charles IV of Spain and His Family, by Francisco Goya, completed in the year of 1800.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Spanish classical guitar with a small late-18th-century string ensemble, elegant courtly minuet pace, gilded and slightly melancholy. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_la_belle_ferronniere_animated.mp4",
@@ -9461,7 +9463,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:La_Belle_Ferroni%C3%A8re_-_Google_Arts.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled La Belle Ferronnière, by Leonardo da Vinci, completed in the year of 1495.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Solo lute and soft viola da gamba in a slow Renaissance Milanese court air, intimate and poised, warm candlelit restraint. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_magpie_on_the_gallows_animated.mp4",
@@ -9484,6 +9487,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Die_Elster_auf_dem_Galgen.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Magpie on the Gallows, by Pieter Brueghel the Elder, completed in the year of 1568.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Rustic 16th-century Flemish dance on recorder, hurdy-gurdy and frame drum, gentle and pastoral, played softly across an open valley. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

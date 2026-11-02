@@ -9393,5 +9393,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled An Experiment on a Bird in the Air Pump, by Joseph Wright of Derby, completed in the year of 1768.",
     "looping": false,
     "music_prompt": "Hushed candlelit Georgian chamber music: harpsichord and slow string trio in a minor key, intimate, suspenseful and still. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/david_coronation_of_napoleon_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/david_coronation_of_napoleon_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/david_coronation_of_napoleon_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/david_coronation_of_napoleon_640w.webp",
+    "title": "The Coronation of Napoleon - Jacques-Louis David (AI Animated)",
+    "type": "video",
+    "date": "2026-11-02",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Jacques-Louis David",
+    "artist_dates": "1748–1825",
+    "original_title": "The Coronation of Napoleon",
+    "original_date": "1807",
+    "museum": "Louvre Museum",
+    "credit_line": "Image: Wikimedia Commons, Le Sacre de Napoléon - Jacques-Louis David - Musée du Louvre Peintures INV 3699 ; MR 1437.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Le_Sacre_de_Napol%C3%A9on_-_Jacques-Louis_David_-_Mus%C3%A9e_du_Louvre_Peintures_INV_3699_;_MR_1437.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Coronation of Napoleon, by Jacques-Louis David, completed in the year of 1807.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/goya_charles_iv_and_his_family_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/goya_charles_iv_and_his_family_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/goya_charles_iv_and_his_family_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/goya_charles_iv_and_his_family_640w.webp",
+    "title": "Charles IV of Spain and His Family - Francisco Goya (AI Animated)",
+    "type": "video",
+    "date": "2026-11-02",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Francisco Goya",
+    "artist_dates": "1746–1828",
+    "original_title": "Charles IV of Spain and His Family",
+    "original_date": "1800",
+    "museum": "Museo del Prado",
+    "credit_line": "Image: Wikimedia Commons, La familia de Carlos IV, Francisco de Goya.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:La_familia_de_Carlos_IV,_Francisco_de_Goya.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Charles IV of Spain and His Family, by Francisco Goya, completed in the year of 1800.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_la_belle_ferronniere_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_la_belle_ferronniere_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_la_belle_ferronniere_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_la_belle_ferronniere_640w.webp",
+    "title": "La Belle Ferronnière - Leonardo da Vinci (AI Animated)",
+    "type": "video",
+    "date": "2026-11-02",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Leonardo da Vinci",
+    "artist_dates": "1452–1519",
+    "original_title": "La Belle Ferronnière",
+    "original_date": "c. 1495",
+    "museum": "Louvre Museum",
+    "credit_line": "Image: Wikimedia Commons, La Belle Ferronière - Google Arts.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:La_Belle_Ferroni%C3%A8re_-_Google_Arts.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled La Belle Ferronnière, by Leonardo da Vinci, completed in the year of 1495.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_magpie_on_the_gallows_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_magpie_on_the_gallows_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_magpie_on_the_gallows_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/bruegel_magpie_on_the_gallows_640w.webp",
+    "title": "The Magpie on the Gallows - Pieter Brueghel the Elder (AI Animated)",
+    "type": "video",
+    "date": "2026-11-02",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Pieter Brueghel the Elder",
+    "artist_dates": "1520s–1569",
+    "original_title": "The Magpie on the Gallows",
+    "original_date": "1568",
+    "museum": "Hessian State Museum Darmstadt",
+    "credit_line": "Image: Wikimedia Commons, Die Elster auf dem Galgen.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Die_Elster_auf_dem_Galgen.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Magpie on the Gallows, by Pieter Brueghel the Elder, completed in the year of 1568.",
+    "looping": false
   }
 ]

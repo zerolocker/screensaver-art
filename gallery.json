@@ -9511,7 +9511,8 @@
     "source_url": "https://www.nga.gov/collection/art-object-page.61379.html",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Woman with a Parasol, by Claude Monet, completed in the year of 1875.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Gentle French Impressionist chamber music: flute, harp and soft strings, breezy and sunlit, light as wind over a summer hillside. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_the_fortune_teller_animated.mp4",
@@ -9534,7 +9535,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:The_Fortune_Teller-Caravaggio_(Louvre).jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Fortune Teller, by Caravaggio, completed in the year of 1594.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Late Renaissance Italian lute and viola da gamba duet, playful and sly, a lilting street-corner dance with light tambourine. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/friedrich_abbey_in_the_oakwood_animated.mp4",
@@ -9557,7 +9559,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Caspar_David_Friedrich_-_Abtei_im_Eichwald_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Abbey in the Oakwood, by Caspar David Friedrich, completed in the year of 1809.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Slow German Romantic elegy: hushed organ pedal drone, low cellos and a distant solo horn, wintry dusk, solemn and still. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/durer_self_portrait_fur_trimmed_robe_animated.mp4",
@@ -9580,6 +9583,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:D%C3%BCrer_-_Selbstbildnis_im_Pelzrock_-_Alte_Pinakothek.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Self-Portrait with Fur-Trimmed Robe, by Albrecht Dürer, completed in the year of 1500.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Northern Renaissance consort of recorders and viols, calm and contemplative, warm modal harmony, a quiet devotional stillness. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

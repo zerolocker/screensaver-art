@@ -9489,5 +9489,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Magpie on the Gallows, by Pieter Brueghel the Elder, completed in the year of 1568.",
     "looping": false,
     "music_prompt": "Rustic 16th-century Flemish dance on recorder, hurdy-gurdy and frame drum, gentle and pastoral, played softly across an open valley. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/monet_woman_with_a_parasol_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/monet_woman_with_a_parasol_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/monet_woman_with_a_parasol_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/monet_woman_with_a_parasol_640w.webp",
+    "title": "Woman with a Parasol - Madame Monet and Her Son - Claude Monet (AI Animated)",
+    "type": "video",
+    "date": "2026-11-04",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Claude Monet",
+    "artist_dates": "1840–1926",
+    "original_title": "Woman with a Parasol - Madame Monet and Her Son",
+    "original_date": "1875",
+    "museum": "National Gallery of Art",
+    "credit_line": "Collection of Mr. and Mrs. Paul Mellon",
+    "source_url": "https://www.nga.gov/collection/art-object-page.61379.html",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Woman with a Parasol, by Claude Monet, completed in the year of 1875.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_the_fortune_teller_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_the_fortune_teller_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_the_fortune_teller_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_the_fortune_teller_640w.webp",
+    "title": "The Fortune Teller - Caravaggio (AI Animated)",
+    "type": "video",
+    "date": "2026-11-04",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Caravaggio",
+    "artist_dates": "1571–1610",
+    "original_title": "The Fortune Teller",
+    "original_date": "c. 1594–1595",
+    "museum": "Louvre Museum",
+    "credit_line": "Image: Wikimedia Commons, The Fortune Teller-Caravaggio (Louvre).jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:The_Fortune_Teller-Caravaggio_(Louvre).jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Fortune Teller, by Caravaggio, completed in the year of 1594.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/friedrich_abbey_in_the_oakwood_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/friedrich_abbey_in_the_oakwood_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/friedrich_abbey_in_the_oakwood_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/friedrich_abbey_in_the_oakwood_640w.webp",
+    "title": "The Abbey in the Oakwood - Caspar David Friedrich (AI Animated)",
+    "type": "video",
+    "date": "2026-11-04",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Caspar David Friedrich",
+    "artist_dates": "1774–1840",
+    "original_title": "The Abbey in the Oakwood",
+    "original_date": "1809–1810",
+    "museum": "Alte Nationalgalerie",
+    "credit_line": "Image: Wikimedia Commons, Caspar David Friedrich - Abtei im Eichwald - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Caspar_David_Friedrich_-_Abtei_im_Eichwald_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Abbey in the Oakwood, by Caspar David Friedrich, completed in the year of 1809.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/durer_self_portrait_fur_trimmed_robe_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/durer_self_portrait_fur_trimmed_robe_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/durer_self_portrait_fur_trimmed_robe_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/durer_self_portrait_fur_trimmed_robe_640w.webp",
+    "title": "Self-Portrait with Fur-Trimmed Robe - Albrecht Dürer (AI Animated)",
+    "type": "video",
+    "date": "2026-11-04",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Albrecht Dürer",
+    "artist_dates": "1471–1528",
+    "original_title": "Self-Portrait with Fur-Trimmed Robe",
+    "original_date": "1500",
+    "museum": "Bavarian State Painting Collections",
+    "credit_line": "Image: Wikimedia Commons, Dürer - Selbstbildnis im Pelzrock - Alte Pinakothek.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:D%C3%BCrer_-_Selbstbildnis_im_Pelzrock_-_Alte_Pinakothek.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Self-Portrait with Fur-Trimmed Robe, by Albrecht Dürer, completed in the year of 1500.",
+    "looping": false
   }
 ]

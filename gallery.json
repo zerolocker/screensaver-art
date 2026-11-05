@@ -9585,5 +9585,96 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Self-Portrait with Fur-Trimmed Robe, by Albrecht Dürer, completed in the year of 1500.",
     "looping": false,
     "music_prompt": "Northern Renaissance consort of recorders and viols, calm and contemplative, warm modal harmony, a quiet devotional stillness. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_girl_reading_letter_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_girl_reading_letter_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_girl_reading_letter_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_girl_reading_letter_640w.webp",
+    "title": "Girl Reading a Letter at an Open Window - Johannes Vermeer (AI Animated)",
+    "type": "video",
+    "date": "2026-11-05",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Johannes Vermeer",
+    "artist_dates": "1632–1675",
+    "original_title": "Girl Reading a Letter at an Open Window",
+    "original_date": "c. 1657–1659",
+    "museum": "Staatliche Kunstsammlungen Dresden",
+    "credit_line": "Image: Wikimedia Commons, Jan Vermeer van Delft - Brieflezend meisje bij het venster (ca. 1657-59).jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Jan_Vermeer_van_Delft_-_Brieflezend_meisje_bij_het_venster_(ca._1657-59).jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Girl Reading a Letter at an Open Window, by Johannes Vermeer, completed in the year of 1657.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_road_cypress_star_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_road_cypress_star_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_road_cypress_star_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_road_cypress_star_640w.webp",
+    "title": "Road with Cypress and Star - Vincent van Gogh (AI Animated)",
+    "type": "video",
+    "date": "2026-11-05",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Vincent van Gogh",
+    "artist_dates": "1853–1890",
+    "original_title": "Road with Cypress and Star",
+    "original_date": "1890",
+    "museum": "Kröller-Müller Museum",
+    "credit_line": "Image: Wikimedia Commons, Vincent van Gogh - Road with Cypress and Star - c. 12-15 May 1890.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Vincent_van_Gogh_-_Road_with_Cypress_and_Star_-_c._12-15_May_1890.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Road with Cypress and Star, by Vincent van Gogh, completed in the year of 1890.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/renoir_two_sisters_terrace_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/renoir_two_sisters_terrace_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/renoir_two_sisters_terrace_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/renoir_two_sisters_terrace_640w.webp",
+    "title": "Two Sisters (On the Terrace) - Pierre-Auguste Renoir (AI Animated)",
+    "type": "video",
+    "date": "2026-11-05",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Pierre-Auguste Renoir",
+    "artist_dates": "1841–1919",
+    "original_title": "Two Sisters (On the Terrace)",
+    "original_date": "1881",
+    "museum": "Art Institute of Chicago",
+    "credit_line": "Mr. and Mrs. Lewis Larned Coburn Memorial Collection",
+    "source_url": "https://www.artic.edu/artworks/14655",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Two Sisters (On the Terrace), by Pierre-Auguste Renoir, completed in the year of 1881.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/hals_merry_drinker_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/hals_merry_drinker_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/hals_merry_drinker_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/hals_merry_drinker_640w.webp",
+    "title": "The Merry Drinker - Frans Hals (AI Animated)",
+    "type": "video",
+    "date": "2026-11-05",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Frans Hals",
+    "artist_dates": "c. 1583–1666",
+    "original_title": "The Merry Drinker",
+    "original_date": "c. 1628 - c. 1630",
+    "museum": "Rijksmuseum",
+    "source_url": "https://www.rijksmuseum.nl/en/collection/SK-A-135",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Merry Drinker, by Frans Hals, completed in the year of 1628.",
+    "looping": false
   }
 ]

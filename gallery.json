@@ -9607,7 +9607,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Jan_Vermeer_van_Delft_-_Brieflezend_meisje_bij_het_venster_(ca._1657-59).jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Girl Reading a Letter at an Open Window, by Johannes Vermeer, completed in the year of 1657.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Quiet 17th-century Dutch interior music: solo harpsichord with a soft viol consort, contemplative and tender, sunlight through a window, slow graceful pace. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_road_cypress_star_animated.mp4",
@@ -9630,7 +9631,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Vincent_van_Gogh_-_Road_with_Cypress_and_Star_-_c._12-15_May_1890.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Road with Cypress and Star, by Vincent van Gogh, completed in the year of 1890.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Late-Romantic French chamber piece for night: solo cello and soft piano, gently pulsing harp arpeggios like twinkling stars, warm and dreamy, Provençal evening calm. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/renoir_two_sisters_terrace_animated.mp4",
@@ -9653,7 +9655,8 @@
     "source_url": "https://www.artic.edu/artworks/14655",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Two Sisters (On the Terrace), by Pierre-Auguste Renoir, completed in the year of 1881.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Light French Impressionist piece for a spring riverside afternoon: flute, harp and soft strings, bright airy major harmonies, gentle breeze through blossoms, carefree and sunny. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/hals_merry_drinker_animated.mp4",
@@ -9675,6 +9678,7 @@
     "source_url": "https://www.rijksmuseum.nl/en/collection/SK-A-135",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Merry Drinker, by Frans Hals, completed in the year of 1628.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Cheerful Dutch Golden Age tavern tune: lute, recorder and viola da gamba with light frame drum, jovial lilting dance in a warm major key, convivial but unhurried. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

@@ -9680,5 +9680,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Merry Drinker, by Frans Hals, completed in the year of 1628.",
     "looping": false,
     "music_prompt": "Cheerful Dutch Golden Age tavern tune: lute, recorder and viola da gamba with light frame drum, jovial lilting dance in a warm major key, convivial but unhurried. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/wright_of_derby_the_alchemist_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/wright_of_derby_the_alchemist_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/wright_of_derby_the_alchemist_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/wright_of_derby_the_alchemist_640w.webp",
+    "title": "The Alchemist Discovering Phosphorus - Joseph Wright of Derby (AI Animated)",
+    "type": "video",
+    "date": "2026-11-06",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Joseph Wright of Derby",
+    "artist_dates": "1734–1797",
+    "original_title": "The Alchemist Discovering Phosphorus",
+    "original_date": "1771",
+    "museum": "Derby Museum and Art Gallery",
+    "credit_line": "Image: Wikimedia Commons, Joseph Wright of Derby The Alchemist.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Joseph_Wright_of_Derby_The_Alchemist.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Alchemist Discovering Phosphorus, by Joseph Wright of Derby, completed in the year of 1771.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/kramskoi_unknown_woman_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/kramskoi_unknown_woman_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/kramskoi_unknown_woman_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/kramskoi_unknown_woman_640w.webp",
+    "title": "Portrait of an Unknown Woman - Ivan Kramskoi (AI Animated)",
+    "type": "video",
+    "date": "2026-11-06",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Ivan Kramskoi",
+    "artist_dates": "1837–1887",
+    "original_title": "Portrait of an Unknown Woman",
+    "original_date": "1883",
+    "museum": "Tretyakov Gallery",
+    "credit_line": "Image: Wikimedia Commons, Kramskoy Portrait of a Woman.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Kramskoy_Portrait_of_a_Woman.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Portrait of an Unknown Woman, by Ivan Kramskoi, completed in the year of 1883.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/goya_clothed_maja_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/goya_clothed_maja_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/goya_clothed_maja_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/goya_clothed_maja_640w.webp",
+    "title": "The Clothed Maja - Francisco Goya (AI Animated)",
+    "type": "video",
+    "date": "2026-11-06",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Francisco Goya",
+    "artist_dates": "1746–1828",
+    "original_title": "The Clothed Maja",
+    "original_date": "1800–1807",
+    "museum": "Museo del Prado",
+    "credit_line": "Image: Wikimedia Commons, Goya Maja ubrana2.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Goya_Maja_ubrana2.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Clothed Maja, by Francisco Goya, completed in the year of 1800.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_the_musicians_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_the_musicians_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_the_musicians_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_the_musicians_640w.webp",
+    "title": "The Musicians - Caravaggio (AI Animated)",
+    "type": "video",
+    "date": "2026-11-06",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Caravaggio",
+    "artist_dates": "1571–1610",
+    "original_title": "The Musicians",
+    "original_date": "1597",
+    "museum": "The Metropolitan Museum of Art",
+    "credit_line": "Rogers Fund, 1952",
+    "source_url": "https://www.metmuseum.org/art/collection/search/435844",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Musicians, by Caravaggio, completed in the year of 1597.",
+    "looping": false
   }
 ]

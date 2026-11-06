@@ -9702,7 +9702,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Joseph_Wright_of_Derby_The_Alchemist.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Alchemist Discovering Phosphorus, by Joseph Wright of Derby, completed in the year of 1771.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Dim candlelit chamber music: low viola da gamba drone, slow harpsichord arpeggios and a faint glass-harmonica shimmer, mysterious and reverent. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/kramskoi_unknown_woman_animated.mp4",
@@ -9725,7 +9726,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Kramskoy_Portrait_of_a_Woman.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Portrait of an Unknown Woman, by Ivan Kramskoi, completed in the year of 1883.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Gentle Russian romance for solo piano and soft cello, wistful and poised, like a winter carriage ride through a hushed snowy city. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/goya_clothed_maja_animated.mp4",
@@ -9748,7 +9750,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Goya_Maja_ubrana2.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Clothed Maja, by Francisco Goya, completed in the year of 1800.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Languid Spanish classical guitar with soft castanet taps and muted strings, warm, playful and relaxed, a late-afternoon salon in Madrid. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_the_musicians_animated.mp4",
@@ -9771,6 +9774,7 @@
     "source_url": "https://www.metmuseum.org/art/collection/search/435844",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Musicians, by Caravaggio, completed in the year of 1597.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Intimate late-Renaissance consort: plucked lute melody with recorder and soft viol, warm, tender and unhurried, a private rehearsal among friends. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

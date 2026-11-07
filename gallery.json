@@ -9776,5 +9776,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Musicians, by Caravaggio, completed in the year of 1597.",
     "looping": false,
     "music_prompt": "Intimate late-Renaissance consort: plucked lute melody with recorder and soft viol, warm, tender and unhurried, a private rehearsal among friends. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_woman_holding_a_balance_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_woman_holding_a_balance_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_woman_holding_a_balance_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_woman_holding_a_balance_640w.webp",
+    "title": "Woman Holding a Balance - Johannes Vermeer (AI Animated)",
+    "type": "video",
+    "date": "2026-11-07",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Johannes Vermeer",
+    "artist_dates": "1632–1675",
+    "original_title": "Woman Holding a Balance",
+    "original_date": "c. 1664",
+    "museum": "National Gallery of Art",
+    "credit_line": "Widener Collection",
+    "source_url": "https://www.nga.gov/collection/art-object-page.1236.html",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Woman Holding a Balance, by Johannes Vermeer, completed in the year of 1664.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/leighton_flaming_june_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/leighton_flaming_june_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/leighton_flaming_june_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/leighton_flaming_june_640w.webp",
+    "title": "Flaming June - Frederic Leighton (AI Animated)",
+    "type": "video",
+    "date": "2026-11-07",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Frederic Leighton",
+    "artist_dates": "1830–1896",
+    "original_title": "Flaming June",
+    "original_date": "1895",
+    "museum": "Museo de Arte de Ponce",
+    "credit_line": "Image: Wikimedia Commons, Frederic Leighton - Flaming June (1895) - Museo de Arte de Ponce.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Frederic_Leighton_-_Flaming_June_(1895)_-_Museo_de_Arte_de_Ponce.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Flaming June, by Frederic Leighton, completed in the year of 1895.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_madonna_of_the_carnation_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_madonna_of_the_carnation_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_madonna_of_the_carnation_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_madonna_of_the_carnation_640w.webp",
+    "title": "Madonna of the Carnation - Leonardo da Vinci (AI Animated)",
+    "type": "video",
+    "date": "2026-11-07",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Leonardo da Vinci",
+    "artist_dates": "1452–1519",
+    "original_title": "Madonna of the Carnation",
+    "original_date": "c. 1475",
+    "museum": "Bavarian State Painting Collections",
+    "credit_line": "Image: Wikimedia Commons, Leonardo da Vinci - Madonna del garofano (ca. 1475).jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Leonardo_da_Vinci_-_Madonna_del_garofano_(ca._1475).jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Madonna of the Carnation, by Leonardo da Vinci, completed in the year of 1475.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/gauguin_the_yellow_christ_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/gauguin_the_yellow_christ_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/gauguin_the_yellow_christ_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/gauguin_the_yellow_christ_640w.webp",
+    "title": "The Yellow Christ - Paul Gauguin (AI Animated)",
+    "type": "video",
+    "date": "2026-11-07",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Paul Gauguin",
+    "artist_dates": "1848–1903",
+    "original_title": "The Yellow Christ",
+    "original_date": "1889",
+    "museum": "Buffalo AKG Art Museum",
+    "credit_line": "Image: Wikimedia Commons, Paul Gauguin - The Yellow Christ (Le Christ jaune) 1889.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Paul_Gauguin_-_The_Yellow_Christ_(Le_Christ_jaune)_1889.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Yellow Christ, by Paul Gauguin, completed in the year of 1889.",
+    "looping": false
   }
 ]

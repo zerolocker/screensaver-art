@@ -9798,7 +9798,8 @@
     "source_url": "https://www.nga.gov/collection/art-object-page.1236.html",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Woman Holding a Balance, by Johannes Vermeer, completed in the year of 1664.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Quiet Dutch Golden Age interior: solo viola da gamba and lute, sparse and contemplative, soft morning light, a still and patient mood. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/leighton_flaming_june_animated.mp4",
@@ -9821,7 +9822,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Frederic_Leighton_-_Flaming_June_(1895)_-_Museo_de_Arte_de_Ponce.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Flaming June, by Frederic Leighton, completed in the year of 1895.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Slow, warm Victorian chamber piece: solo cello and harp over soft sustained strings, drowsy summer afternoon by the sea, gentle and lulling. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_madonna_of_the_carnation_animated.mp4",
@@ -9844,7 +9846,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Leonardo_da_Vinci_-_Madonna_del_garofano_(ca._1475).jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Madonna of the Carnation, by Leonardo da Vinci, completed in the year of 1475.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Early Italian Renaissance devotional calm: recorder, lute and a soft vielle drone, tender and serene, a mother and child in gentle light. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/gauguin_the_yellow_christ_animated.mp4",
@@ -9867,6 +9870,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Paul_Gauguin_-_The_Yellow_Christ_(Le_Christ_jaune)_1889.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Yellow Christ, by Paul Gauguin, completed in the year of 1889.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Rustic Breton autumn: wooden flute and harmonium over a soft low drone, plain modal melody, solemn yet warm, golden fields and quiet prayer. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

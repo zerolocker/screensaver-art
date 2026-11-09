@@ -9872,5 +9872,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Yellow Christ, by Paul Gauguin, completed in the year of 1889.",
     "looping": false,
     "music_prompt": "Rustic Breton autumn: wooden flute and harmonium over a soft low drone, plain modal melody, solemn yet warm, golden fields and quiet prayer. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/bryullov_last_day_of_pompeii_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/bryullov_last_day_of_pompeii_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/bryullov_last_day_of_pompeii_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/bryullov_last_day_of_pompeii_640w.webp",
+    "title": "The Last Day of Pompeii - Karl Bryullov (AI Animated)",
+    "type": "video",
+    "date": "2026-11-09",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Karl Bryullov",
+    "artist_dates": "1799–1852",
+    "original_title": "The Last Day of Pompeii",
+    "original_date": "1833",
+    "museum": "Russian Museum",
+    "credit_line": "Image: Wikimedia Commons, Karl Brullov - The Last Day of Pompeii - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Karl_Brullov_-_The_Last_Day_of_Pompeii_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Last Day of Pompeii, by Karl Bryullov, completed in the year of 1833.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/van_eyck_madonna_of_chancellor_rolin_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/van_eyck_madonna_of_chancellor_rolin_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/van_eyck_madonna_of_chancellor_rolin_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/van_eyck_madonna_of_chancellor_rolin_640w.webp",
+    "title": "Madonna of Chancellor Rolin - Jan van Eyck (AI Animated)",
+    "type": "video",
+    "date": "2026-11-09",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Jan van Eyck",
+    "artist_dates": "c. 1390–1441",
+    "original_title": "Madonna of Chancellor Rolin",
+    "original_date": "1400–1450",
+    "museum": "Louvre Museum",
+    "credit_line": "Image: Wikimedia Commons, La Vierge du chancelier Rolin - Jan van Eyck - Musée du Louvre Peintures INV 1271.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:La_Vierge_du_chancelier_Rolin_-_Jan_van_Eyck_-_Mus%C3%A9e_du_Louvre_Peintures_INV_1271.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Madonna of Chancellor Rolin, by Jan van Eyck, completed in the year of 1400.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/cassatt_the_childs_bath_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/cassatt_the_childs_bath_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/cassatt_the_childs_bath_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/cassatt_the_childs_bath_640w.webp",
+    "title": "The Child's Bath - Mary Cassatt (AI Animated)",
+    "type": "video",
+    "date": "2026-11-09",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Mary Cassatt",
+    "artist_dates": "1844–1926",
+    "original_title": "The Child's Bath",
+    "original_date": "1893",
+    "museum": "Art Institute of Chicago",
+    "credit_line": "Robert A. Waller Fund",
+    "source_url": "https://www.artic.edu/artworks/111442",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Child's Bath, by Mary Cassatt, completed in the year of 1893.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/van_der_weyden_portrait_of_a_lady_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/van_der_weyden_portrait_of_a_lady_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/van_der_weyden_portrait_of_a_lady_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/van_der_weyden_portrait_of_a_lady_640w.webp",
+    "title": "Portrait of a Lady - Rogier van der Weyden (AI Animated)",
+    "type": "video",
+    "date": "2026-11-09",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Rogier van der Weyden",
+    "artist_dates": "1399/1400–1464",
+    "original_title": "Portrait of a Lady",
+    "original_date": "c. 1460",
+    "museum": "National Gallery of Art",
+    "credit_line": "Andrew W. Mellon Collection",
+    "source_url": "https://www.nga.gov/collection/art-object-page.51.html",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Portrait of a Lady, by Rogier van der Weyden, completed in the year of 1460.",
+    "looping": false
   }
 ]

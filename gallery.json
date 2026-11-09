@@ -9894,7 +9894,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Karl_Brullov_-_The_Last_Day_of_Pompeii_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Last Day of Pompeii, by Karl Bryullov, completed in the year of 1833.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Low cellos and double basses holding a dark sustained minor drone, distant timpani rolls and a solemn French horn line, ancient Roman gravity, ash-heavy and restrained. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/van_eyck_madonna_of_chancellor_rolin_animated.mp4",
@@ -9917,7 +9918,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:La_Vierge_du_chancelier_Rolin_-_Jan_van_Eyck_-_Mus%C3%A9e_du_Louvre_Peintures_INV_1271.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Madonna of Chancellor Rolin, by Jan van Eyck, completed in the year of 1400.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Early Flemish court music: recorder, lute and a soft portative organ in a calm modal melody, devout and luminous, 15th-century Burgundian chapel stillness. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/cassatt_the_childs_bath_animated.mp4",
@@ -9940,7 +9942,8 @@
     "source_url": "https://www.artic.edu/artworks/111442",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Child's Bath, by Mary Cassatt, completed in the year of 1893.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Tender solo piano in a warm major key with gentle harp arpeggios and a soft clarinet, intimate late-19th-century domestic calm, unhurried and affectionate. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/van_der_weyden_portrait_of_a_lady_animated.mp4",
@@ -9963,6 +9966,7 @@
     "source_url": "https://www.nga.gov/collection/art-object-page.51.html",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Portrait of a Lady, by Rogier van der Weyden, completed in the year of 1460.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Sparse viol consort and a quiet lute playing a slow contemplative Renaissance pavane, hushed and reverent, soft candlelit stillness. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

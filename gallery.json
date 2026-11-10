@@ -9968,5 +9968,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Portrait of a Lady, by Rogier van der Weyden, completed in the year of 1460.",
     "looping": false,
     "music_prompt": "Sparse viol consort and a quiet lute playing a slow contemplative Renaissance pavane, hushed and reverent, soft candlelit stillness. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/fuseli_the_nightmare_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/fuseli_the_nightmare_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/fuseli_the_nightmare_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/fuseli_the_nightmare_640w.webp",
+    "title": "The Nightmare - Henry Fuseli (AI Animated)",
+    "type": "video",
+    "date": "2026-11-10",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Henry Fuseli",
+    "artist_dates": "1741–1825",
+    "original_title": "The Nightmare",
+    "original_date": "1781",
+    "museum": "Detroit Institute of Arts",
+    "credit_line": "Image: Wikimedia Commons, Johann Heinrich Füssli - The Nightmare 55.5.A-d1-2019-04-15.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Johann_Heinrich_F%C3%BCssli_-_The_Nightmare_55.5.A-d1-2019-04-15.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Nightmare, by Henry Fuseli, completed in the year of 1781.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/renoir_la_balancoire_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/renoir_la_balancoire_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/renoir_la_balancoire_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/renoir_la_balancoire_640w.webp",
+    "title": "The Swing - Pierre-Auguste Renoir (AI Animated)",
+    "type": "video",
+    "date": "2026-11-10",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Pierre-Auguste Renoir",
+    "artist_dates": "1841–1919",
+    "original_title": "La Balançoire",
+    "original_date": "1876",
+    "museum": "Musée d'Orsay",
+    "credit_line": "Image: Wikimedia Commons, Swing-Renoir.jpeg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Swing-Renoir.jpeg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Swing, by Pierre-Auguste Renoir, completed in the year of 1876.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/durer_melencolia_i_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/durer_melencolia_i_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/durer_melencolia_i_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/durer_melencolia_i_640w.webp",
+    "title": "Melencolia I - Albrecht Dürer (AI Animated)",
+    "type": "video",
+    "date": "2026-11-10",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Albrecht Dürer",
+    "artist_dates": "1471–1528",
+    "original_title": "Melencolia I",
+    "original_date": "1514",
+    "museum": "The Metropolitan Museum of Art",
+    "credit_line": "Harris Brisbane Dick Fund, 1943",
+    "source_url": "https://www.metmuseum.org/art/collection/search/336228",
+    "license": "CC0",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Melencolia I, by Albrecht Dürer, completed in the year of 1514.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/petrus_christus_portrait_of_a_young_girl_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/petrus_christus_portrait_of_a_young_girl_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/petrus_christus_portrait_of_a_young_girl_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/petrus_christus_portrait_of_a_young_girl_640w.webp",
+    "title": "Portrait of a Young Girl - Petrus Christus (AI Animated)",
+    "type": "video",
+    "date": "2026-11-10",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Petrus Christus",
+    "artist_dates": "1425–1475",
+    "original_title": "Portrait of a Young Girl",
+    "original_date": "1470",
+    "museum": "Gemäldegalerie Berlin",
+    "credit_line": "Image: Wikimedia Commons, Petrus Christus - Portrait of a Young Woman - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Petrus_Christus_-_Portrait_of_a_Young_Woman_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Portrait of a Young Girl, by Petrus Christus, completed in the year of 1470.",
+    "looping": false
   }
 ]

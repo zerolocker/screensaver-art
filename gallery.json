@@ -9990,7 +9990,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Johann_Heinrich_F%C3%BCssli_-_The_Nightmare_55.5.A-d1-2019-04-15.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Nightmare, by Henry Fuseli, completed in the year of 1781.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Low cello drone, muted chamber strings and a soft fortepiano in a minor key, hushed late-eighteenth-century Gothic unease, dim candlelit stillness. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/renoir_la_balancoire_animated.mp4",
@@ -10013,7 +10014,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Swing-Renoir.jpeg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Swing, by Pierre-Auguste Renoir, completed in the year of 1876.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Light Parisian salon waltz on solo piano with gentle flute and pizzicato strings, sunny and dappled, unhurried afternoon garden warmth, 1870s. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/durer_melencolia_i_animated.mp4",
@@ -10036,7 +10038,8 @@
     "source_url": "https://www.metmuseum.org/art/collection/search/336228",
     "license": "CC0",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Melencolia I, by Albrecht Dürer, completed in the year of 1514.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Slow Renaissance lute and viola da gamba in a pensive minor mode, sparse and meditative, a scholar's quiet study, faint distant bell. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/petrus_christus_portrait_of_a_young_girl_animated.mp4",
@@ -10059,6 +10062,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Petrus_Christus_-_Portrait_of_a_Young_Woman_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Portrait of a Young Girl, by Petrus Christus, completed in the year of 1470.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Sparse fifteenth-century Flemish consort: soft recorder, lute and quiet viol in a calm modal melody, intimate, poised and contemplative. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

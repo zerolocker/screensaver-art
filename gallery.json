@@ -10064,5 +10064,97 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Portrait of a Young Girl, by Petrus Christus, completed in the year of 1470.",
     "looping": false,
     "music_prompt": "Sparse fifteenth-century Flemish consort: soft recorder, lute and quiet viol in a calm modal melody, intimate, poised and contemplative. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/monet_garden_at_sainte_adresse_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/monet_garden_at_sainte_adresse_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/monet_garden_at_sainte_adresse_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/monet_garden_at_sainte_adresse_640w.webp",
+    "title": "Garden at Sainte-Adresse - Claude Monet (AI Animated)",
+    "type": "video",
+    "date": "2026-11-11",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Claude Monet",
+    "artist_dates": "1840–1926",
+    "original_title": "Garden at Sainte-Adresse",
+    "original_date": "1867",
+    "museum": "Metropolitan Museum of Art",
+    "credit_line": "Image: Wikimedia Commons, Claude Monet - Jardin à Sainte-Adresse.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Claude_Monet_-_Jardin_%C3%A0_Sainte-Adresse.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Garden at Sainte-Adresse, by Claude Monet, completed in the year of 1867.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_the_cardsharps_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_the_cardsharps_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_the_cardsharps_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_the_cardsharps_640w.webp",
+    "title": "The Cardsharps - Caravaggio (AI Animated)",
+    "type": "video",
+    "date": "2026-11-11",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Caravaggio",
+    "artist_dates": "1571–1610",
+    "original_title": "The Cardsharps",
+    "original_date": "c. 1596–1597",
+    "museum": "Kimbell Art Museum",
+    "credit_line": "Image: Wikimedia Commons, Caravaggio - The Cardsharps (1596-97) Kimbell Art Museum.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Caravaggio_-_The_Cardsharps_(1596-97)_Kimbell_Art_Museum.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Cardsharps, by Caravaggio, completed in the year of 1596.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_the_geographer_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_the_geographer_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_the_geographer_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_the_geographer_640w.webp",
+    "title": "The Geographer - Johannes Vermeer (AI Animated)",
+    "type": "video",
+    "date": "2026-11-11",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Johannes Vermeer",
+    "artist_dates": "1632–1675",
+    "original_title": "The Geographer",
+    "original_date": "1668",
+    "museum": "Städel Museum",
+    "credit_line": "Image: Wikimedia Commons, Johannes Vermeer, Der Geograf, 1669.png",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Johannes_Vermeer,_Der_Geograf,_1669.png",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Geographer, by Johannes Vermeer, completed in the year of 1668.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_white_house_at_night_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_white_house_at_night_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_white_house_at_night_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_white_house_at_night_640w.webp",
+    "title": "White House at Night - Vincent van Gogh (AI Animated)",
+    "type": "video",
+    "date": "2026-11-11",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Vincent van Gogh",
+    "artist_dates": "1853–1890",
+    "original_title": "White House at Night",
+    "original_date": "1890",
+    "museum": "Hermitage Museum",
+    "credit_line": "Image: Wikimedia Commons, Whitehousenight.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Whitehousenight.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled White House at Night, by Vincent van Gogh, completed in the year of 1890.",
+    "looping": false
   }
 ]

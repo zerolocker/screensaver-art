@@ -10086,7 +10086,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Claude_Monet_-_Jardin_%C3%A0_Sainte-Adresse.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Garden at Sainte-Adresse, by Claude Monet, completed in the year of 1867.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Sunny 1860s French seaside terrace: light flute, harp arpeggios and gentle strings in a bright major key, a breezy salon lilt. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/caravaggio_the_cardsharps_animated.mp4",
@@ -10109,7 +10110,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Caravaggio_-_The_Cardsharps_(1596-97)_Kimbell_Art_Museum.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Cardsharps, by Caravaggio, completed in the year of 1596.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Late-1500s Roman tavern intrigue: lute, viola da gamba and soft frame drum, sly minor-mode dance with a quiet, conspiratorial pulse. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/vermeer_the_geographer_animated.mp4",
@@ -10132,7 +10134,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Johannes_Vermeer,_Der_Geograf,_1669.png",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Geographer, by Johannes Vermeer, completed in the year of 1668.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Quiet 1660s Dutch study in window light: solo harpsichord with a soft recorder line, contemplative and unhurried, warm minor-to-major Baroque phrasing. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/van_gogh_white_house_at_night_animated.mp4",
@@ -10155,6 +10158,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Whitehousenight.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled White House at Night, by Vincent van Gogh, completed in the year of 1890.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Moonlit French village evening, 1890: muted piano, soft clarinet and hushed strings, dreamy and tender with a slow swaying waltz feel. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

@@ -10160,5 +10160,96 @@
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled White House at Night, by Vincent van Gogh, completed in the year of 1890.",
     "looping": false,
     "music_prompt": "Moonlit French village evening, 1890: muted piano, soft clarinet and hushed strings, dreamy and tender with a slow swaying waltz feel. Even dynamics, no build or drop. Instrumental, no vocals."
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/turner_fighting_temeraire_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/turner_fighting_temeraire_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/turner_fighting_temeraire_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/turner_fighting_temeraire_640w.webp",
+    "title": "The Fighting Temeraire - J. M. W. Turner (AI Animated)",
+    "type": "video",
+    "date": "2026-11-12",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "J. M. W. Turner",
+    "artist_dates": "c. 1775–1851",
+    "original_title": "The Fighting Temeraire",
+    "original_date": "1839",
+    "museum": "National Gallery",
+    "credit_line": "Image: Wikimedia Commons, Turner, J. M. W. - The Fighting Téméraire tugged to her last Berth to be broken.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Turner,_J._M._W._-_The_Fighting_T%C3%A9m%C3%A9raire_tugged_to_her_last_Berth_to_be_broken.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Fighting Temeraire, by J. M. W. Turner, completed in the year of 1839.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_salvator_mundi_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_salvator_mundi_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_salvator_mundi_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_salvator_mundi_640w.webp",
+    "title": "Salvator Mundi - Leonardo da Vinci (AI Animated)",
+    "type": "video",
+    "date": "2026-11-12",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Leonardo da Vinci",
+    "original_title": "Salvator Mundi",
+    "original_date": "c. 1500",
+    "museum": "Louvre Abu Dhabi",
+    "credit_line": "Image: Wikimedia Commons, Leonardo da Vinci, Salvator Mundi, c.1500, oil on walnut, 45.4 × 65.6 cm.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Leonardo_da_Vinci,_Salvator_Mundi,_c.1500,_oil_on_walnut,_45.4_%C3%97_65.6_cm.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Salvator Mundi, by Leonardo da Vinci, completed in the year of 1500.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/renoir_young_girls_at_the_piano_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/renoir_young_girls_at_the_piano_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/renoir_young_girls_at_the_piano_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/renoir_young_girls_at_the_piano_640w.webp",
+    "title": "Girls at the Piano - Pierre-Auguste Renoir (AI Animated)",
+    "type": "video",
+    "date": "2026-11-12",
+    "tags": [
+      "19th Century"
+    ],
+    "source": "real_artwork",
+    "artist": "Pierre-Auguste Renoir",
+    "artist_dates": "1841–1919",
+    "original_title": "Girls at the Piano",
+    "original_date": "1892",
+    "museum": "Musée d'Orsay",
+    "credit_line": "Image: Wikimedia Commons, Auguste Renoir - Young Girls at the Piano - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Auguste_Renoir_-_Young_Girls_at_the_Piano_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Girls at the Piano, by Pierre-Auguste Renoir, completed in the year of 1892.",
+    "looping": false
+  },
+  {
+    "src": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_return_of_the_prodigal_son_animated.mp4",
+    "img": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_return_of_the_prodigal_son_2k.webp",
+    "og_img": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_return_of_the_prodigal_son_720p.jpeg",
+    "thumb": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_return_of_the_prodigal_son_640w.webp",
+    "title": "The Return of the Prodigal Son - Rembrandt (AI Animated)",
+    "type": "video",
+    "date": "2026-11-12",
+    "tags": [
+      "Renaissance & Baroque"
+    ],
+    "source": "real_artwork",
+    "artist": "Rembrandt",
+    "artist_dates": "1606–1669",
+    "original_title": "The Return of the Prodigal Son",
+    "original_date": "c. 1668",
+    "museum": "Hermitage Museum",
+    "credit_line": "Image: Wikimedia Commons, Rembrandt Harmensz van Rijn - Return of the Prodigal Son - Google Art Project.jpg",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Rembrandt_Harmensz_van_Rijn_-_Return_of_the_Prodigal_Son_-_Google_Art_Project.jpg",
+    "license": "Public Domain",
+    "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Return of the Prodigal Son, by Rembrandt, completed in the year of 1668.",
+    "looping": false
   }
 ]

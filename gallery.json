@@ -10182,7 +10182,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Turner,_J._M._W._-_The_Fighting_T%C3%A9m%C3%A9raire_tugged_to_her_last_Berth_to_be_broken.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Fighting Temeraire, by J. M. W. Turner, completed in the year of 1839.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Elegiac English string orchestra with a low horn and gentle harp, slow and golden like a sunset on the Thames, wistful farewell without drama. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/leonardo_salvator_mundi_animated.mp4",
@@ -10204,7 +10205,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Leonardo_da_Vinci,_Salvator_Mundi,_c.1500,_oil_on_walnut,_45.4_%C3%97_65.6_cm.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Salvator Mundi, by Leonardo da Vinci, completed in the year of 1500.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Solemn Renaissance consort: slow viols, a quiet lute and a soft chamber organ drone in a dorian mode, reverent and still, candlelit warmth. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/renoir_young_girls_at_the_piano_animated.mp4",
@@ -10227,7 +10229,8 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Auguste_Renoir_-_Young_Girls_at_the_Piano_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled Girls at the Piano, by Pierre-Auguste Renoir, completed in the year of 1892.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Light solo piano in a late-Romantic French salon style, tender and airy major key, unhurried flowing arpeggios, warm afternoon intimacy. Even dynamics, no build or drop. Instrumental, no vocals."
   },
   {
     "src": "https://screensaver-assets.living-art-asset.com/gallery/rembrandt_return_of_the_prodigal_son_animated.mp4",
@@ -10250,6 +10253,7 @@
     "source_url": "https://commons.wikimedia.org/wiki/File:Rembrandt_Harmensz_van_Rijn_-_Return_of_the_Prodigal_Son_-_Google_Art_Project.jpg",
     "license": "Public Domain",
     "video_prompt": "Animate this artwork in a single unbroken scene. No camera movements or zooms.\nThis artwork is titled The Return of the Prodigal Son, by Rembrandt, completed in the year of 1668.",
-    "looping": false
+    "looping": false,
+    "music_prompt": "Dark, warm Dutch Baroque chamber music: a low cello and viola da gamba with sparse harpsichord, slow and forgiving, minor key turning gently consoling. Even dynamics, no build or drop. Instrumental, no vocals."
   }
 ]

@@ -8,8 +8,8 @@
 //     scripts/aftersign-staple.cjs staples the ticket.
 //
 //   Example:
-//     LART_CODESIGN_IDENTITY="Developer ID Application: Jingwen Xu (65WVV3H5N8)" \
-//     APPLE_KEYCHAIN_PROFILE="living-art-notary" \
+//     LART_CODESIGN_IDENTITY="Zhuode Liu (88AD3A776S)" \
+//     APPLE_KEYCHAIN_PROFILE="lart-notary-88AD3A776S" \
 //     pnpm dist:mac
 
 const identity = process.env.LART_CODESIGN_IDENTITY

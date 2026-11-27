@@ -43,8 +43,12 @@ module.exports = async function afterPack(context) {
     throw new Error(`[afterpack-sign] expected appex not found at ${appexPath}`)
   }
 
-  const identity = process.env.LART_CODESIGN_IDENTITY || '-'
-  const adhoc = identity === '-'
+  const name = process.env.LART_CODESIGN_IDENTITY || '-'
+  const adhoc = name === '-'
+  // electron-builder takes the bare "Name (TEAMID)" and refuses the type prefix.
+  // codesign matches by substring, so the bare name is ambiguous when the team
+  // also has an Apple Distribution certificate: name the type here.
+  const identity = adhoc ? '-' : `Developer ID Application: ${name}`
   // Notarization needs a timestamp and the hardened runtime.
   const opts = adhoc ? ['--timestamp=none'] : ['--timestamp', '--options', 'runtime']
 

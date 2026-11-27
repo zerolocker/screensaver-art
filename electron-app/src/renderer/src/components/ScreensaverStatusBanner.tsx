@@ -117,7 +117,7 @@ export function ScreensaverStatusBanner({
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-foreground">{title}</p>
         <p className="text-sm text-muted-foreground">
-          {text} Can change in{' '}
+          {text} Change this in{' '}
           <button
             type="button"
             onClick={onOpenSettings}

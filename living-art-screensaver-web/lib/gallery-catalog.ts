@@ -30,14 +30,13 @@ export const INDEX_ART_PAGES = false
 /** Raw `gallery.json` entry — a superset of the client-facing `ArtItem`. */
 export interface RawItem extends ArtItem {
   /**
-   * Website-only images on R2 (not in `ArtItem`; the app never reads them):
+   * Website-only images on R2 (not in `ArtItem`; the app never reads them).
+   * `thumb` (640w WebP, the /gallery grid) is in `ArtItem`: the app uses it too.
    *   img     2K WebP        archival still; the site never needs more than 720p
    *   og_img  1280x720 JPEG  social cards (JPEG: crawlers and satori handle WebP badly)
-   *   thumb   640w WebP      the /gallery grid
    */
   img?: string
   og_img?: string
-  thumb?: string
   image_prompt?: string
   video_prompt?: string
   looping?: boolean

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import type { ArtItem } from '@screensaver-art/constants'
 import { ArtModal } from './ArtModal'
 
@@ -106,5 +106,82 @@ describe('<ArtModal /> video fit', () => {
     load(video, 0, 0, 0)
     rerenderWith({ ...item, src: 'https://r2/b.mp4' })
     expect(video.style.objectFit).toBe('')
+  })
+})
+
+describe('<ArtModal /> while the clip loads', () => {
+  const withThumb: ArtItem = { ...item, thumb: 'https://r2/a_640w.webp' }
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('shows the still with a loading cue, and keeps the clip hidden until it plays', () => {
+    vi.useFakeTimers()
+    const { container, video } = setup(withThumb)
+    expect(container.querySelector('img')).toHaveAttribute('src', withThumb.thumb)
+    expect(video.style.opacity).toBe('0')
+    // No cue at first, so a cached clip doesn't flash it.
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+
+    act(() => vi.advanceTimersByTime(400))
+    expect(screen.getByRole('status')).toHaveTextContent('Loading the animation…')
+
+    fireEvent.playing(video)
+    expect(video.style.opacity).toBe('1')
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+  })
+
+  it('shows how much of the clip has downloaded, never 100% before it plays', () => {
+    vi.useFakeTimers()
+    const { video } = setup(withThumb)
+    act(() => vi.advanceTimersByTime(400))
+    const buffered = (end: number) => ({ length: 1, start: () => 0, end: () => end })
+    Object.defineProperty(video, 'duration', { value: 10, configurable: true })
+    Object.defineProperty(video, 'buffered', { value: buffered(4), configurable: true })
+    fireEvent.progress(video)
+    expect(screen.getByRole('status')).toHaveTextContent('Loading the animation… 40%')
+
+    Object.defineProperty(video, 'buffered', { value: buffered(10), configurable: true })
+    fireEvent.progress(video)
+    expect(screen.getByRole('status')).toHaveTextContent('Loading the animation… 99%')
+  })
+
+  it('says it is buffering when a playing clip stalls', () => {
+    vi.useFakeTimers()
+    const { video } = setup(withThumb)
+    fireEvent.playing(video)
+    fireEvent.waiting(video)
+    act(() => vi.advanceTimersByTime(400))
+    expect(screen.getByRole('status')).toHaveTextContent('Buffering…')
+    // The clip stays up while it catches up.
+    expect(video.style.opacity).toBe('1')
+
+    fireEvent.playing(video)
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+  })
+
+  it('offers to try again when the clip fails, without closing the preview', () => {
+    const onClose = vi.fn()
+    const props = { selected: false, locked: false, onToggle: vi.fn(), onSubscribe: vi.fn(), onClose }
+    const { container } = render(<ArtModal item={withThumb} {...props} />)
+    const first = container.querySelector('video')!
+    fireEvent.error(first)
+    expect(screen.getByRole('alert')).toHaveTextContent('Couldn’t load the animation')
+    expect(first.style.opacity).toBe('0')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }))
+    expect(onClose).not.toHaveBeenCalled()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    // A fresh <video> fetches the clip again.
+    expect(container.querySelector('video')).not.toBe(first)
+  })
+
+  it('shows only the cue on a piece without a still', () => {
+    vi.useFakeTimers()
+    const { container } = setup(item)
+    expect(container.querySelector('img')).not.toBeInTheDocument()
+    act(() => vi.advanceTimersByTime(400))
+    expect(screen.getByRole('status')).toBeInTheDocument()
   })
 })

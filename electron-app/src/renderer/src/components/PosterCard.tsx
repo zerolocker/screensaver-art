@@ -22,8 +22,10 @@ interface PosterCardProps {
   onOpen: () => void
 }
 
-// A gallery card: first-frame poster, selection tick (or lock), and a hover
-// preview. Hidden rather than unmounted, so its frame is captured once.
+// A gallery card: poster, selection tick (or lock), and a hover preview. The
+// poster is the piece's `thumb` still, a few KB, loaded lazily. Without one, or
+// if it fails, the card captures the clip's first frame instead (poster-engine).
+// Hidden rather than unmounted, so a poster loads once.
 export function PosterCard({
   item,
   selected,
@@ -35,6 +37,9 @@ export function PosterCard({
 }: PosterCardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
+  // The still that failed, so a changed thumb gets its own chance.
+  const [failedThumb, setFailedThumb] = useState<string | null>(null)
+  const thumb = item.thumb && item.thumb !== failedThumb ? item.thumb : null
 
   const [tip, setTip] = useState<{ top: number; left: number } | null>(null)
   const showTip = (e: React.SyntheticEvent<HTMLElement>): void => {
@@ -45,11 +50,12 @@ export function PosterCard({
   }
   const hideTip = (): void => setTip(null)
 
+  // Frame capture only when there's no still to show.
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (thumb || !canvas) return
     return observePoster(canvas, item.src)
-  }, [item.src])
+  }, [item.src, thumb])
 
   useEffect(() => {
     const card = cardRef.current
@@ -92,7 +98,19 @@ export function PosterCard({
       style={hidden ? { display: 'none' } : undefined}
       className="group relative isolate aspect-video rounded-lg overflow-hidden border border-border bg-secondary cursor-pointer transition-colors hover:border-primary/50"
     >
-      <canvas ref={canvasRef} width={480} height={270} className="w-full h-full object-cover block" />
+      {thumb ? (
+        <img
+          src={thumb}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+          onError={() => setFailedThumb(thumb)}
+          className="w-full h-full object-cover block"
+        />
+      ) : (
+        <canvas ref={canvasRef} width={480} height={270} className="w-full h-full object-cover block" />
+      )}
 
       {/* Title, above the preview video. */}
       <div className="absolute inset-x-0 bottom-0 p-2 pt-6 bg-gradient-to-t from-black/75 to-transparent pointer-events-none z-10">

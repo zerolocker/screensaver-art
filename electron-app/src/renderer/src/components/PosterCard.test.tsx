@@ -1,10 +1,11 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 
 // The poster engine touches IntersectionObserver / <canvas> / <video>, none of
 // which jsdom implements — stub it so the card renders as a plain DOM subtree.
+const observePoster = vi.hoisted(() => vi.fn(() => () => {}))
 vi.mock('../lib/poster-engine', () => ({
-  observePoster: () => () => {},
+  observePoster,
   spawnPreview: () => ({ video: document.createElement('video'), destroy: () => {} }),
 }))
 
@@ -72,5 +73,34 @@ describe('<PosterCard />', () => {
     const { onOpen } = setup()
     fireEvent.click(screen.getByText('Aurora'))
     expect(onOpen).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('<PosterCard /> poster', () => {
+  const thumb = 'https://r2/a_640w.webp'
+
+  beforeEach(() => observePoster.mockClear())
+
+  it('shows the thumb still and never downloads the clip for a frame', () => {
+    setup({ item: { ...item, thumb } })
+    const img = document.querySelector('img')
+    expect(img).toHaveAttribute('src', thumb)
+    expect(img).toHaveAttribute('loading', 'lazy')
+    expect(document.querySelector('canvas')).toBeNull()
+    expect(observePoster).not.toHaveBeenCalled()
+  })
+
+  it('captures the first frame when the thumb fails to load', () => {
+    setup({ item: { ...item, thumb } })
+    fireEvent.error(document.querySelector('img')!)
+    expect(document.querySelector('img')).toBeNull()
+    expect(document.querySelector('canvas')).not.toBeNull()
+    expect(observePoster).toHaveBeenCalledWith(expect.any(HTMLCanvasElement), item.src)
+  })
+
+  it('captures the first frame when the piece has no thumb', () => {
+    setup()
+    expect(document.querySelector('img')).toBeNull()
+    expect(observePoster).toHaveBeenCalledWith(expect.any(HTMLCanvasElement), item.src)
   })
 })

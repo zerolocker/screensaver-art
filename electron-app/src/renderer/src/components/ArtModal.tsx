@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react'
-import { X, Check, Lock } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { X, Check, Lock, Loader2, AlertCircle } from 'lucide-react'
 import { type ArtItem, isRealArtwork, tagsOf } from '@screensaver-art/constants'
 import { ArtVideo } from '@screensaver-art/ui'
 
@@ -37,9 +37,17 @@ function artworkCredit(item: ArtItem): string | null {
     .join(' · ')
 }
 
+// How far the clip has got: not playing yet, playing, stalled mid-play, or failed.
+type ClipState = 'loading' | 'playing' | 'buffering' | 'failed'
+
+// Wait this long before showing the loading cue, so a cached clip doesn't flash it.
+const CUE_DELAY_MS = 400
+
 // A full-screen preview of one piece, filling the view like the screensaver
 // does. A portrait (9:16) piece is shown whole on the dark wall (ArtVideo).
-// Clicking anywhere but the action button, Escape, or close dismisses it.
+// A clip is 10–20 MB, so until it plays the piece's still shows with a loading
+// cue, and the clip fades in over it. Clicking anywhere but the action button
+// or "Try again", Escape, or close dismisses it.
 export function ArtModal({
   item,
   selected,
@@ -50,6 +58,46 @@ export function ArtModal({
   osFullscreen,
 }: ArtModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
+
+  // Keyed by src, so a new piece starts from 'loading'.
+  const [clip, setClip] = useState<{ src: string; state: ClipState }>({ src: item.src, state: 'loading' })
+  const state: ClipState = clip.src === item.src ? clip.state : 'loading'
+  const setState = (next: ClipState): void => setClip({ src: item.src, state: next })
+  // Bumped by "Try again" to remount the <video> and fetch the clip afresh.
+  const [attempt, setAttempt] = useState(0)
+
+  // How much of the clip has downloaded, for the cue. A clip starts playing at
+  // about 100% on a slow link, so this is the wait, not a guess.
+  const clipKey = `${item.src}#${attempt}`
+  const [progress, setProgress] = useState<{ key: string; pct: number } | null>(null)
+  const pct = progress?.key === clipKey ? progress.pct : 0
+  const readProgress = (e: React.SyntheticEvent<HTMLVideoElement>): void => {
+    const v = e.currentTarget
+    if (!Number.isFinite(v.duration) || v.duration <= 0 || v.buffered.length === 0) return
+    // Never 100% while still loading.
+    const next = Math.min(99, Math.round((v.buffered.end(0) / v.duration) * 100))
+    setProgress({ key: clipKey, pct: next })
+  }
+
+  // The cue shows only once loading has taken a moment.
+  const busy = state === 'loading' || state === 'buffering'
+  const [cueDue, setCueDue] = useState(false)
+  useEffect(() => {
+    setCueDue(false)
+    if (!busy) return
+    const timer = window.setTimeout(() => setCueDue(true), CUE_DELAY_MS)
+    return () => window.clearTimeout(timer)
+  }, [busy, item.src, attempt])
+
+  const retry = (): void => {
+    const v = videoRef.current
+    if (v) {
+      v.removeAttribute('src')
+      v.load()
+    }
+    setState('loading')
+    setAttempt((a) => a + 1)
+  }
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
@@ -92,15 +140,68 @@ export function ArtModal({
       className="fixed inset-0 z-50 bg-black animate-[fadeIn_150ms_ease-out]"
       onClick={onClose}
     >
+      {/* The still, under the clip until it plays. A portrait piece's still
+          already shows it whole on the dark wall. */}
+      {item.thumb && (
+        <img
+          src={item.thumb}
+          alt=""
+          draggable={false}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      )}
+
       <ArtVideo
+        key={attempt}
         ref={videoRef}
         src={item.src}
         autoPlay
         loop
         muted
         playsInline
+        onPlaying={() => setState('playing')}
+        onWaiting={() => {
+          if (state === 'playing') setState('buffering')
+        }}
+        onError={() => setState('failed')}
+        onProgress={readProgress}
+        style={{
+          opacity: state === 'playing' || state === 'buffering' ? 1 : 0,
+          transition: 'opacity 400ms ease-out',
+        }}
         className="absolute inset-0 w-full h-full object-cover bg-black"
       />
+
+      {/* Loading cue: the still alone could pass for the piece itself. */}
+      {busy && cueDue && (
+        <div
+          role="status"
+          className="pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-black/60 px-4 py-2.5 text-sm text-white/90 tabular-nums shadow-lg backdrop-blur-md animate-[fadeIn_200ms_ease-out]"
+        >
+          <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+          {state === 'buffering'
+            ? 'Buffering…'
+            : `Loading the animation…${pct > 0 ? ` ${pct}%` : ''}`}
+        </div>
+      )}
+      {state === 'failed' && (
+        <div
+          role="alert"
+          className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 inline-flex items-center gap-3 rounded-full border border-white/15 bg-black/60 py-1.5 pl-4 pr-1.5 text-sm text-white/90 shadow-lg backdrop-blur-md"
+        >
+          <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
+          Couldn’t load the animation
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              retry()
+            }}
+            className="rounded-full bg-white/15 px-3 py-1 text-white transition-colors hover:bg-white/25"
+          >
+            Try again
+          </button>
+        </div>
+      )}
 
       {/* Top-right, clear of the traffic lights. */}
       <button

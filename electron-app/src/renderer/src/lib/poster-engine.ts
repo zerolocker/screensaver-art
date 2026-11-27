@@ -1,9 +1,10 @@
-// Keeps the gallery grid cheap: each card draws its clip's first frame onto a
-// <canvas> and then drops the video, so at rest no videos are live. Hundreds of
-// live videos would freeze the renderer. A video plays only on hover and in the
-// preview. (The `thumb` stills on R2 could replace this if the app read them.)
-// A portrait (9:16) clip is never cropped to the 16:9 cell: its poster and hover
-// preview show it whole on the dark wall.
+// Gallery card media. A card's poster is its piece's `thumb` still on R2 (see
+// PosterCard). This file holds the fallback for a piece with no usable still:
+// draw the clip's first frame onto a <canvas>, then drop the video, so at rest
+// no videos are live. Hundreds of live videos would freeze the renderer. A
+// video plays only on hover and in the preview.
+// A portrait (9:16) clip is never cropped to the 16:9 cell: its fallback poster
+// and hover preview show it whole on the dark wall.
 
 import { PORTRAIT_WALL, isPortraitVideo } from '@screensaver-art/constants'
 
@@ -11,11 +12,19 @@ import { PORTRAIT_WALL, isPortraitVideo } from '@screensaver-art/constants'
 const POSTER_CONCURRENCY = 5
 // Capture slightly ahead of the viewport.
 const ROOT_MARGIN = '600px'
-// After this, draw whatever has decoded (possibly nothing).
+// A capture that hasn't decoded a frame by then gives up and retries later. A
+// clip is 10–20 MB, so a slow network can take this long.
 const CAPTURE_TIMEOUT_MS = 12_000
+// Wait before a failed capture tries again, and give up after this many tries.
+const RETRY_DELAY_MS = 5_000
+const MAX_ATTEMPTS = 3
+
+const HAVE_CURRENT_DATA = 2
 
 const queue: (() => void)[] = []
 let active = 0
+// Pending retries, so a card's cleanup can cancel them.
+const retryTimers = new WeakMap<HTMLCanvasElement, number>()
 
 function pump(): void {
   while (active < POSTER_CONCURRENCY && queue.length > 0) {
@@ -54,28 +63,45 @@ function capturePoster(canvas: HTMLCanvasElement): void {
   video.src = src
 
   let done = false
-  const finish = (draw: boolean): void => {
+  const finish = (): void => {
     if (done) return
     done = true
     clearTimeout(timer)
-    if (draw) {
+    let drawn = false
+    if (video.readyState >= HAVE_CURRENT_DATA) {
       try {
         drawFrame(canvas, video)
-        canvas.dataset.ready = '1'
-        canvas.dispatchEvent(new CustomEvent('poster:ready'))
+        drawn = true
       } catch {
-        // drawImage can throw if the frame isn't decodable; leave the canvas blank.
+        // drawImage can throw if the frame isn't decodable.
       }
     }
     video.removeAttribute('src') // abort the in-flight download
     video.load() // release the decoder
+    if (drawn) canvas.dataset.ready = '1'
+    else scheduleRetry(canvas)
     active--
     pump()
   }
 
-  const timer = setTimeout(() => finish(true), CAPTURE_TIMEOUT_MS)
-  video.addEventListener('loadeddata', () => finish(true), { once: true })
-  video.addEventListener('error', () => finish(false), { once: true })
+  const timer = setTimeout(finish, CAPTURE_TIMEOUT_MS)
+  video.addEventListener('loadeddata', finish, { once: true })
+  video.addEventListener('error', finish, { once: true })
+}
+
+// Nothing was drawn: watch the card again after a pause, so it captures the
+// next time it's on screen. Never mark a blank card done.
+function scheduleRetry(canvas: HTMLCanvasElement): void {
+  const attempts = Number(canvas.dataset.attempts ?? 0) + 1
+  canvas.dataset.attempts = String(attempts)
+  if (attempts >= MAX_ATTEMPTS) return
+  const timer = window.setTimeout(() => {
+    retryTimers.delete(canvas)
+    if (!canvas.isConnected) return
+    delete canvas.dataset.captured
+    observer.observe(canvas)
+  }, RETRY_DELAY_MS)
+  retryTimers.set(canvas, timer)
 }
 
 // Draw a landscape frame to fill the canvas, a portrait one whole and centred
@@ -101,7 +127,11 @@ function drawFrame(canvas: HTMLCanvasElement, video: HTMLVideoElement): void {
 export function observePoster(canvas: HTMLCanvasElement, src: string): () => void {
   canvas.dataset.src = src
   observer.observe(canvas)
-  return () => observer.unobserve(canvas)
+  return () => {
+    observer.unobserve(canvas)
+    window.clearTimeout(retryTimers.get(canvas))
+    retryTimers.delete(canvas)
+  }
 }
 
 // Play a looping, muted video over a poster on hover. Returns a teardown.

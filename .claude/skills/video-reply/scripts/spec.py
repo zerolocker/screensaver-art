@@ -8,7 +8,7 @@ import os
 
 import yaml
 
-DEFAULT_VOICE = "Sulafat"
+DEFAULT_VOICE = "Leda"
 DEFAULT_ACCENT = "#e4a853"
 
 # template -> (required fields, optional fields, list field to count, soft max items)

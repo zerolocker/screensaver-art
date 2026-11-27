@@ -8,6 +8,9 @@ export interface ArtItem {
   title: string
   type: string
   date?: string
+  // The 640-wide WebP still on R2: the website's grid and the app's gallery
+  // poster. A portrait piece's still shows it whole on the dark wall.
+  thumb?: string
   // One tag from TAG_ORDER, for the filter pills. Missing means "Misc".
   tags?: string[]
   // `true` opens the piece to everyone. New pieces leave it unset (subscriber-only).
